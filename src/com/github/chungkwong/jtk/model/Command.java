@@ -14,22 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.api;
-import com.github.chungkwong.jtk.model.*;
-import java.util.*;
+package com.github.chungkwong.jtk.model;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CommandRegistry{
-	private final HashMap<String,Command> registry=new HashMap<>();
-	public Command getCommand(String name){
-		return registry.get(name);
+public abstract class Command{
+	public abstract void execute();
+	public abstract String getDisplayName();
+	public static Command create(String name,Runnable action){
+		return new SimpleCommand(name,action);
 	}
-	public void addCommand(String name,Command command){
-		registry.put(name,command);
-	}
-	public void addCommand(String name,Runnable action){
-		addCommand(name,Command.create(ResourceBundle.getBundle("com.github.chungkwong.jtk.message").getString(name.toUpperCase()),action));
+	private static class SimpleCommand extends Command{
+		private final String name;
+		private final Runnable action;
+		public SimpleCommand(String name,Runnable action){
+			this.action=action;
+			this.name=name;
+		}
+		@Override
+		public void execute(){
+			action.run();
+		}
+		@Override
+		public String getDisplayName(){
+			return name;
+		}
+
 	}
 }
