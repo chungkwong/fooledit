@@ -15,21 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
-import com.github.chungkwong.jtk.model.*;
-import java.util.*;
+import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CommandRegistry{
-	private final HashMap<String,Command> registry=new HashMap<>();
-	public Command getCommand(String name){
-		return registry.get(name);
+public class Notifier extends Handler{
+	private static final Formatter FORMATTER=new LogFormatter();
+	public void notify(String msg){
+
 	}
-	public void addCommand(String name,Command command){
-		registry.put(name,command);
+	@Override
+	public void publish(LogRecord record){
+		notify(FORMATTER.format(record));
 	}
-	public void addCommand(String name,Runnable action){
-		addCommand(name,Command.create(MessageRegistry.getString(name.toUpperCase()),action));
+	@Override
+	public void flush(){
+
+	}
+	@Override
+	public void close() throws SecurityException{
+
+	}
+	private static class LogFormatter extends Formatter{
+		@Override
+		public String format(LogRecord record){
+			return "["+record.getLevel().getLocalizedName()+"]:"+formatMessage(record);
+		}
 	}
 }

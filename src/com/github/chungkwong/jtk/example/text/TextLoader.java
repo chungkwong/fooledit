@@ -14,22 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.api;
+package com.github.chungkwong.jtk.example.text;
 import com.github.chungkwong.jtk.model.*;
-import java.util.*;
+import java.io.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CommandRegistry{
-	private final HashMap<String,Command> registry=new HashMap<>();
-	public Command getCommand(String name){
-		return registry.get(name);
-	}
-	public void addCommand(String name,Command command){
-		registry.put(name,command);
-	}
-	public void addCommand(String name,Runnable action){
-		addCommand(name,Command.create(MessageRegistry.getString(name.toUpperCase()),action));
+public class TextLoader implements DataLoader<TextObject>{
+	@Override
+	public TextObject loadDataObject(InputStream in){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

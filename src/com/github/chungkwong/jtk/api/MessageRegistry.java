@@ -15,21 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
-import com.github.chungkwong.jtk.model.*;
 import java.util.*;
+import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CommandRegistry{
-	private final HashMap<String,Command> registry=new HashMap<>();
-	public Command getCommand(String name){
-		return registry.get(name);
+public class MessageRegistry{
+	private static final ResourceBundle jtkBundle=ResourceBundle.getBundle("com.github.chungkwong.jtk.message");
+	private static final HashMap<String,String> dynamicBundle=new HashMap<>();
+	public static void addString(String key,String value){
+		dynamicBundle.put(key,value);
 	}
-	public void addCommand(String name,Command command){
-		registry.put(name,command);
+	public static void addBundle(ResourceBundle bundle){
+		for(String key:bundle.keySet())
+			addString(key,bundle.getString(key));
 	}
-	public void addCommand(String name,Runnable action){
-		addCommand(name,Command.create(MessageRegistry.getString(name.toUpperCase()),action));
+	public static String getString(String key){
+		try{
+			return jtkBundle.getString(key);
+		}catch(MissingResourceException ex){
+			if(dynamicBundle.containsKey(key))
+				return dynamicBundle.get(key);
+			Logger.getGlobal().log(Level.INFO,"Missing string: {0}",key);
+			return key;
+		}
 	}
 }

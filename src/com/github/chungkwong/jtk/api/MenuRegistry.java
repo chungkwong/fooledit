@@ -33,7 +33,7 @@ public class MenuRegistry{
 		this.menus=menus;
 		this.commands=commands;
 		try{
-			pref.clear();
+			pref.clear();//FIXME:Comment it out after debug
 		}catch(BackingStoreException ex){
 			Logger.getLogger(MenuRegistry.class.getName()).log(Level.SEVERE,null,ex);
 		}
@@ -52,10 +52,8 @@ public class MenuRegistry{
 	}
 	private Menu createMenu(String name){
 		String sub=pref.get(name,null);
-		Menu menu=new Menu(name);
-		if(sub==null){
-
-		}else{
+		Menu menu=new Menu(MessageRegistry.getString(name));
+		if(sub!=null){
 			ObservableList<MenuItem> items=menu.getItems();
 			for(String item:sub.split(":")){
 				if(item.isEmpty()){
@@ -64,10 +62,13 @@ public class MenuRegistry{
 					items.add(createMenu(item));
 				}else{
 					Command command=commands.getCommand(item);
-					System.err.println(item);
-					MenuItem mi=new MenuItem(command.getDisplayName());
-					mi.setOnAction((e)->command.execute());
-					items.add(mi);
+					if(command==null){
+						Logger.getGlobal().log(Level.INFO,"Unknown command: {0}",item);
+					}else{
+						MenuItem mi=new MenuItem(command.getDisplayName());
+						mi.setOnAction((e)->command.execute());
+						items.add(mi);
+					}
 				}
 			}
 		}
