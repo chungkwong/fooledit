@@ -14,12 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.model;
-import java.io.*;
+package com.github.chungkwong.jtk.api;
+import com.github.chungkwong.jtk.model.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface DataLoader<T extends DataObject>{
-	T loadDataObject(InputStream in);
+public class DataObjectRegistry{
+	private final TreeMap<String,DataObject> objects=new TreeMap<>();
+	private final IdentityHashMap<DataObject,Map<Object,Object>> properties=new IdentityHashMap<>();
+	public DataObject getDataObject(String name){
+		return objects.get(name);
+	}
+	public Object getProperties(Object key,String name){
+		return properties.get(getDataObject(name)).get(key);
+	}
+	public void addDataObject(String name,DataObject data,Map<Object,Object> prop){
+		objects.put(name,data);
+		properties.put(data,prop);
+	}
 }

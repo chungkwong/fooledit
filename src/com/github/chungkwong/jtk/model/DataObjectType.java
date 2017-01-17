@@ -20,6 +20,11 @@ import java.io.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface DataWriter<T extends DataObject>{
-	void writeDataObject(T data,OutputStream out);
+public interface DataObjectType<T extends DataObject>{
+	boolean canHandleMIME(String mime);
+	String[] getPreferedMIME();
+	boolean canRead();
+	boolean canWrite();
+	void writeTo(T data,OutputStream out)throws Exception;
+	T readFrom(InputStream in)throws Exception;
 }

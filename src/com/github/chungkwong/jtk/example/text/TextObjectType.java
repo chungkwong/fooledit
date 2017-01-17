@@ -17,13 +17,39 @@
 package com.github.chungkwong.jtk.example.text;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TextLoader implements DataLoader<TextObject>{
+public class TextObjectType implements DataObjectType<TextObject>{
 	@Override
-	public TextObject loadDataObject(InputStream in){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public boolean canHandleMIME(String mime){
+		return mime.startsWith("text/");
 	}
+	@Override
+	public String[] getPreferedMIME(){
+		return new String[]{"text/plain"};
+	}
+	@Override
+	public boolean canRead(){
+		return true;
+	}
+	@Override
+	public boolean canWrite(){
+		return true;
+	}
+	@Override
+	public void writeTo(TextObject data,OutputStream out) throws Exception{
+		BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out));
+		writer.write(data.getText().get());
+		writer.flush();
+	}
+	@Override
+	public TextObject readFrom(InputStream in) throws Exception{
+		StringBuilder buf=new StringBuilder();
+		BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+		return new TextObject(reader.lines().collect(Collectors.joining("\n")));
+	}
+
 }

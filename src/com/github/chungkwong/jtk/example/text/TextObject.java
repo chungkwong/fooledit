@@ -16,10 +16,17 @@
  */
 package com.github.chungkwong.jtk.example.text;
 import com.github.chungkwong.jtk.model.*;
+import javafx.beans.property.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class TextObject implements DataObject{
-
+	private final SimpleStringProperty text;
+	public TextObject(String init){
+		this.text=new SimpleStringProperty(init);
+	}
+	public SimpleStringProperty getText(){
+		return text;
+	}
 }

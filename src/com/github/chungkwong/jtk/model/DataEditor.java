@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.model;
-
+import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface DataEditor{
-
+public interface DataEditor<T extends DataObject>{
+	Node edit(T data);
 }

@@ -12,11 +12,14 @@
 						<map/>
 						<node name="api">
 							<map/>
-							<node name="menu">
+							<node name="suffix">
 								<map>
-									<entry key="ROOT" value="FILE:VIEW:HELP"/>
-									<entry key="FILE" value="open-file"/>
-									<entry key="VIEW" value="full_screen:maximize_frame:iconify_frame:always_on_top_frame::split_vertically:split_horizontally:keep_only"/>
+									<entry key=".txt" value="text/plain"/>
+									<entry key=".bmp" value="image/bmp"/>
+									<entry key=".gif" value="image/gif"/>
+									<entry key=".jpg" value="image/jpeg"/>
+									<entry key=".jpeg" value="image/jpeg"/>
+									<entry key=".png" value="image/png"/>
 								</map>
 							</node>
 						</node>

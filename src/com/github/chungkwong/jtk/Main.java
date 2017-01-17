@@ -17,6 +17,7 @@
 package com.github.chungkwong.jtk;
 
 import com.github.chungkwong.jtk.api.*;
+import com.github.chungkwong.jtk.command.*;
 import com.github.chungkwong.jtk.control.*;
 import java.util.logging.*;
 import javafx.application.*;
@@ -33,6 +34,7 @@ public class Main extends Application{
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final MenuRegistry menuRegistry;
 	private final Notifier notifier=new Notifier();
+	private final DataObjectRegistry dataObjectRegistry=new DataObjectRegistry();
 	private final BorderPane root;
 	private Node currentNode;
 	private Stage stage;
@@ -44,8 +46,11 @@ public class Main extends Application{
 		HBox commander=new HBox(bar,input);
 		HBox.setHgrow(bar,Priority.NEVER);
 		HBox.setHgrow(input,Priority.ALWAYS);
-		root=new BorderPane(wrap(new WorkSheet(new TextArea())));
+		currentNode=new TextArea();
+		root=new BorderPane(wrap(new WorkSheet(currentNode)));
 		root.setTop(commander);
+		FileCommands fileCommands=new FileCommands(this);
+		commandRegistry.addCommand("open-file",()->fileCommands.open());
 		commandRegistry.addCommand("full_screen",()->stage.setFullScreen(true));
 		commandRegistry.addCommand("maximize_frame",()->stage.setMaximized(true));
 		commandRegistry.addCommand("iconify_frame",()->stage.setIconified(true));
@@ -55,7 +60,7 @@ public class Main extends Application{
 		commandRegistry.addCommand("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(currentNode));
 		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
 	}
-	private Node wrap(Node node){
+	public Node wrap(Node node){
 		node.focusedProperty().addListener(new ChangeListener<Boolean>(){
 			@Override
 			public void changed(ObservableValue<? extends Boolean> ov,Boolean t,Boolean t1){
@@ -65,14 +70,17 @@ public class Main extends Application{
 		});
 		return node;
 	}
-	private WorkSheet currentWorkSheet(){
-		return currentNode==null?((WorkSheet)root.getCenter()):(WorkSheet)currentNode.getParent();
+	public WorkSheet currentWorkSheet(){
+		return (WorkSheet)currentNode.getParent();
 	}
 	public CommandRegistry getCommandRegistry(){
 		return commandRegistry;
 	}
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
+	}
+	public DataObjectRegistry getDataObjectRegistry(){
+		return dataObjectRegistry;
 	}
 	public Notifier getNotifier(){
 		return notifier;

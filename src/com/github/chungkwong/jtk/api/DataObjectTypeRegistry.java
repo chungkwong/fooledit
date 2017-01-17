@@ -15,38 +15,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
+import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.model.*;
 import java.util.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class DataObjectTypeRegistry{
-	private static final HashMap<String,List<DataLoader>> loaders=new HashMap<>();
-	private static final HashMap<String,List<DataEditor>> editors=new HashMap<>();
-	private static final HashMap<String,List<DataWriter>> writers=new HashMap<>();
-	public static void addDataLoader(String mime,DataLoader loader){
-		if(!loaders.containsKey(mime))
-			loaders.put(mime,new LinkedList<>());
-		loaders.get(mime).add(0,loader);
+	private static final HashMap<Class<? extends DataObject>,List<DataEditor>> editors=new HashMap<>();
+	private static final HashMap<String,List<DataObjectType>> mime2type=new HashMap<>();
+	private static final List<DataObjectType> types=new ArrayList<>();
+	public static void addDataObjectType(DataObjectType type){
+		types.add(type);
+		for(String mime:type.getPreferedMIME())
+			addDataObjectType(type,mime);
 	}
-	public static void addDataWriter(String mime,DataWriter writer){
-		if(!writers.containsKey(mime))
-			writers.put(mime,new LinkedList<>());
-		writers.get(mime).add(0,writer);
+	private static void addDataObjectType(DataObjectType type,String mime){
+		if(!mime2type.containsKey(mime))
+			mime2type.put(mime,new LinkedList<>());
+		mime2type.get(mime).add(0,type);
 	}
-	public static void addDataEditor(String mime,DataEditor editor){
-		if(!editors.containsKey(mime))
-			editors.put(mime,new LinkedList<>());
-		editors.get(mime).add(0,editor);
+	public static void addDataEditor(DataEditor editor,Class<? extends DataObject> objectClass){
+		if(!editors.containsKey(objectClass))
+			editors.put(objectClass,new LinkedList<>());
+		editors.get(objectClass).add(0,editor);
 	}
-	public static List<DataLoader> getDataLoaders(String mime){
-		return loaders.get(mime);
+	public static List<DataEditor> getDataEditors(Class<? extends DataObject> cls){
+		return editors.getOrDefault(cls,Collections.EMPTY_LIST);
 	}
-	public static List<DataWriter> getDataWriters(String mime){
-		return writers.get(mime);
+	public static List<DataObjectType> getPreferedDataObjectType(String mime){
+		return mime2type.getOrDefault(mime,Collections.EMPTY_LIST);
 	}
-	public static List<DataEditor> getDataEditors(String mime){
-		return editors.get(mime);
+	public static List<DataObjectType> getFallbackDataObjectType(String mime){
+		return types.stream().filter((t)->t.canHandleMIME(mime)&&!getPreferedDataObjectType(mime).contains(t)).collect(Collectors.toList());
+	}
+	public static List<DataObjectType> getDataObjectTypes(){
+		return types;
+	}
+	static{
+		addDataObjectType(new TextObjectType());
+		addDataEditor(new TextEditor(),TextObject.class);
 	}
 }
