@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
+import com.github.chungkwong.jtk.example.audio.*;
+import com.github.chungkwong.jtk.example.image.*;
 import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.model.*;
 import java.util.*;
@@ -49,13 +51,18 @@ public class DataObjectTypeRegistry{
 		return mime2type.getOrDefault(mime,Collections.EMPTY_LIST);
 	}
 	public static List<DataObjectType> getFallbackDataObjectType(String mime){
-		return types.stream().filter((t)->t.canHandleMIME(mime)&&!getPreferedDataObjectType(mime).contains(t)).collect(Collectors.toList());
+		List<DataObjectType> prefered=getPreferedDataObjectType(mime);
+		return types.stream().filter((t)->t.canHandleMIME(mime)&&!prefered.contains(t)).collect(Collectors.toList());
 	}
 	public static List<DataObjectType> getDataObjectTypes(){
 		return types;
 	}
 	static{
-		addDataObjectType(new TextObjectType());
+		addDataObjectType(TextObjectType.INSTANCE);
 		addDataEditor(new TextEditor(),TextObject.class);
+		addDataObjectType(ImageObjectType.INSTANCE);
+		addDataEditor(new ImageEditor(),ImageObject.class);
+		addDataObjectType(AudioObjectType.INSTANCE);
+		addDataEditor(new AudioEditor(),AudioObject.class);
 	}
 }

@@ -14,49 +14,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.example.text;
+package com.github.chungkwong.jtk.example.audio;
+import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
 import java.util.logging.*;
 import javafx.application.*;
 import static javafx.application.Application.launch;
 import javafx.scene.*;
-import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.media.*;
 import javafx.stage.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TextEditor extends Application implements DataEditor<TextObject>{
-	public Node edit(TextObject obj){
-		TextArea textArea=new TextArea();
-		textArea.textProperty().bindBidirectional(obj.getText());
-		return textArea;
+public class AudioEditor extends Application implements DataEditor<AudioObject>{
+	@Override
+	public Node edit(AudioObject data){
+		MediaView editor=new MediaView();
+		data.getProperty().getValue().setAutoPlay(true);
+		editor.setMediaPlayer(data.getProperty().getValue());
+		data.getProperty().getValue().play();
+		//editor.mediaPlayerProperty().bindBidirectional(data.getProperty());
+		return editor;
 	}
+
 	@Override
 	public void start(Stage primaryStage){
-		TextObject data;
+		AudioObject data;
 		try{
-			FileInputStream in=new FileInputStream("/home/kwong/下载/train");
-			data=TextObjectType.INSTANCE.readFrom(in);
+			FileInputStream in=new FileInputStream("/home/kwong/sysu_learning2/研究生英语/视频（role play）/Avengers/Avengers.mp4");
+			data=AudioObjectType.INSTANCE.readFrom(in);
 			in.close();
 		}catch(Exception ex){
 			Logger.getLogger(TextEditor.class.getName()).log(Level.SEVERE,null,ex);
 			throw new RuntimeException();
 		}
-		Node edit=new TextEditor().edit(data);
-		Button save=new Button("Save");
-		save.setOnAction((e)->{
-			try{
-				FileOutputStream out=new FileOutputStream("/home/kwong/下载/train");
-				data.getDataObjectType().writeTo(data,out);
-				out.close();
-			}catch(Exception ex){
-				Logger.getLogger(TextEditor.class.getName()).log(Level.SEVERE,null,ex);
-			}
-		});
-		Scene scene=new Scene(new BorderPane(edit,save,null,null,null));
+		Node edit=new AudioEditor().edit(data);
+		Scene scene=new Scene(new BorderPane(edit));
 		primaryStage.setTitle("IDEM");
 		primaryStage.setScene(scene);
 		primaryStage.setMaximized(true);

@@ -22,16 +22,30 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class DataObjectRegistry{
+	private static final String MIME="MIME";
+	private static final String URI="URI";
 	private final TreeMap<String,DataObject> objects=new TreeMap<>();
 	private final IdentityHashMap<DataObject,Map<Object,Object>> properties=new IdentityHashMap<>();
 	public DataObject getDataObject(String name){
 		return objects.get(name);
 	}
-	public Object getProperties(Object key,String name){
-		return properties.get(getDataObject(name)).get(key);
+	public Object getProperties(Object key,DataObject data){
+		return properties.get(data).get(key);
+	}
+	public String getURL(DataObject data){
+		return (String)properties.get(data).get(URI);
+	}
+	public String getMIME(DataObject data){
+		return (String)properties.get(data).get(MIME);
 	}
 	public void addDataObject(String name,DataObject data,Map<Object,Object> prop){
 		objects.put(name,data);
 		properties.put(data,prop);
+	}
+	public static Map<Object,Object> createProperties(String uri,String mime){
+		HashMap<Object,Object> prop=new HashMap<Object,Object>();
+		prop.put(MIME,mime);
+		prop.put(URI,uri);
+		return prop;
 	}
 }

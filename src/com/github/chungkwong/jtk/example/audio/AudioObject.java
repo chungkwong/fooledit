@@ -14,12 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.model;
-
+package com.github.chungkwong.jtk.example.audio;
+import com.github.chungkwong.jtk.model.*;
+import javafx.beans.property.*;
+import javafx.scene.media.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface DataObject<T extends DataObject>{
-	DataObjectType<T> getDataObjectType();
+public class AudioObject implements DataObject<AudioObject>{
+	private final Property<MediaPlayer> property;
+	public AudioObject(MediaPlayer audio){
+		this.property=new SimpleObjectProperty<>(audio);
+	}
+	public Property<MediaPlayer> getProperty(){
+		return property;
+	}
+	@Override
+	public DataObjectType<AudioObject> getDataObjectType(){
+		return AudioObjectType.INSTANCE;
+	}
 }

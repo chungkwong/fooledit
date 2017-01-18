@@ -21,12 +21,16 @@ import javafx.beans.property.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TextObject implements DataObject{
+public class TextObject implements DataObject<TextObject>{
 	private final SimpleStringProperty text;
 	public TextObject(String init){
 		this.text=new SimpleStringProperty(init);
 	}
 	public SimpleStringProperty getText(){
 		return text;
+	}
+	@Override
+	public DataObjectType<TextObject> getDataObjectType(){
+		return TextObjectType.INSTANCE;
 	}
 }

@@ -19,8 +19,8 @@ import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
+import java.net.*;
 import java.nio.file.*;
-import java.util.*;
 import java.util.logging.*;
 import javafx.scene.*;
 import javafx.stage.*;
@@ -41,26 +41,37 @@ public class FileCommands{
 		String mime;
 		try{
 			mime=Files.probeContentType(file.toPath());
+			System.out.println(mime);
 		}catch(IOException ex){
 			mime=geussContentType(file);
 		}
 		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
-			if(tryOpen(file,type))
+			if(tryOpen(file,type,mime))
 				return;
 		}
 		for(DataObjectType type:DataObjectTypeRegistry.getFallbackDataObjectType(mime)){
-			if(tryOpen(file,type))
+			if(tryOpen(file,type,mime))
 				return;
 		}
 	}
-	private boolean tryOpen(File f,DataObjectType type){
-		try(FileInputStream in=new FileInputStream(f)){
-			DataObject data=type.readFrom(in);
-			main.getDataObjectRegistry().addDataObject(f.getName(),data,new HashMap<>());
-			Node editor=DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0).edit(data);
-			main.currentWorkSheet().keepOnly(main.wrap(editor));
+	public void save(){
+		DataObject data=(DataObject)main.currentWorkSheet().getChildren().get(0).getUserData();
+		try{
+			File file=new File(new URI(main.getDataObjectRegistry().getURL(data)));
+			data.getDataObjectType().writeTo(data,new FileOutputStream(file));
 		}catch(Exception ex){
 			Logger.getLogger(FileCommands.class.getName()).log(Level.SEVERE,null,ex);
+		}
+	}
+	private boolean tryOpen(File f,DataObjectType type,String mime){
+		try(FileInputStream in=new FileInputStream(f)){
+			DataObject data=type.readFrom(in);
+			main.getDataObjectRegistry().addDataObject(f.getName(),data,DataObjectRegistry.createProperties(f.toURI().toString(),mime));
+			Node editor=DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0).edit(data);
+			main.currentWorkSheet().keepOnly(main.wrap(editor));
+			editor.setUserData(data);
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return false;
 		}
 		return true;

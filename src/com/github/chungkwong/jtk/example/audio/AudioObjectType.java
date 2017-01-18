@@ -14,26 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.example.text;
+package com.github.chungkwong.jtk.example.audio;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
-import java.util.stream.*;
+import javafx.scene.media.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TextObjectType implements DataObjectType<TextObject>{
-	public static final TextObjectType INSTANCE=new TextObjectType();
-	private TextObjectType(){
-
+public class AudioObjectType implements DataObjectType<AudioObject>{
+	public static final AudioObjectType INSTANCE=new AudioObjectType();
+	private AudioObjectType(){
 	}
 	@Override
 	public boolean canHandleMIME(String mime){
-		return mime.startsWith("text/");
+		return mime.startsWith("audio/")||mime.startsWith("video/");
 	}
 	@Override
 	public String[] getPreferedMIME(){
-		return new String[]{"text/plain"};
+		return new String[]{};
 	}
 	@Override
 	public boolean canRead(){
@@ -41,18 +40,24 @@ public class TextObjectType implements DataObjectType<TextObject>{
 	}
 	@Override
 	public boolean canWrite(){
-		return true;
+		return false;
 	}
 	@Override
-	public void writeTo(TextObject data,OutputStream out) throws Exception{
-		BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out));
-		writer.write(data.getText().get());
-		writer.flush();
+	public void writeTo(AudioObject data,OutputStream out) throws Exception{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public TextObject readFrom(InputStream in) throws Exception{
-		StringBuilder buf=new StringBuilder();
-		BufferedReader reader=new BufferedReader(new InputStreamReader(in));
-		return new TextObject(reader.lines().collect(Collectors.joining("\n")));
+	public AudioObject readFrom(InputStream in) throws Exception{
+		File tmp=File.createTempFile("jtk","");
+		try(OutputStream out=new FileOutputStream(tmp)){
+			byte[] buf=new byte[4096];
+			int c;
+			while((c=in.read(buf))!=-1){
+				out.write(buf,0,c);
+			}
+		}
+		AudioObject data=new AudioObject(new MediaPlayer(new Media(tmp.toURI().toString())));
+		tmp.delete();
+		return data;
 	}
 }

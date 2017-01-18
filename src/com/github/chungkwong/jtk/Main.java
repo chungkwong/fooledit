@@ -51,6 +51,7 @@ public class Main extends Application{
 		root.setTop(commander);
 		FileCommands fileCommands=new FileCommands(this);
 		commandRegistry.addCommand("open-file",()->fileCommands.open());
+		commandRegistry.addCommand("save",()->fileCommands.save());
 		commandRegistry.addCommand("full_screen",()->stage.setFullScreen(true));
 		commandRegistry.addCommand("maximize_frame",()->stage.setMaximized(true));
 		commandRegistry.addCommand("iconify_frame",()->stage.setIconified(true));
