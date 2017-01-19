@@ -13,3 +13,6 @@ and open the template in the editor.
 .button {
 	-fx-background-color: #b8b656;
 }
+.mediaview {
+	-fx-fit-to-height: true
+}
