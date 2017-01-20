@@ -17,8 +17,9 @@
 package com.github.chungkwong.jtk.example.image;
 import com.github.chungkwong.jtk.model.*;
 import javafx.scene.*;
+import javafx.scene.canvas.*;
 import javafx.scene.control.*;
-import javafx.scene.image.*;
+import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -26,8 +27,26 @@ import javafx.scene.image.*;
 public class ImageEditor implements DataEditor<ImageObject>{
 	@Override
 	public Node edit(ImageObject data){
-		ImageView editor=new ImageView();
-		editor.imageProperty().bindBidirectional(data.getProperty());
-		return new ScrollPane(editor);
+		Canvas canvas=data.getCanvas();
+		return new BorderPane(new ScrollPane(canvas),getEffectBar(canvas),null,getDrawingBar(canvas),null);
+	}
+	private Node getEffectBar(Canvas canvas){
+		Button bloom=new Button("Bloom");
+		bloom.setOnAction((e)->canvas.setEffect(new javafx.scene.effect.Bloom()));
+		Button shadow=new Button("DropShadow");
+		shadow.setOnAction((e)->canvas.setEffect(new javafx.scene.effect.DropShadow()));
+		Button glow=new Button("Glow");
+		glow.setOnAction((e)->canvas.setEffect(new javafx.scene.effect.Glow()));
+		Button blur=new Button("Blur");
+		blur.setOnAction((e)->canvas.setEffect(new javafx.scene.effect.GaussianBlur()));
+		Spinner<Double> spinner=new Spinner<>(0.0,4.0,1.0);
+		spinner.setEditable(true);
+		spinner.valueProperty().addListener((e,o,n)->{canvas.setScaleX(n);canvas.setScaleY(n);});
+		return new HBox(bloom,shadow,glow,blur,spinner);
+	}
+	private Node getDrawingBar(Canvas canvas){
+		Button line=new Button("Line");
+		line.setOnAction((e)->{canvas.getGraphicsContext2D().fillOval(50,50,50,50);});
+		return new HBox(line);
 	}
 }

@@ -17,7 +17,9 @@
 package com.github.chungkwong.jtk.example.image;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
+import javafx.embed.swing.*;
 import javafx.scene.image.*;
+import javax.imageio.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -44,11 +46,12 @@ public class ImageObjectType implements DataObjectType<ImageObject>{
 	}
 	@Override
 	public void writeTo(ImageObject data,OutputStream out) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		WritableImage image=new WritableImage((int)data.getCanvas().getWidth(),(int)data.getCanvas().getHeight());
+		data.getCanvas().snapshot(null,image);
+		ImageIO.write(SwingFXUtils.fromFXImage(image,null),"png",out);
 	}
 	@Override
 	public ImageObject readFrom(InputStream in) throws Exception{
 		return new ImageObject(new Image(in));
 	}
-
 }

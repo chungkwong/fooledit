@@ -16,19 +16,20 @@
  */
 package com.github.chungkwong.jtk.example.image;
 import com.github.chungkwong.jtk.model.*;
-import javafx.beans.property.*;
+import javafx.scene.canvas.*;
 import javafx.scene.image.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ImageObject implements DataObject<ImageObject>{
-	private final Property<Image> property;
+	private final Canvas canvas;
 	public ImageObject(Image image){
-		this.property=new SimpleObjectProperty<>(image);
+		canvas=new Canvas(image.getWidth(),image.getHeight());
+		canvas.getGraphicsContext2D().drawImage(image,0,0);
 	}
-	public Property<Image> getProperty(){
-		return property;
+	public Canvas getCanvas(){
+		return canvas;
 	}
 	@Override
 	public DataObjectType<ImageObject> getDataObjectType(){

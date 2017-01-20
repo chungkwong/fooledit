@@ -70,6 +70,7 @@ public class FileCommands{
 			Node editor=DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0).edit(data);
 			main.currentWorkSheet().keepOnly(main.wrap(editor));
 			editor.setUserData(data);
+			editor.requestFocus();
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return false;
