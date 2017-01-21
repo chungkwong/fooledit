@@ -45,8 +45,10 @@ public class ImageEditor implements DataEditor<ImageObject>{
 		return new HBox(bloom,shadow,glow,blur,spinner);
 	}
 	private Node getDrawingBar(Canvas canvas){
+		GraphicsContext g2d=canvas.getGraphicsContext2D();
 		Button line=new Button("Line");
-		line.setOnAction((e)->{canvas.getGraphicsContext2D().fillOval(50,50,50,50);});
+		line.setOnAction((e)->{g2d.fillOval(50,50,50,50);});
+
 		return new HBox(line);
 	}
 }

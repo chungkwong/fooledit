@@ -22,7 +22,6 @@ import java.io.*;
 import java.net.*;
 import java.nio.file.*;
 import java.util.logging.*;
-import javafx.scene.*;
 import javafx.stage.*;
 /**
  *
@@ -65,12 +64,8 @@ public class FileCommands{
 	}
 	private boolean tryOpen(File f,DataObjectType type,String mime){
 		try(FileInputStream in=new FileInputStream(f)){
-			DataObject data=type.readFrom(in);
-			main.getDataObjectRegistry().addDataObject(f.getName(),data,DataObjectRegistry.createProperties(f.toURI().toString(),mime));
-			Node editor=DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0).edit(data);
-			main.currentWorkSheet().keepOnly(main.wrap(editor));
-			editor.setUserData(data);
-			editor.requestFocus();
+			main.addAndShow(type.readFrom(in),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,f.getName(),
+					DataObjectRegistry.MIME,mime,DataObjectRegistry.URI,f.toURI()));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return false;

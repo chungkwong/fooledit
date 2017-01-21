@@ -22,8 +22,10 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class DataObjectRegistry{
-	private static final String MIME="MIME";
-	private static final String URI="URI";
+	public static final String MIME="MIME";
+	public static final String URI="URI";
+	public static final String DEFAULT_NAME="DEFAULT_NAME";
+	private static final String UNTITLED=MessageRegistry.getString("UNTITLED");
 	private final TreeMap<String,DataObject> objects=new TreeMap<>();
 	private final IdentityHashMap<DataObject,Map<Object,Object>> properties=new IdentityHashMap<>();
 	public DataObject getDataObject(String name){
@@ -38,12 +40,23 @@ public class DataObjectRegistry{
 	public String getMIME(DataObject data){
 		return (String)properties.get(data).get(MIME);
 	}
-	public void addDataObject(String name,DataObject data,Map<Object,Object> prop){
+	public void addDataObject(DataObject data,Map<Object,Object> prop){
+		String name=(String)prop.getOrDefault(DEFAULT_NAME,UNTITLED);
+		if(objects.containsKey(name)){
+			for(int i=1;;i++){
+				String tmp=name+":"+i;
+				if(!objects.containsKey(tmp)){
+					name=tmp;
+					break;
+				}
+			}
+		}
 		objects.put(name,data);
 		properties.put(data,prop);
 	}
-	public static Map<Object,Object> createProperties(String uri,String mime){
-		HashMap<Object,Object> prop=new HashMap<Object,Object>();
+	public static Map<Object,Object> createProperties(String name,String uri,String mime){
+		HashMap<Object,Object> prop=new HashMap<>();
+		prop.put(DEFAULT_NAME,name);
 		prop.put(MIME,mime);
 		prop.put(URI,uri);
 		return prop;

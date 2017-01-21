@@ -19,6 +19,9 @@ package com.github.chungkwong.jtk;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.command.*;
 import com.github.chungkwong.jtk.control.*;
+import com.github.chungkwong.jtk.example.tool.*;
+import com.github.chungkwong.jtk.model.*;
+import java.util.*;
 import java.util.logging.*;
 import javafx.application.*;
 import javafx.beans.value.*;
@@ -46,7 +49,7 @@ public class Main extends Application{
 		HBox commander=new HBox(bar,input);
 		HBox.setHgrow(bar,Priority.NEVER);
 		HBox.setHgrow(input,Priority.ALWAYS);
-		currentNode=new TextArea();
+		currentNode=new TextArea();//FIXME
 		root=new BorderPane(wrap(new WorkSheet(currentNode)));
 		root.setTop(commander);
 		FileCommands fileCommands=new FileCommands(this);
@@ -56,12 +59,25 @@ public class Main extends Application{
 		commandRegistry.addCommand("maximize_frame",()->stage.setMaximized(true));
 		commandRegistry.addCommand("iconify_frame",()->stage.setIconified(true));
 		commandRegistry.addCommand("always_on_top_frame",()->stage.setAlwaysOnTop(true));
-		commandRegistry.addCommand("split_vertically",()->currentWorkSheet().splitVertically(wrap(new TextArea())));
-		commandRegistry.addCommand("split_horizontally",()->currentWorkSheet().splitHorizontally(wrap(new TextArea())));
+		commandRegistry.addCommand("split_vertically",()->currentWorkSheet().splitVertically(getEditor(getCurrentDataObject())));
+		commandRegistry.addCommand("split_horizontally",()->currentWorkSheet().splitHorizontally(getEditor(getCurrentDataObject())));
 		commandRegistry.addCommand("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(currentNode));
+		commandRegistry.addCommand("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
 		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
 	}
-	public Node wrap(Node node){
+	public void addAndShow(DataObject data,HashMap<Object,Object> prop){
+		getDataObjectRegistry().addDataObject(data,prop);
+		Node editor=getEditor(data);
+		currentWorkSheet().keepOnly(editor);
+		editor.requestFocus();
+	}
+	public Node getEditor(DataObject data){
+		Node editor=DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0).edit(data);
+		wrap(editor);
+		editor.setUserData(data);
+		return editor;
+	}
+	private Node wrap(Node node){
 		node.focusedProperty().addListener(new ChangeListener<Boolean>(){
 			@Override
 			public void changed(ObservableValue<? extends Boolean> ov,Boolean t,Boolean t1){
@@ -70,6 +86,9 @@ public class Main extends Application{
 			}
 		});
 		return node;
+	}
+	public DataObject getCurrentDataObject(){
+		return (DataObject)currentNode.getUserData();
 	}
 	public WorkSheet currentWorkSheet(){
 		return (WorkSheet)currentNode.getParent();

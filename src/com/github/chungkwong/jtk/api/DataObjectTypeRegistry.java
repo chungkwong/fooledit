@@ -18,6 +18,7 @@ package com.github.chungkwong.jtk.api;
 import com.github.chungkwong.jtk.example.audio.*;
 import com.github.chungkwong.jtk.example.image.*;
 import com.github.chungkwong.jtk.example.text.*;
+import com.github.chungkwong.jtk.example.tool.*;
 import com.github.chungkwong.jtk.model.*;
 import java.util.*;
 import java.util.stream.*;
@@ -64,5 +65,6 @@ public class DataObjectTypeRegistry{
 		addDataEditor(new ImageEditor(),ImageObject.class);
 		addDataObjectType(AudioObjectType.INSTANCE);
 		addDataEditor(new AudioEditor(),AudioObject.class);
+		addDataEditor(new Browser(),BrowserData.class);
 	}
 }
