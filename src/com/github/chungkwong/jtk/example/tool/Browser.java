@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.jtk.example.tool;
 import com.github.chungkwong.jtk.model.*;
+import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -31,12 +32,60 @@ public class Browser implements DataEditor<BrowserData>{
 		Button reload=new Button("↺");
 		reload.setOnAction((e)->browser.getEngine().reload());
 		Button back=new Button("<");
-		back.setOnAction((e)->browser.getEngine().getHistory().go(-1));
-		back.disableProperty().bind(browser.getEngine().getHistory().currentIndexProperty().lessThanOrEqualTo(0));
 		Button forward=new Button(">");
-		forward.setOnAction((e)->browser.getEngine().getHistory().go(1));
-		//FIXME
-		forward.disableProperty().bind(browser.getEngine().getHistory().currentIndexProperty().add(1).greaterThanOrEqualTo(browser.getEngine().getHistory().maxSizeProperty()));
+		WebHistory history=browser.getEngine().getHistory();
+		back.setOnAction((e)->{
+			history.go(-1);
+			forward.setDisable(false);
+		});
+		back.disableProperty().bind(history.currentIndexProperty().lessThanOrEqualTo(0));
+		forward.setOnAction((e)->{
+			history.go(1);
+			forward.setDisable(history.getCurrentIndex()+1>=history.getEntries().size());
+		});
+		forward.setDisable(true);
+		MenuItem noback=new MenuItem("Nowhere to back");
+		ContextMenu backMenu=new ContextMenu(noback);
+		backMenu.setOnShowing((e)->{
+			System.out.println("hello");
+			ObservableList<MenuItem> items=backMenu.getItems();
+			ObservableList<WebHistory.Entry> entries=history.getEntries();
+			items.clear();
+			int curr=history.getCurrentIndex();
+			for(int i=curr-1;i>=0;i--){
+				MenuItem item=new MenuItem(entries.get(i).getTitle());
+				item.setOnAction((event)->{
+					history.go(-items.indexOf(item)-1);
+					forward.setDisable(false);
+				});
+				items.add(item);
+			}
+			if(items.isEmpty()){
+				items.add(noback);
+			}
+		});
+		back.setContextMenu(backMenu);
+		MenuItem noforward=new MenuItem("Nowhere to forward");
+		ContextMenu forwardMenu=new ContextMenu(noforward);
+		forwardMenu.setOnShowing((e)->{
+			ObservableList<MenuItem> items=forwardMenu.getItems();
+			ObservableList<WebHistory.Entry> entries=history.getEntries();
+			items.clear();
+			int curr=history.getCurrentIndex();
+			for(int i=curr+1;i<entries.size();i++){
+				MenuItem item=new MenuItem(entries.get(i).getTitle());
+				item.setOnAction((event)->{
+					history.go(items.indexOf(item)+1);
+					forward.setDisable(history.getCurrentIndex()+1>=history.getEntries().size());
+				});
+				items.add(item);
+			}
+			if(items.isEmpty()){
+				items.add(noforward);
+			}
+		});
+		forward.setContextMenu(forwardMenu);
+
 		TextField loc=new TextField();
 		loc.setEditable(true);
 		loc.setOnAction((e)->browser.getEngine().load(loc.getText()));

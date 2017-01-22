@@ -19,6 +19,7 @@ package com.github.chungkwong.jtk;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.command.*;
 import com.github.chungkwong.jtk.control.*;
+import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.example.tool.*;
 import com.github.chungkwong.jtk.model.*;
 import java.util.*;
@@ -49,8 +50,8 @@ public class Main extends Application{
 		HBox commander=new HBox(bar,input);
 		HBox.setHgrow(bar,Priority.NEVER);
 		HBox.setHgrow(input,Priority.ALWAYS);
-		currentNode=new TextArea();//FIXME
-		root=new BorderPane(wrap(new WorkSheet(currentNode)));
+		currentNode=getEditor(new TextObject("Welcome"));
+		root=new BorderPane(new WorkSheet(currentNode));
 		root.setTop(commander);
 		FileCommands fileCommands=new FileCommands(this);
 		commandRegistry.addCommand("open-file",()->fileCommands.open());
@@ -78,6 +79,7 @@ public class Main extends Application{
 		return editor;
 	}
 	private Node wrap(Node node){
+		node.setFocusTraversable(true);
 		node.focusedProperty().addListener(new ChangeListener<Boolean>(){
 			@Override
 			public void changed(ObservableValue<? extends Boolean> ov,Boolean t,Boolean t1){
