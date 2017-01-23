@@ -15,11 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
-
+import java.io.*;
+import java.util.logging.*;
+import java.util.prefs.*;
+import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class KeymapRegistry{
+	private final Node node;
+	private final Preferences pref=Preferences.userNodeForPackage(KeymapRegistry.class).node("keymap");
+	public KeymapRegistry(Node node){
+		this.node=node;
+		try{
+			Preferences.importPreferences(MenuRegistry.class.getResourceAsStream("/com/github/chungkwong/jtk/api/default_keymap.xml"));
+		}catch(IOException|InvalidPreferencesFormatException ex){
+			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
+		}
+		node.setOnKeyTyped((e)->{
+			
+		});
+	}
+
 
 }

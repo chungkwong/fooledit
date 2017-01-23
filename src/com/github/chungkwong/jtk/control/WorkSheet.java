@@ -28,18 +28,23 @@ public class WorkSheet extends BorderPane{
 		super(node);
 	}
 	public void splitVertically(Node second){
-		SplitPane splitPane=new SplitPane(new WorkSheet(getCenter()),new WorkSheet(second));
+		Node first=getCenter();
+		SplitPane splitPane=new SplitPane(new WorkSheet(first),new WorkSheet(second));
 		splitPane.setOrientation(Orientation.VERTICAL);
 		splitPane.setDividerPositions(0.5,0.5);
 		setCenter(splitPane);
+		first.requestFocus();
 	}
 	public void splitHorizontally(Node second){
-		SplitPane splitPane=new SplitPane(new WorkSheet(getCenter()),new WorkSheet(second));
+		Node first=getCenter();
+		SplitPane splitPane=new SplitPane(new WorkSheet(first),new WorkSheet(second));
 		splitPane.setOrientation(Orientation.HORIZONTAL);
 		splitPane.setDividerPositions(0.5,0.5);
 		setCenter(splitPane);
+		first.requestFocus();
 	}
 	public void keepOnly(Node node){
 		setCenter(node);
+		node.requestFocus();
 	}
 }

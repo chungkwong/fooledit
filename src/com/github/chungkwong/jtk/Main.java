@@ -25,7 +25,6 @@ import com.github.chungkwong.jtk.model.*;
 import java.util.*;
 import java.util.logging.*;
 import javafx.application.*;
-import javafx.beans.value.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -40,7 +39,6 @@ public class Main extends Application{
 	private final Notifier notifier=new Notifier();
 	private final DataObjectRegistry dataObjectRegistry=new DataObjectRegistry();
 	private final BorderPane root;
-	private Node currentNode;
 	private Stage stage;
 	public Main(){
 		Logger.getGlobal().setLevel(Level.INFO);
@@ -50,8 +48,7 @@ public class Main extends Application{
 		HBox commander=new HBox(bar,input);
 		HBox.setHgrow(bar,Priority.NEVER);
 		HBox.setHgrow(input,Priority.ALWAYS);
-		currentNode=getEditor(new TextObject("Welcome"));
-		root=new BorderPane(new WorkSheet(currentNode));
+		root=new BorderPane(new WorkSheet(getEditor(new TextObject("Welcome"))));
 		root.setTop(commander);
 		FileCommands fileCommands=new FileCommands(this);
 		commandRegistry.addCommand("open-file",()->fileCommands.open());
@@ -62,7 +59,7 @@ public class Main extends Application{
 		commandRegistry.addCommand("always_on_top_frame",()->stage.setAlwaysOnTop(true));
 		commandRegistry.addCommand("split_vertically",()->currentWorkSheet().splitVertically(getEditor(getCurrentDataObject())));
 		commandRegistry.addCommand("split_horizontally",()->currentWorkSheet().splitHorizontally(getEditor(getCurrentDataObject())));
-		commandRegistry.addCommand("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(currentNode));
+		commandRegistry.addCommand("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentNode()));
 		commandRegistry.addCommand("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
 		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
 	}
@@ -74,26 +71,21 @@ public class Main extends Application{
 	}
 	public Node getEditor(DataObject data){
 		Node editor=DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0).edit(data);
-		wrap(editor);
 		editor.setUserData(data);
 		return editor;
 	}
-	private Node wrap(Node node){
-		node.setFocusTraversable(true);
-		node.focusedProperty().addListener(new ChangeListener<Boolean>(){
-			@Override
-			public void changed(ObservableValue<? extends Boolean> ov,Boolean t,Boolean t1){
-				if(t1)
-					currentNode=node;
-			}
-		});
-		return node;
-	}
 	public DataObject getCurrentDataObject(){
-		return (DataObject)currentNode.getUserData();
+		return (DataObject)getCurrentNode().getUserData();
+	}
+	public Node getCurrentNode(){
+		return currentWorkSheet().getCenter();
 	}
 	public WorkSheet currentWorkSheet(){
-		return (WorkSheet)currentNode.getParent();
+		Node focusOwner=root.getScene().getFocusOwner();
+		while(!(focusOwner instanceof WorkSheet)){
+			focusOwner=focusOwner.getParent();
+		}
+		return (WorkSheet)focusOwner;
 	}
 	public CommandRegistry getCommandRegistry(){
 		return commandRegistry;

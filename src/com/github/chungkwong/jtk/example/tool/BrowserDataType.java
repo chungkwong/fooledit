@@ -17,29 +17,32 @@
 package com.github.chungkwong.jtk.example.tool;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
+import java.nio.charset.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class BrowserDataType implements DataObjectType<BrowserData>{
 	public static final BrowserDataType INSTANCE=new BrowserDataType();
+	private static final String MIME="text/html";
 	private BrowserDataType(){
 	}
 	@Override
 	public boolean canHandleMIME(String mime){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return mime.equals(MIME);
 	}
 	@Override
 	public String[] getPreferedMIME(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return new String[]{MIME};
 	}
 	@Override
 	public boolean canRead(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return true;
 	}
 	@Override
 	public boolean canWrite(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return false;
 	}
 	@Override
 	public void writeTo(BrowserData data,OutputStream out) throws Exception{
@@ -47,6 +50,9 @@ public class BrowserDataType implements DataObjectType<BrowserData>{
 	}
 	@Override
 	public BrowserData readFrom(InputStream in) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		String content=new BufferedReader(new InputStreamReader(in,StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
+		BrowserData data=new BrowserData();
+		data.getEngine().loadContent(content);
+		return data;
 	}
 }
