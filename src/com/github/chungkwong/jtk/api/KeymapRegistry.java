@@ -19,6 +19,7 @@ import java.io.*;
 import java.util.logging.*;
 import java.util.prefs.*;
 import javafx.scene.*;
+import javafx.scene.input.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -26,17 +27,39 @@ import javafx.scene.*;
 public class KeymapRegistry{
 	private final Node node;
 	private final Preferences pref=Preferences.userNodeForPackage(KeymapRegistry.class).node("keymap");
-	public KeymapRegistry(Node node){
+	private final CommandRegistry commandRegistry;
+	private static final StringBuilder buf=new StringBuilder();
+	public KeymapRegistry(Node node,CommandRegistry commandRegistry){
 		this.node=node;
+		this.commandRegistry=commandRegistry;
+		try{
+			pref.clear();//FIXME:Comment it out after debug
+		}catch(BackingStoreException ex){
+			Logger.getLogger(MenuRegistry.class.getName()).log(Level.SEVERE,null,ex);
+		}
 		try{
 			Preferences.importPreferences(MenuRegistry.class.getResourceAsStream("/com/github/chungkwong/jtk/api/default_keymap.xml"));
 		}catch(IOException|InvalidPreferencesFormatException ex){
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
 		}
-		node.setOnKeyTyped((e)->{
-			
+		node.setOnKeyPressed((e)->{
+			System.out.println(encode(e));
+			String s=pref.get(encode(e),null);
+			if(s!=null){
+				commandRegistry.getCommand(s).execute();
+				e.consume();
+			}
 		});
 	}
-
-
+	private static String encode(KeyEvent evt){
+		buf.setLength(0);
+		if(evt.isShiftDown())
+			buf.append("S-");
+		if(evt.isMetaDown())
+			buf.append("M-");
+		if(evt.isControlDown())
+			buf.append("C-");
+		buf.append(evt.getCode().getName());
+		return buf.toString();
+	}
 }

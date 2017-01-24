@@ -36,6 +36,7 @@ import javafx.stage.*;
 public class Main extends Application{
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final MenuRegistry menuRegistry;
+	private final KeymapRegistry keymapRegistry;
 	private final Notifier notifier=new Notifier();
 	private final DataObjectRegistry dataObjectRegistry=new DataObjectRegistry();
 	private final BorderPane root;
@@ -62,6 +63,8 @@ public class Main extends Application{
 		commandRegistry.addCommand("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentNode()));
 		commandRegistry.addCommand("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
 		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
+		keymapRegistry=new KeymapRegistry(root,commandRegistry);
+		//bar.getMenus().get(0).getItems().add(item);
 	}
 	public void addAndShow(DataObject data,HashMap<Object,Object> prop){
 		getDataObjectRegistry().addDataObject(data,prop);

@@ -14,7 +14,12 @@
 							<map/>
 							<node name="keymap">
 								<map>
-									<entry key="Ctrl+H" value="split_vertically"/>
+									<entry key="C-1" value="keep_only"/>
+									<entry key="C-2" value="split_vertically"/>
+									<entry key="C-3" value="split_horizontally"/>
+									<entry key="F11" value="full_screen"/>
+									<entry key="M-F10" value="maximize_frame"/>
+									<entry key="C-Z" value="iconify_frame"/>
 								</map>
 							</node>
 						</node>
