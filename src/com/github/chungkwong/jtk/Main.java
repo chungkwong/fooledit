@@ -27,6 +27,7 @@ import java.util.logging.*;
 import javafx.application.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 /**
@@ -40,6 +41,7 @@ public class Main extends Application{
 	private final Notifier notifier=new Notifier();
 	private final DataObjectRegistry dataObjectRegistry=new DataObjectRegistry();
 	private final BorderPane root;
+	private final Scene scene;
 	private Stage stage;
 	public Main(){
 		Logger.getGlobal().setLevel(Level.INFO);
@@ -51,6 +53,7 @@ public class Main extends Application{
 		HBox.setHgrow(input,Priority.ALWAYS);
 		root=new BorderPane(new WorkSheet(getEditor(new TextObject("Welcome"))));
 		root.setTop(commander);
+		scene=new Scene(root);
 		FileCommands fileCommands=new FileCommands(this);
 		commandRegistry.addCommand("open-file",()->fileCommands.open());
 		commandRegistry.addCommand("save",()->fileCommands.save());
@@ -63,7 +66,7 @@ public class Main extends Application{
 		commandRegistry.addCommand("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentNode()));
 		commandRegistry.addCommand("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
 		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
-		keymapRegistry=new KeymapRegistry(root,commandRegistry);
+		keymapRegistry=new KeymapRegistry(scene,commandRegistry);
 		//bar.getMenus().get(0).getItems().add(item);
 	}
 	public void addAndShow(DataObject data,HashMap<Object,Object> prop){
@@ -105,11 +108,13 @@ public class Main extends Application{
 	@Override
 	public void start(Stage primaryStage){
 		stage=primaryStage;
-		Scene scene=new Scene(root);
 		primaryStage.setTitle("IDEM");
 		primaryStage.setScene(scene);
 		primaryStage.setMaximized(true);
 		primaryStage.show();
+		scene.getAccelerators().put(KeyCombination.valueOf("Ctrl+C"),()->System.out.println("C"));
+		scene.getAccelerators().put(KeyCombination.valueOf("Ctrl+S"),()->System.out.println("S"));
+		System.out.println(scene.getAccelerators());
 	}
 	/**
 	 * @param args the command line arguments

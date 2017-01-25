@@ -31,7 +31,6 @@ import javafx.stage.*;
 public class TextEditor extends Application implements DataEditor<TextObject>{
 	public Node edit(TextObject obj){
 		TextArea textArea=new TextArea();
-		textArea.textProperty().bindBidirectional(obj.getText());
 		return textArea;
 	}
 	@Override
@@ -57,6 +56,7 @@ public class TextEditor extends Application implements DataEditor<TextObject>{
 			}
 		});
 		Scene scene=new Scene(new BorderPane(edit,save,null,null,null));
+		//new KeymapRegistry(scene,new CommandRegistry()).applyTo(edit);
 		primaryStage.setTitle("IDEM");
 		primaryStage.setScene(scene);
 		primaryStage.setMaximized(true);

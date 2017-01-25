@@ -18,6 +18,7 @@ package com.github.chungkwong.jtk.api;
 import java.io.*;
 import java.util.logging.*;
 import java.util.prefs.*;
+import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.input.*;
 /**
@@ -25,12 +26,12 @@ import javafx.scene.input.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class KeymapRegistry{
-	private final Node node;
+	private final Scene scene;
 	private final Preferences pref=Preferences.userNodeForPackage(KeymapRegistry.class).node("keymap");
 	private final CommandRegistry commandRegistry;
 	private static final StringBuilder buf=new StringBuilder();
-	public KeymapRegistry(Node node,CommandRegistry commandRegistry){
-		this.node=node;
+	public KeymapRegistry(Scene scene,CommandRegistry commandRegistry){
+		this.scene=scene;
 		this.commandRegistry=commandRegistry;
 		try{
 			pref.clear();//FIXME:Comment it out after debug
@@ -42,14 +43,26 @@ public class KeymapRegistry{
 		}catch(IOException|InvalidPreferencesFormatException ex){
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
 		}
-		node.setOnKeyPressed((e)->{
-			System.out.println(encode(e));
-			String s=pref.get(encode(e),null);
-			if(s!=null){
-				commandRegistry.getCommand(s).execute();
-				e.consume();
+		ObservableMap<KeyCombination,Runnable> accelerators=scene.getAccelerators();
+		try{
+			for(String key:pref.keys()){
+				accelerators.put(decode(key),()->commandRegistry.getCommand(pref.get(key,null)).execute());
 			}
-		});
+		}catch(BackingStoreException ex){
+			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
+		}
+	}
+	private static KeyCombination decode(String code){
+		KeyCombination.ModifierValue any=KeyCombination.ModifierValue.ANY;
+		KeyCombination.ModifierValue c=any,m=any,s=any;
+		String[] part=code.split("-");
+		for(int i=0;i<part.length-1;i++)
+			switch(part[i]){
+				case "C":c=KeyCombination.ModifierValue.DOWN;break;
+				case "M":m=KeyCombination.ModifierValue.DOWN;break;
+				case "S":s=KeyCombination.ModifierValue.DOWN;break;
+			}
+		return new KeyCodeCombination(KeyCode.getKeyCode(part[part.length-1]),s,c,any,m,any);
 	}
 	private static String encode(KeyEvent evt){
 		buf.setLength(0);
@@ -61,5 +74,14 @@ public class KeymapRegistry{
 			buf.append("C-");
 		buf.append(evt.getCode().getName());
 		return buf.toString();
+	}
+	public void applyTo(Node node){
+		node.addEventFilter(KeyEvent.KEY_PRESSED,(e)->{
+			String s=pref.get(encode(e),null);
+			if(s!=null){
+				commandRegistry.getCommand(s).execute();
+				e.consume();
+			}
+		});
 	}
 }
