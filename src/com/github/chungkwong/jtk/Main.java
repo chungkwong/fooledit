@@ -43,6 +43,7 @@ public class Main extends Application{
 	private final BorderPane root;
 	private final Scene scene;
 	private Stage stage;
+	private WorkSheet currentWorkSheet;
 	public Main(){
 		Logger.getGlobal().setLevel(Level.INFO);
 		Logger.getGlobal().addHandler(notifier);
@@ -67,7 +68,21 @@ public class Main extends Application{
 		commandRegistry.addCommand("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
 		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
 		keymapRegistry=new KeymapRegistry(scene,commandRegistry);
-		//bar.getMenus().get(0).getItems().add(item);
+		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
+		bar.getMenus().add(new OnDemandMenu("buffer",(l)->{
+			for(String name:dataObjectRegistry.getDataObjectNames()){
+				MenuItem item=new MenuItem(name);
+				item.setOnAction((e)->currentWorkSheet.setCenter(getEditor(dataObjectRegistry.getDataObject(name))));
+				l.add(item);
+			}
+		}));
+	}
+	private void updateCurrentNode(Node node){
+		while(!(node instanceof WorkSheet)&&node!=null){
+			node=node.getParent();
+		}
+		if(node!=null)
+			currentWorkSheet=(WorkSheet)node;
 	}
 	public void addAndShow(DataObject data,HashMap<Object,Object> prop){
 		getDataObjectRegistry().addDataObject(data,prop);
@@ -87,11 +102,7 @@ public class Main extends Application{
 		return currentWorkSheet().getCenter();
 	}
 	public WorkSheet currentWorkSheet(){
-		Node focusOwner=root.getScene().getFocusOwner();
-		while(!(focusOwner instanceof WorkSheet)){
-			focusOwner=focusOwner.getParent();
-		}
-		return (WorkSheet)focusOwner;
+		return currentWorkSheet;
 	}
 	public CommandRegistry getCommandRegistry(){
 		return commandRegistry;

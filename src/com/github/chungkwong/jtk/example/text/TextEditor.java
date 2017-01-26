@@ -31,6 +31,7 @@ import javafx.stage.*;
 public class TextEditor extends Application implements DataEditor<TextObject>{
 	public Node edit(TextObject obj){
 		TextArea textArea=new TextArea();
+		textArea.textProperty().bindBidirectional(obj.getText());
 		return textArea;
 	}
 	@Override

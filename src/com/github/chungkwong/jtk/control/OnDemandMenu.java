@@ -15,36 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.control;
-import javafx.geometry.*;
-import javafx.scene.*;
+import java.util.function.*;
+import javafx.collections.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class WorkSheet extends BorderPane{
-	public WorkSheet(Node node){
-		super(node);
-	}
-	public void splitVertically(Node second){
-		Node first=getCenter();
-		SplitPane splitPane=new SplitPane(new WorkSheet(first),new WorkSheet(second));
-		splitPane.setOrientation(Orientation.VERTICAL);
-		splitPane.setDividerPositions(0.5,0.5);
-		setCenter(splitPane);
-		//first.requestFocus();
-	}
-	public void splitHorizontally(Node second){
-		Node first=getCenter();
-		SplitPane splitPane=new SplitPane(new WorkSheet(first),new WorkSheet(second));
-		splitPane.setOrientation(Orientation.HORIZONTAL);
-		splitPane.setDividerPositions(0.5,0.5);
-		setCenter(splitPane);
-		//first.requestFocus();
-	}
-	public void keepOnly(Node node){
-		setCenter(node);
-		node.requestFocus();
+public class OnDemandMenu extends Menu{
+	private MenuItem stub=new MenuItem("");
+	public OnDemandMenu(String title,Consumer<ObservableList<MenuItem>> setter){
+		super(title);
+		setOnShowing((e)->{
+			getItems().clear();
+			setter.accept(getItems());
+		});
+		setOnHiding((e)->getItems().setAll(stub));
 	}
 }

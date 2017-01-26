@@ -31,6 +31,9 @@ public class DataObjectRegistry{
 	public DataObject getDataObject(String name){
 		return objects.get(name);
 	}
+	public Set<String> getDataObjectNames(){
+		return objects.keySet();
+	}
 	public Object getProperties(Object key,DataObject data){
 		return properties.get(data).get(key);
 	}

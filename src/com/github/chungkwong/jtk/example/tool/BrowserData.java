@@ -82,7 +82,6 @@ public class BrowserData implements DataObject<BrowserData>{
 		});
 		forwardMenu.setOnHidden((e)->forwardMenu.getItems().setAll(noforward));
 		forward.setContextMenu(forwardMenu);
-
 		TextField loc=new TextField();
 		loc.setEditable(true);
 		loc.setOnAction((e)->browser.getEngine().load(loc.getText()));
