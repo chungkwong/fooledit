@@ -41,20 +41,29 @@ public class Main extends Application{
 	private final Notifier notifier=new Notifier();
 	private final DataObjectRegistry dataObjectRegistry=new DataObjectRegistry();
 	private final BorderPane root;
+	private final TextField input=new TextField();
 	private final Scene scene;
 	private Stage stage;
-	private WorkSheet currentWorkSheet;
+	private Node currentNode;
 	public Main(){
 		Logger.getGlobal().setLevel(Level.INFO);
 		Logger.getGlobal().addHandler(notifier);
 		MenuBar bar=new MenuBar();
-		TextField input=new TextField();
 		HBox commander=new HBox(bar,input);
 		HBox.setHgrow(bar,Priority.NEVER);
 		HBox.setHgrow(input,Priority.ALWAYS);
-		root=new BorderPane(new WorkSheet(getEditor(new TextObject("Welcome"))));
+		TextObject welcome=new TextObject("Welcome");
+		dataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Welcome"));
+		root=new BorderPane(new WorkSheet(getDefaultEditor(welcome)));
 		root.setTop(commander);
 		scene=new Scene(root);
+		registerStandardCommand();
+		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
+		keymapRegistry=new KeymapRegistry(scene,commandRegistry);
+		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
+		bar.getMenus().add(getBufferMenu());
+	}
+	private void registerStandardCommand(){
 		FileCommands fileCommands=new FileCommands(this);
 		commandRegistry.addCommand("open-file",()->fileCommands.open());
 		commandRegistry.addCommand("save",()->fileCommands.save());
@@ -62,47 +71,56 @@ public class Main extends Application{
 		commandRegistry.addCommand("maximize_frame",()->stage.setMaximized(true));
 		commandRegistry.addCommand("iconify_frame",()->stage.setIconified(true));
 		commandRegistry.addCommand("always_on_top_frame",()->stage.setAlwaysOnTop(true));
-		commandRegistry.addCommand("split_vertically",()->currentWorkSheet().splitVertically(getEditor(getCurrentDataObject())));
-		commandRegistry.addCommand("split_horizontally",()->currentWorkSheet().splitHorizontally(getEditor(getCurrentDataObject())));
+		commandRegistry.addCommand("split_vertically",()->currentWorkSheet().splitVertically(getDefaultEditor(getCurrentDataObject())));
+		commandRegistry.addCommand("split_horizontally",()->currentWorkSheet().splitHorizontally(getDefaultEditor(getCurrentDataObject())));
 		commandRegistry.addCommand("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentNode()));
 		commandRegistry.addCommand("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
-		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
-		keymapRegistry=new KeymapRegistry(scene,commandRegistry);
-		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
-		bar.getMenus().add(new OnDemandMenu("buffer",(l)->{
+		commandRegistry.addCommand("command",()->input.requestFocus());
+	}
+	private OnDemandMenu getBufferMenu(){
+		return new OnDemandMenu(MessageRegistry.getString("BUFFERS"),(l)->{
 			for(String name:dataObjectRegistry.getDataObjectNames()){
 				MenuItem item=new MenuItem(name);
-				item.setOnAction((e)->currentWorkSheet.setCenter(getEditor(dataObjectRegistry.getDataObject(name))));
+				item.setOnAction((e)->currentWorkSheet().setCenter(getDefaultEditor(dataObjectRegistry.getDataObject(name))));
 				l.add(item);
 			}
-		}));
+			l.add(new SeparatorMenuItem());
+			DataObject curr=getCurrentDataObject();
+			DataObjectTypeRegistry.getDataEditors(curr.getClass()).forEach((editor)->{
+				MenuItem item=new MenuItem(editor.getName());
+				item.setOnAction((e)->currentWorkSheet().setCenter(getEditor(curr,editor)));
+				l.add(item);
+			});
+		});
 	}
 	private void updateCurrentNode(Node node){
 		while(!(node instanceof WorkSheet)&&node!=null){
 			node=node.getParent();
 		}
 		if(node!=null)
-			currentWorkSheet=(WorkSheet)node;
+			currentNode=((WorkSheet)node).getCenter();
 	}
 	public void addAndShow(DataObject data,HashMap<Object,Object> prop){
 		getDataObjectRegistry().addDataObject(data,prop);
-		Node editor=getEditor(data);
+		Node editor=getDefaultEditor(data);
 		currentWorkSheet().keepOnly(editor);
-		editor.requestFocus();
 	}
-	public Node getEditor(DataObject data){
-		Node editor=DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0).edit(data);
-		editor.setUserData(data);
-		return editor;
+	public Node getDefaultEditor(DataObject data){
+		return getEditor(data,DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0));
+	}
+	private Node getEditor(DataObject data,DataEditor editor){
+		Node node=editor.edit(data);
+		node.setUserData(data);
+		return node;
 	}
 	public DataObject getCurrentDataObject(){
-		return (DataObject)getCurrentNode().getUserData();
+		return (DataObject)currentNode.getUserData();
 	}
 	public Node getCurrentNode(){
-		return currentWorkSheet().getCenter();
+		return currentNode;
 	}
 	public WorkSheet currentWorkSheet(){
-		return currentWorkSheet;
+		return (WorkSheet)currentNode.getParent();
 	}
 	public CommandRegistry getCommandRegistry(){
 		return commandRegistry;

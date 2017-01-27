@@ -22,16 +22,16 @@ import javafx.scene.media.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AudioObject implements DataObject<AudioObject>{
+public class MediaObject implements DataObject<MediaObject>{
 	private final Property<MediaPlayer> property;
-	public AudioObject(MediaPlayer audio){
+	public MediaObject(MediaPlayer audio){
 		this.property=new SimpleObjectProperty<>(audio);
 	}
 	public Property<MediaPlayer> getProperty(){
 		return property;
 	}
 	@Override
-	public DataObjectType<AudioObject> getDataObjectType(){
-		return AudioObjectType.INSTANCE;
+	public DataObjectType<MediaObject> getDataObjectType(){
+		return MediaObjectType.INSTANCE;
 	}
 }

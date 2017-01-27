@@ -63,8 +63,8 @@ public class DataObjectTypeRegistry{
 		addDataEditor(new TextEditor(),TextObject.class);
 		addDataObjectType(ImageObjectType.INSTANCE);
 		addDataEditor(new ImageEditor(),ImageObject.class);
-		addDataObjectType(AudioObjectType.INSTANCE);
-		addDataEditor(new AudioEditor(),AudioObject.class);
+		addDataObjectType(MediaObjectType.INSTANCE);
+		addDataEditor(new MediaEditor(),MediaObject.class);
 		addDataEditor(new Browser(),BrowserData.class);
 	}
 }

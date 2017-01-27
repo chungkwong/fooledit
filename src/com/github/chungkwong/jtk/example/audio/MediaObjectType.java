@@ -22,9 +22,9 @@ import javafx.scene.media.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AudioObjectType implements DataObjectType<AudioObject>{
-	public static final AudioObjectType INSTANCE=new AudioObjectType();
-	private AudioObjectType(){
+public class MediaObjectType implements DataObjectType<MediaObject>{
+	public static final MediaObjectType INSTANCE=new MediaObjectType();
+	private MediaObjectType(){
 	}
 	@Override
 	public boolean canHandleMIME(String mime){
@@ -43,11 +43,11 @@ public class AudioObjectType implements DataObjectType<AudioObject>{
 		return false;
 	}
 	@Override
-	public void writeTo(AudioObject data,OutputStream out) throws Exception{
+	public void writeTo(MediaObject data,OutputStream out) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public AudioObject readFrom(InputStream in) throws Exception{
+	public MediaObject readFrom(InputStream in) throws Exception{
 		File tmp=File.createTempFile("jtk","");
 		try(OutputStream out=new FileOutputStream(tmp)){
 			byte[] buf=new byte[4096];
@@ -56,7 +56,7 @@ public class AudioObjectType implements DataObjectType<AudioObject>{
 				out.write(buf,0,c);
 			}
 		}
-		AudioObject data=new AudioObject(new MediaPlayer(new Media(tmp.toURI().toString())));
+		MediaObject data=new MediaObject(new MediaPlayer(new Media(tmp.toURI().toString())));
 		tmp.delete();
 		return data;
 	}

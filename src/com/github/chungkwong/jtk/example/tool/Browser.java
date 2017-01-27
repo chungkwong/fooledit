@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.example.tool;
+import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.model.*;
 import javafx.scene.*;
 /**
@@ -25,5 +26,9 @@ public class Browser implements DataEditor<BrowserData>{
 	@Override
 	public Node edit(BrowserData data){
 		return data.getEditor();
+	}
+	@Override
+	public String getName(){
+		return MessageRegistry.getString("BROWSER");
 	}
 }

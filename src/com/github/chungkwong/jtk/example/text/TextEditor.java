@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.example.text;
+import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
 import java.util.logging.*;
@@ -68,5 +69,9 @@ public class TextEditor extends Application implements DataEditor<TextObject>{
 	 */
 	public static void main(String[] args){
 		launch(args);
+	}
+	@Override
+	public String getName(){
+		return MessageRegistry.getString("TEXT_EDITOR");
 	}
 }

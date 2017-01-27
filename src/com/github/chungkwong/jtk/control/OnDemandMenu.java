@@ -23,9 +23,10 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class OnDemandMenu extends Menu{
-	private MenuItem stub=new MenuItem("");
+	private final MenuItem stub=new MenuItem("");
 	public OnDemandMenu(String title,Consumer<ObservableList<MenuItem>> setter){
 		super(title);
+		getItems().add(stub);
 		setOnShowing((e)->{
 			getItems().clear();
 			setter.accept(getItems());

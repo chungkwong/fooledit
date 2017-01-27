@@ -22,4 +22,5 @@ import javafx.scene.*;
  */
 public interface DataEditor<T extends DataObject>{
 	Node edit(T data);
+	String getName();
 }

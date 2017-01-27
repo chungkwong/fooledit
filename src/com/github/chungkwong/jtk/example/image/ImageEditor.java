@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.example.image;
+import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.model.*;
 import javafx.scene.*;
 import javafx.scene.canvas.*;
@@ -50,5 +51,9 @@ public class ImageEditor implements DataEditor<ImageObject>{
 		line.setOnAction((e)->{g2d.fillOval(50,50,50,50);});
 
 		return new HBox(line);
+	}
+	@Override
+	public String getName(){
+		return MessageRegistry.getString("IMAGE_EDITOR");
 	}
 }

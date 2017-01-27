@@ -33,7 +33,8 @@ public class WorkSheet extends BorderPane{
 		splitPane.setOrientation(Orientation.VERTICAL);
 		splitPane.setDividerPositions(0.5,0.5);
 		setCenter(splitPane);
-		//first.requestFocus();
+		System.out.println(splitPane.getScene());
+		first.requestFocus();
 	}
 	public void splitHorizontally(Node second){
 		Node first=getCenter();
@@ -41,7 +42,8 @@ public class WorkSheet extends BorderPane{
 		splitPane.setOrientation(Orientation.HORIZONTAL);
 		splitPane.setDividerPositions(0.5,0.5);
 		setCenter(splitPane);
-		//first.requestFocus();
+		System.out.println(splitPane.getScene());
+		first.requestFocus();
 	}
 	public void keepOnly(Node node){
 		setCenter(node);

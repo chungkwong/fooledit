@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.example.audio;
+import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
@@ -33,9 +34,9 @@ import javafx.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AudioEditor extends Application implements DataEditor<AudioObject>{
+public class MediaEditor extends Application implements DataEditor<MediaObject>{
 	@Override
-	public Node edit(AudioObject data){
+	public Node edit(MediaObject data){
 		MediaView editor=new MediaView();
 		MediaPlayer player=data.getProperty().getValue();
 		editor.setMediaPlayer(player);
@@ -44,19 +45,19 @@ public class AudioEditor extends Application implements DataEditor<AudioObject>{
 	}
 	@Override
 	public void start(Stage primaryStage){
-		AudioObject data;
+		MediaObject data;
 		try{
 			//FileInputStream in=new FileInputStream("/home/kwong/音乐/半斤八两-许冠杰.mp3");
 			//data=AudioObjectType.INSTANCE.readFrom(in);
 			//data=new AudioObject(new MediaPlayer(new Media(new File("/home/kwong/视频/860b4ce2a01af63795899c89bc9a8c7b.mp4").toURI().toString())));
 			//data=new AudioObject(new MediaPlayer(new Media(new File("/home/kwong/音乐/半斤八两-许冠杰.mp3").toURI().toString())));
-			data=new AudioObject(new MediaPlayer(new Media(new File("/home/kwong/视频/860b4ce2a01af63795899c89bc9a8c7b.mp4").toURI().toString())));
+			data=new MediaObject(new MediaPlayer(new Media(new File("/home/kwong/视频/860b4ce2a01af63795899c89bc9a8c7b.mp4").toURI().toString())));
 			//in.close();
 		}catch(Exception ex){
 			Logger.getLogger(TextEditor.class.getName()).log(Level.SEVERE,null,ex);
 			throw new RuntimeException();
 		}
-		Node edit=new AudioEditor().edit(data);
+		Node edit=new MediaEditor().edit(data);
 		Scene scene=new Scene(new BorderPane(edit));
 		primaryStage.setTitle("IDEM");
 		primaryStage.setScene(scene);
@@ -68,6 +69,10 @@ public class AudioEditor extends Application implements DataEditor<AudioObject>{
 	 */
 	public static void main(String[] args){
 		launch(args);
+	}
+	@Override
+	public String getName(){
+		return MessageRegistry.getString("MEDIA_PLAYER");
 	}
 }
 class MediaControl extends HBox{
