@@ -62,7 +62,8 @@ public class KeymapRegistry{
 				case "M":m=KeyCombination.ModifierValue.DOWN;break;
 				case "S":s=KeyCombination.ModifierValue.DOWN;break;
 			}
-		return new KeyCodeCombination(KeyCode.getKeyCode(part[part.length-1]),s,c,any,m,any);
+		return new KeyCodeCombination(KeyCode.getKeyCode(part[part.length-1]),s,c,m,any,any);
+		//return new KeyCodeCombination(KeyCode.getKeyCode(part[part.length-1]),s,c,any,m,any);
 	}
 	private static String encode(KeyEvent evt){
 		buf.setLength(0);

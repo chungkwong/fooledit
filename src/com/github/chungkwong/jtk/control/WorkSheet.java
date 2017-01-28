@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.control;
+import javafx.beans.value.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -28,22 +29,27 @@ public class WorkSheet extends BorderPane{
 		super(node);
 	}
 	public void splitVertically(Node second){
-		Node first=getCenter();
-		SplitPane splitPane=new SplitPane(new WorkSheet(first),new WorkSheet(second));
-		splitPane.setOrientation(Orientation.VERTICAL);
-		splitPane.setDividerPositions(0.5,0.5);
-		setCenter(splitPane);
-		System.out.println(splitPane.getScene());
-		first.requestFocus();
+		split(second,Orientation.VERTICAL);
 	}
 	public void splitHorizontally(Node second){
+		split(second,Orientation.HORIZONTAL);
+	}
+	private void split(Node second,Orientation orientation){
 		Node first=getCenter();
 		SplitPane splitPane=new SplitPane(new WorkSheet(first),new WorkSheet(second));
-		splitPane.setOrientation(Orientation.HORIZONTAL);
+		splitPane.setOrientation(orientation);
 		splitPane.setDividerPositions(0.5,0.5);
 		setCenter(splitPane);
-		System.out.println(splitPane.getScene());
-		first.requestFocus();
+		ChangeListener<Scene> listener=new ChangeListener<Scene>(){
+			@Override
+			public void changed(ObservableValue ov,Scene t,Scene t1){
+				if(t1!=null){
+					first.requestFocus();
+					first.sceneProperty().removeListener(this);
+				}
+			}
+		};
+		first.sceneProperty().addListener(listener);
 	}
 	public void keepOnly(Node node){
 		setCenter(node);

@@ -61,6 +61,7 @@ public class Main extends Application{
 		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
 		keymapRegistry=new KeymapRegistry(scene,commandRegistry);
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
+		input.setOnAction((e)->commandRegistry.getCommand(input.getText()).execute());
 		bar.getMenus().add(getBufferMenu());
 	}
 	private void registerStandardCommand(){

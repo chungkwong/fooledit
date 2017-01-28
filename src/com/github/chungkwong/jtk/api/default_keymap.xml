@@ -21,6 +21,7 @@
 									<entry key="M-F10" value="maximize_frame"/>
 									<entry key="C-Z" value="iconify_frame"/>
 									<entry key="M-X" value="command"/>
+									<entry key="C-4" value="command"/>
 								</map>
 							</node>
 						</node>
