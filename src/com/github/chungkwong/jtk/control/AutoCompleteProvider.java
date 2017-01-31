@@ -34,6 +34,8 @@ class SimpleAutoCompleteProvider implements AutoCompleteProvider{
 	}
 	@Override
 	public Stream<AutoCompleteHint> checkForHints(String text,int pos){
-		return hints.stream();
+		String prefix=text.substring(0,pos);
+		return hints.stream().filter((hint)->hint.getInputText().startsWith(text)).
+				map((hint)->AutoCompleteHint.modify(hint.getInputText().substring(pos),hint));
 	}
 }

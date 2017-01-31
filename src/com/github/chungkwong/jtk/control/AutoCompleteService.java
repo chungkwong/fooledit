@@ -15,15 +15,126 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.control;
+import com.github.chungkwong.jtk.api.*;
+import com.github.chungkwong.jtk.util.*;
+import java.util.logging.*;
+import java.util.stream.*;
+import javafx.application.*;
 import javafx.scene.control.*;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
+import javafx.scene.web.*;
+import javafx.stage.*;
+import javafx.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AutoCompleteService extends ComboBox<Object>{
-	public AutoCompleteService(){
-
+public class AutoCompleteService{
+	private final TextInputControl comp;
+	private final AutoCompleteProvider hints;
+	private static final PopupHint popupHint=new PopupHint();
+	private static final RealTimeTask<HintContext> task=new RealTimeTask<>((o)->{
+		Stream<AutoCompleteHint> hint=o.provider.checkForHints(o.component.getText(),o.position);
+		Platform.runLater(()->popupHint.showHints(o.component,o.position,hint));
+	});
+	public AutoCompleteService(TextInputControl comp,AutoCompleteProvider hints){
+		this.hints=hints;
+		this.comp=comp;
+		comp.addEventFilter(KeyEvent.KEY_PRESSED,(e)->{
+			if(popupHint.isShowing())
+			switch(e.getCode()){
+				case UP:popupHint.selectPrevious();e.consume();break;
+				case DOWN:popupHint.selectNext();e.consume();break;
+				case ENTER:popupHint.choose();e.consume();break;
+				case ESCAPE:popupHint.hideHints();e.consume();break;
+			}
+		});
+		comp.focusedProperty().addListener((e,o,n)->{
+			if(n)
+				updateHint();
+			else
+				popupHint.hideHints();
+		});
+		comp.caretPositionProperty().addListener((e)->updateHint());
 	}
-
-
+	public void updateHint(){
+		task.summit(new HintContext(hints,comp,comp.selectionProperty().get().getStart()));
+	}
+	static class HintContext{
+		final AutoCompleteProvider provider;
+		final TextInputControl component;
+		final int position;
+		public HintContext(AutoCompleteProvider provider,TextInputControl component,int position){
+			this.provider=provider;
+			this.component=component;
+			this.position=position;
+		}
+	}
+}
+class PopupHint extends BorderPane{
+	private final WebView note=new WebView();
+	private final ListView<AutoCompleteHint> loc=new ListView<>();
+	private final MultipleSelectionModel<AutoCompleteHint> model=loc.getSelectionModel();
+	private TextInputControl doc;
+	private int pos;
+	private Popup popup;
+	public PopupHint(){
+		new ListCell<Object>();
+		new Callback(){
+			@Override
+			public Object call(Object p){
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		};
+		model.selectedItemProperty().addListener((e,o,n)->{
+			note.getEngine().loadContent(Helper.readText(n.getDocument()));
+		});
+		/*loc.setOnMouseClicked((e)->{
+			if(e.getClickCount()==2)
+				choose(mod.get(loc.locationToIndex(e.getPoint())).getInputText());
+		});
+		*/
+		loc.setOpacity(0.5);
+		setLeft(loc);
+		setRight(note);
+	}
+	public void showHints(TextInputControl comp,int pos,Stream<AutoCompleteHint> choices){
+		hideHints();
+		loc.getItems().setAll(choices.collect(Collectors.toList()));
+		if(loc.getItems().isEmpty())
+			return;
+		this.pos=pos;
+		this.doc=comp;
+		model.selectFirst();
+		popup=new Popup();
+		popup.show(doc,0,0);
+	}
+	public void hideHints(){
+		loc.getItems().clear();
+		if(popup!=null)
+			popup.hide();
+		popup=null;
+		doc=null;
+	}
+	public boolean isShowing(){
+		return popup!=null;
+	}
+	void selectPrevious(){
+		model.selectPrevious();
+	}
+	void selectNext(){
+		model.selectNext();
+	}
+	void choose(){
+		choose(model.getSelectedItem().getInputText());
+	}
+	private void choose(String inputText){
+		try{
+			doc.insertText(pos,inputText);
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.FINER,inputText,ex);
+		}
+		hideHints();
+	}
 }

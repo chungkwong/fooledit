@@ -24,8 +24,11 @@ public interface AutoCompleteHint{
 	String getDisplayText();
 	String getInputText();
 	Reader getDocument();
-	static AutoCompleteHint createSimple(String displayText,String inputText,String document){
+	static AutoCompleteHint create(String displayText,String inputText,String document){
 		return new SimpleHint(displayText,inputText,document);
+	}
+	static AutoCompleteHint modify(String inputText,AutoCompleteHint parent){
+		return new PartialHint(inputText,parent);
 	}
 }
 class SimpleHint implements AutoCompleteHint{
@@ -46,5 +49,25 @@ class SimpleHint implements AutoCompleteHint{
 	@Override
 	public Reader getDocument(){
 		return new StringReader(document);
+	}
+}
+class PartialHint implements AutoCompleteHint{
+	private final String inputText;
+	private final AutoCompleteHint parent;
+	public PartialHint(String inputText,AutoCompleteHint hint){
+		this.inputText=inputText;
+		this.parent=hint;
+	}
+	@Override
+	public String getDisplayText(){
+		return parent.getDisplayText();
+	}
+	@Override
+	public String getInputText(){
+		return inputText;
+	}
+	@Override
+	public Reader getDocument(){
+		return parent.getDocument();
 	}
 }

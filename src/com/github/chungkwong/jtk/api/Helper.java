@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
+import java.io.*;
 import java.util.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -26,5 +28,8 @@ public class Helper{
 		for(int i=0;i<val.length;i+=2)
 			map.put(val[i],val[i+1]);
 		return map;
+	}
+	public static String readText(Reader in){
+		return new BufferedReader(in).lines().collect(Collectors.joining("\n"));
 	}
 }
