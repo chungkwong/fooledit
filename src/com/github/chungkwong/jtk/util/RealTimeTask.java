@@ -32,6 +32,7 @@ public class RealTimeTask<K> implements Runnable{
 		this.currentKey=key;
 		if(thread==null){
 			thread=new Thread(this);
+			thread.setDaemon(true);
 			thread.start();
 		}else
 			thread.interrupt();

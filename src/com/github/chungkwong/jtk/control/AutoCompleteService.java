@@ -17,9 +17,11 @@
 package com.github.chungkwong.jtk.control;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.util.*;
+import java.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
 import javafx.application.*;
+import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
@@ -30,7 +32,7 @@ import javafx.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AutoCompleteService{
+public class AutoCompleteService extends Application{
 	private final TextInputControl comp;
 	private final AutoCompleteProvider hints;
 	private static final PopupHint popupHint=new PopupHint();
@@ -38,17 +40,22 @@ public class AutoCompleteService{
 		Stream<AutoCompleteHint> hint=o.provider.checkForHints(o.component.getText(),o.position);
 		Platform.runLater(()->popupHint.showHints(o.component,o.position,hint));
 	});
+	public AutoCompleteService(){
+		this.comp=null;
+		this.hints=null;
+	}
+
 	public AutoCompleteService(TextInputControl comp,AutoCompleteProvider hints){
 		this.hints=hints;
 		this.comp=comp;
 		comp.addEventFilter(KeyEvent.KEY_PRESSED,(e)->{
 			if(popupHint.isShowing())
-			switch(e.getCode()){
-				case UP:popupHint.selectPrevious();e.consume();break;
-				case DOWN:popupHint.selectNext();e.consume();break;
-				case ENTER:popupHint.choose();e.consume();break;
-				case ESCAPE:popupHint.hideHints();e.consume();break;
-			}
+				switch(e.getCode()){
+					case UP:popupHint.selectPrevious();System.out.println("up");comp.requestFocus();e.consume();break;
+					case DOWN:popupHint.selectNext();System.out.println("down");comp.requestFocus();e.consume();break;
+					case ENTER:popupHint.choose();System.out.println("enter");comp.requestFocus();e.consume();break;
+					case ESCAPE:popupHint.hideHints();comp.requestFocus();e.consume();break;
+				}
 		});
 		comp.focusedProperty().addListener((e,o,n)->{
 			if(n)
@@ -60,6 +67,20 @@ public class AutoCompleteService{
 	}
 	public void updateHint(){
 		task.summit(new HintContext(hints,comp,comp.selectionProperty().get().getStart()));
+	}
+	@Override
+	public void start(Stage stage) throws Exception{
+		TextField field=new TextField();
+		new AutoCompleteService(field,AutoCompleteProvider.createSimple(Arrays.asList(
+				AutoCompleteHint.create("c","c","doc: c"),
+				AutoCompleteHint.create("cd","cd","doc: cd")
+		)));
+		Scene scene=new Scene(field);
+		stage.setScene(scene);
+		stage.show();
+	}
+	public static void main(String[] args){
+		launch(args);
 	}
 	static class HintContext{
 		final AutoCompleteProvider provider;
@@ -88,13 +109,22 @@ class PopupHint extends BorderPane{
 			}
 		};
 		model.selectedItemProperty().addListener((e,o,n)->{
-			note.getEngine().loadContent(Helper.readText(n.getDocument()));
+			if(n!=null)
+				note.getEngine().loadContent(Helper.readText(n.getDocument()));
 		});
 		/*loc.setOnMouseClicked((e)->{
 			if(e.getClickCount()==2)
 				choose(mod.get(loc.locationToIndex(e.getPoint())).getInputText());
 		});
 		*/
+		loc.setFocusTraversable(false);
+		loc.setCellFactory(new Callback<ListView<AutoCompleteHint>,ListCell<AutoCompleteHint>>() {
+			@Override
+			public ListCell<AutoCompleteHint> call(ListView<AutoCompleteHint> p){
+				ListCell<AutoCompleteHint> cell=new ListCell<>();
+				return cell;
+			}
+		});
 		loc.setOpacity(0.5);
 		setLeft(loc);
 		setRight(note);
@@ -108,7 +138,11 @@ class PopupHint extends BorderPane{
 		this.doc=comp;
 		model.selectFirst();
 		popup=new Popup();
-		popup.show(doc,0,0);
+		popup.getContent().add(this);
+		popup.setHeight(300);
+		popup.setWidth(400);
+		popup.show(comp,0,50);
+		comp.requestFocus();
 	}
 	public void hideHints(){
 		loc.getItems().clear();
