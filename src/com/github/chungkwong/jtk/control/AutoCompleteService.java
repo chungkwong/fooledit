@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
 import javafx.application.*;
+import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
@@ -44,29 +45,28 @@ public class AutoCompleteService extends Application{
 		this.comp=null;
 		this.hints=null;
 	}
-
 	public AutoCompleteService(TextInputControl comp,AutoCompleteProvider hints){
 		this.hints=hints;
 		this.comp=comp;
 		comp.addEventFilter(KeyEvent.KEY_PRESSED,(e)->{
 			if(popupHint.isShowing())
 				switch(e.getCode()){
-					case UP:popupHint.selectPrevious();System.out.println("up");comp.requestFocus();e.consume();break;
-					case DOWN:popupHint.selectNext();System.out.println("down");comp.requestFocus();e.consume();break;
-					case ENTER:popupHint.choose();System.out.println("enter");comp.requestFocus();e.consume();break;
+					case UP:popupHint.selectPrevious();comp.requestFocus();e.consume();break;
+					case DOWN:popupHint.selectNext();comp.requestFocus();e.consume();break;
+					case ENTER:popupHint.choose();comp.requestFocus();e.consume();break;
 					case ESCAPE:popupHint.hideHints();comp.requestFocus();e.consume();break;
 				}
 		});
 		comp.focusedProperty().addListener((e,o,n)->{
 			if(n)
-				updateHint();
+				updateHint(comp.getCaretPosition());
 			else
 				popupHint.hideHints();
 		});
-		comp.caretPositionProperty().addListener((e)->updateHint());
+		comp.caretPositionProperty().addListener((e,o,n)->updateHint(n.intValue()));
 	}
-	public void updateHint(){
-		task.summit(new HintContext(hints,comp,comp.selectionProperty().get().getStart()));
+	public void updateHint(int pos){
+		task.summit(new HintContext(hints,comp,pos));
 	}
 	@Override
 	public void start(Stage stage) throws Exception{
@@ -118,15 +118,9 @@ class PopupHint extends BorderPane{
 		});
 		*/
 		loc.setFocusTraversable(false);
-		loc.setCellFactory(new Callback<ListView<AutoCompleteHint>,ListCell<AutoCompleteHint>>() {
-			@Override
-			public ListCell<AutoCompleteHint> call(ListView<AutoCompleteHint> p){
-				ListCell<AutoCompleteHint> cell=new ListCell<>();
-				return cell;
-			}
-		});
-		loc.setOpacity(0.5);
+		loc.setCellFactory((p)->new HintCell());
 		setLeft(loc);
+		note.setPrefSize(400,300);
 		setRight(note);
 	}
 	public void showHints(TextInputControl comp,int pos,Stream<AutoCompleteHint> choices){
@@ -138,10 +132,10 @@ class PopupHint extends BorderPane{
 		this.doc=comp;
 		model.selectFirst();
 		popup=new Popup();
+		popup.setOpacity(0.8);
 		popup.getContent().add(this);
-		popup.setHeight(300);
-		popup.setWidth(400);
-		popup.show(comp,0,50);
+		Point2D location=comp.localToScreen(0,comp.getHeight());
+		popup.show(comp,location.getX(),location.getY());
 		comp.requestFocus();
 	}
 	public void hideHints(){
@@ -170,5 +164,17 @@ class PopupHint extends BorderPane{
 			Logger.getGlobal().log(Level.FINER,inputText,ex);
 		}
 		hideHints();
+	}
+	static class HintCell extends ListCell<AutoCompleteHint>{
+		@Override
+		protected void updateItem(AutoCompleteHint item,boolean empty){
+			super.updateItem(item,empty);
+			if(empty||item==null){
+				setText(null);
+				setGraphic(null);
+			}else{
+				setText(item.getDisplayText());
+			}
+		}
 	}
 }
