@@ -21,7 +21,7 @@ package com.github.chungkwong.jtk.api;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface Module{
-	String getName();
+	ModuleDescriptor getModuleDescriptor();
 	void onLoad();
 	void onUnLoad();
 }
