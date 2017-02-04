@@ -19,40 +19,42 @@ import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.prefs.*;
 import java.util.stream.*;
+import java.util.zip.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ModuleRegistry{
 	private static final HashMap<String,Module> modules=new HashMap<>();
-	public static void register(String cls) throws ClassNotFoundException, MalformedURLException,ReflectiveOperationException{
-		register((Module)getModuleLoader().loadClass(cls).newInstance());
+	private static final Preferences paths=Preferences.userNodeForPackage(ModuleRegistry.class).node("module/classpath");
+	private static final Preferences dirs=Preferences.userNodeForPackage(ModuleRegistry.class).node("module/directory");
+	public static void load(String cls)throws MalformedURLException,ReflectiveOperationException{
+		load(getInstance(cls));
 	}
-	public static void register(Module module){
+	public static void load(Module module){
 		modules.put(module.getModuleDescriptor().getName(),module);
 		module.onLoad();
 	}
-	public static void unRegister(Module module){
+	public static void unLoad(Module module){
 		module.onUnLoad();
 		modules.remove(module.getModuleDescriptor().getName());
 	}
-	private static ClassLoader getModuleLoader(){
-		String[] paths=Preferences.userNodeForPackage(ModuleRegistry.class).node("module").get("classpath","").split(" ");
-		URL[] urls=Arrays.stream(paths).map((path)->{
-			try{
-				return new File(path).toURI().toURL();
-			}catch(MalformedURLException ex){
-				Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
-				return null;
-			}
-		}).toArray(URL[]::new);
-		return new URLClassLoader(urls,ModuleRegistry.class.getClassLoader());
+	public static Map<String,Module> getModules(){
+		return Collections.unmodifiableMap(modules);
 	}
-	public List<ModuleDescriptor> listDownloadable(){
+	public static List<ModuleDescriptor> listInstalled() throws BackingStoreException, ReflectiveOperationException, MalformedURLException{
+		ArrayList<ModuleDescriptor> installed=new ArrayList<>();
+		for(String m:paths.keys()){
+			installed.add(getInstance(m).getModuleDescriptor());
+		}
+		return installed;
+	}
+	public static List<ModuleDescriptor> listDownloadable(){
 		String url=Preferences.userNodeForPackage(ModuleRegistry.class).node("module").get("repository","");
 		try(BufferedReader in=new BufferedReader(new InputStreamReader(new URL(url).openStream(),StandardCharsets.UTF_8))){
 			return ((JSONArray)JSONParser.parse(in)).getElements().stream().
@@ -62,12 +64,20 @@ public class ModuleRegistry{
 			return Collections.emptyList();
 		}
 	}
-	/*public void download(String url){
-		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL(url).openStream()),UTF8)){
+	public static URL resolveURL(String url) throws MalformedURLException{
+		return new URL(getDataDirectory().toURI().toURL(),url);
+	}
+	public static File getDataDirectory(){
+		return new File(System.getProperty("user.home"),".jtk");
+	}
+	public File download(ModuleDescriptor module) throws IOException{
+		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL(module.getURL()).openStream()),StandardCharsets.UTF_8)){
+			File base=File.createTempFile("module",module.getName(),getDataDirectory());
+			base.mkdirs();
 			ZipEntry entry;
 			byte[] buf=new byte[4096];
 			while((entry=in.getNextEntry())!=null){
-				File file=new File(PATH,entry.getName());
+				File file=new File(base,entry.getName());
 				if(entry.isDirectory()){
 					file.mkdirs();
 				}else{
@@ -78,11 +88,25 @@ public class ModuleRegistry{
 					out.close();
 				}
 			}
-		}catch(IOException ex){
-			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
+			return base;
 		}
+	}
+	public void install(File dir) throws BackingStoreException, IOException, SyntaxException{
+		String manifest=new String(Files.readAllBytes(new File(dir,"manifest.json").toPath()),StandardCharsets.UTF_8);
+		JSONObject object=(JSONObject)JSONParser.parse(manifest);
+		String cls=((JSONString)object.getMembers().get(new JSONString("class"))).getValue();
+		String path=new URL(dir.toURI().toURL(),((JSONString)object.getMembers().get(new JSONString("classpath"))).getValue()).toString();
+		paths.put(cls,path);
+		paths.flush();
+		dirs.put(cls,dir.getAbsolutePath());
+		dirs.flush();
+	}
+	private static Module getInstance(String cls) throws ReflectiveOperationException, MalformedURLException{
+		String path=paths.get(cls,null);
+		ClassLoader loader=path!=null?new URLClassLoader(new URL[]{resolveURL(path)}):ModuleRegistry.class.getClassLoader();
+		return (Module)loader.loadClass(cls).newInstance();
 	}
 	public static void main(String[] args)throws Exception{
 
-	}*/
+	}
 }

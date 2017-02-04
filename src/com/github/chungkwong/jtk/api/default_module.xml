@@ -15,7 +15,6 @@
 							<node name="module">
 								<map>
 									<entry key="repository" value="https://raw.githubusercontent.com/chungkwong/jtk/master/MODULES"/>
-									<entry key="classpath" value=""/>
 								</map>
 							</node>
 						</node>
