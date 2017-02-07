@@ -57,6 +57,7 @@ public class Main extends Application{
 		root=new BorderPane(new WorkSheet(getDefaultEditor(welcome)));
 		root.setTop(commander);
 		scene=new Scene(root);
+		//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
 		registerStandardCommand();
 		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
 		keymapRegistry=new KeymapRegistry(scene,commandRegistry);

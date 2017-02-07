@@ -33,16 +33,16 @@ public class ModuleRegistry{
 	private static final HashMap<String,Module> modules=new HashMap<>();
 	private static final Preferences paths=Preferences.userNodeForPackage(ModuleRegistry.class).node("module/classpath");
 	private static final Preferences dirs=Preferences.userNodeForPackage(ModuleRegistry.class).node("module/directory");
-	public static void load(String cls)throws MalformedURLException,ReflectiveOperationException{
-		load(getInstance(cls));
+	public static void ensureLoaded(String cls)throws MalformedURLException,ReflectiveOperationException{
+		if(!modules.containsKey(cls)){
+			Module module=getInstance(cls);
+			module.onLoad();
+			modules.put(cls,module);
+		}
 	}
-	public static void load(Module module){
-		modules.put(module.getModuleDescriptor().getName(),module);
-		module.onLoad();
-	}
-	public static void unLoad(Module module){
+	public static void unLoad(String cls){
+		Module module=modules.remove(cls);
 		module.onUnLoad();
-		modules.remove(module.getModuleDescriptor().getName());
 	}
 	public static Map<String,Module> getModules(){
 		return Collections.unmodifiableMap(modules);
@@ -105,8 +105,5 @@ public class ModuleRegistry{
 		String path=paths.get(cls,null);
 		ClassLoader loader=path!=null?new URLClassLoader(new URL[]{resolveURL(path)}):ModuleRegistry.class.getClassLoader();
 		return (Module)loader.loadClass(cls).newInstance();
-	}
-	public static void main(String[] args)throws Exception{
-
 	}
 }
