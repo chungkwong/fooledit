@@ -37,38 +37,11 @@ public class FileSystemViewer extends Application{
 		TreeItem<File> root=new LazyTreeItem<File>(()->Arrays.stream(File.listRoots()).sorted().map((r)->new LazyTreeItem<>(()->getChildren(r),r)).collect(Collectors.toList()),null);
 		tree.setShowRoot(false);
 		tree.setRoot(root);
-		tree.setOnDragDetected((e)->{
-			Dragboard board=tree.startDragAndDrop(TransferMode.MOVE);
-			ClipboardContent content=new ClipboardContent();
-			content.putFiles(tree.getSelectionModel().getSelectedItems().stream().map((item)->item.getValue()).collect(Collectors.toList()));
-			board.setContent(content);
-			e.consume();
-		});
-		tree.setOnDragOver((e)->{
-			if(e.getDragboard().hasFiles())
-				e.acceptTransferModes(TransferMode.MOVE);
-		});
-		tree.setOnDragDropped((e)->{
-			Dragboard board=e.getDragboard();
-			if(board.hasFiles()){
-				try{
-					for(File f:board.getFiles()){
-						Files.move(f.toPath(),((TreeItem<File>)e.getAcceptingObject()).getValue().toPath().resolve(f.getName()));
-					}
-				}catch(IOException ex){
-					Logger.getGlobal().log(Level.SEVERE,null,ex);
-					e.setDropCompleted(true);
-				}
-			}else{
-				e.setDropCompleted(false);
-			}
-			e.consume();
-		});
 	}
 	private static Collection<TreeItem<File>> getChildren(File item){
 		return Arrays.stream(item.listFiles()).sorted()
 				.map((f)->f.isDirectory()?new LazyTreeItem<File>(()->getChildren(f),f):new TreeItem<>(f))
-				.collect(Collectors.toSet());
+				.collect(Collectors.toList());
 	}
 	public static void main(String[] args){
 		launch(args);
@@ -79,6 +52,44 @@ public class FileSystemViewer extends Application{
 		stage.show();
 	}
 	static class FileCell extends TreeCell<File>{
+		private TreeItem<File> src;
+		public FileCell(){
+			setOnDragDetected((e)->{
+				Dragboard board=startDragAndDrop(TransferMode.MOVE);
+				ClipboardContent content=new ClipboardContent();
+				content.putFiles(Collections.singletonList(getItem()));
+				src=getTreeItem();
+				board.setContent(content);
+				e.consume();
+			});
+			setOnDragOver((e)->{
+				if(e.getDragboard().hasFiles()&&getItem().isDirectory())
+					e.acceptTransferModes(TransferMode.MOVE,TransferMode.COPY);
+				e.consume();
+			});
+			setOnDragDropped((e)->{
+				Dragboard board=e.getDragboard();
+				if(board.hasFiles()){
+					try{
+						for(File f:board.getFiles()){
+							Path to=getItem().toPath().resolve(f.getName());
+							Files.move(f.toPath(),to);
+							getTreeItem().getChildren().add(new TreeItem<>(to.toFile()));
+						}
+						e.setDropCompleted(true);
+					}catch(IOException ex){
+						Logger.getGlobal().log(Level.SEVERE,null,ex);
+						e.setDropCompleted(false);
+					}
+				}else{
+					e.setDropCompleted(false);
+				}
+				e.consume();
+			});
+			setOnDragDone((e)->{
+				src.getParent().getChildren().remove(src);
+			});
+		}
 		@Override
 		protected void updateItem(File item,boolean empty){
 			super.updateItem(item,empty);
