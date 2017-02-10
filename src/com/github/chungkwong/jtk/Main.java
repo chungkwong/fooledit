@@ -27,7 +27,6 @@ import java.util.logging.*;
 import javafx.application.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 /**
@@ -143,9 +142,6 @@ public class Main extends Application{
 		primaryStage.setScene(scene);
 		primaryStage.setMaximized(true);
 		primaryStage.show();
-		scene.getAccelerators().put(KeyCombination.valueOf("Ctrl+C"),()->System.out.println("C"));
-		scene.getAccelerators().put(KeyCombination.valueOf("Ctrl+S"),()->System.out.println("S"));
-		System.out.println(scene.getAccelerators());
 	}
 	/**
 	 * @param args the command line arguments
