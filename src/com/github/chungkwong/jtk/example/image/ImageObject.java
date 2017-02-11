@@ -24,11 +24,13 @@ import javafx.scene.image.*;
  */
 public class ImageObject implements DataObject<ImageObject>{
 	private final Canvas canvas;
+
 	public ImageObject(Image image){
 		canvas=new Canvas(image.getWidth(),image.getHeight());
 		canvas.getGraphicsContext2D().drawImage(image,0,0);
 	}
 	public Canvas getCanvas(){
+
 		return canvas;
 	}
 	@Override
