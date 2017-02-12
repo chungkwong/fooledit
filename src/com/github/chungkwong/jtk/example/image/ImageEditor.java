@@ -47,6 +47,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		Canvas canvas=context.canvas;
 		ComboBox<ImageEffect> effectChooser=new ComboBox<>();
 		effectChooser.getItems().setAll(ImageEffect.values());
+		effectChooser.getSelectionModel().selectFirst();
 		effectChooser.getSelectionModel().selectedItemProperty().addListener((e,o,n)->canvas.setEffect(n.getEffect()));
 		Spinner<Double> scaleChooser=new Spinner<>(0.0,4.0,1.0);
 		scaleChooser.valueProperty().addListener((e,o,n)->{canvas.setScaleX(n);canvas.setScaleY(n);});
@@ -55,6 +56,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		return new HBox(effectChooser,scaleChooser,rotateChooser);
 	}
 	private enum ImageEffect{
+		NONE(()->null),
 		BLOOM(()->new Bloom()),
 		SHADOW(()->new Shadow()),
 		GLOW(()->new Glow()),
@@ -70,8 +72,9 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 	}
 	private enum Shape{
 		LINE((e,c)->((Canvas)e.getSource()).getGraphicsContext2D().strokeLine(c.lastx,c.lasty,e.getX(),e.getY())),
-		RECTANGLE((e,c)->((Canvas)e.getSource()).getGraphicsContext2D().strokeRect(c.lastx,c.lasty,e.getX(),e.getY())),
-		OVAL((e,c)->((Canvas)e.getSource()).getGraphicsContext2D().strokeOval(c.lastx,c.lasty,e.getX(),e.getY()));
+		RECTANGLE((e,c)->((Canvas)e.getSource()).getGraphicsContext2D().strokeRect(c.lastx,c.lasty,e.getX()-c.lastx,e.getY()-c.lasty)),
+		OVAL((e,c)->((Canvas)e.getSource()).getGraphicsContext2D().strokeOval(c.lastx,c.lasty,e.getX()-c.lastx,e.getY()-c.lasty)),
+		TEXT((e,c)->((Canvas)e.getSource()).getGraphicsContext2D().strokeText("hello",e.getX(),e.getY()));
 		private final BiConsumer<MouseEvent,ImageContext> drawer;
 		private Shape(BiConsumer<MouseEvent,ImageContext> drawer){
 			this.drawer=drawer;
