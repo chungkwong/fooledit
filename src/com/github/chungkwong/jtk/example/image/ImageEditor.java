@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.jtk.example.image;
 import com.github.chungkwong.jtk.api.*;
+import com.github.chungkwong.jtk.control.*;
 import com.github.chungkwong.jtk.model.*;
 import java.util.*;
 import java.util.function.*;
@@ -41,7 +42,54 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 	public Node edit(ImageObject data){
 		Canvas canvas=data.getCanvas();
 		ImageContext context=new ImageContext(canvas);
-		return new BorderPane(new ScrollPane(canvas),getEffectBar(context),null,getDrawingBar(context),null);
+		return new BorderPane(new ScrollPane(new StackPane(canvas,context.preview)),getEffectBar(context),getPathBar(context),getDrawingBar(context),null);
+	}
+	private Node getPathBar(ImageContext context){
+		Canvas canvas=context.canvas;
+		GraphicsContext g2d=canvas.getGraphicsContext2D();
+		Button start=new Button("Start");
+		start.setOnAction((e)->g2d.beginPath());
+		Button close=new Button("Close");
+		close.setOnAction((e)->g2d.closePath());
+		Button draw=new Button("Draw");
+		draw.setOnAction((e)->g2d.stroke());
+		Button fill=new Button("Fill");
+		fill.setOnAction((e)->g2d.fill());
+		ComboBox<Element> elementChooser=new ComboBox<>();
+		elementChooser.getItems().setAll(Element.values());
+		context.preview.setOnMouseClicked((e)->{
+			configure(context);
+			elementChooser.getValue().make(e,context);
+		});
+		return new VBox(start,close,draw,fill,elementChooser);
+	}
+	private enum Element{
+		MOVE((e,c)->c.getGraphics().moveTo(e.getX(),e.getY())),
+		LINE((e,c)->c.getGraphics().lineTo(e.getX(),e.getY())),
+		RECT(keepOrMake((e,c)->c.getGraphics().rect(c.lastx,c.lasty,e.getX()-c.lastx,e.getY()-c.lasty))),
+		QUADRATIC(keepOrMake((e,c)->c.getGraphics().quadraticCurveTo(c.lastx,c.lasty,e.getX(),e.getY()))),
+		ARC(keepOrMake((e,c)->c.getGraphics().arcTo(c.lastx,c.lasty,e.getX(),e.getY(),Math.PI))),
+		BEZIER(keepOrMake((e,c)->c.getGraphics().bezierCurveTo(c.lastx,c.lasty,c.lastx,c.lasty,e.getX(),e.getY()))),
+		TEXT((e,c)->c.getGraphics().strokeText(OptionDialog.showInputDialog("","Text:"),e.getX(),e.getY()));
+		private final BiConsumer<MouseEvent,ImageContext> drawer;
+		private Element(BiConsumer<MouseEvent,ImageContext> drawer){
+			this.drawer=drawer;
+		}
+		void make(MouseEvent e,ImageContext c){
+			drawer.accept(e,c);
+		}
+		static BiConsumer<MouseEvent,ImageContext> keepOrMake(BiConsumer<MouseEvent,ImageContext> maker){
+			return (e,c)->{
+				if(Double.isNaN(c.lastx)){
+					c.lastx=e.getX();
+					c.lasty=e.getY();
+				}else{
+					maker.accept(e,c);
+					c.lastx=Double.NaN;
+					c.lasty=Double.NaN;
+				}
+			};
+		}
 	}
 	private Node getEffectBar(ImageContext context){
 		Canvas canvas=context.canvas;
@@ -70,34 +118,9 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			return supplier.get();
 		}
 	}
-	private enum Shape{
-		LINE((e,c)->((Canvas)e.getSource()).getGraphicsContext2D().strokeLine(c.lastx,c.lasty,e.getX(),e.getY())),
-		RECTANGLE((e,c)->((Canvas)e.getSource()).getGraphicsContext2D().strokeRect(c.lastx,c.lasty,e.getX()-c.lastx,e.getY()-c.lasty)),
-		OVAL((e,c)->((Canvas)e.getSource()).getGraphicsContext2D().strokeOval(c.lastx,c.lasty,e.getX()-c.lastx,e.getY()-c.lasty)),
-		TEXT((e,c)->((Canvas)e.getSource()).getGraphicsContext2D().strokeText("hello",e.getX(),e.getY()));
-		private final BiConsumer<MouseEvent,ImageContext> drawer;
-		private Shape(BiConsumer<MouseEvent,ImageContext> drawer){
-			this.drawer=drawer;
-		}
-		void draw(MouseEvent e,ImageContext c){
-			drawer.accept(e,c);
-		}
-	}
 	private Node getDrawingBar(ImageContext context){
 		Canvas canvas=context.canvas;
 		GraphicsContext g2d=canvas.getGraphicsContext2D();
-		canvas.setOnMouseClicked((e)->{
-			if(Double.isNaN(context.lastx)){
-				context.lastx=e.getX();
-				context.lasty=e.getY();
-			}else{
-				configure(context);
-				context.shapeChooser.getValue().draw(e,context);
-				context.lastx=Double.NaN;
-				context.lasty=Double.NaN;
-			}
-		});
-		context.shapeChooser.getItems().setAll(Shape.values());
 		context.joinChooser.getItems().setAll(StrokeLineJoin.values());
 		context.joinChooser.getSelectionModel().select(g2d.getLineJoin());
 		context.capChooser.getItems().setAll(StrokeLineCap.values());
@@ -106,7 +129,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		context.dashChooser.setText(fromDashArray(g2d.getLineDashes()));
 		Label thickLabel=new Label("Thick:");
 		context.thickChooser.setText(Double.toString(g2d.getLineWidth()));
-		return new HBox(context.shapeChooser,context.joinChooser,context.capChooser,
+		return new HBox(context.joinChooser,context.capChooser,
 				dashLabel,context.dashChooser,thickLabel,context.thickChooser,
 				context.strokeChooser,context.fillChooser);
 	}
@@ -138,7 +161,6 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		launch(args);
 	}
 	private class ImageContext{
-		private final ComboBox<Shape> shapeChooser=new ComboBox<>();
 		private final ComboBox<StrokeLineJoin> joinChooser=new ComboBox<>();
 		private final ComboBox<StrokeLineCap> capChooser=new ComboBox<>();
 		private final TextField dashChooser=new TextField();
@@ -146,9 +168,13 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		private final ColorPicker strokeChooser=new ColorPicker(Color.BLACK);
 		private final ColorPicker fillChooser=new ColorPicker(Color.WHITE);
 		private double lastx=Double.NaN,lasty=Double.NaN;
-		private final Canvas canvas;
+		private final Canvas canvas,preview;
 		public ImageContext(Canvas canvas){
 			this.canvas=canvas;
+			preview=new Canvas(canvas.getWidth(),canvas.getHeight());
+		}
+		GraphicsContext getGraphics(){
+			return canvas.getGraphicsContext2D();
 		}
 	}
 }
