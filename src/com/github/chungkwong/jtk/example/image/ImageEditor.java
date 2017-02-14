@@ -101,7 +101,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		scaleChooser.valueProperty().addListener((e,o,n)->{canvas.setScaleX(n);canvas.setScaleY(n);});
 		Spinner<Double> rotateChooser=new Spinner<>(-180.0,180.0,0.0);
 		rotateChooser.valueProperty().addListener((e,o,n)->{canvas.setRotate(n);});
-		return new HBox(effectChooser,scaleChooser,rotateChooser);
+		return new HBox(effectChooser,scaleChooser,rotateChooser,context.fontChooser);
 	}
 	private enum ImageEffect{
 		NONE(()->null),
@@ -147,6 +147,8 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		g2d.setLineWidth(Double.parseDouble(context.thickChooser.getText()));
 		g2d.setStroke(context.strokeChooser.getValue());
 		g2d.setFill(context.fillChooser.getValue());
+		g2d.setFont(context.fontChooser.getFont());
+		g2d.setFontSmoothingType(context.fontChooser.getFontSmoothingType());
 	}
 	@Override
 	public String getName(){
@@ -157,10 +159,16 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		stage.setScene(new Scene(new BorderPane(new ImageEditor().edit(new ImageObject(new WritableImage(200,200))))));
 		stage.show();
 	}
+	private void updatePreview(ImageContext c){
+		GraphicsContext g2d=c.getGraphics();
+		g2d.clearRect(0,0,c.canvas.getWidth(),c.canvas.getHeight());
+
+	}
 	public static void main(String[] args){
 		launch(args);
 	}
 	private class ImageContext{
+		private final FontChooser fontChooser=new FontChooser();
 		private final ComboBox<StrokeLineJoin> joinChooser=new ComboBox<>();
 		private final ComboBox<StrokeLineCap> capChooser=new ComboBox<>();
 		private final TextField dashChooser=new TextField();
