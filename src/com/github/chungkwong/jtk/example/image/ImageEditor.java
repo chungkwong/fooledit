@@ -42,19 +42,31 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 	public Node edit(ImageObject data){
 		Canvas canvas=data.getCanvas();
 		ImageContext context=new ImageContext(canvas);
-		return new BorderPane(new ScrollPane(new StackPane(canvas,context.preview)),getEffectBar(context),getPathBar(context),getDrawingBar(context),null);
+		return new BorderPane(new ScrollPane(new StackPane(canvas,context.preview)),getEffectBar(context),getPathBar(context),getPropertiesBar(context),null);
 	}
 	private Node getPathBar(ImageContext context){
 		Canvas canvas=context.canvas;
 		GraphicsContext g2d=canvas.getGraphicsContext2D();
+		GraphicsContext pg2d=context.preview.getGraphicsContext2D();
 		Button start=new Button("Start");
-		start.setOnAction((e)->g2d.beginPath());
+		start.setOnAction((e)->{
+			g2d.beginPath();
+			pg2d.beginPath();
+		});
 		Button close=new Button("Close");
-		close.setOnAction((e)->g2d.closePath());
+		close.setOnAction((e)->{
+			g2d.closePath();
+		});
 		Button draw=new Button("Draw");
-		draw.setOnAction((e)->g2d.stroke());
+		draw.setOnAction((e)->{
+			g2d.stroke();
+			clearPreview(context);
+		});
 		Button fill=new Button("Fill");
-		fill.setOnAction((e)->g2d.fill());
+		fill.setOnAction((e)->{
+			g2d.fill();
+			clearPreview(context);
+		});
 		ComboBox<Element> elementChooser=new ComboBox<>();
 		elementChooser.getItems().setAll(Element.values());
 		context.preview.setOnMouseClicked((e)->{
@@ -64,12 +76,35 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		return new VBox(start,close,draw,fill,elementChooser);
 	}
 	private enum Element{
-		MOVE((e,c)->c.getGraphics().moveTo(e.getX(),e.getY())),
-		LINE((e,c)->c.getGraphics().lineTo(e.getX(),e.getY())),
-		RECT(keepOrMake((e,c)->c.getGraphics().rect(c.lastx,c.lasty,e.getX()-c.lastx,e.getY()-c.lasty))),
-		QUADRATIC(keepOrMake((e,c)->c.getGraphics().quadraticCurveTo(c.lastx,c.lasty,e.getX(),e.getY()))),
-		ARC(keepOrMake((e,c)->c.getGraphics().arcTo(c.lastx,c.lasty,e.getX(),e.getY(),Math.PI))),
-		BEZIER(keepOrMake((e,c)->c.getGraphics().bezierCurveTo(c.lastx,c.lasty,c.lastx,c.lasty,e.getX(),e.getY()))),
+		MOVE((e,c)->{
+			c.getGraphics().moveTo(e.getX(),e.getY());
+			c.preview.getGraphicsContext2D().moveTo(e.getX(),e.getY());
+		}),
+		LINE((e,c)->{
+			c.getGraphics().lineTo(e.getX(),e.getY());
+			c.preview.getGraphicsContext2D().lineTo(e.getX(),e.getY());
+			c.preview.getGraphicsContext2D().stroke();
+		}),
+		RECT(keepOrMake((e,c)->{
+			c.getGraphics().rect(c.lastx,c.lasty,e.getX()-c.lastx,e.getY()-c.lasty);
+			c.preview.getGraphicsContext2D().rect(c.lastx,c.lasty,e.getX()-c.lastx,e.getY()-c.lasty);
+			c.preview.getGraphicsContext2D().stroke();
+		})),
+		QUADRATIC(keepOrMake((e,c)->{
+			c.getGraphics().quadraticCurveTo(c.lastx,c.lasty,e.getX(),e.getY());
+			c.preview.getGraphicsContext2D().quadraticCurveTo(c.lastx,c.lasty,e.getX(),e.getY());
+			c.preview.getGraphicsContext2D().stroke();
+		})),
+		ARC(keepOrMake((e,c)->{
+			c.getGraphics().arcTo(c.lastx,c.lasty,e.getX(),e.getY(),Math.PI);
+			c.preview.getGraphicsContext2D().arcTo(c.lastx,c.lasty,e.getX(),e.getY(),Math.PI);
+			c.preview.getGraphicsContext2D().stroke();
+		})),
+		BEZIER(keepOrMake((e,c)->{
+			c.getGraphics().bezierCurveTo(c.lastx,c.lasty,c.lastx,c.lasty,e.getX(),e.getY());
+			c.preview.getGraphicsContext2D().bezierCurveTo(c.lastx,c.lasty,c.lastx,c.lasty,e.getX(),e.getY());
+			c.preview.getGraphicsContext2D().stroke();
+		})),
 		TEXT((e,c)->c.getGraphics().strokeText(OptionDialog.showInputDialog("","Text:"),e.getX(),e.getY()));
 		private final BiConsumer<MouseEvent,ImageContext> drawer;
 		private Element(BiConsumer<MouseEvent,ImageContext> drawer){
@@ -101,7 +136,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		scaleChooser.valueProperty().addListener((e,o,n)->{canvas.setScaleX(n);canvas.setScaleY(n);});
 		Spinner<Double> rotateChooser=new Spinner<>(-180.0,180.0,0.0);
 		rotateChooser.valueProperty().addListener((e,o,n)->{canvas.setRotate(n);});
-		return new HBox(effectChooser,scaleChooser,rotateChooser,context.fontChooser);
+		return new HBox(effectChooser,scaleChooser,rotateChooser);
 	}
 	private enum ImageEffect{
 		NONE(()->null),
@@ -118,7 +153,13 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			return supplier.get();
 		}
 	}
-	private Node getDrawingBar(ImageContext context){
+	private Node getPropertiesBar(ImageContext context){
+		TabPane tabs=new TabPane(new Tab("Stroke",getStrokePropertiesBar(context)),
+				new Tab("Text",getTextPropertiesBar(context)));
+		tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+		return tabs;
+	}
+	private Node getStrokePropertiesBar(ImageContext context){
 		Canvas canvas=context.canvas;
 		GraphicsContext g2d=canvas.getGraphicsContext2D();
 		context.joinChooser.getItems().setAll(StrokeLineJoin.values());
@@ -132,6 +173,9 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		return new HBox(context.joinChooser,context.capChooser,
 				dashLabel,context.dashChooser,thickLabel,context.thickChooser,
 				context.strokeChooser,context.fillChooser);
+	}
+	private Node getTextPropertiesBar(ImageContext context){
+		return context.fontChooser;
 	}
 	private static double[] toDashArray(String str){
 		return Arrays.stream(str.split(":")).mapToDouble((s)->Double.parseDouble(s)).toArray();
@@ -149,6 +193,8 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		g2d.setFill(context.fillChooser.getValue());
 		g2d.setFont(context.fontChooser.getFont());
 		g2d.setFontSmoothingType(context.fontChooser.getFontSmoothingType());
+		g2d.setTextAlign(context.fontChooser.getTextAlignment());
+		g2d.setTextBaseline(context.fontChooser.getTextBaseline());
 	}
 	@Override
 	public String getName(){
@@ -159,10 +205,8 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		stage.setScene(new Scene(new BorderPane(new ImageEditor().edit(new ImageObject(new WritableImage(200,200))))));
 		stage.show();
 	}
-	private void updatePreview(ImageContext c){
-		GraphicsContext g2d=c.getGraphics();
-		g2d.clearRect(0,0,c.canvas.getWidth(),c.canvas.getHeight());
-
+	private void clearPreview(ImageContext c){
+		c.preview.getGraphicsContext2D().clearRect(0,0,c.canvas.getWidth(),c.canvas.getHeight());
 	}
 	public static void main(String[] args){
 		launch(args);
