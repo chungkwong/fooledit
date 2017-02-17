@@ -67,13 +67,20 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			g2d.fill();
 			clearPreview(context);
 		});
-		ComboBox<Element> elementChooser=new ComboBox<>();
-		elementChooser.getItems().setAll(Element.values());
+		VBox bar=new VBox(start,close,draw,fill);
+		ToggleGroup elements=new ToggleGroup();
+		for(Element shape:Element.values()){
+			ToggleButton button=new ToggleButton(shape.name());
+			button.setUserData(shape);
+			elements.getToggles().add(button);
+			bar.getChildren().add(button);
+		}
 		context.preview.setOnMouseClicked((e)->{
 			configure(context);
-			elementChooser.getValue().make(e,context);
+			context.preview.getGraphicsContext2D().fillOval(e.getX()-2,e.getY()-2,4,4);
+			((Element)elements.getSelectedToggle().getUserData()).make(e,context);
 		});
-		return new VBox(start,close,draw,fill,elementChooser);
+		return bar;
 	}
 	private enum Element{
 		MOVE((e,c)->{
@@ -105,7 +112,10 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			c.preview.getGraphicsContext2D().bezierCurveTo(c.lastx,c.lasty,c.lastx,c.lasty,e.getX(),e.getY());
 			c.preview.getGraphicsContext2D().stroke();
 		})),
-		TEXT((e,c)->c.getGraphics().strokeText(OptionDialog.showInputDialog("","Text:"),e.getX(),e.getY()));
+		TEXT((e,c)->{
+			c.getGraphics().strokeText(OptionDialog.showInputDialog("","Text:"),e.getX(),e.getY());
+			clearPreview(c);
+		});
 		private final BiConsumer<MouseEvent,ImageContext> drawer;
 		private Element(BiConsumer<MouseEvent,ImageContext> drawer){
 			this.drawer=drawer;
@@ -155,6 +165,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 	}
 	private Node getPropertiesBar(ImageContext context){
 		TabPane tabs=new TabPane(new Tab("Stroke",getStrokePropertiesBar(context)),
+				new Tab("Fill",getFillPropertiesBar(context)),
 				new Tab("Text",getTextPropertiesBar(context)));
 		tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 		return tabs;
@@ -172,7 +183,10 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		context.thickChooser.setText(Double.toString(g2d.getLineWidth()));
 		return new HBox(context.joinChooser,context.capChooser,
 				dashLabel,context.dashChooser,thickLabel,context.thickChooser,
-				context.strokeChooser,context.fillChooser);
+				context.strokeChooser);
+	}
+	private Node getFillPropertiesBar(ImageContext context){
+		return context.fillChooser;
 	}
 	private Node getTextPropertiesBar(ImageContext context){
 		return context.fontChooser;
@@ -189,8 +203,8 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		g2d.setLineCap(context.capChooser.getValue());
 		g2d.setLineDashes(toDashArray(context.dashChooser.getText()));
 		g2d.setLineWidth(Double.parseDouble(context.thickChooser.getText()));
-		g2d.setStroke(context.strokeChooser.getValue());
-		g2d.setFill(context.fillChooser.getValue());
+		g2d.setStroke(context.strokeChooser.getPaint());
+		g2d.setFill(context.fillChooser.getPaint());
 		g2d.setFont(context.fontChooser.getFont());
 		g2d.setFontSmoothingType(context.fontChooser.getFontSmoothingType());
 		g2d.setTextAlign(context.fontChooser.getTextAlignment());
@@ -205,7 +219,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		stage.setScene(new Scene(new BorderPane(new ImageEditor().edit(new ImageObject(new WritableImage(200,200))))));
 		stage.show();
 	}
-	private void clearPreview(ImageContext c){
+	private static void clearPreview(ImageContext c){
 		c.preview.getGraphicsContext2D().clearRect(0,0,c.canvas.getWidth(),c.canvas.getHeight());
 	}
 	public static void main(String[] args){
@@ -217,9 +231,10 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		private final ComboBox<StrokeLineCap> capChooser=new ComboBox<>();
 		private final TextField dashChooser=new TextField();
 		private final TextField thickChooser=new TextField();
-		private final ColorPicker strokeChooser=new ColorPicker(Color.BLACK);
-		private final ColorPicker fillChooser=new ColorPicker(Color.WHITE);
+		private final PaintChooser strokeChooser=new PaintChooser(Color.BLACK);
+		private final PaintChooser fillChooser=new PaintChooser(Color.WHITE);
 		private double lastx=Double.NaN,lasty=Double.NaN;
+		private double lastlastx=Double.NaN,lastlasty=Double.NaN;
 		private final Canvas canvas,preview;
 		public ImageContext(Canvas canvas){
 			this.canvas=canvas;
