@@ -15,15 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
+import com.github.chungkwong.jtk.*;
 import java.util.logging.*;
+import javafx.stage.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Notifier extends Handler{
 	private static final Formatter FORMATTER=new LogFormatter();
+	private final Main app;
+	public Notifier(Main app){
+		this.app=app;
+	}
 	public void notify(String msg){
-
+		Stage stage=app.getStage();
+		if(stage!=null)
+			stage.setTitle(msg);
 	}
 	@Override
 	public void publish(LogRecord record){

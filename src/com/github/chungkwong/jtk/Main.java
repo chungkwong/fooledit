@@ -27,6 +27,7 @@ import java.util.logging.*;
 import javafx.application.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 /**
@@ -37,7 +38,7 @@ public class Main extends Application{
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
-	private final Notifier notifier=new Notifier();
+	private final Notifier notifier;
 	private final DataObjectRegistry dataObjectRegistry=new DataObjectRegistry();
 	private final BorderPane root;
 	private final TextField input=new TextField();
@@ -45,6 +46,7 @@ public class Main extends Application{
 	private Stage stage;
 	private Node currentNode;
 	public Main(){
+		notifier=new Notifier(this);
 		Logger.getGlobal().setLevel(Level.INFO);
 		Logger.getGlobal().addHandler(notifier);
 		MenuBar bar=new MenuBar();
@@ -132,12 +134,16 @@ public class Main extends Application{
 	public DataObjectRegistry getDataObjectRegistry(){
 		return dataObjectRegistry;
 	}
+	public Stage getStage(){
+		return stage;
+	}
 	public Notifier getNotifier(){
 		return notifier;
 	}
 	@Override
 	public void start(Stage primaryStage){
 		stage=primaryStage;
+		primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/com/github/chungkwong/jtk/cross.png")));
 		primaryStage.setTitle("IDEM");
 		primaryStage.setScene(scene);
 		primaryStage.setMaximized(true);

@@ -30,7 +30,6 @@ public class ImageObject implements DataObject<ImageObject>{
 		canvas.getGraphicsContext2D().drawImage(image,0,0);
 	}
 	public Canvas getCanvas(){
-
 		return canvas;
 	}
 	@Override

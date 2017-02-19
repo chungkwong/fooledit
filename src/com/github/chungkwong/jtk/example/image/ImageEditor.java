@@ -186,7 +186,10 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 				context.strokeChooser);
 	}
 	private Node getFillPropertiesBar(ImageContext context){
-		return context.fillChooser;
+		context.fillRuleChooser.getItems().setAll(FillRule.values());
+		context.fillRuleChooser.getSelectionModel().select(FillRule.NON_ZERO);
+		context.alphaChooser.setEditable(true);
+		return new HBox(context.fillRuleChooser,context.alphaChooser,context.fillChooser);
 	}
 	private Node getTextPropertiesBar(ImageContext context){
 		return context.fontChooser;
@@ -205,10 +208,12 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		g2d.setLineWidth(Double.parseDouble(context.thickChooser.getText()));
 		g2d.setStroke(context.strokeChooser.getPaint());
 		g2d.setFill(context.fillChooser.getPaint());
+		g2d.setFillRule(context.fillRuleChooser.getValue());
 		g2d.setFont(context.fontChooser.getFont());
 		g2d.setFontSmoothingType(context.fontChooser.getFontSmoothingType());
 		g2d.setTextAlign(context.fontChooser.getTextAlignment());
 		g2d.setTextBaseline(context.fontChooser.getTextBaseline());
+		g2d.setGlobalAlpha(((Number)context.alphaChooser.getValue()).doubleValue());
 	}
 	@Override
 	public String getName(){
@@ -229,6 +234,8 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		private final FontChooser fontChooser=new FontChooser();
 		private final ComboBox<StrokeLineJoin> joinChooser=new ComboBox<>();
 		private final ComboBox<StrokeLineCap> capChooser=new ComboBox<>();
+		private final ComboBox<FillRule> fillRuleChooser=new ComboBox<>();
+		private final Spinner alphaChooser=new Spinner(0.0,1.0,1.0,0.1);
 		private final TextField dashChooser=new TextField();
 		private final TextField thickChooser=new TextField();
 		private final PaintChooser strokeChooser=new PaintChooser(Color.BLACK);
