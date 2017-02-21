@@ -41,7 +41,7 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 		MediaPlayer player=data.getProperty().getValue();
 		editor.setMediaPlayer(player);
 		player.play();
-		return new BorderPane(new ScrollPane(editor),null,null,new MediaControl(player),null);
+		return new BorderPane(new ScrollPane(editor),new Label(player.getMedia().getMetadata().toString()),null,new MediaControl(player),null);
 	}
 	@Override
 	public void start(Stage primaryStage){

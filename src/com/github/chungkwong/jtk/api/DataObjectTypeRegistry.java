@@ -62,6 +62,7 @@ public class DataObjectTypeRegistry{
 		addDataObjectType(TextObjectType.INSTANCE);
 		addDataEditor(new TextEditor(),TextObject.class);
 		addDataObjectType(ImageObjectType.INSTANCE);
+		addDataEditor(new IconEditor(),ImageObject.class);
 		addDataEditor(new ImageEditor(),ImageObject.class);
 		addDataObjectType(MediaObjectType.INSTANCE);
 		addDataEditor(new MediaEditor(),MediaObject.class);
