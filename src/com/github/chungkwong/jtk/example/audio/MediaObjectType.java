@@ -60,4 +60,12 @@ public class MediaObjectType implements DataObjectType<MediaObject>{
 		tmp.delete();
 		return data;
 	}
+	@Override
+	public boolean canCreate(){
+		return false;
+	}
+	@Override
+	public MediaObject create(){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

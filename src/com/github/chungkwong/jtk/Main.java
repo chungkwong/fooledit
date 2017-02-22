@@ -68,6 +68,7 @@ public class Main extends Application{
 	}
 	private void registerStandardCommand(){
 		FileCommands fileCommands=new FileCommands(this);
+		commandRegistry.addCommand("new",()->fileCommands.create());
 		commandRegistry.addCommand("open-file",()->fileCommands.open());
 		commandRegistry.addCommand("save",()->fileCommands.save());
 		commandRegistry.addCommand("full_screen",()->stage.setFullScreen(true));

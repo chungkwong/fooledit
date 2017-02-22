@@ -55,4 +55,12 @@ public class TextObjectType implements DataObjectType<TextObject>{
 		BufferedReader reader=new BufferedReader(new InputStreamReader(in));
 		return new TextObject(reader.lines().collect(Collectors.joining("\n")));
 	}
+	@Override
+	public boolean canCreate(){
+		return true;
+	}
+	@Override
+	public TextObject create(){
+		return new TextObject("");
+	}
 }

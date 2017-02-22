@@ -54,4 +54,12 @@ public class ImageObjectType implements DataObjectType<ImageObject>{
 	public ImageObject readFrom(InputStream in) throws Exception{
 		return new ImageObject(new Image(in));
 	}
+	@Override
+	public boolean canCreate(){
+		return true;
+	}
+	@Override
+	public ImageObject create(){
+		return new ImageObject(new WritableImage(200,200));
+	}
 }

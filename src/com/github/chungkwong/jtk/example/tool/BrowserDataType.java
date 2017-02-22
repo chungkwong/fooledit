@@ -55,4 +55,12 @@ public class BrowserDataType implements DataObjectType<BrowserData>{
 		data.getEngine().loadContent(content);
 		return data;
 	}
+	@Override
+	public BrowserData create(){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public boolean canCreate(){
+		return false;
+	}
 }

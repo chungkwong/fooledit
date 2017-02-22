@@ -15,7 +15,7 @@
 							<node name="menu">
 								<map>
 									<entry key="ROOT" value="FILE:VIEW:TOOL:HELP"/>
-									<entry key="FILE" value="open-file:save"/>
+									<entry key="FILE" value="new:open-file:save"/>
 									<entry key="VIEW" value="full_screen:maximize_frame:iconify_frame:always_on_top_frame::split_vertically:split_horizontally:keep_only"/>
 									<entry key="TOOL" value="browser"/>
 								</map>

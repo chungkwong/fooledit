@@ -22,6 +22,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.file.*;
 import java.util.logging.*;
+import javafx.scene.control.*;
 import javafx.stage.*;
 /**
  *
@@ -74,5 +75,14 @@ public class FileCommands{
 	}
 	private String geussContentType(File file){
 		return "";
+	}
+	public void create(){
+		ListView<DataObjectType> types=new ListView<>();
+		types.getItems().setAll(DataObjectTypeRegistry.getDataObjectTypes());
+		Dialog dia=new Dialog();
+		dia.getDialogPane().setContent(types);
+		dia.getDialogPane().getButtonTypes().add(ButtonType.OK);
+		dia.showAndWait();
+		main.addAndShow(types.getSelectionModel().getSelectedItem().create(),Helper.hashMap());
 	}
 }

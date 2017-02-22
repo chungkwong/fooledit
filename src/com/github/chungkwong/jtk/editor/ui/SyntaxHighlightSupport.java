@@ -14,19 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.model;
-import java.io.*;
+package com.github.chungkwong.jtk.editor.ui;
+import javax.swing.text.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface DataObjectType<T extends DataObject>{
-	boolean canHandleMIME(String mime);
-	String[] getPreferedMIME();
-	boolean canRead();
-	boolean canWrite();
-	boolean canCreate();
-	T create();
-	void writeTo(T data,OutputStream out)throws Exception;
-	T readFrom(InputStream in)throws Exception;
+public class SyntaxHighlightSupport{
+	private static boolean editing=true;//Single thread rule
+	public static void apply(StyleScheme scheme,StyledDocument doc){
+		doc.addUndoableEditListener((e)->{
+			if(editing){
+				editing=false;
+				scheme.updateStyle(doc);
+				editing=true;
+			}
+		});
+	}
 }
