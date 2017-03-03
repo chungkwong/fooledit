@@ -28,11 +28,14 @@ public class Main{
 		JFrame f=new JFrame("Test");
 		//JEditorPane editor=new JEditorPane();
 		JTextPane editor=new JTextPane();
-		editor.setEditorKit(new javax.swing.text.StyledEditorKit());
+		//for(KeyStroke key:editor.getInputMap().allKeys())
+		//	System.out.println(key+":"+editor.getInputMap().get(key));
+		//System.out.println(Arrays.toString(editor.getActionMap().allKeys()));
+		editor.setEditorKit(new StyledEditorKit());
 		editor.setEditable(true);
 		StyleScheme scheme=new StyleScheme();
 		SyntaxHighlightSupport.apply(getExampleScheme(),(StyledDocument)editor.getDocument());
-		f.add(new JScrollPane(editor),BorderLayout.CENTER);
+		f.add(new NumberedScrollPane(editor),BorderLayout.CENTER);
 		f.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
@@ -42,13 +45,10 @@ public class Main{
 		StyleScheme scheme=new StyleScheme();
 		SimpleAttributeSet italic=new SimpleAttributeSet();
 		StyleConstants.setItalic(italic,true);
-		scheme.addTokenType("NUM","[0-9]+",italic);
-		SimpleAttributeSet bold=new SimpleAttributeSet();
-		StyleConstants.setBold(bold,true);
-		scheme.addTokenType("LETTER","[a-zA-Z]+",bold);
+		scheme.addTokenType("TAG","<[^>]*>",italic);
 		SimpleAttributeSet red=new SimpleAttributeSet();
 		StyleConstants.setForeground(red,Color.RED);
-		scheme.addTokenType("OTHER","[^0-9a-zA-Z]+",red);
+		scheme.addTokenType("OTHER","[^<]+",red);
 		return scheme;
 	}
 }
