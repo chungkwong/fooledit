@@ -57,6 +57,7 @@ public class Main extends Application{
 		dataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Welcome"));
 		root=new BorderPane(new WorkSheet(getDefaultEditor(welcome)));
 		root.setTop(commander);
+		root.setBottom(new PasswordField());
 		scene=new Scene(root);
 		//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
 		registerStandardCommand();

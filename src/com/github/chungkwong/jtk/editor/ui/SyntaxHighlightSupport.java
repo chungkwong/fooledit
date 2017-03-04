@@ -15,20 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.editor.ui;
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.text.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class SyntaxHighlightSupport{
-	private static boolean editing=true;//Single thread rule
+	private static int editing=0;//Single thread rule
 	public static void apply(StyleScheme scheme,StyledDocument doc){
-		doc.addUndoableEditListener((e)->{
-			if(editing){
-				editing=false;
-				scheme.updateStyle(doc);
-				editing=true;
+		doc.addDocumentListener(
+			new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e){
+				++editing;
+				SwingUtilities.invokeLater(()->update(scheme,doc));
 			}
-		});
+			@Override
+			public void removeUpdate(DocumentEvent e){
+				++editing;
+				SwingUtilities.invokeLater(()->update(scheme,doc));
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e){
+
+			}
+		}
+		);
+	}
+	private static void update(StyleScheme scheme,StyledDocument doc){
+		--editing;
+		if(editing==0){
+			scheme.updateStyle(doc);
+		}
 	}
 }

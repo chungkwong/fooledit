@@ -36,6 +36,9 @@ public class Main{
 		StyleScheme scheme=new StyleScheme();
 		SyntaxHighlightSupport.apply(getExampleScheme(),(StyledDocument)editor.getDocument());
 		f.add(new NumberedScrollPane(editor),BorderLayout.CENTER);
+		JButton hide=new JButton("Hide");
+		hide.addActionListener((e)->hide(editor));
+		f.add(hide,BorderLayout.SOUTH);
 		f.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
@@ -50,5 +53,12 @@ public class Main{
 		StyleConstants.setForeground(red,Color.RED);
 		scheme.addTokenType("OTHER","[^<]+",red);
 		return scheme;
+	}
+	private static void hide(JTextComponent editor){
+		SimpleAttributeSet hidden=new SimpleAttributeSet();
+		StyleConstants.setFontSize(hidden,0);
+		StyleConstants.setLineSpacing(hidden,0);
+		((StyledDocument)editor.getDocument()).setCharacterAttributes(editor.getSelectionStart(),
+				editor.getSelectionEnd()-editor.getSelectionStart(),hidden,true);
 	}
 }

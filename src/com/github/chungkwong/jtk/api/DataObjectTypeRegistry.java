@@ -60,6 +60,7 @@ public class DataObjectTypeRegistry{
 	}
 	static{
 		addDataObjectType(TextObjectType.INSTANCE);
+		addDataEditor(new CodeEditor(),TextObject.class);
 		addDataEditor(new TextEditor(),TextObject.class);
 		addDataObjectType(ImageObjectType.INSTANCE);
 		addDataEditor(new IconEditor(),ImageObject.class);
