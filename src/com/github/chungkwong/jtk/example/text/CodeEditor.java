@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.example.text;
+import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.model.*;
+import java.awt.event.*;
+import javafx.application.*;
 import javafx.embed.swing.*;
 import javafx.scene.*;
 import javax.swing.*;
@@ -30,6 +33,12 @@ public class CodeEditor implements DataEditor<TextObject>{
 	public Node edit(TextObject data){
 		SwingNode node=new SwingNode();
 		JTextPane editor=new JTextPane();
+		editor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e){
+				Platform.runLater(()->{node.requestFocus();});
+			}
+		});
 		SwingUtilities.invokeLater(()->{
 			editor.setEditorKit(new StyledEditorKit());
 			editor.setEditable(true);
@@ -59,6 +68,6 @@ public class CodeEditor implements DataEditor<TextObject>{
 	}
 	@Override
 	public String getName(){
-		return "Code";
+		return MessageRegistry.getString("CODE_EDITOR");
 	}
 }

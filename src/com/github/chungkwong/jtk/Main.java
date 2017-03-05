@@ -81,6 +81,8 @@ public class Main extends Application{
 		commandRegistry.addCommand("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentNode()));
 		commandRegistry.addCommand("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
 		commandRegistry.addCommand("command",()->input.requestFocus());
+		commandRegistry.addCommand("next_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(dataObjectRegistry.getNextDataObject(getCurrentDataObject()))));
+		commandRegistry.addCommand("previous_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(dataObjectRegistry.getPreviousDataObject(getCurrentDataObject()))));
 	}
 	private OnDemandMenu getBufferMenu(){
 		return new OnDemandMenu(MessageRegistry.getString("BUFFERS"),(l)->{
@@ -96,7 +98,15 @@ public class Main extends Application{
 				item.setOnAction((e)->currentWorkSheet().setCenter(getEditor(curr,editor)));
 				l.add(item);
 			});
+			l.add(new SeparatorMenuItem());
+			l.add(createCommandMenuItem("next_buffer"));
+			l.add(createCommandMenuItem("previous_buffer"));
 		});
+	}
+	private MenuItem createCommandMenuItem(String name){
+		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase()));
+		item.setOnAction((e)->commandRegistry.getCommand(name).execute());
+		return item;
 	}
 	private void updateCurrentNode(Node node){
 		while(!(node instanceof WorkSheet)&&node!=null){

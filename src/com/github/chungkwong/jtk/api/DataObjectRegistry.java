@@ -25,6 +25,7 @@ public class DataObjectRegistry{
 	public static final String MIME="MIME";
 	public static final String URI="URI";
 	public static final String DEFAULT_NAME="DEFAULT_NAME";
+	public static final String BUFFER_NAME="BUFFER_NAME";
 	private static final String UNTITLED=MessageRegistry.getString("UNTITLED");
 	private final TreeMap<String,DataObject> objects=new TreeMap<>();
 	private final IdentityHashMap<DataObject,Map<Object,Object>> properties=new IdentityHashMap<>();
@@ -54,8 +55,23 @@ public class DataObjectRegistry{
 				}
 			}
 		}
+		prop.put(BUFFER_NAME,name);
 		objects.put(name,data);
 		properties.put(data,prop);
+	}
+	public DataObject getNextDataObject(DataObject curr){
+		Map.Entry<String,DataObject> next=objects.higherEntry((String)properties.get(curr).get(BUFFER_NAME));
+		if(next==null)
+			return objects.firstEntry().getValue();
+		else
+			return next.getValue();
+	}
+	public DataObject getPreviousDataObject(DataObject curr){
+		Map.Entry<String,DataObject> prev=objects.lowerEntry((String)properties.get(curr).get(BUFFER_NAME));
+		if(prev==null)
+			return objects.lastEntry().getValue();
+		else
+			return prev.getValue();
 	}
 	public static Map<Object,Object> createProperties(String name,String uri,String mime){
 		HashMap<Object,Object> prop=new HashMap<>();
