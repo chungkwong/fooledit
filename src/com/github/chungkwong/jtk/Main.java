@@ -57,7 +57,7 @@ public class Main extends Application{
 		dataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Welcome"));
 		root=new BorderPane(new WorkSheet(getDefaultEditor(welcome)));
 		root.setTop(commander);
-		root.setBottom(new PasswordField());
+		root.setBottom(notifier.getStatusBar());
 		scene=new Scene(root);
 		//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
 		registerStandardCommand();
@@ -66,6 +66,7 @@ public class Main extends Application{
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		input.setOnAction((e)->commandRegistry.getCommand(input.getText()).execute());
 		bar.getMenus().add(getBufferMenu());
+		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
 	private void registerStandardCommand(){
 		FileCommands fileCommands=new FileCommands(this);
