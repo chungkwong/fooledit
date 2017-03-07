@@ -41,7 +41,7 @@ public class Main extends Application{
 	private final Notifier notifier;
 	private final DataObjectRegistry dataObjectRegistry=new DataObjectRegistry();
 	private final BorderPane root;
-	private final TextField input=new TextField();
+	private final MiniBuffer input;
 	private final Scene scene;
 	private Stage stage;
 	private Node currentNode;
@@ -50,6 +50,7 @@ public class Main extends Application{
 		Logger.getGlobal().setLevel(Level.INFO);
 		Logger.getGlobal().addHandler(notifier);
 		MenuBar bar=new MenuBar();
+		input=new MiniBuffer(this);
 		HBox commander=new HBox(bar,input);
 		HBox.setHgrow(bar,Priority.NEVER);
 		HBox.setHgrow(input,Priority.ALWAYS);
@@ -64,7 +65,6 @@ public class Main extends Application{
 		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
 		keymapRegistry=new KeymapRegistry(scene,commandRegistry);
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
-		input.setOnAction((e)->commandRegistry.getCommand(input.getText()).execute());
 		bar.getMenus().add(getBufferMenu());
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
@@ -146,6 +146,9 @@ public class Main extends Application{
 	}
 	public DataObjectRegistry getDataObjectRegistry(){
 		return dataObjectRegistry;
+	}
+	public MiniBuffer getMiniBuffer(){
+		return input;
 	}
 	public Stage getStage(){
 		return stage;
