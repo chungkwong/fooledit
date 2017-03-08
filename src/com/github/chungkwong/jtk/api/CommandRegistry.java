@@ -32,4 +32,10 @@ public class CommandRegistry{
 	public void addCommand(String name,Runnable action){
 		addCommand(name,Command.create(MessageRegistry.getString(name.toUpperCase()),action));
 	}
+	public Command removeCommand(String name){
+		return registry.remove(name);
+	}
+	public Set<String> getCommandNames(){
+		return registry.keySet();
+	}
 }

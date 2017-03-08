@@ -29,6 +29,7 @@ import javafx.scene.layout.*;
 public class MiniBuffer extends BorderPane{
 	private final TextField input=new TextField();
 	private final Main main;
+	private final AutoCompleteProvider commandHints=new CommandComplete();
 	private AutoCompleteProvider hints;
 	public MiniBuffer(Main main){
 		this.main=main;
@@ -44,7 +45,7 @@ public class MiniBuffer extends BorderPane{
 		setRight(supp);
 	}
 	private void restore(){
-		hints=null;
+		hints=commandHints;
 		setRight(null);
 		input.setOnAction((e)->main.getCommandRegistry().getCommand(input.getText()).execute());
 	}
@@ -53,5 +54,12 @@ public class MiniBuffer extends BorderPane{
 		super.requestFocus();
 		input.requestFocus();
 	}
-
+	private class CommandComplete implements AutoCompleteProvider{
+		@Override
+		public Stream<AutoCompleteHint> checkForHints(String text,int pos){
+			String prefix=text.substring(0,pos);
+			return main.getCommandRegistry().getCommandNames().stream().filter((name)->name.startsWith(prefix))
+					.sorted().map((name)->AutoCompleteHint.create(name,name,""));
+		}
+	}
 }

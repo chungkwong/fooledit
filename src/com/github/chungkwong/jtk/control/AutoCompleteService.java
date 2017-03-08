@@ -41,10 +41,6 @@ public class AutoCompleteService extends Application{
 		Stream<AutoCompleteHint> hint=o.provider.checkForHints(o.component.getText(),o.position);
 		Platform.runLater(()->popupHint.showHints(o.component,o.position,hint));
 	});
-	public AutoCompleteService(){
-		this.comp=null;
-		this.hints=null;
-	}
 	public AutoCompleteService(TextInputControl comp,AutoCompleteProvider hints){
 		this.hints=hints;
 		this.comp=comp;
