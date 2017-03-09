@@ -50,6 +50,7 @@ public class WorkSheet extends BorderPane{
 			}
 		};
 		first.sceneProperty().addListener(listener);
+		first.requestFocus();
 	}
 	public void keepOnly(Node node){
 		setCenter(node);

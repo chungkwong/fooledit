@@ -50,6 +50,10 @@ class SimpleHint implements AutoCompleteHint{
 	public Reader getDocument(){
 		return new StringReader(document);
 	}
+	@Override
+	public String toString(){
+		return displayText+":"+inputText;
+	}
 }
 class PartialHint implements AutoCompleteHint{
 	private final String inputText;

@@ -28,7 +28,6 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.web.*;
 import javafx.stage.*;
-import javafx.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -49,7 +48,7 @@ public class AutoCompleteService extends Application{
 				switch(e.getCode()){
 					case UP:popupHint.selectPrevious();comp.requestFocus();e.consume();break;
 					case DOWN:popupHint.selectNext();comp.requestFocus();e.consume();break;
-					case ENTER:popupHint.choose();comp.requestFocus();e.consume();break;
+					case ENTER:if(popupHint.isShowing()){popupHint.choose();comp.requestFocus();e.consume();}break;
 					case ESCAPE:popupHint.hideHints();comp.requestFocus();e.consume();break;
 				}
 		});
@@ -97,13 +96,6 @@ class PopupHint extends BorderPane{
 	private int pos;
 	private Popup popup;
 	public PopupHint(){
-		new ListCell<Object>();
-		new Callback(){
-			@Override
-			public Object call(Object p){
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
-		};
 		model.selectedItemProperty().addListener((e,o,n)->{
 			if(n!=null)
 				note.getEngine().loadContent(Helper.readText(n.getDocument()));
@@ -113,10 +105,12 @@ class PopupHint extends BorderPane{
 				choose(mod.get(loc.locationToIndex(e.getPoint())).getInputText());
 		});
 		*/
+		loc.setOpacity(0.8);
 		loc.setFocusTraversable(false);
 		loc.setCellFactory((p)->new HintCell());
 		setLeft(loc);
 		note.setPrefSize(400,300);
+		note.setOpacity(0.8);
 		setRight(note);
 	}
 	public void showHints(TextInputControl comp,int pos,Stream<AutoCompleteHint> choices){
@@ -128,7 +122,7 @@ class PopupHint extends BorderPane{
 		this.doc=comp;
 		model.selectFirst();
 		popup=new Popup();
-		popup.setOpacity(0.8);
+		//popup.setOpacity(0.8);
 		popup.getContent().add(this);
 		Point2D location=comp.localToScreen(0,comp.getHeight());
 		popup.show(comp,location.getX(),location.getY());

@@ -58,8 +58,8 @@ public class MiniBuffer extends BorderPane{
 		@Override
 		public Stream<AutoCompleteHint> checkForHints(String text,int pos){
 			String prefix=text.substring(0,pos);
-			return main.getCommandRegistry().getCommandNames().stream().filter((name)->name.startsWith(prefix))
-					.sorted().map((name)->AutoCompleteHint.create(name,name,""));
+			return main.getCommandRegistry().getCommandNames().stream().filter((name)->name.startsWith(prefix)&&name.length()>pos)
+					.sorted().map((name)->AutoCompleteHint.create(name,name.substring(pos),""));
 		}
 	}
 }
