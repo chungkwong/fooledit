@@ -80,4 +80,17 @@ public class ScriptEnvironment implements Bindings{
 	public Set<Entry<String,Object>> entrySet(){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+	public static void main(String[] args){
+		ScriptEngineManager scriptEngineManager=new ScriptEngineManager();
+		ScriptEngine engine=scriptEngineManager.getEngineByName("nashorn");
+		Bindings bindings=new SimpleBindings();
+		bindings.put("x","hello");
+		try{
+			engine.eval("print('Hello, World!');x='world';",bindings);
+		}catch(final ScriptException se){
+			se.printStackTrace();
+		}
+		System.out.println(bindings.get("x"));
+		System.err.println(bindings.entrySet());
+	}
 }

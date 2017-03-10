@@ -37,8 +37,9 @@ public class AutoCompleteService extends Application{
 	private final AutoCompleteProvider hints;
 	private static final PopupHint popupHint=new PopupHint();
 	private static final RealTimeTask<HintContext> task=new RealTimeTask<>((o)->{
-		Stream<AutoCompleteHint> hint=o.provider.checkForHints(o.component.getText(),o.position);
-		Platform.runLater(()->popupHint.showHints(o.component,o.position,hint));
+		Stream<AutoCompleteHint> hint=o.provider.checkForHints(o.text,o.position);
+		if(!Thread.interrupted())
+			Platform.runLater(()->popupHint.showHints(o.component,o.position,hint));
 	});
 	public AutoCompleteService(TextInputControl comp,AutoCompleteProvider hints){
 		this.hints=hints;
@@ -52,16 +53,16 @@ public class AutoCompleteService extends Application{
 					case ESCAPE:popupHint.hideHints();comp.requestFocus();e.consume();break;
 				}
 		});
-		comp.focusedProperty().addListener((e,o,n)->{
+		/*comp.focusedProperty().addListener((e,o,n)->{
 			if(n)
 				updateHint(comp.getCaretPosition());
 			else
 				popupHint.hideHints();
-		});
+		});*/
 		comp.caretPositionProperty().addListener((e,o,n)->updateHint(n.intValue()));
 	}
 	public void updateHint(int pos){
-		task.summit(new HintContext(hints,comp,pos));
+		task.summit(new HintContext(hints,comp.getText(),pos,comp));
 	}
 	@Override
 	public void start(Stage stage) throws Exception{
@@ -79,39 +80,43 @@ public class AutoCompleteService extends Application{
 	}
 	static class HintContext{
 		final AutoCompleteProvider provider;
-		final TextInputControl component;
+		final String text;
 		final int position;
-		public HintContext(AutoCompleteProvider provider,TextInputControl component,int position){
+		final TextInputControl component;
+		public HintContext(AutoCompleteProvider provider,String text,int position,TextInputControl component){
 			this.provider=provider;
-			this.component=component;
+			this.text=text;
 			this.position=position;
+			this.component=component;
 		}
 	}
 }
-class PopupHint extends BorderPane{
+class PopupHint{
 	private final WebView note=new WebView();
 	private final ListView<AutoCompleteHint> loc=new ListView<>();
 	private final MultipleSelectionModel<AutoCompleteHint> model=loc.getSelectionModel();
 	private TextInputControl doc;
 	private int pos;
-	private Popup popup;
+	private Popup popup=new Popup();
 	public PopupHint(){
 		model.selectedItemProperty().addListener((e,o,n)->{
 			if(n!=null)
 				note.getEngine().loadContent(Helper.readText(n.getDocument()));
 		});
-		/*loc.setOnMouseClicked((e)->{
+		loc.setOnMouseClicked((e)->{
 			if(e.getClickCount()==2)
-				choose(mod.get(loc.locationToIndex(e.getPoint())).getInputText());
+				choose();
 		});
-		*/
+		BorderPane pane=new BorderPane();
 		loc.setOpacity(0.8);
 		loc.setFocusTraversable(false);
 		loc.setCellFactory((p)->new HintCell());
-		setLeft(loc);
+		pane.setLeft(loc);
 		note.setPrefSize(400,300);
 		note.setOpacity(0.8);
-		setRight(note);
+		pane.setRight(note);
+		popup.setAutoHide(true);
+		popup.getContent().add(pane);
 	}
 	public void showHints(TextInputControl comp,int pos,Stream<AutoCompleteHint> choices){
 		hideHints();
@@ -121,22 +126,17 @@ class PopupHint extends BorderPane{
 		this.pos=pos;
 		this.doc=comp;
 		model.selectFirst();
-		popup=new Popup();
-		//popup.setOpacity(0.8);
-		popup.getContent().add(this);
 		Point2D location=comp.localToScreen(0,comp.getHeight());
 		popup.show(comp,location.getX(),location.getY());
 		comp.requestFocus();
 	}
 	public void hideHints(){
 		loc.getItems().clear();
-		if(popup!=null)
-			popup.hide();
-		popup=null;
+		popup.hide();
 		doc=null;
 	}
 	public boolean isShowing(){
-		return popup!=null;
+		return popup.isShowing();
 	}
 	void selectPrevious(){
 		model.selectPrevious();
