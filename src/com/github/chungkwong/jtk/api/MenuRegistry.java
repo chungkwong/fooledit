@@ -61,12 +61,12 @@ public class MenuRegistry{
 				}else if(pref.get(item,null)!=null){
 					items.add(createMenu(item));
 				}else{
-					Command command=commands.getCommand(item);
+					Command command=commands.get(item);
 					if(command==null){
 						Logger.getGlobal().log(Level.INFO,"Unknown command: {0}",item);
 					}else{
 						MenuItem mi=new MenuItem(command.getDisplayName());
-						mi.setOnAction((e)->command.execute());
+						mi.setOnAction((e)->command.run());
 						items.add(mi);
 					}
 				}

@@ -21,21 +21,8 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CommandRegistry{
-	private final HashMap<String,Command> registry=new HashMap<>();
-	public Command getCommand(String name){
-		return registry.get(name);
-	}
-	public void addCommand(String name,Command command){
-		registry.put(name,command);
-	}
-	public void addCommand(String name,Runnable action){
-		addCommand(name,Command.create(MessageRegistry.getString(name.toUpperCase()),action));
-	}
-	public Command removeCommand(String name){
-		return registry.remove(name);
-	}
-	public Set<String> getCommandNames(){
-		return registry.keySet();
+public class CommandRegistry extends HashMap<String,Command>{
+	public void put(String name,Runnable action){
+		put(name,Command.create(MessageRegistry.getString(name.toUpperCase()),action));
 	}
 }

@@ -70,20 +70,20 @@ public class Main extends Application{
 	}
 	private void registerStandardCommand(){
 		FileCommands fileCommands=new FileCommands(this);
-		commandRegistry.addCommand("new",()->fileCommands.create());
-		commandRegistry.addCommand("open-file",()->fileCommands.open());
-		commandRegistry.addCommand("save",()->fileCommands.save());
-		commandRegistry.addCommand("full_screen",()->stage.setFullScreen(true));
-		commandRegistry.addCommand("maximize_frame",()->stage.setMaximized(true));
-		commandRegistry.addCommand("iconify_frame",()->stage.setIconified(true));
-		commandRegistry.addCommand("always_on_top_frame",()->stage.setAlwaysOnTop(true));
-		commandRegistry.addCommand("split_vertically",()->currentWorkSheet().splitVertically(getDefaultEditor(getCurrentDataObject())));
-		commandRegistry.addCommand("split_horizontally",()->currentWorkSheet().splitHorizontally(getDefaultEditor(getCurrentDataObject())));
-		commandRegistry.addCommand("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentNode()));
-		commandRegistry.addCommand("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
-		commandRegistry.addCommand("command",()->input.requestFocus());
-		commandRegistry.addCommand("next_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(dataObjectRegistry.getNextDataObject(getCurrentDataObject()))));
-		commandRegistry.addCommand("previous_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(dataObjectRegistry.getPreviousDataObject(getCurrentDataObject()))));
+		commandRegistry.put("new",()->fileCommands.create());
+		commandRegistry.put("open-file",()->fileCommands.open());
+		commandRegistry.put("save",()->fileCommands.save());
+		commandRegistry.put("full_screen",()->stage.setFullScreen(true));
+		commandRegistry.put("maximize_frame",()->stage.setMaximized(true));
+		commandRegistry.put("iconify_frame",()->stage.setIconified(true));
+		commandRegistry.put("always_on_top_frame",()->stage.setAlwaysOnTop(true));
+		commandRegistry.put("split_vertically",()->currentWorkSheet().splitVertically(getDefaultEditor(getCurrentDataObject())));
+		commandRegistry.put("split_horizontally",()->currentWorkSheet().splitHorizontally(getDefaultEditor(getCurrentDataObject())));
+		commandRegistry.put("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentNode()));
+		commandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
+		commandRegistry.put("command",()->input.requestFocus());
+		commandRegistry.put("next_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(dataObjectRegistry.getNextDataObject(getCurrentDataObject()))));
+		commandRegistry.put("previous_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(dataObjectRegistry.getPreviousDataObject(getCurrentDataObject()))));
 	}
 	private OnDemandMenu getBufferMenu(){
 		return new OnDemandMenu(MessageRegistry.getString("BUFFERS"),(l)->{
@@ -106,7 +106,7 @@ public class Main extends Application{
 	}
 	private MenuItem createCommandMenuItem(String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase()));
-		item.setOnAction((e)->commandRegistry.getCommand(name).execute());
+		item.setOnAction((e)->commandRegistry.get(name).run());
 		return item;
 	}
 	private void updateCurrentNode(Node node){

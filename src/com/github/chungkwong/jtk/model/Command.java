@@ -19,8 +19,7 @@ package com.github.chungkwong.jtk.model;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class Command{
-	public abstract void execute();
+public abstract class Command implements Runnable{
 	public abstract String getDisplayName();
 	public static Command create(String name,Runnable action){
 		return new SimpleCommand(name,action);
@@ -33,12 +32,12 @@ public abstract class Command{
 			this.name=name;
 		}
 		@Override
-		public void execute(){
-			action.run();
-		}
-		@Override
 		public String getDisplayName(){
 			return name;
+		}
+		@Override
+		public void run(){
+			action.run();
 		}
 
 	}

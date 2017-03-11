@@ -25,7 +25,7 @@ public abstract class ToggleCommand extends Command{
 		this.on=on;
 	}
 	@Override
-	public void execute(){
+	public void run(){
 		setStatus(!on);
 	}
 	public boolean getStatus(){

@@ -46,7 +46,7 @@ public class KeymapRegistry{
 		ObservableMap<KeyCombination,Runnable> accelerators=scene.getAccelerators();
 		try{
 			for(String key:pref.keys()){
-				accelerators.put(decode(key),()->commandRegistry.getCommand(pref.get(key,null)).execute());
+				accelerators.put(decode(key),()->commandRegistry.get(pref.get(key,null)).run());
 			}
 		}catch(BackingStoreException ex){
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
@@ -80,7 +80,7 @@ public class KeymapRegistry{
 		node.addEventFilter(KeyEvent.KEY_PRESSED,(e)->{
 			String s=pref.get(encode(e),null);
 			if(s!=null){
-				commandRegistry.getCommand(s).execute();
+				commandRegistry.get(s).run();
 				e.consume();
 			}
 		});
