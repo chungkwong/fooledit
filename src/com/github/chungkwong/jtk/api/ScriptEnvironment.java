@@ -105,7 +105,6 @@ public class ScriptEnvironment implements Bindings{
 		ScriptEngineManager scriptEngineManager=new ScriptEngineManager();
 		ScriptEngine engine=scriptEngineManager.getEngineByName("nashorn");
 		CommandRegistry commandRegistry=new CommandRegistry();
-
 		commandRegistry.put("command",()->System.err.println("fired"));
 		Bindings bindings=new ScriptEnvironment(commandRegistry);
 		bindings.put("yyy",new Function<String,Integer>() {
