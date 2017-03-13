@@ -15,21 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.setting;
-import java.util.*;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Settings{
-	private static final Map<Class,SettingEditorFactory> EDITOR_FACTORYS=new HashMap<>();
-	private static final Group ROOT=new Group("","",new ArrayList<>());
-	public static void registerEditorFactory(Class cls,SettingEditorFactory factory){
-		EDITOR_FACTORYS.put(cls,factory);
-	}
-	public static Setting getRoot(){
-		return ROOT;
-	}
-	static{
+public interface OptionType{
 
-	}
 }

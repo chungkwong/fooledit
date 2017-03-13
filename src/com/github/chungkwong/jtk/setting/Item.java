@@ -15,20 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.setting;
-
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Item implements Setting{
+	private final String shortDescription,longDescription;
+	public Item(String shortDescription,String longDescription){
+		this.shortDescription=shortDescription;
+		this.longDescription=longDescription;
+	}
 
 	@Override
 	public String getShortDescription(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return shortDescription;
 	}
 	@Override
 	public String getLongDescription(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return longDescription;
 	}
 
 }
