@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.setting;
+import com.github.chungkwong.jtk.setting.Group;
 import java.util.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -37,6 +40,16 @@ public class Group implements Setting{
 	}
 	@Override
 	public String getLongDescription(){
-		return shortDescription;
+		return longDescription;
+	}
+	@Override
+	public String getType(){
+		return "group";
+	}
+	public static class EditorFactory implements SettingEditorFactory<Group>{
+		@Override
+		public Node getEditor(Group group){
+			return new VBox(group.items.stream().map((setting)->Settings.getEditorFactory(setting.getType()).getEditor(setting)).toArray(Node[]::new));
+		}
 	}
 }

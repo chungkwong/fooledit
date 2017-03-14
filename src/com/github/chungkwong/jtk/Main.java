@@ -22,6 +22,7 @@ import com.github.chungkwong.jtk.control.*;
 import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.example.tool.*;
 import com.github.chungkwong.jtk.model.*;
+import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javafx.application.*;
@@ -35,6 +36,7 @@ import javafx.stage.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Main extends Application{
+	private static final File PATH=new File(System.getProperty("user.dir"),".jtk");
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
@@ -164,6 +166,9 @@ public class Main extends Application{
 		primaryStage.setScene(scene);
 		primaryStage.setMaximized(true);
 		primaryStage.show();
+	}
+	public static File getPath(){
+		return PATH;
 	}
 	/**
 	 * @param args the command line arguments

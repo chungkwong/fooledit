@@ -23,4 +23,5 @@ package com.github.chungkwong.jtk.setting;
 public interface Setting{
 	String getShortDescription();
 	String getLongDescription();
+	String getType();
 }

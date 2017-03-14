@@ -20,6 +20,6 @@ import javafx.scene.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface SettingEditorFactory{
-	Node getEditor(Setting setting);
+public interface SettingEditorFactory<T extends Setting>{
+	Node getEditor(T setting);
 }

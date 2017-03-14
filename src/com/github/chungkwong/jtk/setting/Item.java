@@ -15,17 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.setting;
+import javafx.beans.property.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Item implements Setting{
-	private final String shortDescription,longDescription;
-	public Item(String shortDescription,String longDescription){
+public class Item<T> implements Setting{
+	private final String shortDescription,longDescription,type;
+	private T value;
+	public Item(String shortDescription,String longDescription,String type){
 		this.shortDescription=shortDescription;
 		this.longDescription=longDescription;
+		this.type=type;
 	}
-
 	@Override
 	public String getShortDescription(){
 		return shortDescription;
@@ -34,5 +39,22 @@ public class Item implements Setting{
 	public String getLongDescription(){
 		return longDescription;
 	}
-
+	@Override
+	public String getType(){
+		return type;
+	}
+	public T getValue(){
+		return value;
+	}
+	public void setValue(T value){
+		this.value=value;
+	}
+	public static class StringEditorFactory implements SettingEditorFactory<Item<String>>{
+		@Override
+		public Node getEditor(Item<String> setting){
+			TextArea area=new TextArea();
+			area.textProperty().bindBidirectional(new SimpleStringProperty(setting,"Value"));
+			return new HBox(area,new Label(setting.longDescription));
+		}
+	}
 }

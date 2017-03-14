@@ -51,11 +51,12 @@ public class BasicPreferenceEditor extends Application{
 				return new ReadOnlyObjectWrapper<>(p.getValue().getValue());
 			}
 		});
+		table.getColumns().setAll(key,value);
 		tree.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
 			try{
 				table.getItems().setAll(Arrays.stream(n.getValue().keys()).collect(Collectors.toMap((s)->s,s->n.getValue().get(s,null))).entrySet());
 			}catch(BackingStoreException ex){
-				Logger.getLogger(BasicPreferenceEditor.class.getName()).log(Level.SEVERE,null,ex);
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
 		});
 		stage.setScene(new Scene(new SplitPane(tree,table)));
