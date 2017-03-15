@@ -43,7 +43,7 @@ public class Settings extends Application{
 	}
 	@Override
 	public void start(Stage stage) throws Exception{
-		Group root=new Group("a","aaa",Arrays.asList(new Item<String>("b","bbb","string")));
+		Group root=new Group("a","aaa",Arrays.asList(new Item<String>("b","bbb","string"),new Item<String>("c","cccc","string")));
 		stage.setScene(new Scene(new BorderPane(Settings.getEditorFactory("group").getEditor(root))));
 		stage.show();
 	}

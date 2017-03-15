@@ -25,6 +25,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.*;
 import javafx.util.*;
 /**
@@ -34,40 +35,42 @@ import javafx.util.*;
 public class BasicPreferenceEditor extends Application{
 	@Override
 	public void start(Stage stage) throws Exception{
-		TreeView<Preferences> tree=new TreeView(createTreeNode(Preferences.userRoot()));
-		tree.setCellFactory((view)->new NodeCell());
-		TableView<Map.Entry<String,String>> table=new TableView<>();
-		TableColumn<Map.Entry<String,String>,String> key=new TableColumn<>("KEY");
-		key.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<String,String>,String>,ObservableValue<String>>() {
+		TreeTableView<Object> tree=new TreeTableView<Object>(createTreeNode(Preferences.userRoot()));
+		TreeTableColumn<Object,String> key=new TreeTableColumn<>("KEY");
+		key.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
+		key.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
 			@Override
-			public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<String,String>,String> p){
-				return new ReadOnlyObjectWrapper<>(p.getValue().getKey());
+			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
+				if(p.getValue().getValue() instanceof Preferences)
+					return new ReadOnlyObjectWrapper<>(((Preferences)p.getValue().getValue()).name());
+				else
+					return new ReadOnlyObjectWrapper<>(((Pair<String,String>)p.getValue().getValue()).getKey());
 			}
 		});
-		TableColumn<Map.Entry<String,String>,String> value=new TableColumn<>("VALUE");
-		value.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<String,String>,String>,ObservableValue<String>>() {
+		TreeTableColumn<Object,String> value=new TreeTableColumn<>("VALUE");
+		value.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
+		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
 			@Override
-			public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<String,String>,String> p){
-				return new ReadOnlyObjectWrapper<>(p.getValue().getValue());
+			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
+				if(p.getValue().getValue() instanceof Preferences)
+					return new ReadOnlyObjectWrapper<>("");
+				else
+					return new ReadOnlyObjectWrapper<>(((Pair<String,String>)p.getValue().getValue()).getValue());
 			}
 		});
-		table.getColumns().setAll(key,value);
-		tree.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
-			try{
-				table.getItems().setAll(Arrays.stream(n.getValue().keys()).collect(Collectors.toMap((s)->s,s->n.getValue().get(s,null))).entrySet());
-			}catch(BackingStoreException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-			}
-		});
-		stage.setScene(new Scene(new SplitPane(tree,table)));
+		tree.getColumns().addAll(key,value);
+		stage.setScene(new Scene(new BorderPane(tree)));
 		stage.setMaximized(true);
 		stage.show();
 	}
-	private static TreeItem<Preferences> createTreeNode(Preferences pref){
+	private static TreeItem<Object> createTreeNode(Preferences pref){
 		return new LazyTreeItem<>(()->{
 			try{
-				return Arrays.stream(pref.childrenNames()).map(pref::node).map(BasicPreferenceEditor::createTreeNode)
-						.collect(Collectors.toList());
+				List<TreeItem<Object>> child=new ArrayList<>();
+				child.addAll(Arrays.stream(pref.childrenNames()).map(pref::node).map(BasicPreferenceEditor::createTreeNode)
+						.collect(Collectors.toList()));
+				child.addAll(Arrays.stream(pref.keys()).map((key)->new TreeItem<Object>(new Pair<>(key,pref.get(key,"")))).collect(Collectors.toList()));
+				return child;
 			}catch(BackingStoreException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 				return Collections.emptyList();

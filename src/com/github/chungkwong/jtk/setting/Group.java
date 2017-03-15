@@ -18,6 +18,7 @@ package com.github.chungkwong.jtk.setting;
 import com.github.chungkwong.jtk.setting.Group;
 import java.util.*;
 import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 /**
  *
@@ -49,7 +50,9 @@ public class Group implements Setting{
 	public static class EditorFactory implements SettingEditorFactory<Group>{
 		@Override
 		public Node getEditor(Group group){
-			return new VBox(group.items.stream().map((setting)->Settings.getEditorFactory(setting.getType()).getEditor(setting)).toArray(Node[]::new));
+			VBox box=new VBox(new Label(group.getShortDescription()));
+			box.getChildren().addAll(group.items.stream().map((setting)->Settings.getEditorFactory(setting.getType()).getEditor(setting)).toArray(Node[]::new));
+			return box;
 		}
 	}
 }

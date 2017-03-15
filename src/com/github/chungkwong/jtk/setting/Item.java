@@ -31,6 +31,12 @@ public class Item<T> implements Setting{
 		this.longDescription=longDescription;
 		this.type=type;
 	}
+	public Item(String shortDescription,String longDescription,String type,T value){
+		this.shortDescription=shortDescription;
+		this.longDescription=longDescription;
+		this.type=type;
+		this.value=value;
+	}
 	@Override
 	public String getShortDescription(){
 		return shortDescription;
@@ -54,7 +60,7 @@ public class Item<T> implements Setting{
 		public Node getEditor(Item<String> setting){
 			TextArea area=new TextArea();
 			area.textProperty().bindBidirectional(new SimpleStringProperty(setting,"Value"));
-			return new HBox(area,new Label(setting.longDescription));
+			return new HBox(new Label(setting.shortDescription),area,new Label(setting.longDescription));
 		}
 	}
 }
