@@ -36,26 +36,28 @@ public class BasicPreferenceEditor extends Application{
 	@Override
 	public void start(Stage stage) throws Exception{
 		TreeTableView<Object> tree=new TreeTableView<Object>(createTreeNode(Preferences.userRoot()));
+		tree.setEditable(true);
 		TreeTableColumn<Object,String> key=new TreeTableColumn<>("KEY");
 		key.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
 		key.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
 				if(p.getValue().getValue() instanceof Preferences)
-					return new ReadOnlyObjectWrapper<>(((Preferences)p.getValue().getValue()).name());
+					return new ReadOnlyStringWrapper(((Preferences)p.getValue().getValue()).name());
 				else
-					return new ReadOnlyObjectWrapper<>(((Pair<String,String>)p.getValue().getValue()).getKey());
+					return new ReadOnlyStringWrapper(((PreferenceBean)p.getValue().getValue()).getKey());
 			}
 		});
 		TreeTableColumn<Object,String> value=new TreeTableColumn<>("VALUE");
+		value.setEditable(true);
 		value.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
 		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
 				if(p.getValue().getValue() instanceof Preferences)
-					return new ReadOnlyObjectWrapper<>("");
+					return new ReadOnlyStringWrapper("");
 				else
-					return new ReadOnlyObjectWrapper<>(((Pair<String,String>)p.getValue().getValue()).getValue());
+					return new SimpleStringProperty(p.getValue().getValue(),"Value",((PreferenceBean)p.getValue().getValue()).getValue());
 			}
 		});
 		tree.getColumns().addAll(key,value);
@@ -69,7 +71,7 @@ public class BasicPreferenceEditor extends Application{
 				List<TreeItem<Object>> child=new ArrayList<>();
 				child.addAll(Arrays.stream(pref.childrenNames()).map(pref::node).map(BasicPreferenceEditor::createTreeNode)
 						.collect(Collectors.toList()));
-				child.addAll(Arrays.stream(pref.keys()).map((key)->new TreeItem<Object>(new Pair<>(key,pref.get(key,"")))).collect(Collectors.toList()));
+				child.addAll(Arrays.stream(pref.keys()).map((key)->new TreeItem<Object>(new PreferenceBean(key,pref))).collect(Collectors.toList()));
 				return child;
 			}catch(BackingStoreException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
@@ -90,6 +92,24 @@ public class BasicPreferenceEditor extends Application{
 			}else{
 				setText(item.name());
 			}
+		}
+	}
+	private static class PreferenceBean{
+		private final String key;
+		private final Preferences pref;
+		public PreferenceBean(String key,Preferences pref){
+			this.key=key;
+			this.pref=pref;
+		}
+		public String getKey(){
+			return key;
+		}
+		public String getValue(){
+			return pref.get(key,"");
+		}
+		public void setValue(String value) throws BackingStoreException{
+			pref.put(key,value);
+			pref.sync();
 		}
 	}
 }

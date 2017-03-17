@@ -22,7 +22,7 @@ import java.util.logging.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MessageRegistry{
-	private static final ResourceBundle jtkBundle=ResourceBundle.getBundle("com.github.chungkwong.jtk.message");
+	private static final ResourceBundle jtkBundle=ResourceBundle.getBundle("com.github.chungkwong.jtk.default.locale.base");
 	private static final HashMap<String,String> dynamicBundle=new HashMap<>();
 	public static void addString(String key,String value){
 		dynamicBundle.put(key,value);

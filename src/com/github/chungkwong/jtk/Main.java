@@ -23,6 +23,7 @@ import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.example.tool.*;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.logging.*;
 import javafx.application.*;
@@ -170,10 +171,27 @@ public class Main extends Application{
 	public static File getPath(){
 		return PATH;
 	}
+	private static void checkInstall(){
+		if(!PATH.exists()){
+			restoreToDefault();
+		}
+	}
+	private static void restoreToDefault(){
+		PATH.mkdir();
+	}
+	private static void installFile(String filename){
+		try{
+			String location="/com/github/chungkwong/jtk/"+filename;
+			Files.copy(Main.class.getResourceAsStream(filename),new File(PATH,filename).toPath(),StandardCopyOption.REPLACE_EXISTING);
+		}catch(IOException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+	}
 	/**
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args){
+		checkInstall();
 		launch(args);
 	}
 }
