@@ -17,7 +17,9 @@
 package com.github.chungkwong.jtk.api;
 import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.control.*;
+import com.github.chungkwong.jtk.model.*;
 import java.util.function.*;
+import java.util.logging.*;
 import java.util.stream.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -47,7 +49,13 @@ public class MiniBuffer extends BorderPane{
 	private void restore(){
 		hints=commandHints;
 		setRight(null);
-		input.setOnAction((e)->main.getCommandRegistry().get(input.getText()).run());
+		input.setOnAction((e)->{
+			Command command=main.getCommandRegistry().get(input.getText());
+			if(command!=null)
+				main.getCommandRegistry().get(input.getText()).run();
+			else
+				Logger.getGlobal().info("No such command:"+input.getText());
+		});
 	}
 	@Override
 	public void requestFocus(){

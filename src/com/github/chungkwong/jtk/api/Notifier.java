@@ -29,7 +29,7 @@ import javafx.scene.layout.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Notifier extends Handler{
-	private static final Formatter FORMATTER=new LogFormatter();
+	private static final Formatter USER_FORMATTER=new UserLogFormatter();
 	private final Main app;
 	private final Node bar;
 	private final Label label;
@@ -45,7 +45,7 @@ public class Notifier extends Handler{
 	}
 	@Override
 	public void publish(LogRecord record){
-		notify(FORMATTER.format(record));
+		notify(USER_FORMATTER.format(record));
 	}
 	@Override
 	public void flush(){
@@ -64,10 +64,32 @@ public class Notifier extends Handler{
 	public void removeItem(Node node){
 		other.getChildren().remove(node);
 	}
-	private static class LogFormatter extends Formatter{
+	public static class UserLogFormatter extends Formatter{
+		private final StringBuilder buf=new StringBuilder();
 		@Override
 		public String format(LogRecord record){
-			return "["+record.getLevel().getLocalizedName()+"]:"+formatMessage(record);
+			buf.setLength(0);
+			buf.append("[").append(record.getLevel().getLocalizedName()).append("] ");
+			buf.append(formatMessage(record)).append('\n');
+			return buf.toString();
+		}
+	}
+	public static class SystemLogFormatter extends Formatter{
+		private static final DateFormat TIME_FORMAT=new SimpleDateFormat("y-M-d H:m:s");
+		private final Date date=new Date(0L);
+		private final StringBuilder buf=new StringBuilder();
+		@Override
+		public String format(LogRecord record){
+			date.setTime(record.getMillis());
+			buf.setLength(0);
+			buf.append(TIME_FORMAT.format(new Date(record.getMillis()))).append(" [");
+			buf.append(record.getLevel().getName()).append("] [");
+			buf.append(record.getSourceClassName()).append('.').append(record.getSourceMethodName()).append("] ");
+			if(record.getMessage()!=null)
+				buf.append(MessageFormat.format(record.getMessage(),record.getParameters()));
+			else if(record.getThrown()!=null)
+				buf.append(record.getThrown().getClass().getName()).append(':').append(record.getThrown().getMessage());
+			return buf.append('\n').toString();
 		}
 	}
 	public static Node createTimeField(DateFormat format){
@@ -79,5 +101,10 @@ public class Notifier extends Handler{
 			}
 		},0,1000);
 		return time;
+	}
+	public static void main(String[] args){
+		Logger.getGlobal().addHandler(new StreamHandler(System.err,USER_FORMATTER));
+		Logger.getGlobal().log(Level.SEVERE,null,new RuntimeException("hello"));
+		Logger.getGlobal().severe("world");Logger.getGlobal().setResourceBundle(null);
 	}
 }

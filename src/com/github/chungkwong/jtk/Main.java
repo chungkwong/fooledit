@@ -37,7 +37,7 @@ import javafx.stage.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Main extends Application{
-	private static final File PATH=new File(System.getProperty("user.dir"),".jtk");
+	private static final File PATH=new File(System.getProperty("user.home"),".jtk");
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
@@ -51,6 +51,11 @@ public class Main extends Application{
 	public Main(){
 		notifier=new Notifier(this);
 		Logger.getGlobal().setLevel(Level.INFO);
+		try{
+			Logger.getGlobal().addHandler(new StreamHandler(new FileOutputStream(new File(PATH,"LOG")),new Notifier.SystemLogFormatter()));
+		}catch(FileNotFoundException ex){
+			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
+		}
 		Logger.getGlobal().addHandler(notifier);
 		MenuBar bar=new MenuBar();
 		input=new MiniBuffer(this);
@@ -178,11 +183,15 @@ public class Main extends Application{
 	}
 	private static void restoreToDefault(){
 		PATH.mkdir();
+		installFile("locale/base.properties");
+		installFile("locale/base_zh_CN.properties");
 	}
 	private static void installFile(String filename){
 		try{
-			String location="/com/github/chungkwong/jtk/"+filename;
-			Files.copy(Main.class.getResourceAsStream(filename),new File(PATH,filename).toPath(),StandardCopyOption.REPLACE_EXISTING);
+			String from="/com/github/chungkwong/jtk/default/"+filename;
+			File to=new File(PATH,filename);
+			to.getParentFile().mkdirs();
+			Files.copy(Main.class.getResourceAsStream(from),to.toPath(),StandardCopyOption.REPLACE_EXISTING);
 		}catch(IOException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
