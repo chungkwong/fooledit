@@ -39,7 +39,7 @@ public class KeymapRegistry{
 			Logger.getLogger(MenuRegistry.class.getName()).log(Level.SEVERE,null,ex);
 		}
 		try{
-			Preferences.importPreferences(MenuRegistry.class.getResourceAsStream("/com/github/chungkwong/jtk/api/default_keymap.xml"));
+			Preferences.importPreferences(MenuRegistry.class.getResourceAsStream("/com/github/chungkwong/jtk/default/keymap.xml"));
 		}catch(IOException|InvalidPreferencesFormatException ex){
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
 		}

@@ -40,7 +40,7 @@ public class MenuRegistry{
 		String root=pref.get("ROOT",null);
 		if(root==null)
 			try{
-				Preferences.importPreferences(MenuRegistry.class.getResourceAsStream("/com/github/chungkwong/jtk/api/default_menu.xml"));
+				Preferences.importPreferences(MenuRegistry.class.getResourceAsStream("/com/github/chungkwong/jtk/default/menu.xml"));
 				root=pref.get("ROOT","");
 			}catch(IOException|InvalidPreferencesFormatException ex){
 				Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);

@@ -177,12 +177,16 @@ public class Main extends Application{
 		return PATH;
 	}
 	private static void checkInstall(){
-		if(!PATH.exists()){
+		//if(!PATH.exists()){
 			restoreToDefault();
-		}
+		//}//FIXME remove command
 	}
 	private static void restoreToDefault(){
 		PATH.mkdir();
+		installFile("keymap.xml");
+		installFile("menu.xml");
+		installFile("module.xml");
+		installFile("suffix.xml");
 		installFile("locale/base.properties");
 		installFile("locale/base_zh_CN.properties");
 	}
