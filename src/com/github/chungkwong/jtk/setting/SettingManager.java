@@ -27,7 +27,9 @@ import java.util.logging.*;
  */
 public class SettingManager{
 	private static final Map<String,Group> groups=new HashMap<>();
-
+	private static void load(String grp){
+		getOrCreate(grp).load(new File(Main.getPath(),grp));
+	}
 	public static Group getOrCreate(String key){
 		if(!groups.containsKey(key))
 			groups.put(key,new Group());
@@ -45,8 +47,21 @@ public class SettingManager{
 		public String get(String key,String def){
 			return properties.getProperty(key,def);
 		}
+		public Object put(String key,String value){
+			modified=true;
+			return properties.put(key,value);
+		}
+		void load(File f){
+			try{
+				modified=true;
+				properties.load(new InputStreamReader(new FileInputStream(f),StandardCharsets.UTF_8));
+			}catch(IOException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+		}
 		public void store(File f){
 			try{
+				f.getParentFile().mkdirs();
 				properties.store(new OutputStreamWriter(new FileOutputStream(f),StandardCharsets.UTF_8),null);
 			}catch(IOException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
@@ -55,5 +70,9 @@ public class SettingManager{
 	}
 	static{
 		EventManager.addEventListener(EventManager.SHUTDOWN,()->sync());
+	}
+	public static void main(String[] args){
+		//load("recent");
+		//getOrCreate("recent").put("78"," ");
 	}
 }
