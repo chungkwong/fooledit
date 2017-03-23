@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.setting;
-import com.github.chungkwong.jtk.setting.Group;
 import java.util.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -24,35 +23,29 @@ import javafx.scene.layout.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Group implements Setting{
+public class Group{
 	private final String shortDescription,longDescription;
-	private final List<Setting> items;
-	public Group(String shortDescription,String longDescription,List<Setting> items){
+	private final List<Option> items;
+	public Group(String shortDescription,String longDescription,List<Option> items){
 		this.shortDescription=shortDescription;
 		this.longDescription=longDescription;
 		this.items=items;
 	}
-	public List<Setting> getSubItems(){
+	public List<Option> getSubItems(){
 		return items;
 	}
-	@Override
 	public String getShortDescription(){
 		return shortDescription;
 	}
-	@Override
 	public String getLongDescription(){
 		return longDescription;
 	}
-	@Override
 	public String getType(){
 		return "group";
 	}
-	public static class EditorFactory implements SettingEditorFactory<Group>{
-		@Override
-		public Node getEditor(Group group){
-			VBox box=new VBox(new Label(group.getShortDescription()));
-			box.getChildren().addAll(group.items.stream().map((setting)->Settings.getEditorFactory(setting.getType()).getEditor(setting)).toArray(Node[]::new));
-			return box;
-		}
+	public Node getEditor(){
+		VBox box=new VBox(new Label(getShortDescription()));
+		box.getChildren().addAll(items.stream().map((setting)->Settings.getEditorFactory(setting.getType()).getEditor(setting)).toArray(Node[]::new));
+		return box;
 	}
 }

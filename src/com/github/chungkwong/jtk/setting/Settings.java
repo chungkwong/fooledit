@@ -27,24 +27,26 @@ import javafx.stage.*;
  */
 public class Settings extends Application{
 	private static final Map<String,SettingEditorFactory> TYPES=new HashMap<>();
-	private static final Group ROOT=new Group("","",new ArrayList<>());
+	private static final TreeMap<String,Group> nodes=new TreeMap<>();
 	public static void registerEditorFactory(String cls,SettingEditorFactory factory){
 		TYPES.put(cls,factory);
 	}
 	public static SettingEditorFactory getEditorFactory(String cls){
 		return TYPES.get(cls);
 	}
-	public static Setting getRoot(){
-		return ROOT;
+	public static Group getNode(String key){
+		return nodes.get(key);
+	}
+	public static Group putNode(String key,Group node){
+		return nodes.put(key,node);
 	}
 	static{
-		TYPES.put("group",new Group.EditorFactory());
-		TYPES.put("string",new Item.StringEditorFactory());
+		TYPES.put("string",new Option.StringEditorFactory());
 	}
 	@Override
 	public void start(Stage stage) throws Exception{
-		Group root=new Group("a","aaa",Arrays.asList(new Item<String>("b","bbb","string"),new Item<String>("c","cccc","string")));
-		stage.setScene(new Scene(new BorderPane(Settings.getEditorFactory("group").getEditor(root))));
+		Group root=new Group("a","aaa",Arrays.asList(new Option<String>("b","bbb","string"),new Option<String>("c","cccc","string")));
+		stage.setScene(new Scene(new BorderPane(root.getEditor())));
 		stage.show();
 	}
 	public static void main(String[] args){

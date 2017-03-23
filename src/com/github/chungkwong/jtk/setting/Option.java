@@ -23,29 +23,26 @@ import javafx.scene.layout.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Item<T> implements Setting{
+public class Option<T>{
 	private final String shortDescription,longDescription,type;
 	private T value;
-	public Item(String shortDescription,String longDescription,String type){
+	public Option(String shortDescription,String longDescription,String type){
 		this.shortDescription=shortDescription;
 		this.longDescription=longDescription;
 		this.type=type;
 	}
-	public Item(String shortDescription,String longDescription,String type,T value){
+	public Option(String shortDescription,String longDescription,String type,T value){
 		this.shortDescription=shortDescription;
 		this.longDescription=longDescription;
 		this.type=type;
 		this.value=value;
 	}
-	@Override
 	public String getShortDescription(){
 		return shortDescription;
 	}
-	@Override
 	public String getLongDescription(){
 		return longDescription;
 	}
-	@Override
 	public String getType(){
 		return type;
 	}
@@ -55,9 +52,9 @@ public class Item<T> implements Setting{
 	public void setValue(T value){
 		this.value=value;
 	}
-	public static class StringEditorFactory implements SettingEditorFactory<Item<String>>{
+	public static class StringEditorFactory implements SettingEditorFactory<Option<String>>{
 		@Override
-		public Node getEditor(Item<String> setting){
+		public Node getEditor(Option<String> setting){
 			TextArea area=new TextArea();
 			area.textProperty().bindBidirectional(new SimpleStringProperty(setting,"Value"));
 			return new HBox(new Label(setting.shortDescription),area,new Label(setting.longDescription));
