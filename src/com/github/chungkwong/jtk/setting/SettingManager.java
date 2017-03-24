@@ -27,12 +27,9 @@ import java.util.logging.*;
  */
 public class SettingManager{
 	private static final Map<String,Group> groups=new HashMap<>();
-	private static void load(String grp){
-		getOrCreate(grp).load(new File(Main.getPath(),grp));
-	}
 	public static Group getOrCreate(String key){
 		if(!groups.containsKey(key))
-			groups.put(key,new Group());
+			groups.put(key,new Group(new File(Main.getPath(),key)));
 		return groups.get(key);
 	}
 	public static void sync(){
@@ -41,6 +38,14 @@ public class SettingManager{
 	public static class Group{
 		private boolean modified=false;
 		private final Properties properties=new Properties();
+		public Group(File f){
+			try{
+				modified=true;
+				properties.load(new InputStreamReader(new FileInputStream(f),StandardCharsets.UTF_8));
+			}catch(IOException ex){
+				Logger.getGlobal().log(Level.SEVERE,"A new group is created",ex);
+			}
+		}
 		public boolean isModified(){
 			return modified;
 		}
@@ -51,18 +56,11 @@ public class SettingManager{
 			modified=true;
 			return properties.put(key,value);
 		}
-		void load(File f){
-			try{
-				modified=true;
-				properties.load(new InputStreamReader(new FileInputStream(f),StandardCharsets.UTF_8));
-			}catch(IOException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-			}
-		}
 		public void store(File f){
 			try{
 				f.getParentFile().mkdirs();
 				properties.store(new OutputStreamWriter(new FileOutputStream(f),StandardCharsets.UTF_8),null);
+				modified=false;
 			}catch(IOException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}

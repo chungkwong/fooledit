@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.jtk.api;
 import com.github.chungkwong.json.*;
+import com.github.chungkwong.jtk.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
@@ -68,7 +69,7 @@ public class ModuleRegistry{
 		return new URL(getDataDirectory().toURI().toURL(),url);
 	}
 	public static File getDataDirectory(){
-		return new File(System.getProperty("user.home"),".jtk");
+		return new File(Main.getPath(),"modules");
 	}
 	public File download(ModuleDescriptor module) throws IOException{
 		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL(module.getURL()).openStream()),StandardCharsets.UTF_8)){

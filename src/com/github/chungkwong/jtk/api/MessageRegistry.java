@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
+import com.github.chungkwong.jtk.*;
+import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 /**
@@ -22,7 +24,6 @@ import java.util.logging.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MessageRegistry{
-	private static final ResourceBundle jtkBundle=ResourceBundle.getBundle("com.github.chungkwong.jtk.default.locale.base");
 	private static final HashMap<String,String> dynamicBundle=new HashMap<>();
 	public static void addString(String key,String value){
 		dynamicBundle.put(key,value);
@@ -32,13 +33,19 @@ public class MessageRegistry{
 			addString(key,bundle.getString(key));
 	}
 	public static String getString(String key){
-		try{
-			return jtkBundle.getString(key);
-		}catch(MissingResourceException ex){
-			if(dynamicBundle.containsKey(key))
-				return dynamicBundle.get(key);
+		if(dynamicBundle.containsKey(key)){
+			return dynamicBundle.get(key);
+		}else{
 			Logger.getGlobal().log(Level.INFO,"Missing string: {0}",key);
 			return key;
+		}
+	}
+	static{
+		try{
+			addBundle(ResourceBundle.getBundle("locale.base",Locale.getDefault(),
+					new URLClassLoader(new URL[]{Main.getPath().toURI().toURL()})));
+		}catch(MalformedURLException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
 }

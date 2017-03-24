@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.logging.Formatter;
 import java.util.logging.*;
 import javafx.application.*;
+import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -37,6 +38,7 @@ public class Notifier extends Handler{
 	public Notifier(Main app){
 		this.app=app;
 		label=new Label();
+		label.setAlignment(Pos.BASELINE_LEFT);
 		other=new HBox();
 		bar=new BorderPane(label,null,other,null,null);
 	}

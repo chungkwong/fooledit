@@ -24,6 +24,7 @@ public class LimitedCache<T> implements Iterable<T>{
 	private int limit;
 	private final LinkedList<T> cache;
 	public LimitedCache(){
+		this.limit=Integer.MAX_VALUE;
 		this.cache=null;
 	}
 	public LimitedCache(int limit,Collection<T> cache){
