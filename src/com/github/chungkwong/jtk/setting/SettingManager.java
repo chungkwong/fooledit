@@ -21,19 +21,23 @@ import java.io.*;
 import java.nio.charset.*;
 import java.util.*;
 import java.util.logging.*;
+import javafx.scene.control.*;
+import javafx.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class SettingManager{
-	private static final Map<String,Group> groups=new HashMap<>();
+	private static final Map<String,SettingEditorFactory> EDITORS=new HashMap<>();
+	private static final Map<String,StringConverter> CONVERTORS=new HashMap<>();
+	private static final Map<String,Group> GROUPS=new HashMap<>();
 	public static Group getOrCreate(String key){
-		if(!groups.containsKey(key))
-			groups.put(key,new Group(new File(Main.getPath(),key)));
-		return groups.get(key);
+		if(!GROUPS.containsKey(key))
+			GROUPS.put(key,new Group(new File(Main.getPath(),key)));
+		return GROUPS.get(key);
 	}
 	public static void sync(){
-		groups.entrySet().stream().filter((e)->e.getValue().isModified()).forEach((e)->e.getValue().store(new File(Main.getPath(),e.getKey())));
+		GROUPS.entrySet().stream().filter((e)->e.getValue().isModified()).forEach((e)->e.getValue().store(new File(Main.getPath(),e.getKey())));
 	}
 	public static class Group{
 		private boolean modified=false;
@@ -67,6 +71,21 @@ public class SettingManager{
 		}
 	}
 	static{
+		EDITORS.put("string",(p)->{
+			TextArea node=new TextArea();
+			node.textProperty().bindBidirectional(p,CONVERTORS.get("string"));
+			return node;
+		});
+		CONVERTORS.put("string",new StringConverter() {
+			@Override
+			public String toString(Object t){
+				return t.toString();
+			}
+			@Override
+			public Object fromString(String string){
+				return string;
+			}
+		});
 		EventManager.addEventListener(EventManager.SHUTDOWN,()->sync());
 	}
 	public static void main(String[] args){

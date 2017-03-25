@@ -183,6 +183,7 @@ public class Main extends Application{
 	}
 	private static void restoreToDefault(){
 		PATH.mkdir();
+		installFile("init.scm");
 		installFile("keymap.xml");
 		installFile("menu.xml");
 		installFile("module.xml");

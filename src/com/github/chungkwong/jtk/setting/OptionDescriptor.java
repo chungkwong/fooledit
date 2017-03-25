@@ -15,27 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.setting;
-import javafx.beans.property.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Option<T>{
+public class OptionDescriptor{
 	private final String shortDescription,longDescription,type;
-	private T value;
-	public Option(String shortDescription,String longDescription,String type){
+	private final Object defaultValue;
+	public OptionDescriptor(String shortDescription,String longDescription,String type,Object defaultValue){
 		this.shortDescription=shortDescription;
 		this.longDescription=longDescription;
 		this.type=type;
-	}
-	public Option(String shortDescription,String longDescription,String type,T value){
-		this.shortDescription=shortDescription;
-		this.longDescription=longDescription;
-		this.type=type;
-		this.value=value;
+		this.defaultValue=defaultValue;
 	}
 	public String getShortDescription(){
 		return shortDescription;
@@ -45,19 +36,5 @@ public class Option<T>{
 	}
 	public String getType(){
 		return type;
-	}
-	public T getValue(){
-		return value;
-	}
-	public void setValue(T value){
-		this.value=value;
-	}
-	public static class StringEditorFactory implements SettingEditorFactory<Option<String>>{
-		@Override
-		public Node getEditor(Option<String> setting){
-			TextArea area=new TextArea();
-			area.textProperty().bindBidirectional(new SimpleStringProperty(setting,"Value"));
-			return new HBox(new Label(setting.shortDescription),area,new Label(setting.longDescription));
-		}
 	}
 }
