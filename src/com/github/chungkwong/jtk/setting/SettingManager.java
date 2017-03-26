@@ -33,19 +33,26 @@ public class SettingManager{
 	private static final Map<String,Group> GROUPS=new HashMap<>();
 	public static Group getOrCreate(String key){
 		if(!GROUPS.containsKey(key))
-			GROUPS.put(key,new Group(new File(Main.getPath(),key)));
+			GROUPS.put(key,new Group(key));
 		return GROUPS.get(key);
 	}
 	public static void sync(){
-		GROUPS.entrySet().stream().filter((e)->e.getValue().isModified()).forEach((e)->e.getValue().store(new File(Main.getPath(),e.getKey())));
+		GROUPS.entrySet().stream().filter((e)->e.getValue().isModified()).forEach((e)->e.getValue().store());
+	}
+	private static File getFile(String key){
+		return new File(new File(Main.getPath(),"settings"),key);
 	}
 	public static class Group{
 		private boolean modified=false;
-		private final Properties properties=new Properties();
-		public Group(File f){
+		private final Map<String,Object> settings=new HashMap<>();
+		private final String id;
+		Group(String id){
+			this.id=id;
 			try{
-				modified=true;
+				File f=getFile(id+".properties");
+				Properties properties=new Properties();
 				properties.load(new InputStreamReader(new FileInputStream(f),StandardCharsets.UTF_8));
+				properties.forEach((key,value)->settings.put(key.toString(),value.toString()));
 			}catch(IOException ex){
 				Logger.getGlobal().log(Level.SEVERE,"A new group is created",ex);
 			}
@@ -53,16 +60,25 @@ public class SettingManager{
 		public boolean isModified(){
 			return modified;
 		}
-		public String get(String key,String def){
-			return properties.getProperty(key,def);
+		public Object get(String key,String def){
+			return settings.getOrDefault(key,def);
 		}
-		public Object put(String key,String value){
+		public Object put(String key,Object value){
 			modified=true;
-			return properties.put(key,value);
+			return settings.put(key,value);
 		}
-		public void store(File f){
+		public Set<String> getKeys(){
+			return settings.keySet();
+		}
+		/*public Map<String,OptionDescriptor> getDescriptors(){
+
+		}*/
+		public void store(){
 			try{
+				File f=getFile(id+".properties");
 				f.getParentFile().mkdirs();
+				Properties properties=new Properties();
+				properties.putAll(settings);
 				properties.store(new OutputStreamWriter(new FileOutputStream(f),StandardCharsets.UTF_8),null);
 				modified=false;
 			}catch(IOException ex){
