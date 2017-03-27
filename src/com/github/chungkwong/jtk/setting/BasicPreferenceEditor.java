@@ -51,6 +51,7 @@ public class BasicPreferenceEditor extends Application{
 		TreeTableColumn<Object,String> value=new TreeTableColumn<>("VALUE");
 		value.setEditable(true);
 		value.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
+		
 		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){

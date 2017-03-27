@@ -21,6 +21,7 @@ import java.io.*;
 import java.nio.charset.*;
 import java.util.*;
 import java.util.logging.*;
+import java.util.stream.*;
 import javafx.scene.control.*;
 import javafx.util.*;
 /**
@@ -41,6 +42,28 @@ public class SettingManager{
 	}
 	private static File getFile(String key){
 		return new File(new File(Main.getPath(),"settings"),key);
+	}
+	public static Set<String> getChildren(String parent){
+		if(parent.isEmpty()){
+			return GROUPS.keySet().stream().map((k)->{
+				int i=k.indexOf('.');
+				return i==-1?k:k.substring(0,i);
+			}).collect(Collectors.toSet());
+		}else{
+			String prefix=parent+".";
+			int after=prefix.length();
+			return GROUPS.keySet().stream().filter((k)->k.startsWith(prefix)).map((k)->{
+				int i=k.indexOf('.',after);
+				return i==-1?k:k.substring(0,i);
+			}).collect(Collectors.toSet());
+		}
+	}
+	public static boolean isLeaf(String key){
+		return GROUPS.containsKey(key);
+	}
+	public static String getLastPart(String grp){
+		int i=grp.lastIndexOf('.');
+		return i==-1?grp:grp.substring(i+1);
 	}
 	public static class Group{
 		private boolean modified=false;
@@ -67,7 +90,7 @@ public class SettingManager{
 			modified=true;
 			return settings.put(key,value);
 		}
-		public Set<String> getKeys(){
+		public Set<String> keys(){
 			return settings.keySet();
 		}
 		/*public Map<String,OptionDescriptor> getDescriptors(){

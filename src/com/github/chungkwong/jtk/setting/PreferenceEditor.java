@@ -17,8 +17,6 @@
 package com.github.chungkwong.jtk.setting;
 import com.github.chungkwong.jtk.control.*;
 import java.util.*;
-import java.util.logging.*;
-import java.util.prefs.*;
 import java.util.stream.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
@@ -31,15 +29,15 @@ import javafx.util.*;
  */
 public class PreferenceEditor extends BorderPane{
 	public PreferenceEditor(){
-		TreeTableView<Object> tree=new TreeTableView<Object>(createTreeNode(Preferences.userRoot()));
+		TreeTableView<Object> tree=new TreeTableView<Object>(createTreeNode(""));
 		tree.setEditable(true);
 		TreeTableColumn<Object,String> key=new TreeTableColumn<>("KEY");
 		key.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
 		key.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
-				if(p.getValue().getValue() instanceof Preferences)
-					return new ReadOnlyStringWrapper(((Preferences)p.getValue().getValue()).name());
+				if(p.getValue().getValue() instanceof String)
+					return new ReadOnlyStringWrapper(SettingManager.getLastPart((String)p.getValue().getValue()));
 				else
 					return new ReadOnlyStringWrapper(((PreferenceEditor.PreferenceBean)p.getValue().getValue()).getKey());
 			}
@@ -50,7 +48,7 @@ public class PreferenceEditor extends BorderPane{
 		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
-				if(p.getValue().getValue() instanceof Preferences)
+				if(p.getValue().getValue() instanceof String)
 					return new ReadOnlyStringWrapper("");
 				else
 					return new SimpleStringProperty(p.getValue().getValue(),"Value",((PreferenceEditor.PreferenceBean)p.getValue().getValue()).getValue());
@@ -59,36 +57,33 @@ public class PreferenceEditor extends BorderPane{
 		tree.getColumns().addAll(key,value);
 		setCenter(tree);
 	}
-	private static TreeItem<Object> createTreeNode(Preferences pref){
+	private static TreeItem<Object> createTreeNode(String root){
 		return new LazyTreeItem<>(()->{
-			try{
-				List<TreeItem<Object>> child=new ArrayList<>();
-				child.addAll(Arrays.stream(pref.childrenNames()).map(pref::node).map(PreferenceEditor::createTreeNode)
-						.collect(Collectors.toList()));
-				child.addAll(Arrays.stream(pref.keys()).map((key)->new TreeItem<Object>(new PreferenceEditor.PreferenceBean(key,pref))).collect(Collectors.toList()));
-				return child;
-			}catch(BackingStoreException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				return Collections.emptyList();
+			List<TreeItem<Object>> child=new ArrayList<>();
+			child.addAll(SettingManager.getChildren(root).stream().map(PreferenceEditor::createTreeNode)
+					.collect(Collectors.toList()));
+			if(SettingManager.isLeaf(root)){
+				SettingManager.Group group=SettingManager.getOrCreate(root);
+				child.addAll(group.keys().stream().map((key)->new TreeItem<Object>(new PreferenceEditor.PreferenceBean(key,root))).collect(Collectors.toList()));
 			}
-		},pref);
+			return child;
+		},root);
 	}
 	private static class PreferenceBean{
 		private final String key;
-		private final Preferences pref;
-		public PreferenceBean(String key,Preferences pref){
+		private final SettingManager.Group grp;
+		public PreferenceBean(String key,String grp){
 			this.key=key;
-			this.pref=pref;
+			this.grp=SettingManager.getOrCreate(grp);
 		}
 		public String getKey(){
 			return key;
 		}
 		public String getValue(){
-			return pref.get(key,"");
+			return grp.get(key,"").toString();
 		}
-		public void setValue(String value) throws BackingStoreException{
-			pref.put(key,value);
-			pref.sync();
+		public void setValue(String value){
+			grp.put(key,value);
 		}
 	}
 }
