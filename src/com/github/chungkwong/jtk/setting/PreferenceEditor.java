@@ -42,18 +42,19 @@ public class PreferenceEditor extends BorderPane{
 					return new ReadOnlyStringWrapper(((PreferenceEditor.PreferenceBean)p.getValue().getValue()).getKey());
 			}
 		});
-		TreeTableColumn<Object,String> value=new TreeTableColumn<>("VALUE");
+		TreeTableColumn<Object,Object> value=new TreeTableColumn<>("VALUE");
 		value.setEditable(true);
 		value.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
-		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
+		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, Object>,ObservableValue<Object>>(){
 			@Override
-			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
+			public ObservableValue<Object> call(TreeTableColumn.CellDataFeatures<Object,Object> p){
 				if(p.getValue().getValue() instanceof String)
-					return new ReadOnlyStringWrapper("");
+					return new ReadOnlyObjectWrapper(null);
 				else
-					return new SimpleStringProperty(p.getValue().getValue(),"Value",((PreferenceEditor.PreferenceBean)p.getValue().getValue()).getValue());
+					return new ReadOnlyObjectWrapper(((PreferenceEditor.PreferenceBean)p.getValue().getValue()).getValue());
 			}
 		});
+		value.setCellFactory((p)->new ValueCell());
 		tree.getColumns().addAll(key,value);
 		setCenter(tree);
 	}
@@ -79,11 +80,25 @@ public class PreferenceEditor extends BorderPane{
 		public String getKey(){
 			return key;
 		}
-		public String getValue(){
-			return grp.get(key,"").toString();
+		public Object getValue(){
+			return grp.get(key,"");
 		}
 		public void setValue(String value){
 			grp.put(key,value);
+		}
+	}
+	private static class ValueCell extends TreeTableCell<Object,Object>{
+		public ValueCell(){
+		}
+		@Override
+		protected void updateItem(Object item,boolean empty){
+			super.updateItem(item,empty);
+			if(empty||item==null){
+				setText(null);
+				setGraphic(null);
+			}else{
+				setGraphic(new TextField(item.toString()));
+			}
 		}
 	}
 }

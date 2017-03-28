@@ -32,7 +32,6 @@ public class PreferenceEditorTest extends Application{
 		SettingManager.getOrCreate("com");
 		SettingManager.getOrCreate("com.github.chungkwong");
 		SettingManager.getOrCreate("xyz.hh");
-		SettingManager.getOrCreate("xyz.hh");
 		launch(args);
 	}
 }

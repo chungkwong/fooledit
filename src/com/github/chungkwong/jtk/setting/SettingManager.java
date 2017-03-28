@@ -17,6 +17,7 @@
 package com.github.chungkwong.jtk.setting;
 import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.api.*;
+import com.github.chungkwong.jtk.util.*;
 import java.io.*;
 import java.nio.charset.*;
 import java.util.*;
@@ -65,10 +66,17 @@ public class SettingManager{
 		int i=grp.lastIndexOf('.');
 		return i==-1?grp:grp.substring(i+1);
 	}
+	public static void registerSettingType(String type,StringConverter converter){
+		CONVERTORS.put(type,converter);
+	}
+	public static void registerSettingEditor(String type,SettingEditorFactory editorFactory){
+		EDITORS.put(type,editorFactory);
+	}
 	public static class Group{
 		private boolean modified=false;
 		private final Map<String,Object> settings=new HashMap<>();
 		private final String id;
+		private final Cache<Map<String,OptionDescriptor>> meta;
 		Group(String id){
 			this.id=id;
 			try{
@@ -79,6 +87,9 @@ public class SettingManager{
 			}catch(IOException ex){
 				Logger.getGlobal().log(Level.SEVERE,"A new group is created",ex);
 			}
+			this.meta=new Cache<>(()->{
+				return OptionDescriptor.decode(getFile(id+".properties"));
+			});
 		}
 		public boolean isModified(){
 			return modified;

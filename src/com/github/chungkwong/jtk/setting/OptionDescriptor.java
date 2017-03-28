@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.setting;
+import java.io.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -36,5 +38,13 @@ public class OptionDescriptor{
 	}
 	public String getType(){
 		return type;
+	}
+	public static void encode(Map<String,OptionDescriptor> data,File out){
+
+	}
+	public static Map<String,OptionDescriptor> decode(File in){
+		HashMap<String,OptionDescriptor> data=new HashMap<>();
+
+		return data;
 	}
 }
