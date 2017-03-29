@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.setting;
-import javafx.beans.property.*;
 import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface SettingEditorFactory<T>{
-	Node getEditor(Property<T> setting);
+	Node getEditor(String key,SettingManager.Group grp);
 }

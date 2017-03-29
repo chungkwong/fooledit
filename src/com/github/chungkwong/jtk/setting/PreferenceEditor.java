@@ -81,7 +81,7 @@ public class PreferenceEditor extends BorderPane{
 			return key;
 		}
 		public Object getValue(){
-			return grp.get(key,"");
+			return grp.get(key);
 		}
 		public void setValue(String value){
 			grp.put(key,value);

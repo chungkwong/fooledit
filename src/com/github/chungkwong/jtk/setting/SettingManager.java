@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.setting;
+import com.github.chungkwong.json.*;
 import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.util.*;
@@ -23,6 +24,7 @@ import java.nio.charset.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.util.*;
 /**
@@ -69,7 +71,7 @@ public class SettingManager{
 	public static void registerSettingType(String type,StringConverter converter){
 		CONVERTORS.put(type,converter);
 	}
-	public static void registerSettingEditor(String type,SettingEditorFactory editorFactory){
+	public static void registerSettingEditorFactory(String type,SettingEditorFactory editorFactory){
 		EDITORS.put(type,editorFactory);
 	}
 	public static class Group{
@@ -79,23 +81,43 @@ public class SettingManager{
 		private final Cache<Map<String,OptionDescriptor>> meta;
 		Group(String id){
 			this.id=id;
+			this.meta=new Cache<>(()->{
+				try{
+					JSONObject json=(JSONObject)JSONParser.parse(new InputStreamReader(new FileInputStream(getFile(id+".json")),StandardCharsets.UTF_8));
+					return json.getMembers().entrySet().stream().collect(Collectors.toMap((e)->((JSONString)e.getKey()).getValue(),(e)->OptionDescriptor.fromJSONObject((JSONObject)e.getValue())));
+				}catch(IOException|SyntaxException ex){
+					Logger.getGlobal().log(Level.SEVERE,null,ex);
+					return Collections.emptyMap();
+				}
+			});
 			try{
 				File f=getFile(id+".properties");
 				Properties properties=new Properties();
 				properties.load(new InputStreamReader(new FileInputStream(f),StandardCharsets.UTF_8));
-				properties.forEach((key,value)->settings.put(key.toString(),value.toString()));
+				properties.forEach((key,value)->settings.put(key.toString(),CONVERTORS.get(getType(key.toString())).fromString(value.toString())));
 			}catch(IOException ex){
 				Logger.getGlobal().log(Level.SEVERE,"A new group is created",ex);
 			}
-			this.meta=new Cache<>(()->{
-				return OptionDescriptor.decode(getFile(id+".properties"));
-			});
 		}
 		public boolean isModified(){
 			return modified;
 		}
-		public Object get(String key,String def){
-			return settings.getOrDefault(key,def);
+		public Object get(String key){
+			if(settings.containsKey(key))
+				return settings.get(key);
+			else{
+				OptionDescriptor metaData=getMetaData(key);
+				return metaData!=null?CONVERTORS.get(metaData.getType()).fromString(metaData.getDefaultValue()):null;
+			}
+		}
+		public Node getEditor(String key){
+			return EDITORS.get(getType(key)).getEditor(key,this);
+		}
+		public String getType(String key){
+			return Optional.ofNullable(getMetaData(key)).map(OptionDescriptor::getType).orElse(null);
+		}
+		public OptionDescriptor getMetaData(String key){
+			return meta.get().get(key);
 		}
 		public Object put(String key,Object value){
 			modified=true;
@@ -104,15 +126,12 @@ public class SettingManager{
 		public Set<String> keys(){
 			return settings.keySet();
 		}
-		/*public Map<String,OptionDescriptor> getDescriptors(){
-
-		}*/
 		public void store(){
 			try{
 				File f=getFile(id+".properties");
 				f.getParentFile().mkdirs();
 				Properties properties=new Properties();
-				properties.putAll(settings);
+				settings.entrySet().forEach((e)->properties.put(e.getKey(),CONVERTORS.get(getType(e.getKey())).toString(e.getValue())));
 				properties.store(new OutputStreamWriter(new FileOutputStream(f),StandardCharsets.UTF_8),null);
 				modified=false;
 			}catch(IOException ex){
@@ -121,12 +140,18 @@ public class SettingManager{
 		}
 	}
 	static{
-		EDITORS.put("string",(p)->{
+		EDITORS.put("string",(key,grp)->{
 			TextArea node=new TextArea();
-			node.textProperty().bindBidirectional(p,CONVERTORS.get("string"));
+			node.setText(grp.get(key).toString());
+			node.textProperty().addListener((e,o,n)->{
+				try{
+					grp.put(key,CONVERTORS.get(grp.getType(key)).fromString(n));
+				}catch(Exception ex){
+				}
+			});
 			return node;
 		});
-		CONVERTORS.put("string",new StringConverter() {
+		StringConverter stdConvertor=new StringConverter() {
 			@Override
 			public String toString(Object t){
 				return t.toString();
@@ -135,7 +160,9 @@ public class SettingManager{
 			public Object fromString(String string){
 				return string;
 			}
-		});
+		};
+		CONVERTORS.put(null,stdConvertor);
+		CONVERTORS.put("string",stdConvertor);
 		EventManager.addEventListener(EventManager.SHUTDOWN,()->sync());
 	}
 	public static void main(String[] args){

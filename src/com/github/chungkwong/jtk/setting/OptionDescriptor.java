@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.setting;
-import java.io.*;
+import com.github.chungkwong.json.*;
+import com.github.chungkwong.jtk.api.*;
 import java.util.*;
 /**
  *
@@ -23,8 +24,8 @@ import java.util.*;
  */
 public class OptionDescriptor{
 	private final String shortDescription,longDescription,type;
-	private final Object defaultValue;
-	public OptionDescriptor(String shortDescription,String longDescription,String type,Object defaultValue){
+	private final String defaultValue;
+	public OptionDescriptor(String shortDescription,String longDescription,String type,String defaultValue){
 		this.shortDescription=shortDescription;
 		this.longDescription=longDescription;
 		this.type=type;
@@ -39,12 +40,28 @@ public class OptionDescriptor{
 	public String getType(){
 		return type;
 	}
-	public static void encode(Map<String,OptionDescriptor> data,File out){
-
+	public String getDefaultValue(){
+		return defaultValue;
 	}
-	public static Map<String,OptionDescriptor> decode(File in){
-		HashMap<String,OptionDescriptor> data=new HashMap<>();
-
-		return data;
+	private static final JSONString SHORT_DESCRIPTION=new JSONString("short_description");
+	private static final JSONString LONG_DESCRIPTION=new JSONString("long_description");
+	private static final JSONString TYPE=new JSONString("type");
+	private static final JSONString DEFAULT=new JSONString("default_value");
+	private JSONObject toJSONObject(){
+		return new JSONObject(Helper.hashMap(SHORT_DESCRIPTION,new JSONString(shortDescription),
+				LONG_DESCRIPTION,new JSONString(longDescription),
+				TYPE,new JSONString(type),
+				DEFAULT,new JSONString(defaultValue)));
+	}
+	static OptionDescriptor fromJSONObject(JSONObject obj){
+		Map<JSONStuff,JSONStuff> table=obj.getMembers();
+		return new OptionDescriptor(table.get(SHORT_DESCRIPTION).toString(),
+				table.get(LONG_DESCRIPTION).toString(),
+				table.get(TYPE).toString(),
+				table.get(DEFAULT).toString());
+	}
+	@Override
+	public String toString(){
+		return toJSONObject().toString();
 	}
 }
