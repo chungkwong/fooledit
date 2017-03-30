@@ -18,6 +18,7 @@ package com.github.chungkwong.jtk.setting;
 import javafx.application.*;
 import javafx.scene.*;
 import javafx.stage.*;
+import javafx.util.converter.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -29,9 +30,12 @@ public class PreferenceEditorTest extends Application{
 		stage.show();
 	}
 	public static void main(String[] args){
+		SettingManager.registerSettingType("integer",new IntegerStringConverter());
 		SettingManager.getOrCreate("com");
 		SettingManager.getOrCreate("com.github.chungkwong");
 		SettingManager.getOrCreate("xyz.hh");
+		SettingManager.getOrCreate("xyz.pp");
+
 		launch(args);
 	}
 }

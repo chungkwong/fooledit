@@ -42,21 +42,32 @@ public class PreferenceEditor extends BorderPane{
 					return new ReadOnlyStringWrapper(((PreferenceEditor.PreferenceBean)p.getValue().getValue()).getKey());
 			}
 		});
-		TreeTableColumn<Object,Object> value=new TreeTableColumn<>("VALUE");
+		TreeTableColumn<Object,PreferenceBean> value=new TreeTableColumn<>("VALUE");
 		value.setEditable(true);
 		value.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
-		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, Object>,ObservableValue<Object>>(){
+		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, PreferenceBean>,ObservableValue<PreferenceBean>>(){
 			@Override
-			public ObservableValue<Object> call(TreeTableColumn.CellDataFeatures<Object,Object> p){
+			public ObservableValue<PreferenceBean> call(TreeTableColumn.CellDataFeatures<Object,PreferenceBean> p){
 				if(p.getValue().getValue() instanceof String)
 					return new ReadOnlyObjectWrapper(null);
 				else
-					return new ReadOnlyObjectWrapper(((PreferenceEditor.PreferenceBean)p.getValue().getValue()).getValue());
+					return new ReadOnlyObjectWrapper(((PreferenceEditor.PreferenceBean)p.getValue().getValue()));
 			}
 		});
 		value.setCellFactory((p)->new ValueCell());
 		tree.getColumns().addAll(key,value);
 		setCenter(tree);
+		Label label=new Label();
+		label.setWrapText(true);
+		tree.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
+			if(n.getValue() instanceof PreferenceBean){
+				PreferenceBean bean=(PreferenceBean)n.getValue();
+				OptionDescriptor meta=bean.getGroup().getMetaData(bean.getKey());
+				label.setText(meta!=null?meta.getLongDescription():"");
+			}
+		});
+
+		setBottom(label);
 	}
 	private static TreeItem<Object> createTreeNode(String root){
 		return new LazyTreeItem<>(()->{
@@ -80,24 +91,24 @@ public class PreferenceEditor extends BorderPane{
 		public String getKey(){
 			return key;
 		}
-		public Object getValue(){
-			return grp.get(key);
+		public SettingManager.Group getGroup(){
+			return grp;
 		}
 		public void setValue(String value){
 			grp.put(key,value);
 		}
 	}
-	private static class ValueCell extends TreeTableCell<Object,Object>{
+	private static class ValueCell extends TreeTableCell<Object,PreferenceBean>{
 		public ValueCell(){
 		}
 		@Override
-		protected void updateItem(Object item,boolean empty){
+		protected void updateItem(PreferenceBean item,boolean empty){
 			super.updateItem(item,empty);
 			if(empty||item==null){
 				setText(null);
 				setGraphic(null);
 			}else{
-				setGraphic(new TextField(item.toString()));
+				setGraphic(item.getGroup().getEditor(item.getKey()));
 			}
 		}
 	}

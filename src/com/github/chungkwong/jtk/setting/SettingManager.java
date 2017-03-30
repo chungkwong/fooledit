@@ -77,6 +77,7 @@ public class SettingManager{
 	public static class Group{
 		private boolean modified=false;
 		private final Map<String,Object> settings=new HashMap<>();
+		private final Map<String,String> types=new HashMap<>();
 		private final String id;
 		private final Cache<Map<String,OptionDescriptor>> meta;
 		Group(String id){
@@ -90,6 +91,10 @@ public class SettingManager{
 					return Collections.emptyMap();
 				}
 			});
+			meta.get().forEach((k,d)->{
+				settings.put(k,CONVERTORS.get(d.getType()).fromString(d.getDefaultValue()));
+				types.put(k,d.getType());
+			});
 			try{
 				File f=getFile(id+".properties");
 				Properties properties=new Properties();
@@ -102,19 +107,14 @@ public class SettingManager{
 		public boolean isModified(){
 			return modified;
 		}
-		public Object get(String key){
-			if(settings.containsKey(key))
-				return settings.get(key);
-			else{
-				OptionDescriptor metaData=getMetaData(key);
-				return metaData!=null?CONVERTORS.get(metaData.getType()).fromString(metaData.getDefaultValue()):null;
-			}
+		public Object get(String key,Object def){
+			return settings.getOrDefault(key,def);
 		}
 		public Node getEditor(String key){
-			return EDITORS.get(getType(key)).getEditor(key,this);
+			return EDITORS.getOrDefault(getType(key),DEFAULT_EDITOR_FACTORY).getEditor(key,this);
 		}
 		public String getType(String key){
-			return Optional.ofNullable(getMetaData(key)).map(OptionDescriptor::getType).orElse(null);
+			return types.get(key);
 		}
 		public OptionDescriptor getMetaData(String key){
 			return meta.get().get(key);
@@ -140,17 +140,6 @@ public class SettingManager{
 		}
 	}
 	static{
-		EDITORS.put("string",(key,grp)->{
-			TextArea node=new TextArea();
-			node.setText(grp.get(key).toString());
-			node.textProperty().addListener((e,o,n)->{
-				try{
-					grp.put(key,CONVERTORS.get(grp.getType(key)).fromString(n));
-				}catch(Exception ex){
-				}
-			});
-			return node;
-		});
 		StringConverter stdConvertor=new StringConverter() {
 			@Override
 			public String toString(Object t){
@@ -163,8 +152,39 @@ public class SettingManager{
 		};
 		CONVERTORS.put(null,stdConvertor);
 		CONVERTORS.put("string",stdConvertor);
+		CONVERTORS.put("boolean",new StringConverter() {
+			@Override
+			public String toString(Object t){
+				return ((Boolean)t).toString();
+			}
+			@Override
+			public Boolean fromString(String string){
+				return Boolean.parseBoolean(string);
+			}
+		});
+		EDITORS.put("boolean",(key,grp)->{
+			CheckBox node=new CheckBox();
+			node.setSelected((Boolean)grp.get(key,false));
+			node.selectedProperty().addListener((e,o,n)->{
+				grp.put(key,n);
+			});
+			return node;
+		});
 		EventManager.addEventListener(EventManager.SHUTDOWN,()->sync());
 	}
+	private static final SettingEditorFactory DEFAULT_EDITOR_FACTORY=(key,grp)->{
+		TextArea node=new TextArea();
+		String text=CONVERTORS.get(grp.getType(key)).toString(grp.get(key,""));
+		node.setText(text);
+		node.setPrefRowCount(node.getParagraphs().size());
+		node.textProperty().addListener((e,o,n)->{
+			try{
+				grp.put(key,CONVERTORS.get(grp.getType(key)).fromString(n));
+			}catch(Exception ex){
+			}
+		});
+		return node;
+	};
 	public static void main(String[] args){
 		//load("recent");
 		//getOrCreate("recent").put("78"," ");

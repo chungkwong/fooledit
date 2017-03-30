@@ -55,10 +55,10 @@ public class OptionDescriptor{
 	}
 	static OptionDescriptor fromJSONObject(JSONObject obj){
 		Map<JSONStuff,JSONStuff> table=obj.getMembers();
-		return new OptionDescriptor(table.get(SHORT_DESCRIPTION).toString(),
-				table.get(LONG_DESCRIPTION).toString(),
-				table.get(TYPE).toString(),
-				table.get(DEFAULT).toString());
+		return new OptionDescriptor(((JSONString)table.get(SHORT_DESCRIPTION)).getValue(),
+				((JSONString)table.get(LONG_DESCRIPTION)).getValue(),
+				((JSONString)table.get(TYPE)).getValue(),
+				((JSONString)table.get(DEFAULT)).getValue());
 	}
 	@Override
 	public String toString(){
