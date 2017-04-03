@@ -23,9 +23,13 @@ import com.github.chungkwong.jschememin.lib.*;
  */
 public class ScriptAPI extends NativeLibrary{
 	public static void main(String[] args){
+
 	}
 	@Override
 	protected void init(Library lbr){
-
+		addNativeProcedure("",null);
+	}
+	static{
+		LibraryManager.addLibrary(new ScriptAPI().getLibrary());
 	}
 }

@@ -185,7 +185,7 @@ public class Main extends Application{
 		PATH.mkdir();
 		installFile("init.scm");
 		installFile("keymap.xml");
-		installFile("menu.xml");
+		installFile("menu.json");
 		installFile("module.xml");
 		installFile("suffix.xml");
 		installFile("locale/base.properties");

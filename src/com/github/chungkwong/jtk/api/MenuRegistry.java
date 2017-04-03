@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
-import com.github.chungkwong.jtk.model.*;
-import java.io.*;
-import java.util.logging.*;
-import java.util.prefs.*;
+import com.github.chungkwong.json.*;
+import java.util.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
 /**
@@ -26,52 +24,40 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MenuRegistry{
-	private final ObservableList<Menu> menus;
+	private final MenuBar bar;
 	private final CommandRegistry commands;
-	private final Preferences pref=Preferences.userNodeForPackage(MenuRegistry.class).node("menu");
-	public MenuRegistry(ObservableList<Menu> menus,CommandRegistry commands){
-		this.menus=menus;
+	public MenuRegistry(JSONObject json,CommandRegistry commands){
 		this.commands=commands;
-		try{
-			pref.clear();//FIXME:Comment it out after debug
-		}catch(BackingStoreException ex){
-			Logger.getLogger(MenuRegistry.class.getName()).log(Level.SEVERE,null,ex);
-		}
-		String root=pref.get("ROOT",null);
-		if(root==null)
-			try{
-				Preferences.importPreferences(MenuRegistry.class.getResourceAsStream("/com/github/chungkwong/jtk/default/menu.xml"));
-				root=pref.get("ROOT","");
-			}catch(IOException|InvalidPreferencesFormatException ex){
-				Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
-				root="";
-			}
-		for(String name:root.split(":")){
-			menus.add(createMenu(name));
-		}
+		this.bar=new MenuBar();
+		List<JSONStuff> menus=getChildren(json);
+		bar.getMenus().setAll(menus.stream().map((e)->makeMenu((JSONObject)e)).toArray(Menu[]::new));
 	}
-	private Menu createMenu(String name){
-		String sub=pref.get(name,null);
-		Menu menu=new Menu(MessageRegistry.getString(name));
-		if(sub!=null){
-			ObservableList<MenuItem> items=menu.getItems();
-			for(String item:sub.split(":")){
-				if(item.isEmpty()){
-					items.add(new SeparatorMenuItem());
-				}else if(pref.get(item,null)!=null){
-					items.add(createMenu(item));
-				}else{
-					Command command=commands.get(item);
-					if(command==null){
-						Logger.getGlobal().log(Level.INFO,"Unknown command: {0}",item);
-					}else{
-						MenuItem mi=new MenuItem(command.getDisplayName());
-						mi.setOnAction((e)->command.run());
-						items.add(mi);
-					}
-				}
+	private Menu makeMenu(JSONObject json){
+		Menu menu=new Menu(getName(json));
+		List<JSONStuff> children=getChildren(json);
+		ObservableList<MenuItem> items=menu.getItems();
+		for(JSONStuff child:children){
+			Map<JSONStuff,JSONStuff> props=((JSONObject)child).getMembers();
+			if(!props.containsKey(NAME)){
+				items.add(new SeparatorMenuItem());
+			}else if(props.containsKey(COMMAND)){
+				String commandName=((JSONString)props.get(COMMAND)).getValue();
+				MenuItem mi=new MenuItem(getName((JSONObject)child));
+				mi.setOnAction((e)->commands.get(commandName).run());
+				items.add(mi);
+			}else{
+				items.add(makeMenu((JSONObject)child));
 			}
 		}
 		return menu;
 	}
+	private static String getName(JSONObject obj){
+		return MessageRegistry.getString(((JSONString)obj.getMembers().get(NAME)).getValue());
+	}
+	private List<JSONStuff> getChildren(JSONObject obj){
+		return ((JSONArray)obj.getMembers().get(CHILDREN)).getElements();
+	}
+	private static final JSONString CHILDREN=new JSONString("children");
+	private static final JSONString NAME=new JSONString("name");
+	private static final JSONString COMMAND=new JSONString("command");
 }
