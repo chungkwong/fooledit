@@ -16,7 +16,9 @@
  */
 package com.github.chungkwong.jtk.api;
 import com.github.chungkwong.json.*;
+import com.github.chungkwong.jtk.control.*;
 import java.util.*;
+import java.util.function.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
 /**
@@ -26,6 +28,7 @@ import javafx.scene.control.*;
 public class MenuRegistry{
 	private final MenuBar bar;
 	private final CommandRegistry commands;
+	private final Map<String,Consumer<ObservableList<MenuItem>>> dynamic=new HashMap<>();
 	public MenuRegistry(JSONObject json,CommandRegistry commands){
 		this.commands=commands;
 		this.bar=new MenuBar();
@@ -33,23 +36,34 @@ public class MenuRegistry{
 		bar.getMenus().setAll(menus.stream().map((e)->makeMenu((JSONObject)e)).toArray(Menu[]::new));
 	}
 	private Menu makeMenu(JSONObject json){
-		Menu menu=new Menu(getName(json));
-		List<JSONStuff> children=getChildren(json);
-		ObservableList<MenuItem> items=menu.getItems();
-		for(JSONStuff child:children){
-			Map<JSONStuff,JSONStuff> props=((JSONObject)child).getMembers();
-			if(!props.containsKey(NAME)){
-				items.add(new SeparatorMenuItem());
-			}else if(props.containsKey(COMMAND)){
-				String commandName=((JSONString)props.get(COMMAND)).getValue();
-				MenuItem mi=new MenuItem(getName((JSONObject)child));
-				mi.setOnAction((e)->commands.get(commandName).run());
-				items.add(mi);
-			}else{
-				items.add(makeMenu((JSONObject)child));
+		if(json.getMembers().containsKey(CHILDREN)){
+			Menu menu=new Menu(getName(json));
+			List<JSONStuff> children=getChildren(json);
+			ObservableList<MenuItem> items=menu.getItems();
+			for(JSONStuff child:children){
+				Map<JSONStuff,JSONStuff> props=((JSONObject)child).getMembers();
+				if(!props.containsKey(NAME)){
+					items.add(new SeparatorMenuItem());
+				}else if(props.containsKey(COMMAND)){
+					String commandName=((JSONString)props.get(COMMAND)).getValue();
+					MenuItem mi=new MenuItem(getName((JSONObject)child));
+					mi.setOnAction((e)->commands.get(commandName).run());
+					items.add(mi);
+				}else{
+					items.add(makeMenu((JSONObject)child));
+				}
 			}
+			return menu;
+		}else{
+			String id=((JSONString)json.getMembers().get(PROVIDER)).getValue();
+			return new OnDemandMenu(getName(json),(items)->dynamic.get(id).accept(items));
 		}
-		return menu;
+	}
+	public MenuBar getMenuBar(){
+		return bar;
+	}
+	public void registerDynamicMenu(String id,Consumer<ObservableList<MenuItem>> provider){
+		dynamic.put(id,provider);
 	}
 	private static String getName(JSONObject obj){
 		return MessageRegistry.getString(((JSONString)obj.getMembers().get(NAME)).getValue());
@@ -60,4 +74,5 @@ public class MenuRegistry{
 	private static final JSONString CHILDREN=new JSONString("children");
 	private static final JSONString NAME=new JSONString("name");
 	private static final JSONString COMMAND=new JSONString("command");
+	private static final JSONString PROVIDER=new JSONString("provider");
 }

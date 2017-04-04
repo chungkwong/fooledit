@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.jtk;
 
+import com.github.chungkwong.json.*;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.command.*;
 import com.github.chungkwong.jtk.control.*;
@@ -23,10 +24,13 @@ import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.example.tool.*;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
+import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.logging.*;
 import javafx.application.*;
+import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
@@ -57,8 +61,11 @@ public class Main extends Application{
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
 		}
 		Logger.getGlobal().addHandler(notifier);
-		MenuBar bar=new MenuBar();
 		input=new MiniBuffer(this);
+		JSONObject menus=loadJSON("menu.json");
+		menuRegistry=new MenuRegistry(menus,commandRegistry);
+		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
+		MenuBar bar=menuRegistry.getMenuBar();
 		HBox commander=new HBox(bar,input);
 		HBox.setHgrow(bar,Priority.NEVER);
 		HBox.setHgrow(input,Priority.ALWAYS);
@@ -70,10 +77,8 @@ public class Main extends Application{
 		scene=new Scene(root);
 		//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
 		registerStandardCommand();
-		menuRegistry=new MenuRegistry(bar.getMenus(),commandRegistry);
 		keymapRegistry=new KeymapRegistry(scene,commandRegistry);
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
-		bar.getMenus().add(getBufferMenu());
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
 	private void registerStandardCommand(){
@@ -93,8 +98,8 @@ public class Main extends Application{
 		commandRegistry.put("next_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(dataObjectRegistry.getNextDataObject(getCurrentDataObject()))));
 		commandRegistry.put("previous_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(dataObjectRegistry.getPreviousDataObject(getCurrentDataObject()))));
 	}
-	private OnDemandMenu getBufferMenu(){
-		return new OnDemandMenu(MessageRegistry.getString("BUFFERS"),(l)->{
+	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
+		return (l)->{
 			for(String name:dataObjectRegistry.getDataObjectNames()){
 				MenuItem item=new MenuItem(name);
 				item.setOnAction((e)->currentWorkSheet().setCenter(getDefaultEditor(dataObjectRegistry.getDataObject(name))));
@@ -110,7 +115,7 @@ public class Main extends Application{
 			l.add(new SeparatorMenuItem());
 			l.add(createCommandMenuItem("next_buffer"));
 			l.add(createCommandMenuItem("previous_buffer"));
-		});
+		};
 	}
 	private MenuItem createCommandMenuItem(String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase()));
@@ -186,8 +191,8 @@ public class Main extends Application{
 		installFile("init.scm");
 		installFile("keymap.xml");
 		installFile("menu.json");
-		installFile("module.xml");
-		installFile("suffix.xml");
+		installFile("module.json");
+		installFile("suffix.json");
 		installFile("locale/base.properties");
 		installFile("locale/base_zh_CN.properties");
 	}
@@ -200,6 +205,16 @@ public class Main extends Application{
 		}catch(IOException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
+	}
+	public static JSONObject loadJSON(String name){
+		JSONObject obj;
+		try{
+			obj=(JSONObject)JSONParser.parse(new InputStreamReader(new FileInputStream(new File(getPath(),name)),StandardCharsets.UTF_8));
+		}catch(IOException|SyntaxException ex){
+			obj=new JSONObject(Collections.emptyMap());
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+		return obj;
 	}
 	/**
 	 * @param args the command line arguments

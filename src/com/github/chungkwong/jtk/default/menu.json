@@ -28,7 +28,8 @@
 			]
 		},
 		{
-			"name":"BUFFER"
+			"name":"BUFFERS",
+			"provider":"buffer"
 		},
 		{
 			"name":"HELP",

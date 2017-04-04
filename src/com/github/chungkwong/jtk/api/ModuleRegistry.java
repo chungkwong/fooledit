@@ -56,7 +56,7 @@ public class ModuleRegistry{
 		return installed;
 	}
 	public static List<ModuleDescriptor> listDownloadable(){
-		String url=Preferences.userNodeForPackage(ModuleRegistry.class).node("module").get("repository","");
+		String url=((JSONString)Main.loadJSON("module.json").getMembers().get(new JSONString("repository"))).getValue();
 		try(BufferedReader in=new BufferedReader(new InputStreamReader(new URL(url).openStream(),StandardCharsets.UTF_8))){
 			return ((JSONArray)JSONParser.parse(in)).getElements().stream().
 					map((e)->ModuleDescriptor.fromJSON((JSONObject)e)).collect(Collectors.toList());

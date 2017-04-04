@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.setting;
+import com.github.chungkwong.json.*;
 import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.api.*;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+import java.util.stream.*;
 import javax.xml.bind.*;
 /**
  *
@@ -64,6 +66,24 @@ public class PersistenceStatusManager{
 		f.getParentFile().mkdirs();
 		return f;
 	}
+	private static JSONStuff toJSONStuff(Object obj){
+		if(obj instanceof String){
+			return new JSONString((String)obj);
+		}else if(obj instanceof Boolean){
+			return ((Boolean)obj)?JSONBoolean.TRUE:JSONBoolean.FALSE;
+		}else if(obj instanceof Number){
+			return new JSONNumber((Number)obj);
+		}else if(obj instanceof List){
+			return new JSONArray(((List<JSONStuff>)obj).stream().map(PersistenceStatusManager::toJSONStuff).collect(Collectors.toList()));
+		}else if(obj instanceof Map){
+			return new JSONObject(((Map<JSONStuff,JSONStuff>)obj).entrySet().stream().
+					collect(Collectors.toMap(PersistenceStatusManager::toJSONStuff,PersistenceStatusManager::toJSONStuff)));
+		}else if(obj==null){
+			return JSONNull.INSTANCE;
+		}else
+			throw new RuntimeException();
+	}
+
 	static{
 		EventManager.addEventListener(EventManager.SHUTDOWN,()->sync());
 	}
