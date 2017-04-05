@@ -57,7 +57,7 @@ public class FileCommands{
 	public void save(){
 		DataObject data=(DataObject)main.currentWorkSheet().getChildren().get(0).getUserData();
 		try{
-			File file=new File(new URI(main.getDataObjectRegistry().getURL(data)));
+			File file=new File(new URI(DataObjectRegistry.getURL(data)));
 			data.getDataObjectType().writeTo(data,new FileOutputStream(file));
 		}catch(Exception ex){
 			Logger.getLogger(FileCommands.class.getName()).log(Level.SEVERE,null,ex);

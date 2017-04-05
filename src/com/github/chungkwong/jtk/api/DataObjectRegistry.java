@@ -27,24 +27,24 @@ public class DataObjectRegistry{
 	public static final String DEFAULT_NAME="DEFAULT_NAME";
 	public static final String BUFFER_NAME="BUFFER_NAME";
 	private static final String UNTITLED=MessageRegistry.getString("UNTITLED");
-	private final TreeMap<String,DataObject> objects=new TreeMap<>();
-	private final IdentityHashMap<DataObject,Map<Object,Object>> properties=new IdentityHashMap<>();
-	public DataObject getDataObject(String name){
+	private static final TreeMap<String,DataObject> objects=new TreeMap<>();
+	private static final IdentityHashMap<DataObject,Map<Object,Object>> properties=new IdentityHashMap<>();
+	public static DataObject getDataObject(String name){
 		return objects.get(name);
 	}
-	public Set<String> getDataObjectNames(){
+	public static Set<String> getDataObjectNames(){
 		return objects.keySet();
 	}
-	public Object getProperties(Object key,DataObject data){
+	public static Object getProperties(Object key,DataObject data){
 		return properties.get(data).get(key);
 	}
-	public String getURL(DataObject data){
+	public static String getURL(DataObject data){
 		return (String)properties.get(data).get(URI);
 	}
-	public String getMIME(DataObject data){
+	public static String getMIME(DataObject data){
 		return (String)properties.get(data).get(MIME);
 	}
-	public void addDataObject(DataObject data,Map<Object,Object> prop){
+	public static void addDataObject(DataObject data,Map<Object,Object> prop){
 		String name=(String)prop.getOrDefault(DEFAULT_NAME,UNTITLED);
 		if(objects.containsKey(name)){
 			for(int i=1;;i++){
@@ -59,14 +59,14 @@ public class DataObjectRegistry{
 		objects.put(name,data);
 		properties.put(data,prop);
 	}
-	public DataObject getNextDataObject(DataObject curr){
+	public static DataObject getNextDataObject(DataObject curr){
 		Map.Entry<String,DataObject> next=objects.higherEntry((String)properties.get(curr).get(BUFFER_NAME));
 		if(next==null)
 			return objects.firstEntry().getValue();
 		else
 			return next.getValue();
 	}
-	public DataObject getPreviousDataObject(DataObject curr){
+	public static DataObject getPreviousDataObject(DataObject curr){
 		Map.Entry<String,DataObject> prev=objects.lowerEntry((String)properties.get(curr).get(BUFFER_NAME));
 		if(prev==null)
 			return objects.lastEntry().getValue();

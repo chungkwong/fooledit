@@ -16,6 +16,8 @@
  */
 package com.github.chungkwong.jtk.api;
 import java.io.*;
+import java.nio.charset.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.*;
 /**
@@ -31,5 +33,11 @@ public class Helper{
 	}
 	public static String readText(Reader in){
 		return new BufferedReader(in).lines().collect(Collectors.joining("\n"));
+	}
+	public static String readText(File file) throws IOException{
+		return Files.readAllLines(file.toPath()).stream().collect(Collectors.joining("\n"));
+	}
+	public static void writeText(String text,File file) throws IOException{
+		Files.write(file.toPath(),text.getBytes(StandardCharsets.UTF_8));
 	}
 }

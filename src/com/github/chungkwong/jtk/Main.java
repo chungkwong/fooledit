@@ -46,7 +46,6 @@ public class Main extends Application{
 	private final MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
 	private final Notifier notifier;
-	private final DataObjectRegistry dataObjectRegistry=new DataObjectRegistry();
 	private final BorderPane root;
 	private final MiniBuffer input;
 	private final Scene scene;
@@ -70,7 +69,7 @@ public class Main extends Application{
 		HBox.setHgrow(bar,Priority.NEVER);
 		HBox.setHgrow(input,Priority.ALWAYS);
 		TextObject welcome=new TextObject("Welcome");
-		dataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Welcome"));
+		DataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Welcome"));
 		root=new BorderPane(new WorkSheet(getDefaultEditor(welcome)));
 		root.setTop(commander);
 		root.setBottom(notifier.getStatusBar());
@@ -95,14 +94,14 @@ public class Main extends Application{
 		commandRegistry.put("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentNode()));
 		commandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
 		commandRegistry.put("command",()->input.requestFocus());
-		commandRegistry.put("next_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(dataObjectRegistry.getNextDataObject(getCurrentDataObject()))));
-		commandRegistry.put("previous_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(dataObjectRegistry.getPreviousDataObject(getCurrentDataObject()))));
+		commandRegistry.put("next_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(DataObjectRegistry.getNextDataObject(getCurrentDataObject()))));
+		commandRegistry.put("previous_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject()))));
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
-			for(String name:dataObjectRegistry.getDataObjectNames()){
+			for(String name:DataObjectRegistry.getDataObjectNames()){
 				MenuItem item=new MenuItem(name);
-				item.setOnAction((e)->currentWorkSheet().setCenter(getDefaultEditor(dataObjectRegistry.getDataObject(name))));
+				item.setOnAction((e)->currentWorkSheet().setCenter(getDefaultEditor(DataObjectRegistry.getDataObject(name))));
 				l.add(item);
 			}
 			l.add(new SeparatorMenuItem());
@@ -130,7 +129,7 @@ public class Main extends Application{
 			currentNode=((WorkSheet)node).getCenter();
 	}
 	public void addAndShow(DataObject data,HashMap<Object,Object> prop){
-		getDataObjectRegistry().addDataObject(data,prop);
+		DataObjectRegistry.addDataObject(data,prop);
 		Node editor=getDefaultEditor(data);
 		currentWorkSheet().keepOnly(editor);
 	}
@@ -156,9 +155,6 @@ public class Main extends Application{
 	}
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
-	}
-	public DataObjectRegistry getDataObjectRegistry(){
-		return dataObjectRegistry;
 	}
 	public MiniBuffer getMiniBuffer(){
 		return input;
