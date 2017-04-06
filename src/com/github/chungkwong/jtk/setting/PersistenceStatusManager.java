@@ -20,8 +20,8 @@ import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.api.*;
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.logging.*;
-import java.util.stream.*;
 import javafx.util.*;
 /**
  *
@@ -34,9 +34,6 @@ public class PersistenceStatusManager{
 		warnExists(key);
 		return load(key);
 	}
-	public static boolean ensureLoaded(String key){
-		return objects.containsKey(key)||load(key);
-	}
 	public static boolean load(String key){
 		try{
 			objects.put(key,getConvertor(key).fromString(Helper.readText(getFile(key))));
@@ -46,9 +43,11 @@ public class PersistenceStatusManager{
 		}
 	}
 	public static boolean containsKey(String key){
-		return objects.containsKey(key);
+		return objects.containsKey(key)||load(key);
 	}
-	public static Object get(String key){
+	public static Object getOrDefault(String key,Supplier<Object> def){
+		if(!containsKey(key))
+			objects.put(key,def.get());
 		return objects.get(key);
 	}
 	public static Object put(String key,Object obj){
@@ -61,12 +60,12 @@ public class PersistenceStatusManager{
 	private static final StringConverter DEFAULT_CONVERTER=new StringConverter() {
 		@Override
 		public String toString(Object t){
-			return toJSONStuff(t).toString();
+			return JSONConvertor.toJSON(t);
 		}
 		@Override
 		public Object fromString(String string){
 			try{
-				return fromJSONStuff(JSONParser.parse(string));
+				return JSONConvertor.fromJSON(string);
 			}catch(IOException|SyntaxException ex){
 				throw new RuntimeException(ex);
 			}
@@ -93,40 +92,6 @@ public class PersistenceStatusManager{
 		File f=new File(DIRECTORY,key);
 		f.getParentFile().mkdirs();
 		return f;
-	}
-	private static JSONStuff toJSONStuff(Object obj){
-		if(obj instanceof String){
-			return new JSONString((String)obj);
-		}else if(obj instanceof Boolean){
-			return ((Boolean)obj)?JSONBoolean.TRUE:JSONBoolean.FALSE;
-		}else if(obj instanceof Number){
-			return new JSONNumber((Number)obj);
-		}else if(obj instanceof List){
-			return new JSONArray(((List<JSONStuff>)obj).stream().map(PersistenceStatusManager::toJSONStuff).collect(Collectors.toList()));
-		}else if(obj instanceof Map){
-			return new JSONObject(((Map<JSONStuff,JSONStuff>)obj).entrySet().stream().
-					collect(Collectors.toMap((e)->toJSONStuff(e.getKey()),(e)->toJSONStuff(e.getValue()))));
-		}else if(obj==null){
-			return JSONNull.INSTANCE;
-		}else
-			throw new RuntimeException();
-	}
-	private static Object fromJSONStuff(JSONStuff json){
-		if(json instanceof JSONString){
-			return ((JSONString)json).getValue();
-		}else if(json instanceof JSONBoolean){
-			return ((JSONBoolean)json).getValue();
-		}else if(json instanceof JSONNumber){
-			return ((JSONNumber)json).getValue();
-		}else if(json instanceof JSONArray){
-			return ((JSONArray)json).getElements().stream().map(PersistenceStatusManager::fromJSONStuff).collect(Collectors.toList());
-		}else if(json instanceof JSONObject){
-			return ((JSONObject)json).getMembers().entrySet().stream().
-					collect(Collectors.toMap((e)->fromJSONStuff(e.getKey()),(e)->fromJSONStuff(e.getValue())));
-		}else if(json instanceof JSONNull){
-			return null;
-		}else
-			throw new RuntimeException();
 	}
 	static{
 		EventManager.addEventListener(EventManager.SHUTDOWN,()->sync());

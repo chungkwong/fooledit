@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.jtk.api;
 import com.github.chungkwong.jtk.model.*;
+import com.github.chungkwong.jtk.setting.*;
 import java.util.*;
 /**
  *
@@ -27,15 +28,20 @@ public class DataObjectRegistry{
 	public static final String DEFAULT_NAME="DEFAULT_NAME";
 	public static final String BUFFER_NAME="BUFFER_NAME";
 	private static final String UNTITLED=MessageRegistry.getString("UNTITLED");
+	private static final String KEY="file_history.json";
+	private static final String LIMIT="limit";
+	private static final String ENTRIES="entries";
 	private static final TreeMap<String,DataObject> objects=new TreeMap<>();
-	private static final IdentityHashMap<DataObject,Map<Object,Object>> properties=new IdentityHashMap<>();
+	private static final IdentityHashMap<DataObject,Map<String,String>> properties=new IdentityHashMap<>();
+	private static final Map<String,Object> HISTORY=(Map<String,Object>)PersistenceStatusManager.getOrDefault(KEY,
+			()->Helper.hashMap(LIMIT,20,ENTRIES,new LinkedList<>()));
 	public static DataObject getDataObject(String name){
 		return objects.get(name);
 	}
 	public static Set<String> getDataObjectNames(){
 		return objects.keySet();
 	}
-	public static Object getProperties(Object key,DataObject data){
+	public static String getProperties(String key,DataObject data){
 		return properties.get(data).get(key);
 	}
 	public static String getURL(DataObject data){
@@ -44,7 +50,7 @@ public class DataObjectRegistry{
 	public static String getMIME(DataObject data){
 		return (String)properties.get(data).get(MIME);
 	}
-	public static void addDataObject(DataObject data,Map<Object,Object> prop){
+	public static void addDataObject(DataObject data,Map<String,String> prop){
 		String name=(String)prop.getOrDefault(DEFAULT_NAME,UNTITLED);
 		if(objects.containsKey(name)){
 			for(int i=1;;i++){
@@ -58,6 +64,10 @@ public class DataObjectRegistry{
 		prop.put(BUFFER_NAME,name);
 		objects.put(name,data);
 		properties.put(data,prop);
+		List entries=(List)HISTORY.get(ENTRIES);
+		entries.add(prop);
+		if(entries.size()>((Number)HISTORY.get(LIMIT)).intValue())
+			entries.remove(0);
 	}
 	public static DataObject getNextDataObject(DataObject curr){
 		Map.Entry<String,DataObject> next=objects.higherEntry((String)properties.get(curr).get(BUFFER_NAME));

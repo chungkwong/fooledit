@@ -128,7 +128,7 @@ public class Main extends Application{
 		if(node!=null)
 			currentNode=((WorkSheet)node).getCenter();
 	}
-	public void addAndShow(DataObject data,HashMap<Object,Object> prop){
+	public void addAndShow(DataObject data,HashMap<String,String> prop){
 		DataObjectRegistry.addDataObject(data,prop);
 		Node editor=getDefaultEditor(data);
 		currentWorkSheet().keepOnly(editor);

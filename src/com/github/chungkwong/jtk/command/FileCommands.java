@@ -66,7 +66,7 @@ public class FileCommands{
 	private boolean tryOpen(File f,DataObjectType type,String mime){
 		try(FileInputStream in=new FileInputStream(f)){
 			main.addAndShow(type.readFrom(in),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,f.getName(),
-					DataObjectRegistry.MIME,mime,DataObjectRegistry.URI,f.toURI()));
+					DataObjectRegistry.MIME,mime,DataObjectRegistry.URI,f.toURI().toString()));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return false;
