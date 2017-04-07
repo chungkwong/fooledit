@@ -38,13 +38,18 @@ public class FileCommands{
 		File file=fileChooser.showOpenDialog(null);
 		if(file==null)
 			return;
+		open(file);
+	}
+	public void open(File file){
 		String mime;
 		try{
 			mime=Files.probeContentType(file.toPath());
-			System.out.println(mime);
 		}catch(IOException ex){
 			mime=geussContentType(file);
 		}
+		open(file,mime);
+	}
+	public void open(File file,String mime){
 		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
 			if(tryOpen(file,type,mime))
 				return;

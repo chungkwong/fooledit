@@ -64,10 +64,26 @@ public class DataObjectRegistry{
 		prop.put(BUFFER_NAME,name);
 		objects.put(name,data);
 		properties.put(data,prop);
-		List entries=(List)HISTORY.get(ENTRIES);
-		entries.add(prop);
-		if(entries.size()>((Number)HISTORY.get(LIMIT)).intValue())
-			entries.remove(0);
+		addHistoryEntry(prop);
+	}
+	private static void addHistoryEntry(Map<String,String> prop){
+		if(prop.containsKey(URI)){
+			String uri=prop.get(URI);
+			List<Map<String,String>> list=getHistoryList();
+			Iterator<Map<String,String>> iter=list.iterator();
+			while(iter.hasNext()){
+				if(uri.equals(iter.next().get(URI))){
+					iter.remove();
+				}
+			}
+			Helper.addEntry(prop,getHistoryList(),getHistoryLimit());
+		}
+	}
+	public static int getHistoryLimit(){
+		return ((Number)HISTORY.get(LIMIT)).intValue();
+	}
+	public static List<Map<String,String>> getHistoryList(){
+		return (List)HISTORY.get(ENTRIES);
 	}
 	public static DataObject getNextDataObject(DataObject curr){
 		Map.Entry<String,DataObject> next=objects.higherEntry((String)properties.get(curr).get(BUFFER_NAME));

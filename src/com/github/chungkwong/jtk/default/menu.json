@@ -5,7 +5,8 @@
 			"children":[
 				{"name":"NEW","command":"new"},
 				{"name":"OPEN_FILE","command":"open-file"},
-				{"name":"SAVE","command":"save"}
+				{"name":"SAVE","command":"save"},
+				{"name":"FILE_HISTORY","provider":"file_history"}
 			]
 		},
 		{

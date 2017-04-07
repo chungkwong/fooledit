@@ -24,6 +24,7 @@ import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.example.tool.*;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
+import java.net.*;
 import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.*;
@@ -45,6 +46,7 @@ public class Main extends Application{
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
+	private final FileCommands fileCommands;
 	private final Notifier notifier;
 	private final BorderPane root;
 	private final MiniBuffer input;
@@ -64,6 +66,7 @@ public class Main extends Application{
 		JSONObject menus=loadJSON("menu.json");
 		menuRegistry=new MenuRegistry(menus,commandRegistry);
 		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
+		menuRegistry.registerDynamicMenu("file_history",getHistoryMenu());
 		MenuBar bar=menuRegistry.getMenuBar();
 		HBox commander=new HBox(bar,input);
 		HBox.setHgrow(bar,Priority.NEVER);
@@ -75,13 +78,13 @@ public class Main extends Application{
 		root.setBottom(notifier.getStatusBar());
 		scene=new Scene(root);
 		//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
+		this.fileCommands=new FileCommands(this);
 		registerStandardCommand();
 		keymapRegistry=new KeymapRegistry(scene,commandRegistry);
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
 	private void registerStandardCommand(){
-		FileCommands fileCommands=new FileCommands(this);
 		commandRegistry.put("new",()->fileCommands.create());
 		commandRegistry.put("open-file",()->fileCommands.open());
 		commandRegistry.put("save",()->fileCommands.save());
@@ -114,6 +117,26 @@ public class Main extends Application{
 			l.add(new SeparatorMenuItem());
 			l.add(createCommandMenuItem("next_buffer"));
 			l.add(createCommandMenuItem("previous_buffer"));
+		};
+	}
+	private Consumer<ObservableList<MenuItem>> getHistoryMenu(){
+		return (l)->{
+			for(Map<String,String> prop:DataObjectRegistry.getHistoryList()){
+				MenuItem item=new MenuItem(prop.get(DataObjectRegistry.BUFFER_NAME));
+				item.setOnAction((e)->{
+					try{
+						File file=new File(new URI(prop.get(DataObjectRegistry.URI)));
+						if(prop.containsKey(DataObjectRegistry.MIME)){
+							fileCommands.open(file,prop.get(DataObjectRegistry.MIME));
+						}else{
+							fileCommands.open(file);
+						}
+					}catch(URISyntaxException ex){
+						Logger.getGlobal().log(Level.SEVERE,null,ex);
+					}
+				});
+				l.add(item);
+			}
 		};
 	}
 	private MenuItem createCommandMenuItem(String name){

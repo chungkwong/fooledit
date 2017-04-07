@@ -40,4 +40,12 @@ public class Helper{
 	public static void writeText(String text,File file) throws IOException{
 		Files.write(file.toPath(),text.getBytes(StandardCharsets.UTF_8));
 	}
+	public static <T> void addEntry(T obj,List<T> list,int limit){
+		if(list.size()>=limit)
+			list.subList(limit-1,list.size()).clear();
+		list.add(0,obj);
+	}
+	public static <T> T getEntry(List<T> list){
+		return list.get(0);
+	}
 }
