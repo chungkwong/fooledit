@@ -1,0 +1,11 @@
+{
+	"C-1":"keep_only",
+	"C-2":"split_vertically",
+	"C-3":"split_horizontally",
+	"F11":"full_screen",
+	"M-F10":"maximize_frame",
+	"C-Z":"iconify_frame",
+	"M-X":"command",
+	"C-N":"new",
+	"C-X 4":"split_vertically"
+}

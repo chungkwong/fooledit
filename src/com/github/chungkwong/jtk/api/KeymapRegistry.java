@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
-import java.io.*;
-import java.util.logging.*;
-import java.util.prefs.*;
-import javafx.collections.*;
+import com.github.chungkwong.json.*;
+import com.github.chungkwong.jtk.*;
+import java.util.*;
 import javafx.scene.*;
 import javafx.scene.input.*;
 /**
@@ -26,63 +25,43 @@ import javafx.scene.input.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class KeymapRegistry{
-	private final Scene scene;
-	private final Preferences pref=Preferences.userNodeForPackage(KeymapRegistry.class).node("keymap");
-	private final CommandRegistry commandRegistry;
+	private final Node node;
+	private final Main main;
+	private final TreeMap<String,String> map=new TreeMap<>();
+	private String curr=null;
 	private static final StringBuilder buf=new StringBuilder();
-	public KeymapRegistry(Scene scene,CommandRegistry commandRegistry){
-		this.scene=scene;
-		this.commandRegistry=commandRegistry;
-		try{
-			pref.clear();//FIXME:Comment it out after debug
-		}catch(BackingStoreException ex){
-			Logger.getLogger(MenuRegistry.class.getName()).log(Level.SEVERE,null,ex);
-		}
-		try{
-			Preferences.importPreferences(MenuRegistry.class.getResourceAsStream("/com/github/chungkwong/jtk/default/keymap.xml"));
-		}catch(IOException|InvalidPreferencesFormatException ex){
-			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
-		}
-		ObservableMap<KeyCombination,Runnable> accelerators=scene.getAccelerators();
-		try{
-			for(String key:pref.keys()){
-				accelerators.put(decode(key),()->commandRegistry.get(pref.get(key,null)).run());
+	public KeymapRegistry(JSONObject json,Node node,Main main){
+		this.node=node;
+		this.main=main;
+		map.putAll((Map<String,String>)JSONConvertor.fromJSONStuff(json));
+		node.addEventFilter(KeyEvent.KEY_PRESSED,(KeyEvent e)->{
+			String code=curr==null?encode(e):curr+' '+encode(e);
+			String next=map.ceilingKey(code);
+			if(code.equals(next)){
+				String command=map.get(code);
+				main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command);
+				main.getCommandRegistry().get(command).run();
+				main.getNotifier().notify(MessageRegistry.getString("EXECUTED")+command);
+				e.consume();
+			}else if(next!=null&&next.startsWith(code)){
+				curr=code;
+				main.getNotifier().notify(MessageRegistry.getString("ENTERED")+code);
+				e.consume();
+			}else{
+				curr=null;
+				main.getNotifier().notify("");
 			}
-		}catch(BackingStoreException ex){
-			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
-		}
-	}
-	private static KeyCombination decode(String code){
-		KeyCombination.ModifierValue any=KeyCombination.ModifierValue.ANY;
-		KeyCombination.ModifierValue c=any,m=any,s=any;
-		String[] part=code.split("-");
-		for(int i=0;i<part.length-1;i++)
-			switch(part[i]){
-				case "C":c=KeyCombination.ModifierValue.DOWN;break;
-				case "M":m=KeyCombination.ModifierValue.DOWN;break;
-				case "S":s=KeyCombination.ModifierValue.DOWN;break;
-			}
-		return new KeyCodeCombination(KeyCode.getKeyCode(part[part.length-1]),s,c,m,any,any);
-		//return new KeyCodeCombination(KeyCode.getKeyCode(part[part.length-1]),s,c,any,m,any);
+		});
 	}
 	private static String encode(KeyEvent evt){
 		buf.setLength(0);
-		if(evt.isShiftDown())
-			buf.append("S-");
-		if(evt.isMetaDown())
-			buf.append("M-");
 		if(evt.isControlDown())
 			buf.append("C-");
+		if(evt.isMetaDown())
+			buf.append("M-");
+		if(evt.isShiftDown())
+			buf.append("S-");
 		buf.append(evt.getCode().getName());
 		return buf.toString();
-	}
-	public void applyTo(Node node){
-		node.addEventFilter(KeyEvent.KEY_PRESSED,(e)->{
-			String s=pref.get(encode(e),null);
-			if(s!=null){
-				commandRegistry.get(s).run();
-				e.consume();
-			}
-		});
 	}
 }

@@ -63,8 +63,7 @@ public class Main extends Application{
 		}
 		Logger.getGlobal().addHandler(notifier);
 		input=new MiniBuffer(this);
-		JSONObject menus=loadJSON("menu.json");
-		menuRegistry=new MenuRegistry(menus,commandRegistry);
+		menuRegistry=new MenuRegistry(loadJSON("menu.json"),commandRegistry);
 		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
 		menuRegistry.registerDynamicMenu("file_history",getHistoryMenu());
 		MenuBar bar=menuRegistry.getMenuBar();
@@ -80,13 +79,13 @@ public class Main extends Application{
 		//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
 		this.fileCommands=new FileCommands(this);
 		registerStandardCommand();
-		keymapRegistry=new KeymapRegistry(scene,commandRegistry);
+		keymapRegistry=new KeymapRegistry(loadJSON("keymap.json"),root,this);
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
 	private void registerStandardCommand(){
 		commandRegistry.put("new",()->fileCommands.create());
-		commandRegistry.put("open-file",()->fileCommands.open());
+		commandRegistry.put("open_file",()->fileCommands.open());
 		commandRegistry.put("save",()->fileCommands.save());
 		commandRegistry.put("full_screen",()->stage.setFullScreen(true));
 		commandRegistry.put("maximize_frame",()->stage.setMaximized(true));
@@ -208,7 +207,7 @@ public class Main extends Application{
 	private static void restoreToDefault(){
 		PATH.mkdir();
 		installFile("init.scm");
-		installFile("keymap.xml");
+		installFile("keymap.json");
 		installFile("menu.json");
 		installFile("module.json");
 		installFile("suffix.json");
