@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.control;
+import com.github.chungkwong.json.*;
+import java.util.*;
+import java.util.stream.*;
 import javafx.beans.value.*;
 import javafx.geometry.*;
+import javafx.scene.Node;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -56,4 +60,23 @@ public class WorkSheet extends BorderPane{
 		setCenter(node);
 		node.requestFocus();
 	}
+	public JSONStuff toJSON(){
+		Node center=getCenter();
+		if(center instanceof SplitPane){
+			HashMap<JSONStuff,JSONStuff> map=new HashMap<>();
+			map.put(new JSONString("direction"),new JSONString(((SplitPane)center).getOrientation().name()));
+			map.put(new JSONString("dividers"),JSONConvertor.toJSONStuff(((SplitPane)center).getDividerPositions()));
+			map.put(new JSONString("children"),new JSONArray(((SplitPane)center).getItems().stream().map((c)->toJSON(c)).collect(Collectors.toList())));
+			return new JSONObject(map);
+		}else{
+			return toJSON(center);
+		}
+	}
+	private static JSONStuff toJSON(Node node){
+		return null;
+	}
+	public static WorkSheet fromJSON(JSONStuff json){
+		return null;
+	}
+
 }

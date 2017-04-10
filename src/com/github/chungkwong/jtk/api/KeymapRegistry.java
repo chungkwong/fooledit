@@ -17,6 +17,7 @@
 package com.github.chungkwong.jtk.api;
 import com.github.chungkwong.json.*;
 import com.github.chungkwong.jtk.*;
+import com.github.chungkwong.jtk.model.*;
 import java.util.*;
 import javafx.scene.*;
 import javafx.scene.input.*;
@@ -30,26 +31,41 @@ public class KeymapRegistry{
 	private final TreeMap<String,String> map=new TreeMap<>();
 	private String curr=null;
 	private static final StringBuilder buf=new StringBuilder();
+	boolean ignore=false;
 	public KeymapRegistry(JSONObject json,Node node,Main main){
 		this.node=node;
 		this.main=main;
 		map.putAll((Map<String,String>)JSONConvertor.fromJSONStuff(json));
-		node.addEventFilter(KeyEvent.KEY_PRESSED,(KeyEvent e)->{
-			String code=curr==null?encode(e):curr+' '+encode(e);
-			String next=map.ceilingKey(code);
-			if(code.equals(next)){
-				String command=map.get(code);
-				main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command);
-				main.getCommandRegistry().get(command).run();
-				main.getNotifier().notify(MessageRegistry.getString("EXECUTED")+command);
-				e.consume();
-			}else if(next!=null&&next.startsWith(code)){
-				curr=code;
-				main.getNotifier().notify(MessageRegistry.getString("ENTERED")+code);
-				e.consume();
-			}else{
-				curr=null;
-				main.getNotifier().notify("");
+		node.addEventFilter(KeyEvent.ANY,(KeyEvent e)->{
+			System.err.println(e);
+			if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
+				if(ignore){
+					ignore=false;
+					e.consume();
+				}
+			}else if(e.getEventType().equals(KeyEvent.KEY_PRESSED)){
+				if(e.getCode().isModifierKey())
+					return;
+				String code=curr==null?encode(e):curr+' '+encode(e);
+				String next=map.ceilingKey(code);
+				if(code.equals(next)){
+					e.consume();
+					curr=null;
+					Command command=main.getCommandRegistry().get(map.get(code));
+					main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
+					command.run();
+					main.getNotifier().notify(MessageRegistry.getString("EXECUTED")+command.getDisplayName());
+					ignore=true;
+				}else if(next!=null&&next.startsWith(code+' ')){
+					e.consume();
+					curr=code;
+					main.getNotifier().notify(MessageRegistry.getString("ENTERED")+code);
+					ignore=true;
+				}else{
+					curr=null;
+					main.getNotifier().notify("");
+					ignore=false;
+				}
 			}
 		});
 	}
