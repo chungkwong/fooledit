@@ -16,7 +16,12 @@
  */
 package com.github.chungkwong.jtk.control;
 import com.github.chungkwong.json.*;
+import com.github.chungkwong.jtk.api.*;
+import com.github.chungkwong.jtk.model.*;
+import com.github.chungkwong.jtk.util.*;
+import java.io.*;
 import java.util.*;
+import java.util.logging.*;
 import java.util.stream.*;
 import javafx.beans.value.*;
 import javafx.geometry.*;
@@ -29,14 +34,17 @@ import javafx.scene.layout.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class WorkSheet extends BorderPane{
-	public WorkSheet(Node node){
+	private WorkSheet(Node node){
 		super(node);
 	}
-	public void splitVertically(Node second){
-		split(second,Orientation.VERTICAL);
+	public WorkSheet(DataObject data,DataEditor editor){
+		super(pack(data,editor));
 	}
-	public void splitHorizontally(Node second){
-		split(second,Orientation.HORIZONTAL);
+	public void splitVertically(DataObject data,DataEditor editor){
+		split(pack(data,editor),Orientation.VERTICAL);
+	}
+	public void splitHorizontally(DataObject data,DataEditor editor){
+		split(pack(data,editor),Orientation.HORIZONTAL);
 	}
 	private void split(Node second,Orientation orientation){
 		Node first=getCenter();
@@ -56,27 +64,62 @@ public class WorkSheet extends BorderPane{
 		first.sceneProperty().addListener(listener);
 		first.requestFocus();
 	}
-	public void keepOnly(Node node){
+	private static Node pack(DataObject data,DataEditor editor){
+		Node node=editor.edit(data);
+		node.setUserData(new Pair<>(data,editor));
+		return node;
+	}
+	public void keepOnly(DataObject data,DataEditor editor){
+		Node node=pack(data,editor);
 		setCenter(node);
 		node.requestFocus();
 	}
+	private static final JSONString DIRECTION=new JSONString("direction");
+	private static final JSONString DIVIDERS=new JSONString("dividers");
+	private static final JSONString CHILDREN=new JSONString("children");
+	private static final JSONString EDITOR=new JSONString("editor");
+	private static final JSONString BUFFER=new JSONString("buffer");
 	public JSONStuff toJSON(){
 		Node center=getCenter();
-		if(center instanceof SplitPane){
-			HashMap<JSONStuff,JSONStuff> map=new HashMap<>();
-			map.put(new JSONString("direction"),new JSONString(((SplitPane)center).getOrientation().name()));
-			map.put(new JSONString("dividers"),JSONConvertor.toJSONStuff(((SplitPane)center).getDividerPositions()));
-			map.put(new JSONString("children"),new JSONArray(((SplitPane)center).getItems().stream().map((c)->toJSON(c)).collect(Collectors.toList())));
-			return new JSONObject(map);
+		HashMap<JSONStuff,JSONStuff> map=new HashMap<>();
+		if(isSplit()){
+			map.put(DIRECTION,new JSONString(((SplitPane)center).getOrientation().name()));
+			map.put(DIVIDERS,JSONConvertor.toJSONStuff(Arrays.stream(((SplitPane)center).getDividerPositions()).boxed().collect(Collectors.toList())));
+			map.put(CHILDREN,new JSONArray(((SplitPane)center).getItems().stream().map((c)->((WorkSheet)c).toJSON()).collect(Collectors.toList())));
 		}else{
-			return toJSON(center);
+			map.put(EDITOR,new JSONString(getDataEditor().getClass().getName()));
+			map.put(BUFFER,JSONConvertor.toJSONStuff(DataObjectRegistry.getProperties(getDataObject())));
 		}
-	}
-	private static JSONStuff toJSON(Node node){
-		return null;
+		return new JSONObject(map);
 	}
 	public static WorkSheet fromJSON(JSONStuff json){
 		return null;
 	}
-
+	public boolean isSplit(){
+		return getCenter() instanceof SplitPane;
+	}
+	public Orientation getOrientation(){
+		return ((SplitPane)getCenter()).getOrientation();
+	}
+	public DataObject getDataObject(){
+		return ((Pair<DataObject,DataEditor>)getCenter().getUserData()).getKey();
+	}
+	public DataEditor getDataEditor(){
+		return ((Pair<DataObject,DataEditor>)getCenter().getUserData()).getValue();
+	}
+	public static final javafx.util.StringConverter<WorkSheet> CONVERTOR=new javafx.util.StringConverter<WorkSheet>(){
+		@Override
+		public String toString(WorkSheet t){
+			return t.toJSON().toString();
+		}
+		@Override
+		public WorkSheet fromString(String string){
+			try{
+				return fromJSON(JSONParser.parse(string));
+			}catch(IOException|SyntaxException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+				return new WorkSheet(null);
+			}
+		}
+	};
 }

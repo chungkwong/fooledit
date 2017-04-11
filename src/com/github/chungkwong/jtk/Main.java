@@ -23,6 +23,7 @@ import com.github.chungkwong.jtk.control.*;
 import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.example.tool.*;
 import com.github.chungkwong.jtk.model.*;
+import com.github.chungkwong.jtk.setting.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
@@ -72,7 +73,7 @@ public class Main extends Application{
 		HBox.setHgrow(input,Priority.ALWAYS);
 		TextObject welcome=new TextObject("Welcome");
 		DataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Welcome"));
-		root=new BorderPane(new WorkSheet(getDefaultEditor(welcome)));
+		root=new BorderPane(new WorkSheet(welcome,getDefaultEditor(welcome)));
 		root.setTop(commander);
 		root.setBottom(notifier.getStatusBar());
 		scene=new Scene(root);
@@ -80,6 +81,8 @@ public class Main extends Application{
 		this.fileCommands=new FileCommands(this);
 		registerStandardCommand();
 		keymapRegistry=new KeymapRegistry(loadJSON("keymap.json"),root,this);
+		PersistenceStatusManager.registerConvertor("layout",WorkSheet.CONVERTOR);
+		PersistenceStatusManager.put("layout",(WorkSheet)root.getCenter());
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
@@ -91,26 +94,26 @@ public class Main extends Application{
 		commandRegistry.put("maximize_frame",()->stage.setMaximized(true));
 		commandRegistry.put("iconify_frame",()->stage.setIconified(true));
 		commandRegistry.put("always_on_top_frame",()->stage.setAlwaysOnTop(true));
-		commandRegistry.put("split_vertically",()->currentWorkSheet().splitVertically(getDefaultEditor(getCurrentDataObject())));
-		commandRegistry.put("split_horizontally",()->currentWorkSheet().splitHorizontally(getDefaultEditor(getCurrentDataObject())));
-		commandRegistry.put("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentNode()));
+		commandRegistry.put("split_vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
+		commandRegistry.put("split_horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
+		commandRegistry.put("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
 		commandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
 		commandRegistry.put("command",()->input.requestFocus());
-		commandRegistry.put("next_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(DataObjectRegistry.getNextDataObject(getCurrentDataObject()))));
-		commandRegistry.put("previous_buffer",()->currentWorkSheet().keepOnly(getDefaultEditor(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject()))));
+		commandRegistry.put("next_buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
+		commandRegistry.put("previous_buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
 			for(String name:DataObjectRegistry.getDataObjectNames()){
 				MenuItem item=new MenuItem(name);
-				item.setOnAction((e)->currentWorkSheet().setCenter(getDefaultEditor(DataObjectRegistry.getDataObject(name))));
+				item.setOnAction((e)->showDefault(DataObjectRegistry.getDataObject(name)));
 				l.add(item);
 			}
 			l.add(new SeparatorMenuItem());
 			DataObject curr=getCurrentDataObject();
 			DataObjectTypeRegistry.getDataEditors(curr.getClass()).forEach((editor)->{
 				MenuItem item=new MenuItem(editor.getName());
-				item.setOnAction((e)->currentWorkSheet().setCenter(getEditor(curr,editor)));
+				item.setOnAction((e)->getCurrentWorkSheet().keepOnly(curr,editor));
 				l.add(item);
 			});
 			l.add(new SeparatorMenuItem());
@@ -152,24 +155,21 @@ public class Main extends Application{
 	}
 	public void addAndShow(DataObject data,HashMap<String,String> prop){
 		DataObjectRegistry.addDataObject(data,prop);
-		Node editor=getDefaultEditor(data);
-		currentWorkSheet().keepOnly(editor);
+		showDefault(data);
 	}
-	public Node getDefaultEditor(DataObject data){
-		return getEditor(data,DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0));
+	private void showDefault(DataObject data){
+		getCurrentWorkSheet().keepOnly(data,getDefaultEditor(data));
 	}
-	private Node getEditor(DataObject data,DataEditor editor){
-		Node node=editor.edit(data);
-		node.setUserData(data);
-		return node;
+	public DataEditor getDefaultEditor(DataObject data){
+		return DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0);
 	}
 	public DataObject getCurrentDataObject(){
-		return (DataObject)currentNode.getUserData();
+		return getCurrentWorkSheet().getDataObject();
 	}
 	public Node getCurrentNode(){
 		return currentNode;
 	}
-	public WorkSheet currentWorkSheet(){
+	public WorkSheet getCurrentWorkSheet(){
 		return (WorkSheet)currentNode.getParent();
 	}
 	public CommandRegistry getCommandRegistry(){

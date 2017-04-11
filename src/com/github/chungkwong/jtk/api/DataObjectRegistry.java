@@ -41,8 +41,11 @@ public class DataObjectRegistry{
 	public static Set<String> getDataObjectNames(){
 		return objects.keySet();
 	}
-	public static String getProperties(String key,DataObject data){
+	public static String getProperty(String key,DataObject data){
 		return properties.get(data).get(key);
+	}
+	public static Map<String,String> getProperties(DataObject data){
+		return properties.get(data);
 	}
 	public static String getURL(DataObject data){
 		return (String)properties.get(data).get(URI);

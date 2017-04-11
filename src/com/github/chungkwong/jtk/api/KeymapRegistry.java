@@ -37,7 +37,6 @@ public class KeymapRegistry{
 		this.main=main;
 		map.putAll((Map<String,String>)JSONConvertor.fromJSONStuff(json));
 		node.addEventFilter(KeyEvent.ANY,(KeyEvent e)->{
-			System.err.println(e);
 			if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
 				if(ignore){
 					ignore=false;

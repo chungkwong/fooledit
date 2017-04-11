@@ -60,7 +60,7 @@ public class FileCommands{
 		}
 	}
 	public void save(){
-		DataObject data=(DataObject)main.currentWorkSheet().getChildren().get(0).getUserData();
+		DataObject data=(DataObject)main.getCurrentWorkSheet().getChildren().get(0).getUserData();
 		try{
 			File file=new File(new URI(DataObjectRegistry.getURL(data)));
 			data.getDataObjectType().writeTo(data,new FileOutputStream(file));
