@@ -93,7 +93,20 @@ public class WorkSheet extends BorderPane{
 		return new JSONObject(map);
 	}
 	public static WorkSheet fromJSON(JSONStuff json){
-		return null;
+		Map<JSONStuff,JSONStuff> members=((JSONObject)json).getMembers();
+		if(members.containsKey(DIRECTION)){
+			SplitPane pane=new SplitPane();
+			pane.setOrientation(Orientation.valueOf(((JSONString)members.get(DIRECTION)).getValue()));
+			pane.getItems().setAll(((JSONArray)members.get(CHILDREN)).getElements().stream().map((o)->fromJSON(o)).toArray(Node[]::new));
+			pane.setDividerPositions(((JSONArray)members.get(DIVIDERS)).getElements().stream().mapToDouble((o)->((JSONNumber)o).getValue().doubleValue()).toArray());
+			return new WorkSheet(pane);
+		}else{
+			DataObject buffer=DataObjectRegistry.get((JSONObject)members.get(BUFFER));
+			String editorName=((JSONString)members.get(EDITOR)).getValue();
+			DataEditor editor=DataObjectTypeRegistry.getDataEditors(buffer.getClass()).stream().
+					filter((e)->e.getClass().getName().equals(editorName)).findFirst().get();
+			return new WorkSheet(buffer,editor);
+		}
 	}
 	public boolean isSplit(){
 		return getCenter() instanceof SplitPane;

@@ -71,9 +71,8 @@ public class Main extends Application{
 		HBox commander=new HBox(bar,input);
 		HBox.setHgrow(bar,Priority.NEVER);
 		HBox.setHgrow(input,Priority.ALWAYS);
-		TextObject welcome=new TextObject("Welcome");
-		DataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Welcome"));
-		root=new BorderPane(new WorkSheet(welcome,getDefaultEditor(welcome)));
+		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
+		root=new BorderPane(getDefaultWorkSheet());
 		root.setTop(commander);
 		root.setBottom(notifier.getStatusBar());
 		scene=new Scene(root);
@@ -81,8 +80,6 @@ public class Main extends Application{
 		this.fileCommands=new FileCommands(this);
 		registerStandardCommand();
 		keymapRegistry=new KeymapRegistry(loadJSON("keymap.json"),root,this);
-		PersistenceStatusManager.registerConvertor("layout",WorkSheet.CONVERTOR);
-		PersistenceStatusManager.put("layout",(WorkSheet)root.getCenter());
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
@@ -153,7 +150,7 @@ public class Main extends Application{
 		if(node!=null)
 			currentNode=((WorkSheet)node).getCenter();
 	}
-	public void addAndShow(DataObject data,HashMap<String,String> prop){
+	public void addAndShow(DataObject data,Map<String,String> prop){
 		DataObjectRegistry.addDataObject(data,prop);
 		showDefault(data);
 	}
@@ -171,6 +168,14 @@ public class Main extends Application{
 	}
 	public WorkSheet getCurrentWorkSheet(){
 		return (WorkSheet)currentNode.getParent();
+	}
+	private WorkSheet getDefaultWorkSheet(){
+		return (WorkSheet)PersistenceStatusManager.getOrDefault("layout.json",()->{
+			String msg=MessageRegistry.getString("WELCOME");
+			TextObject welcome=new TextObject(msg);
+			DataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,msg,DataObjectRegistry.TYPE,TextObjectType.class.getName()));
+			return new WorkSheet(welcome,getDefaultEditor(welcome));
+		});
 	}
 	public CommandRegistry getCommandRegistry(){
 		return commandRegistry;

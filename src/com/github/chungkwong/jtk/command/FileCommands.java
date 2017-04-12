@@ -70,8 +70,7 @@ public class FileCommands{
 	}
 	private boolean tryOpen(File f,DataObjectType type,String mime){
 		try(FileInputStream in=new FileInputStream(f)){
-			main.addAndShow(type.readFrom(in),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,f.getName(),
-					DataObjectRegistry.MIME,mime,DataObjectRegistry.URI,f.toURI().toString()));
+			main.addAndShow(type.readFrom(in),DataObjectRegistry.createProperties(f.getName(),f.toURI().toString(),mime,type.getClass().getName()));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return false;
@@ -88,6 +87,7 @@ public class FileCommands{
 		dia.getDialogPane().setContent(types);
 		dia.getDialogPane().getButtonTypes().add(ButtonType.OK);
 		dia.showAndWait();
-		main.addAndShow(types.getSelectionModel().getSelectedItem().create(),Helper.hashMap());
+		DataObjectType type=types.getSelectionModel().getSelectedItem();
+		main.addAndShow(type.create(),Helper.hashMap(DataObjectRegistry.TYPE,type));
 	}
 }

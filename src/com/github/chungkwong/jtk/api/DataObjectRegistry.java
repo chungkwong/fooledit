@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
+import com.github.chungkwong.json.*;
 import com.github.chungkwong.jtk.model.*;
 import com.github.chungkwong.jtk.setting.*;
+import java.net.*;
 import java.util.*;
+import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -27,6 +30,7 @@ public class DataObjectRegistry{
 	public static final String URI="URI";
 	public static final String DEFAULT_NAME="DEFAULT_NAME";
 	public static final String BUFFER_NAME="BUFFER_NAME";
+	public static final String TYPE="TYPE";
 	private static final String UNTITLED=MessageRegistry.getString("UNTITLED");
 	private static final String KEY="file_history.json";
 	private static final String LIMIT="limit";
@@ -52,6 +56,28 @@ public class DataObjectRegistry{
 	}
 	public static String getMIME(DataObject data){
 		return (String)properties.get(data).get(MIME);
+	}
+	public static DataObject get(JSONObject json){
+		Map<String,String> prop=(Map<String,String>)JSONConvertor.fromJSONStuff(json);
+		String type=prop.get(TYPE);
+		DataObjectType builder=DataObjectTypeRegistry.getDataObjectTypes().stream().filter((t)->t.getClass().getName().equals(type)).findFirst().get();
+		DataObject object;
+		if(prop.containsKey(URI)){
+			String uri=prop.get(URI);
+			Optional<DataObject> old=objects.values().stream().filter((o)->uri.equals(getURL(o))).findAny();
+			if(old.isPresent())
+				return old.get();
+			try{
+				object=builder.readFrom(new URL(uri).openConnection().getInputStream());
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+				object=builder.create();
+			}
+		}else{
+			object=builder.create();
+		}
+		addDataObject(object,prop);
+		return object;
 	}
 	public static void addDataObject(DataObject data,Map<String,String> prop){
 		String name=(String)prop.getOrDefault(DEFAULT_NAME,UNTITLED);
@@ -102,11 +128,12 @@ public class DataObjectRegistry{
 		else
 			return prev.getValue();
 	}
-	public static Map<Object,Object> createProperties(String name,String uri,String mime){
-		HashMap<Object,Object> prop=new HashMap<>();
+	public static Map<String,String> createProperties(String name,String uri,String mime,String type){
+		HashMap<String,String> prop=new HashMap<>();
 		prop.put(DEFAULT_NAME,name);
 		prop.put(MIME,mime);
 		prop.put(URI,uri);
+		prop.put(TYPE,type);
 		return prop;
 	}
 }
