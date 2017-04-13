@@ -22,14 +22,12 @@ import com.github.chungkwong.jschememin.lib.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ScriptAPI extends NativeLibrary{
-	public static void main(String[] args){
-
-	}
+	public static final Evaluator SCHEME_ENGINE=new Evaluator(true);
 	@Override
 	protected void init(Library lbr){
-		addNativeProcedure("",null);
+		//addNativeProcedure("",null);
 	}
 	static{
-		LibraryManager.addLibrary(new ScriptAPI().getLibrary());
+		//LibraryManager.addLibrary(new ScriptAPI().getLibrary());
 	}
 }

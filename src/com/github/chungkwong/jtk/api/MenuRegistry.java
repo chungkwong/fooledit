@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.jtk.api;
 import com.github.chungkwong.json.*;
+import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.control.*;
 import java.util.*;
 import java.util.function.*;
@@ -27,10 +28,10 @@ import javafx.scene.control.*;
  */
 public class MenuRegistry{
 	private final MenuBar bar;
-	private final CommandRegistry commands;
+	private final Main main;
 	private final Map<String,Consumer<ObservableList<MenuItem>>> dynamic=new HashMap<>();
-	public MenuRegistry(JSONObject json,CommandRegistry commands){
-		this.commands=commands;
+	public MenuRegistry(JSONObject json,Main main){
+		this.main=main;
 		this.bar=new MenuBar();
 		List<JSONStuff> menus=getChildren(json);
 		bar.getMenus().setAll(menus.stream().map((e)->makeMenu((JSONObject)e)).toArray(Menu[]::new));
@@ -47,7 +48,7 @@ public class MenuRegistry{
 				}else if(props.containsKey(COMMAND)){
 					String commandName=((JSONString)props.get(COMMAND)).getValue();
 					MenuItem mi=new MenuItem(getName((JSONObject)child));
-					mi.setOnAction((e)->commands.get(commandName).run());
+					mi.setOnAction((e)->main.getCommandRegistry().get(commandName).accept(main));
 					items.add(mi);
 				}else{
 					items.add(makeMenu((JSONObject)child));

@@ -18,12 +18,14 @@ package com.github.chungkwong.jtk.api;
 import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.control.*;
 import com.github.chungkwong.jtk.model.*;
+import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
 import java.util.stream.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javax.script.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -51,10 +53,17 @@ public class MiniBuffer extends BorderPane{
 		setRight(null);
 		input.setOnAction((e)->{
 			Command command=main.getCommandRegistry().get(input.getText());
-			if(command!=null)
-				main.getCommandRegistry().get(input.getText()).run();
-			else
-				Logger.getGlobal().info("No such command:"+input.getText());
+			if(command!=null){
+				main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
+				main.getCommandRegistry().get(input.getText()).accept(main);
+				main.getNotifier().notify(MessageRegistry.getString("EXECUTED")+command.getDisplayName());
+			}else{
+				try{
+					main.getNotifier().notify(Objects.toString(ScriptAPI.SCHEME_ENGINE.eval(input.getText())));
+				}catch(ScriptException ex){
+					Logger.getGlobal().log(Level.SEVERE,MessageRegistry.getString("FAILED"),ex);
+				}
+			}
 		});
 	}
 	@Override

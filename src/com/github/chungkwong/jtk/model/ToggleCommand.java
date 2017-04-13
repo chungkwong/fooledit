@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.model;
+import com.github.chungkwong.jtk.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -25,7 +26,7 @@ public abstract class ToggleCommand extends Command{
 		this.on=on;
 	}
 	@Override
-	public void run(){
+	public void accept(Main main){
 		setStatus(!on);
 	}
 	public boolean getStatus(){

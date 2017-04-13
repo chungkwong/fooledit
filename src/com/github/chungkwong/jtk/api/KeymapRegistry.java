@@ -52,7 +52,7 @@ public class KeymapRegistry{
 					curr=null;
 					Command command=main.getCommandRegistry().get(map.get(code));
 					main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
-					command.run();
+					command.accept(main);
 					main.getNotifier().notify(MessageRegistry.getString("EXECUTED")+command.getDisplayName());
 					ignore=true;
 				}else if(next!=null&&next.startsWith(code+' ')){

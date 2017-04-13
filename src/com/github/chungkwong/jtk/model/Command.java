@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.model;
+import com.github.chungkwong.jtk.*;
+import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class Command implements Runnable{
+public abstract class Command implements Consumer<Main>{
 	public abstract String getDisplayName();
 	public static Command create(String name,Runnable action){
 		return new SimpleCommand(name,action);
@@ -36,7 +38,7 @@ public abstract class Command implements Runnable{
 			return name;
 		}
 		@Override
-		public void run(){
+		public void accept(Main t){
 			action.run();
 		}
 

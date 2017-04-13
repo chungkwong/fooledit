@@ -64,7 +64,7 @@ public class Main extends Application{
 		}
 		Logger.getGlobal().addHandler(notifier);
 		input=new MiniBuffer(this);
-		menuRegistry=new MenuRegistry(loadJSON("menu.json"),commandRegistry);
+		menuRegistry=new MenuRegistry(loadJSON("menu.json"),this);
 		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
 		menuRegistry.registerDynamicMenu("file_history",getHistoryMenu());
 		MenuBar bar=menuRegistry.getMenuBar();
@@ -140,7 +140,7 @@ public class Main extends Application{
 	}
 	private MenuItem createCommandMenuItem(String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase()));
-		item.setOnAction((e)->commandRegistry.get(name).run());
+		item.setOnAction((e)->commandRegistry.get(name).accept(this));
 		return item;
 	}
 	private void updateCurrentNode(Node node){
