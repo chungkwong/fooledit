@@ -43,7 +43,7 @@ public class Notifier extends Handler{
 		bar=new BorderPane(label,null,other,null,null);
 	}
 	public void notify(String msg){
-		label.setText(msg);
+		Platform.runLater(()->label.setText(msg));
 	}
 	@Override
 	public void publish(LogRecord record){

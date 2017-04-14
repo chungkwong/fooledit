@@ -31,8 +31,10 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
+import java.util.stream.*;
 import javafx.application.*;
 import javafx.collections.*;
+import javafx.scene.Node;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
@@ -95,7 +97,7 @@ public class Main extends Application{
 		commandRegistry.put("split_horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
 		commandRegistry.put("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
 		commandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
-		commandRegistry.put("command",()->input.requestFocus());
+		commandRegistry.put("command",()->{input.requestFocus();System.out.println("hello");});
 		commandRegistry.put("next_buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
 		commandRegistry.put("previous_buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
 	}
@@ -177,8 +179,17 @@ public class Main extends Application{
 			return new WorkSheet(welcome,getDefaultEditor(welcome));
 		});
 	}
-	public CommandRegistry getCommandRegistry(){
+	public Command getCommand(String key){
+		return getLocalCommandRegistry().getOrDefault(key,getGlobalCommandRegistry().get(key));
+	}
+	public Stream<String> getCommandKeys(){
+		return Arrays.asList(getLocalCommandRegistry(),getGlobalCommandRegistry()).stream().flatMap((m)->m.keySet().stream());
+	}
+	private CommandRegistry getGlobalCommandRegistry(){
 		return commandRegistry;
+	}
+	private CommandRegistry getLocalCommandRegistry(){
+		return getCurrentWorkSheet().getDataEditor().getCommandRegistry();
 	}
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
@@ -203,6 +214,24 @@ public class Main extends Application{
 	}
 	public static File getPath(){
 		return PATH;
+	}
+	public static JSONObject loadJSON(String name){
+		JSONObject obj;
+		try{
+			obj=(JSONObject)JSONParser.parse(new InputStreamReader(new FileInputStream(new File(getPath(),name)),StandardCharsets.UTF_8));
+		}catch(IOException|SyntaxException ex){
+			obj=new JSONObject(Collections.emptyMap());
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+		return obj;
+	}
+	/**
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args){
+		checkInstall();
+		runScript();
+		launch(args);
 	}
 	private static void checkInstall(){
 		//if(!PATH.exists()){
@@ -229,21 +258,11 @@ public class Main extends Application{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
-	public static JSONObject loadJSON(String name){
-		JSONObject obj;
+	private static void runScript(){
 		try{
-			obj=(JSONObject)JSONParser.parse(new InputStreamReader(new FileInputStream(new File(getPath(),name)),StandardCharsets.UTF_8));
-		}catch(IOException|SyntaxException ex){
-			obj=new JSONObject(Collections.emptyMap());
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			ScriptAPI.SCHEME_ENGINE.eval(new InputStreamReader(new FileInputStream(new File(getPath(),"init.scm")),StandardCharsets.UTF_8));
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.SEVERE,"Error in init script",ex);
 		}
-		return obj;
-	}
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String[] args){
-		checkInstall();
-		launch(args);
 	}
 }

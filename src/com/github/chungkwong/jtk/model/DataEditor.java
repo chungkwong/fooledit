@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.model;
+import com.github.chungkwong.jtk.api.*;
 import javafx.scene.*;
 /**
  *
@@ -22,5 +23,8 @@ import javafx.scene.*;
  */
 public interface DataEditor<T extends DataObject>{
 	Node edit(T data);
+	default CommandRegistry getCommandRegistry(){
+		return new CommandRegistry();
+	}
 	String getName();
 }

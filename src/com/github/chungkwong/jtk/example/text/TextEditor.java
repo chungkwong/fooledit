@@ -17,6 +17,7 @@
 package com.github.chungkwong.jtk.example.text;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.model.*;
+import com.github.chungkwong.jtk.util.*;
 import java.io.*;
 import java.util.logging.*;
 import javafx.application.*;
@@ -35,6 +36,15 @@ public class TextEditor extends Application implements DataEditor<TextObject>{
 		textArea.textProperty().bindBidirectional(obj.getText());
 		return textArea;
 	}
+	@Override
+	public CommandRegistry getCommandRegistry(){
+		return COMMANDS.get();
+	}
+	private static final Cache<CommandRegistry> COMMANDS=new Cache<>(()->{
+		CommandRegistry registry=new CommandRegistry();
+		registry.put("clear",(t)->((TextArea)t.getCurrentNode()).setText(""));
+		return registry;
+	});
 	@Override
 	public void start(Stage primaryStage){
 		TextObject data;

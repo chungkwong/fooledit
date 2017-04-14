@@ -50,7 +50,7 @@ public class KeymapRegistry{
 				if(code.equals(next)){
 					e.consume();
 					curr=null;
-					Command command=main.getCommandRegistry().get(map.get(code));
+					Command command=main.getCommand(map.get(code));
 					main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
 					command.accept(main);
 					main.getNotifier().notify(MessageRegistry.getString("EXECUTED")+command.getDisplayName());
@@ -70,9 +70,9 @@ public class KeymapRegistry{
 	}
 	private static String encode(KeyEvent evt){
 		buf.setLength(0);
-		if(evt.isControlDown())
+		if(evt.isControlDown()||evt.isShortcutDown())
 			buf.append("C-");
-		if(evt.isMetaDown())
+		if(evt.isAltDown())
 			buf.append("M-");
 		if(evt.isShiftDown())
 			buf.append("S-");

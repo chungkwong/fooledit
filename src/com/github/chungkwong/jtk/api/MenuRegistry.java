@@ -48,7 +48,7 @@ public class MenuRegistry{
 				}else if(props.containsKey(COMMAND)){
 					String commandName=((JSONString)props.get(COMMAND)).getValue();
 					MenuItem mi=new MenuItem(getName((JSONObject)child));
-					mi.setOnAction((e)->main.getCommandRegistry().get(commandName).accept(main));
+					mi.setOnAction((e)->main.getCommand(commandName).accept(main));
 					items.add(mi);
 				}else{
 					items.add(makeMenu((JSONObject)child));

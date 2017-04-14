@@ -23,13 +23,13 @@ import java.util.function.*;
  */
 public abstract class Command implements Consumer<Main>{
 	public abstract String getDisplayName();
-	public static Command create(String name,Runnable action){
+	public static Command create(String name,Consumer<Main> action){
 		return new SimpleCommand(name,action);
 	}
 	private static class SimpleCommand extends Command{
 		private final String name;
-		private final Runnable action;
-		public SimpleCommand(String name,Runnable action){
+		private final Consumer<Main> action;
+		public SimpleCommand(String name,Consumer<Main> action){
 			this.action=action;
 			this.name=name;
 		}
@@ -39,7 +39,7 @@ public abstract class Command implements Consumer<Main>{
 		}
 		@Override
 		public void accept(Main t){
-			action.run();
+			action.accept(t);
 		}
 
 	}

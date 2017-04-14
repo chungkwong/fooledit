@@ -52,10 +52,10 @@ public class MiniBuffer extends BorderPane{
 		hints=commandHints;
 		setRight(null);
 		input.setOnAction((e)->{
-			Command command=main.getCommandRegistry().get(input.getText());
+			Command command=main.getCommand(input.getText());
 			if(command!=null){
 				main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
-				main.getCommandRegistry().get(input.getText()).accept(main);
+				main.getCommand(input.getText()).accept(main);
 				main.getNotifier().notify(MessageRegistry.getString("EXECUTED")+command.getDisplayName());
 			}else{
 				try{
@@ -75,7 +75,7 @@ public class MiniBuffer extends BorderPane{
 		@Override
 		public Stream<AutoCompleteHint> checkForHints(String text,int pos){
 			String prefix=text.substring(0,pos);
-			return main.getCommandRegistry().keySet().stream().filter((name)->name.startsWith(prefix)&&name.length()>pos)
+			return main.getCommandKeys().filter((name)->name.startsWith(prefix)&&name.length()>pos)
 					.sorted().map((name)->AutoCompleteHint.create(name,name.substring(pos),""));
 		}
 	}
