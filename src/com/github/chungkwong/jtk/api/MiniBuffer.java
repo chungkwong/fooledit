@@ -59,7 +59,7 @@ public class MiniBuffer extends BorderPane{
 				main.getNotifier().notify(MessageRegistry.getString("EXECUTED")+command.getDisplayName());
 			}else{
 				try{
-					main.getNotifier().notify(Objects.toString(ScriptAPI.SCHEME_ENGINE.eval(input.getText())));
+					main.getNotifier().notify(Objects.toString(main.getScriptAPI().eval(input.getText())));
 				}catch(ScriptException ex){
 					Logger.getGlobal().log(Level.SEVERE,MessageRegistry.getString("FAILED"),ex);
 				}

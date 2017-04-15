@@ -16,18 +16,23 @@
  */
 package com.github.chungkwong.jtk.api;
 import com.github.chungkwong.jschememin.*;
-import com.github.chungkwong.jschememin.lib.*;
+import java.io.*;
+import javax.script.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ScriptAPI extends NativeLibrary{
-	public static final Evaluator SCHEME_ENGINE=new Evaluator(true);
-	@Override
-	protected void init(Library lbr){
-		//addNativeProcedure("",null);
+public class ScriptAPI{
+	private final Evaluator SCHEME_ENGINE=new Evaluator(true);
+	private final SimpleScriptContext CONTEXT;
+	public ScriptAPI(com.github.chungkwong.jtk.Main main){
+		this.CONTEXT=new SimpleScriptContext();
+		//CONTEXT.setBindings(new ScriptEnvironment(main.getMenuRegistry()),SimpleScriptContext.GLOBAL_SCOPE);
 	}
-	static{
-		//LibraryManager.addLibrary(new ScriptAPI().getLibrary());
+	public Object eval(Reader reader) throws ScriptException{
+		return SCHEME_ENGINE.eval(reader,CONTEXT);
+	}
+	public Object eval(String code) throws ScriptException{
+		return SCHEME_ENGINE.eval(code,CONTEXT);
 	}
 }

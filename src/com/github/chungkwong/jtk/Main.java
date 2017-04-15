@@ -53,6 +53,7 @@ public class Main extends Application{
 	private final Notifier notifier;
 	private final BorderPane root;
 	private final MiniBuffer input;
+	private final ScriptAPI script;
 	private final Scene scene;
 	private Stage stage;
 	private Node currentNode;
@@ -65,6 +66,8 @@ public class Main extends Application{
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
 		}
 		Logger.getGlobal().addHandler(notifier);
+		script=new ScriptAPI(this);
+		runScript();
 		input=new MiniBuffer(this);
 		menuRegistry=new MenuRegistry(loadJSON("menu.json"),this);
 		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
@@ -230,7 +233,6 @@ public class Main extends Application{
 	 */
 	public static void main(String[] args){
 		checkInstall();
-		runScript();
 		launch(args);
 	}
 	private static void checkInstall(){
@@ -258,11 +260,14 @@ public class Main extends Application{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
-	private static void runScript(){
+	private void runScript(){
 		try{
-			ScriptAPI.SCHEME_ENGINE.eval(new InputStreamReader(new FileInputStream(new File(getPath(),"init.scm")),StandardCharsets.UTF_8));
+			script.eval(new InputStreamReader(new FileInputStream(new File(getPath(),"init.scm")),StandardCharsets.UTF_8));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,"Error in init script",ex);
 		}
+	}
+	public ScriptAPI getScriptAPI(){
+		return script;
 	}
 }
