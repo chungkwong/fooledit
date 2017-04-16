@@ -100,7 +100,7 @@ public class Main extends Application{
 		commandRegistry.put("split_horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
 		commandRegistry.put("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
 		commandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
-		commandRegistry.put("command",()->{input.requestFocus();System.out.println("hello");});
+		commandRegistry.put("command",()->input.requestFocus());
 		commandRegistry.put("next_buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
 		commandRegistry.put("previous_buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
 	}
@@ -236,9 +236,9 @@ public class Main extends Application{
 		launch(args);
 	}
 	private static void checkInstall(){
-		//if(!PATH.exists()){
+		if(!PATH.exists()){
 			restoreToDefault();
-		//}//FIXME remove command
+		}//FIXME remove command
 	}
 	private static void restoreToDefault(){
 		PATH.mkdir();
@@ -269,5 +269,8 @@ public class Main extends Application{
 	}
 	public ScriptAPI getScriptAPI(){
 		return script;
+	}
+	public CommandRegistry getCommandRegistry(){
+		return commandRegistry;
 	}
 }

@@ -15,18 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
+import com.github.chungkwong.jschememin.lib.*;
+import com.github.chungkwong.jschememin.type.*;
+import com.github.chungkwong.jtk.*;
+import com.github.chungkwong.jtk.model.*;
 import java.util.*;
-import java.util.function.*;
+import java.util.stream.*;
 import javax.script.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ScriptEnvironment implements Bindings{
+	private final Main main;
 	private final CommandRegistry commands;
 	private final HashMap<String,Object> bindings=new HashMap<>();
-	public ScriptEnvironment(CommandRegistry commands){
-		this.commands=commands;
+	public ScriptEnvironment(Main main){
+		this.main=main;
+		this.commands=main.getCommandRegistry();
 	}
 	@Override
 	public Object put(String name,Object value){
@@ -38,11 +44,11 @@ public class ScriptEnvironment implements Bindings{
 	}
 	@Override
 	public boolean containsKey(Object key){
-		return bindings.containsKey(key)||commands.get(key.toString())!=null;
+		return bindings.containsKey(key)||commands.containsKey(key);
 	}
 	@Override
 	public Object get(Object key){
-		return bindings.containsKey(key)?bindings.get(key):commands.get(key.toString());
+		return bindings.containsKey(key)?bindings.get(key):pack(commands.get(key));
 	}
 	@Override
 	public Object remove(Object key){
@@ -58,7 +64,7 @@ public class ScriptEnvironment implements Bindings{
 	}
 	@Override
 	public boolean containsValue(Object value){
-		return bindings.containsValue(value)||commands.containsValue(value);
+		return bindings.containsValue(value)||commands.values().stream().map(this::pack).anyMatch((o)->o.equals(value));
 	}
 	@Override
 	public void clear(){
@@ -70,11 +76,11 @@ public class ScriptEnvironment implements Bindings{
 	}
 	@Override
 	public Collection<Object> values(){
-		return new BiSet<>(bindings.values(),commands.values());
+		return new BiSet<>(bindings.values(),commands.values().stream().map(this::pack).collect(Collectors.toSet()));
 	}
 	@Override
 	public Set<Entry<String,Object>> entrySet(){
-		return new BiSet<>(bindings.entrySet(),commands.entrySet());
+		return new BiSet<>(bindings.entrySet(),commands.entrySet().stream().collect(Collectors.toMap((e)->e.getKey(),(e)->pack(e.getValue()))).entrySet());
 	}
 	private static class BiSet<T> extends AbstractSet<T>{
 		private final Collection<T> set1,set2;
@@ -101,25 +107,10 @@ public class ScriptEnvironment implements Bindings{
 			return set1.size()+set2.size();
 		}
 	}
-	public static void main(String[] args){
-		ScriptEngineManager scriptEngineManager=new ScriptEngineManager();
-		ScriptEngine engine=scriptEngineManager.getEngineByName("nashorn");
-		CommandRegistry commandRegistry=new CommandRegistry();
-		commandRegistry.put("command",()->System.err.println("fired"));
-		Bindings bindings=new ScriptEnvironment(commandRegistry);
-		bindings.put("yyy",new Function<String,Integer>() {
-			@Override
-			public Integer apply(String t){
-				System.out.println("got: "+t);
-				return 12;
-			}
+	private ScmObject pack(Command command){
+		return new NativeEvaluable((o)->{
+			command.accept(main);
+			return ScmNil.NIL;
 		});
-		try{
-			engine.eval("print(yyy('bad')+5);",bindings);
-			engine.eval("command();",bindings);
-		}catch(final ScriptException se){
-			se.printStackTrace();
-		}
-		System.out.println(bindings.entrySet());
 	}
 }

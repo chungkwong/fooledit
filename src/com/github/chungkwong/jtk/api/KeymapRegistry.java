@@ -37,14 +37,17 @@ public class KeymapRegistry{
 		this.main=main;
 		map.putAll((Map<String,String>)JSONConvertor.fromJSONStuff(json));
 		node.addEventFilter(KeyEvent.ANY,(KeyEvent e)->{
+			System.err.println(e);
 			if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
 				if(ignore){
 					ignore=false;
 					e.consume();
 				}
 			}else if(e.getEventType().equals(KeyEvent.KEY_PRESSED)){
-				if(e.getCode().isModifierKey())
+				if(e.getCode().isModifierKey()){
+					e.consume();
 					return;
+				}
 				String code=curr==null?encode(e):curr+' '+encode(e);
 				String next=map.ceilingKey(code);
 				if(code.equals(next)){

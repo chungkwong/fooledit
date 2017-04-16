@@ -27,7 +27,7 @@ public class ScriptAPI{
 	private final SimpleScriptContext CONTEXT;
 	public ScriptAPI(com.github.chungkwong.jtk.Main main){
 		this.CONTEXT=new SimpleScriptContext();
-		//CONTEXT.setBindings(new ScriptEnvironment(main.getMenuRegistry()),SimpleScriptContext.GLOBAL_SCOPE);
+		CONTEXT.setBindings(new ScriptEnvironment(main),SimpleScriptContext.GLOBAL_SCOPE);
 	}
 	public Object eval(Reader reader) throws ScriptException{
 		return SCHEME_ENGINE.eval(reader,CONTEXT);
