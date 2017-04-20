@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.editor.lex;
+import com.github.chungkwong.jtk.util.*;
 import java.util.*;
 import java.util.regex.*;
 /**
@@ -22,13 +23,18 @@ import java.util.regex.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class NaiveLex implements Lex{
-	private final HashMap<String,Pattern> types=new HashMap<>();
+	private final Map<Integer,Map<Pattern,Pair<String,Integer>>> types=new HashMap<>();
 	public NaiveLex(){
 
 	}
 	@Override
-	public void addType(String type,String regex){
-		types.put(type,Pattern.compile(regex));
+	public void addType(int status,String regex,String type,int newStatus){
+		Map<Pattern,Pair<String,Integer>> map=types.get(status);
+		if(map==null){
+			map=new HashMap<>();
+			types.put(status,map);
+		}
+		map.put(Pattern.compile(regex),new Pair<>(type,newStatus));
 	}
 	@Override
 	public Iterator<Token> split(String text){
@@ -38,6 +44,7 @@ public class NaiveLex implements Lex{
 		private final String text;
 		private int index=0;
 		private Token token;
+		private int status=INIT;
 		public TokenIterator(String text){
 			this.text=text;
 		}
@@ -45,12 +52,13 @@ public class NaiveLex implements Lex{
 		public boolean hasNext(){
 			if(token!=null)
 				return true;
-			for(Map.Entry<String,Pattern> entry:types.entrySet()){
-				Matcher matcher=entry.getValue().matcher(text);
+			for(Map.Entry<Pattern,Pair<String,Integer>> entry:types.get(status).entrySet()){
+				Matcher matcher=entry.getKey().matcher(text);
 				matcher.region(index,text.length());
 				if(matcher.lookingAt()){
-					token=new Token(matcher.group(),entry.getKey());
+					token=new Token(matcher.group(),entry.getValue().getKey());
 					index=matcher.end();
+					status=entry.getValue().getValue();
 					return true;
 				}
 			}

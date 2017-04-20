@@ -21,6 +21,7 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface Lex{
-	public void addType(String type,String regex);
-	public Iterator<Token> split(String text);
+	static final int INIT=0;
+	void addType(int status,String regex,String type,int newStatus);
+	Iterator<Token> split(String text);
 }

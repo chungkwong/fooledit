@@ -14,40 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.editor.ui;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
+package com.github.chungkwong.jtk.editor;
+import com.github.chungkwong.jtk.editor.lex.*;
+import java.util.*;
+import org.fxmisc.richtext.*;
+import org.fxmisc.richtext.model.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class SyntaxHighlightSupport{
-	private static int editing=0;//Single thread rule
-	public static void apply(StyleScheme scheme,StyledDocument doc){
-		doc.addDocumentListener(
-			new DocumentListener() {
-			@Override
-			public void insertUpdate(DocumentEvent e){
-				++editing;
-				SwingUtilities.invokeLater(()->update(scheme,doc));
-			}
-			@Override
-			public void removeUpdate(DocumentEvent e){
-				++editing;
-				SwingUtilities.invokeLater(()->update(scheme,doc));
-			}
-			@Override
-			public void changedUpdate(DocumentEvent e){
-
-			}
-		}
-		);
+	private final Lex lex;
+	public SyntaxHighlightSupport(Lex lex){
+		this.lex=lex;
 	}
-	private static void update(StyleScheme scheme,StyledDocument doc){
-		--editing;
-		if(editing==0){
-			scheme.updateStyle(doc);
+	public void apply(CodeArea editor){
+		editor.textProperty().addListener((e,o,n)->editor.setStyleSpans(0,computeHighlighting(n)));
+	}
+	private StyleSpans<Collection<String>> computeHighlighting(String text){
+		StyleSpansBuilder<Collection<String>> spansBuilder=new StyleSpansBuilder<>();
+		Iterator<Token> iter=lex.split(text);
+		while(iter.hasNext()){
+			Token token=iter.next();
+			spansBuilder.add(Collections.singleton(token.getType()),token.getText().length());
 		}
+		return spansBuilder.create();
 	}
 }
