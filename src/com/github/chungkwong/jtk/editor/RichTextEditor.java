@@ -15,10 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.editor;
+import com.github.chungkwong.json.*;
+import com.github.chungkwong.jtk.api.*;
+import com.github.chungkwong.jtk.control.*;
 import com.github.chungkwong.jtk.editor.lex.*;
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.logging.*;
 import javafx.application.*;
 import static javafx.application.Application.launch;
 import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.stage.*;
 import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.*;
@@ -32,8 +40,14 @@ public class RichTextEditor extends Application{
 		CodeArea editor=new CodeArea();
 		editor.setParagraphGraphicFactory(LineNumberFactory.get(editor));
 		new SyntaxHighlightSupport(getExampleLex()).apply(editor);
+		new CompleteSupport(AutoCompleteProvider.createSimple(Arrays.asList(
+				AutoCompleteHint.create("c","c","doc: c"),
+				AutoCompleteHint.create("cd","cd","doc: cd")
+		))).apply(editor);
+		Popup popup=new Popup();
+		popup.getContent().add(new Label("hello"));
 		Scene scene=new Scene(new VirtualizedScrollPane(editor));
-		scene.getStylesheets().add(RichTextEditor.class.getResource("xml.css").toExternalForm());
+		scene.getStylesheets().add(RichTextEditor.class.getResource("highlight.css").toExternalForm());
 		stage.setScene(scene);
 		stage.show();
 		editor.requestFocus();
@@ -46,9 +60,11 @@ public class RichTextEditor extends Application{
 	}
 	private static Lex getExampleLex(){
 		NaiveLex lex=new NaiveLex();
-		lex.addType(INIT,"[a-zA-Z]+","word",INIT);
-		lex.addType(INIT,"[0-9]+","number",INIT);
-		lex.addType(INIT,"[^0-9a-zA-Z]","other",INIT);
+		try{
+			LexBuilder.fromJSON(Helper.readText(new InputStreamReader(RichTextEditor.class.getResourceAsStream("lex.json"),StandardCharsets.UTF_8)),lex);
+		}catch(IOException|SyntaxException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
 		return lex;
 	}
 	private static final int INIT=Lex.INIT;

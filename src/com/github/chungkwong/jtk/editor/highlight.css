@@ -1,0 +1,9 @@
+.comment {
+    -fx-fill: gray;
+}
+.key {
+    -fx-fill: blue;
+}
+.value {
+    -fx-fill: green;
+}

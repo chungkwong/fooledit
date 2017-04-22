@@ -34,7 +34,7 @@ public class NaiveLex implements Lex{
 			map=new HashMap<>();
 			types.put(status,map);
 		}
-		map.put(Pattern.compile(regex),new Pair<>(type,newStatus));
+		map.put(Pattern.compile(regex,Pattern.DOTALL|Pattern.MULTILINE),new Pair<>(type,newStatus));
 	}
 	@Override
 	public Iterator<Token> split(String text){
