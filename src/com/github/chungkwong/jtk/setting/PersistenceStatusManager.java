@@ -60,12 +60,12 @@ public class PersistenceStatusManager{
 	private static final StringConverter DEFAULT_CONVERTER=new StringConverter() {
 		@Override
 		public String toString(Object t){
-			return JSONConvertor.toJSON(t);
+			return JSONEncoder.encode(t);
 		}
 		@Override
 		public Object fromString(String string){
 			try{
-				return JSONConvertor.fromJSON(string);
+				return JSONDecoder.decode(string);
 			}catch(IOException|SyntaxException ex){
 				throw new RuntimeException(ex);
 			}

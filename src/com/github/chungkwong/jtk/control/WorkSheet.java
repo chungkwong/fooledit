@@ -74,35 +74,34 @@ public class WorkSheet extends BorderPane{
 		setCenter(node);
 		node.requestFocus();
 	}
-	private static final JSONString DIRECTION=new JSONString("direction");
-	private static final JSONString DIVIDERS=new JSONString("dividers");
-	private static final JSONString CHILDREN=new JSONString("children");
-	private static final JSONString EDITOR=new JSONString("editor");
-	private static final JSONString BUFFER=new JSONString("buffer");
-	public JSONStuff toJSON(){
+	private static final String DIRECTION="direction";
+	private static final String DIVIDERS="dividers";
+	private static final String CHILDREN="children";
+	private static final String EDITOR="editor";
+	private static final String BUFFER="buffer";
+	public Map<Object,Object> toJSON(){
 		Node center=getCenter();
-		HashMap<JSONStuff,JSONStuff> map=new HashMap<>();
+		HashMap<Object,Object> map=new HashMap<>();
 		if(isSplit()){
-			map.put(DIRECTION,new JSONString(((SplitPane)center).getOrientation().name()));
-			map.put(DIVIDERS,JSONConvertor.toJSONStuff(Arrays.stream(((SplitPane)center).getDividerPositions()).boxed().collect(Collectors.toList())));
-			map.put(CHILDREN,new JSONArray(((SplitPane)center).getItems().stream().map((c)->((WorkSheet)c).toJSON()).collect(Collectors.toList())));
+			map.put(DIRECTION,((SplitPane)center).getOrientation().name());
+			map.put(DIVIDERS,Arrays.stream(((SplitPane)center).getDividerPositions()).boxed().collect(Collectors.toList()));
+			map.put(CHILDREN,((SplitPane)center).getItems().stream().map((c)->((WorkSheet)c).toJSON()).collect(Collectors.toList()));
 		}else{
-			map.put(EDITOR,new JSONString(getDataEditor().getClass().getName()));
-			map.put(BUFFER,JSONConvertor.toJSONStuff(DataObjectRegistry.getProperties(getDataObject())));
+			map.put(EDITOR,getDataEditor().getClass().getName());
+			map.put(BUFFER,DataObjectRegistry.getProperties(getDataObject()));
 		}
-		return new JSONObject(map);
+		return map;
 	}
-	public static WorkSheet fromJSON(JSONStuff json){
-		Map<JSONStuff,JSONStuff> members=((JSONObject)json).getMembers();
-		if(members.containsKey(DIRECTION)){
+	public static WorkSheet fromJSON(Map<Object,Object> json){
+		if(json.containsKey(DIRECTION)){
 			SplitPane pane=new SplitPane();
-			pane.setOrientation(Orientation.valueOf(((JSONString)members.get(DIRECTION)).getValue()));
-			pane.getItems().setAll(((JSONArray)members.get(CHILDREN)).getElements().stream().map((o)->fromJSON(o)).toArray(Node[]::new));
-			pane.setDividerPositions(((JSONArray)members.get(DIVIDERS)).getElements().stream().mapToDouble((o)->((JSONNumber)o).getValue().doubleValue()).toArray());
+			pane.setOrientation(Orientation.valueOf((String)json.get(DIRECTION)));
+			pane.getItems().setAll(((List<Map<Object,Object>>)json.get(CHILDREN)).stream().map((o)->fromJSON(o)).toArray(Node[]::new));
+			pane.setDividerPositions(((List<Number>)json.get(DIVIDERS)).stream().mapToDouble((o)->o.doubleValue()).toArray());
 			return new WorkSheet(pane);
 		}else{
-			DataObject buffer=DataObjectRegistry.get((JSONObject)members.get(BUFFER));
-			String editorName=((JSONString)members.get(EDITOR)).getValue();
+			DataObject buffer=DataObjectRegistry.get(json.get(BUFFER));
+			String editorName=(String)json.get(EDITOR);
 			DataEditor editor=DataObjectTypeRegistry.getDataEditors(buffer.getClass()).stream().
 					filter((e)->e.getClass().getName().equals(editorName)).findFirst().get();
 			return new WorkSheet(buffer,editor);
@@ -123,12 +122,12 @@ public class WorkSheet extends BorderPane{
 	public static final javafx.util.StringConverter<WorkSheet> CONVERTOR=new javafx.util.StringConverter<WorkSheet>(){
 		@Override
 		public String toString(WorkSheet t){
-			return t.toJSON().toString();
+			return JSONEncoder.encode(t.toJSON());
 		}
 		@Override
 		public WorkSheet fromString(String string){
 			try{
-				return fromJSON(JSONParser.parse(string));
+				return fromJSON((Map<Object,Object>)JSONDecoder.decode(string));
 			}catch(IOException|SyntaxException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 				return new WorkSheet(null);

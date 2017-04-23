@@ -84,8 +84,8 @@ public class SettingManager{
 			this.id=id;
 			this.meta=new Cache<>(()->{
 				try{
-					JSONObject json=(JSONObject)JSONParser.parse(new InputStreamReader(new FileInputStream(getFile(id+".json")),StandardCharsets.UTF_8));
-					return json.getMembers().entrySet().stream().collect(Collectors.toMap((e)->((JSONString)e.getKey()).getValue(),(e)->OptionDescriptor.fromJSONObject((JSONObject)e.getValue())));
+					Map<Object,Object> json=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(getFile(id+".json")),StandardCharsets.UTF_8));
+					return json.entrySet().stream().collect(Collectors.toMap((e)->(String)e.getKey(),(e)->OptionDescriptor.fromJSONObject((Map<Object,Object>)e.getValue())));
 				}catch(IOException|SyntaxException ex){
 					Logger.getGlobal().log(Level.SEVERE,null,ex);
 					return Collections.emptyMap();

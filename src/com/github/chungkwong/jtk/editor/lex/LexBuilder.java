@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class LexBuilder{
 	public static void fromJSON(String json,Lex lex) throws IOException, SyntaxException{
-		Map<String,Object> obj=(Map<String,Object>)JSONConvertor.fromJSON(json);
+		Map<String,Object> obj=(Map<String,Object>)JSONDecoder.decode(json);
 		Map<String,Number> states=(Map<String,Number>)obj.get("states");
 		List<Map<String,Object>> rules=(List<Map<String,Object>>)obj.get("rules");
 		for(Map<String,Object> rule:rules){

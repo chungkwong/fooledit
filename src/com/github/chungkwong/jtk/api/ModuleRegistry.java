@@ -56,10 +56,10 @@ public class ModuleRegistry{
 		return installed;
 	}
 	public static List<ModuleDescriptor> listDownloadable(){
-		String url=((JSONString)Main.loadJSON("module.json").getMembers().get(new JSONString("repository"))).getValue();
+		String url=(String)Main.loadJSON("module.json").get("repository");
 		try(BufferedReader in=new BufferedReader(new InputStreamReader(new URL(url).openStream(),StandardCharsets.UTF_8))){
-			return ((JSONArray)JSONParser.parse(in)).getElements().stream().
-					map((e)->ModuleDescriptor.fromJSON((JSONObject)e)).collect(Collectors.toList());
+			return ((List<Map<Object,Object>>)JSONDecoder.decode(in)).stream().
+					map((e)->ModuleDescriptor.fromJSON(e)).collect(Collectors.toList());
 		}catch(IOException|SyntaxException ex){
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
 			return Collections.emptyList();
@@ -94,9 +94,9 @@ public class ModuleRegistry{
 	}
 	public void install(File dir) throws BackingStoreException, IOException, SyntaxException{
 		String manifest=new String(Files.readAllBytes(new File(dir,"manifest.json").toPath()),StandardCharsets.UTF_8);
-		JSONObject object=(JSONObject)JSONParser.parse(manifest);
-		String cls=((JSONString)object.getMembers().get(new JSONString("class"))).getValue();
-		String path=new URL(dir.toURI().toURL(),((JSONString)object.getMembers().get(new JSONString("classpath"))).getValue()).toString();
+		Map<Object,Object> object=(Map<Object,Object>)JSONDecoder.decode(manifest);
+		String cls=(String)object.get("class");
+		String path=new URL(dir.toURI().toURL(),(String)object.get("classpath")).toString();
 		paths.put(cls,path);
 		paths.flush();
 		dirs.put(cls,dir.getAbsolutePath());

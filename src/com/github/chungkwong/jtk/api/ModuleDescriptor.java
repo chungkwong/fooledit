@@ -16,7 +16,6 @@
  */
 package com.github.chungkwong.jtk.api;
 import com.github.chungkwong.json.*;
-import java.io.*;
 import java.util.*;
 /**
  *
@@ -60,38 +59,34 @@ public class ModuleDescriptor{
 		return versionRevise;
 	}
 	public String toJSON(){
-		Map<JSONStuff,JSONStuff> object=new HashMap<>();
-		object.put(NAME,new JSONString(getName()));
-		object.put(DESCRIPTION,new JSONString(getDescription()));
-		object.put(LICENSE,new JSONString(getLicense()));
-		object.put(AUTHOR,new JSONString(getAuthor()));
-		object.put(URL,new JSONString(getURL()));
-		object.put(MAJOR_VERSION,new JSONNumber(getVersionMajor()));
-		object.put(MINOR_VERSION,new JSONNumber(getVersionMinor()));
-		object.put(REVISE_VERSION,new JSONNumber(getVersionRevise()));
-		return new JSONObject(null).toString();
+		Map<Object,Object> object=new HashMap<>();
+		object.put(NAME,getName());
+		object.put(DESCRIPTION,getDescription());
+		object.put(LICENSE,getLicense());
+		object.put(AUTHOR,getAuthor());
+		object.put(URL,getURL());
+		object.put(MAJOR_VERSION,getVersionMajor());
+		object.put(MINOR_VERSION,getVersionMinor());
+		object.put(REVISE_VERSION,getVersionRevise());
+		return JSONEncoder.encode(object);
 	}
-	public static ModuleDescriptor fromJSON(String json) throws SyntaxException, IOException{
-		return fromJSON((JSONObject)JSONParser.parse(json));
-	}
-	public static ModuleDescriptor fromJSON(JSONObject json){
-		Map<JSONStuff,JSONStuff> object=json.getMembers();
-		String name=((JSONString)object.get(NAME)).getValue();
-		String description=((JSONString)object.get(DESCRIPTION)).getValue();
-		String author=((JSONString)object.get(AUTHOR)).getValue();
-		String license=((JSONString)object.get(LICENSE)).getValue();
-		String url=((JSONString)object.get(URL)).getValue();
-		int versionMajor=((JSONNumber)object.get(MAJOR_VERSION)).getValue().intValue();
-		int versionMinor=((JSONNumber)object.get(MINOR_VERSION)).getValue().intValue();
-		int versionRevise=((JSONNumber)object.get(REVISE_VERSION)).getValue().intValue();
+	public static ModuleDescriptor fromJSON(Map<Object,Object> object){
+		String name=(String)object.get(NAME);
+		String description=(String)object.get(DESCRIPTION);
+		String author=(String)object.get(AUTHOR);
+		String license=(String)object.get(LICENSE);
+		String url=(String)object.get(URL);
+		int versionMajor=((Number)object.get(MAJOR_VERSION)).intValue();
+		int versionMinor=((Number)object.get(MINOR_VERSION)).intValue();
+		int versionRevise=((Number)object.get(REVISE_VERSION)).intValue();
 		return new ModuleDescriptor(name,description,author,license,url,versionMajor,versionMinor,versionRevise);
 	}
-	private static final JSONString NAME=new JSONString("name");
-	private static final JSONString DESCRIPTION=new JSONString("description");
-	private static final JSONString LICENSE=new JSONString("license");
-	private static final JSONString AUTHOR=new JSONString("author");
-	private static final JSONString URL=new JSONString("url");
-	private static final JSONString MAJOR_VERSION=new JSONString("version_major");
-	private static final JSONString MINOR_VERSION=new JSONString("version_minor");
-	private static final JSONString REVISE_VERSION=new JSONString("version_revise");
+	private static final String NAME="name";
+	private static final String DESCRIPTION="description";
+	private static final String LICENSE="license";
+	private static final String AUTHOR="author";
+	private static final String URL="url";
+	private static final String MAJOR_VERSION="version_major";
+	private static final String MINOR_VERSION="version_minor";
+	private static final String REVISE_VERSION="version_revise";
 }

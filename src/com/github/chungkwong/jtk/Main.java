@@ -218,12 +218,12 @@ public class Main extends Application{
 	public static File getPath(){
 		return PATH;
 	}
-	public static JSONObject loadJSON(String name){
-		JSONObject obj;
+	public static Map<Object,Object> loadJSON(String name){
+		Map<Object,Object> obj;
 		try{
-			obj=(JSONObject)JSONParser.parse(new InputStreamReader(new FileInputStream(new File(getPath(),name)),StandardCharsets.UTF_8));
+			obj=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(new File(getPath(),name)),StandardCharsets.UTF_8));
 		}catch(IOException|SyntaxException ex){
-			obj=new JSONObject(Collections.emptyMap());
+			obj=Collections.emptyMap();
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 		return obj;

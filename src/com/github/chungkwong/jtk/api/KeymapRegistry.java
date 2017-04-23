@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
-import com.github.chungkwong.json.*;
 import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.model.*;
 import java.util.*;
@@ -32,12 +31,11 @@ public class KeymapRegistry{
 	private String curr=null;
 	private static final StringBuilder buf=new StringBuilder();
 	boolean ignore=false;
-	public KeymapRegistry(JSONObject json,Node node,Main main){
+	public KeymapRegistry(Object json,Node node,Main main){
 		this.node=node;
 		this.main=main;
-		map.putAll((Map<String,String>)JSONConvertor.fromJSONStuff(json));
+		map.putAll((Map<String,String>)json);
 		node.addEventFilter(KeyEvent.ANY,(KeyEvent e)->{
-			System.err.println(e);
 			if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
 				if(ignore){
 					ignore=false;

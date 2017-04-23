@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
-import com.github.chungkwong.json.*;
 import com.github.chungkwong.jtk.model.*;
 import com.github.chungkwong.jtk.setting.*;
 import java.net.*;
@@ -57,8 +56,8 @@ public class DataObjectRegistry{
 	public static String getMIME(DataObject data){
 		return (String)properties.get(data).get(MIME);
 	}
-	public static DataObject get(JSONObject json){
-		Map<String,String> prop=(Map<String,String>)JSONConvertor.fromJSONStuff(json);
+	public static DataObject get(Object json){
+		Map<String,String> prop=(Map<String,String>)json;
 		String type=prop.get(TYPE);
 		DataObjectType builder=DataObjectTypeRegistry.getDataObjectTypes().stream().filter((t)->t.getClass().getName().equals(type)).findFirst().get();
 		DataObject object;

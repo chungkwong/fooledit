@@ -43,25 +43,22 @@ public class OptionDescriptor{
 	public String getDefaultValue(){
 		return defaultValue;
 	}
-	private static final JSONString SHORT_DESCRIPTION=new JSONString("short_description");
-	private static final JSONString LONG_DESCRIPTION=new JSONString("long_description");
-	private static final JSONString TYPE=new JSONString("type");
-	private static final JSONString DEFAULT=new JSONString("default_value");
-	private JSONObject toJSONObject(){
-		return new JSONObject(Helper.hashMap(SHORT_DESCRIPTION,new JSONString(shortDescription),
-				LONG_DESCRIPTION,new JSONString(longDescription),
-				TYPE,new JSONString(type),
-				DEFAULT,new JSONString(defaultValue)));
+	private static final String SHORT_DESCRIPTION="short_description";
+	private static final String LONG_DESCRIPTION="long_description";
+	private static final String TYPE="type";
+	private static final String DEFAULT="default_value";
+	private Map<Object,Object> toJSONObject(){
+		return Helper.hashMap(SHORT_DESCRIPTION,shortDescription,
+				LONG_DESCRIPTION,longDescription,
+				TYPE,type,
+				DEFAULT,defaultValue);
 	}
-	static OptionDescriptor fromJSONObject(JSONObject obj){
-		Map<JSONStuff,JSONStuff> table=obj.getMembers();
-		return new OptionDescriptor(((JSONString)table.get(SHORT_DESCRIPTION)).getValue(),
-				((JSONString)table.get(LONG_DESCRIPTION)).getValue(),
-				((JSONString)table.get(TYPE)).getValue(),
-				((JSONString)table.get(DEFAULT)).getValue());
+	static OptionDescriptor fromJSONObject(Map<Object,Object> table){
+		return new OptionDescriptor((String)table.get(SHORT_DESCRIPTION),
+				(String)table.get(LONG_DESCRIPTION),(String)table.get(TYPE),(String)table.get(DEFAULT));
 	}
 	@Override
 	public String toString(){
-		return toJSONObject().toString();
+		return JSONEncoder.encode(toJSONObject());
 	}
 }
