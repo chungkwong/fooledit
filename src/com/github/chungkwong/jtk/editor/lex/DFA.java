@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.editor.lex;
-import com.github.chungkwong.idem.util.IntCheckPointIterator;
 import com.github.chungkwong.jtk.util.*;
 import java.util.*;
 /**

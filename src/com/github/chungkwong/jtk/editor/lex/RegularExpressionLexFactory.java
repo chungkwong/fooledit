@@ -40,7 +40,7 @@ public class RegularExpressionLexFactory implements Lex{
 			machine.prepareForRun();
 			changed=false;
 		}
-		return new RegularExpressionLex(new IntCheckPointIterator());//FIXME
+		return new RegularExpressionLex(new IntCheckPointIterator(text.codePoints().iterator()));//FIXME
 	}
 	private class RegularExpressionLex implements Iterator<Token>{
 		private final IntCheckPointIterator src;

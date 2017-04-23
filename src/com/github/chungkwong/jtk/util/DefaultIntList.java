@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.github.chungkwong.idem.util;
+package com.github.chungkwong.jtk.util;
 import java.util.*;
 import java.util.function.*;
 /**

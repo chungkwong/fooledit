@@ -61,7 +61,7 @@ public final class NFA{
 		return isAccepted(input,init);
 	}
 	public boolean isAccepted(IntCheckPointIterator input,State start){
-		StateSet result=run(input,start).getFirst();
+		StateSet result=run(input,start).getKey();
 		return !input.hasNext()&&result!=null&&result.contains(accept);
 	}
 	public State getInitState(){
