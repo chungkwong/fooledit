@@ -14,27 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.github.chungkwong.jtk.editor.lex;
-
+package com.github.chungkwong.jtk.editor.parser;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AmbiguousException extends RuntimeException{
-
-	/**
-	 * Creates a new instance of <code>Ambiguous</code> without detail message.
-	 */
-	public AmbiguousException() {
+public class SymbolInstance<T>{
+	private final String symbol;
+	private final T semanticValue;
+	public SymbolInstance(String symbol,T semanticValue){
+		this.symbol=symbol;
+		this.semanticValue=semanticValue;
 	}
-
-
-	/**
-	 * Constructs an instance of <code>Ambiguous</code> with the specified detail message.
-	 * @param msg the detail message.
-	 */
-	public AmbiguousException(String msg) {
-		super(msg);
+	public String getSymbol(){
+		return symbol;
+	}
+	public T getSemanticValue(){
+		return semanticValue;
+	}
+	@Override
+	public String toString(){
+		return semanticValue+"("+symbol+")";
 	}
 }

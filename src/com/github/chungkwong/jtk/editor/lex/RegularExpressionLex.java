@@ -21,10 +21,10 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class RegularExpressionLexFactory implements Lex{
+public class RegularExpressionLex implements Lex{
 	private final NFA machine=new NFA();
 	private boolean changed=true;
-	public RegularExpressionLexFactory(){
+	public RegularExpressionLex(){
 	}
 	@Override
 	public void addType(int status,String regex,String type,int newStatus){
@@ -40,11 +40,11 @@ public class RegularExpressionLexFactory implements Lex{
 			machine.prepareForRun();
 			changed=false;
 		}
-		return new RegularExpressionLex(new IntCheckPointIterator(text.codePoints().iterator()));//FIXME
+		return new TokenIterator(new IntCheckPointIterator(text.codePoints().iterator()));//FIXME
 	}
-	private class RegularExpressionLex implements Iterator<Token>{
+	private class TokenIterator implements Iterator<Token>{
 		private final IntCheckPointIterator src;
-		public RegularExpressionLex(IntCheckPointIterator src){
+		public TokenIterator(IntCheckPointIterator src){
 			this.src=src;
 		}
 		@Override
@@ -62,15 +62,4 @@ public class RegularExpressionLexFactory implements Lex{
 			return src.hasNext();
 		}
 	}
-	/*public static void main(String[] args){
-		RegularExpressionLexFactory factory=new RegularExpressionLexFactory();
-		factory.addTokenType("NUMBER","[0-9]+");
-		factory.addTokenType("WORD","[a-zA-Z]+");
-		factory.addTokenType("OTHER","[^0-9a-zA-Z]");
-		Lex lex=factory.createLex(new IntCheckPointIterator("fe2672j-=".codePoints().iterator()));
-		Token t;
-		while(lex.hasNext()){
-			System.out.println(lex.next());
-		}
-	}*/
 }

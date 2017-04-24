@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,27 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.github.chungkwong.jtk.editor.lex;
+package com.github.chungkwong.idem.lib.lang.common.parser;
 
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AmbiguousException extends RuntimeException{
+public class LL1Parser{
 
-	/**
-	 * Creates a new instance of <code>Ambiguous</code> without detail message.
-	 */
-	public AmbiguousException() {
-	}
-
-
-	/**
-	 * Constructs an instance of <code>Ambiguous</code> with the specified detail message.
-	 * @param msg the detail message.
-	 */
-	public AmbiguousException(String msg) {
-		super(msg);
-	}
 }
