@@ -64,11 +64,11 @@ public class NaiveParser implements Parser{
 					ProductionRule rule=rules.get(i);
 					String[] comp=rule.getMember();
 					for(int j=0;j<comp.length;j++){
-						if(comp[i].equals(cand)){
+						if(comp[j].equals(cand)){
 							String[] reducedComp=arrayDelete(j,comp);
 							int k=j;
 							rules.add(new ProductionRule(rule.getTarget(),reducedComp,
-									(a)->rule.apply((SymbolInstance[])arrayInsert(k,a)).getSemanticValue()));
+									(a)->rule.apply((SymbolInstance[])arrayInsert(k,zip(a,rule))).getSemanticValue()));
 							break;
 						}
 					}
@@ -76,17 +76,23 @@ public class NaiveParser implements Parser{
 			}
 		}
 	}
-	private static <T> T[] arrayDelete(int index,T[] array){
-		Object[] deleted=new Object[array.length-1];
+	private static SymbolInstance[] zip(Object[] objects,ProductionRule rule){
+		SymbolInstance[] instances=new SymbolInstance[objects.length];
+		for(int i=0;i<objects.length;i++)
+			instances[i]=new SymbolInstance(rule.getMember()[i],objects[i]);
+		return instances;
+	}
+	private static String[] arrayDelete(int index,String[] array){
+		String[] deleted=new String[array.length-1];
 		System.arraycopy(array,0,deleted,0,index);
 		System.arraycopy(array,index+1,deleted,index,array.length-index-1);
-		return (T[])deleted;
+		return deleted;
 	}
-	private static <T> T[] arrayInsert(int index,T[] array){
-		Object[] inserted=new Object[array.length+1];
+	private static SymbolInstance[] arrayInsert(int index,SymbolInstance[] array){
+		SymbolInstance[] inserted=new SymbolInstance[array.length+1];
 		System.arraycopy(array,0,inserted,0,index);
 		System.arraycopy(array,index,inserted,index+1,array.length-index);
-		return (T[])inserted;
+		return inserted;
 	}
 	private static void removeEqualRule(List<ProductionRule> rules){
 		while(true){
@@ -147,14 +153,18 @@ public class NaiveParser implements Parser{
 	@Override
 	public Object parse(Iterator<Token> iter){
 		List<Token> tokens=new ArrayList<>();
-		iter.forEachRemaining((t)->tokens.add(t));
+		iter.forEachRemaining((t)->{
+			if(grammar.getTerminals().containsKey(t.getType()))
+				tokens.add(t);
+		});
 		int n=tokens.size();
 		if(nullable&&n==0)
 			return null;
 		SymbolSet[][] table=new SymbolSet[n][n];
 		for(int i=0;i<n;i++){
 			String type=tokens.get(i).getType();
-			Object val=grammar.getTerminals().get(type).apply(tokens.get(i).getText());
+			Function<String,Object> convertor=grammar.getTerminals().get(type);
+			Object val=convertor.apply(tokens.get(i).getText());
 			addSymbolInstance(i,i,new SymbolInstance(type,val),table);
 			for(ProductionRule rule:grammar.getRules())
 				if(rule.getMember().length==1&&rule.getMember()[0].equals(type))

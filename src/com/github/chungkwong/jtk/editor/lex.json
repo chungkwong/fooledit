@@ -2,8 +2,8 @@
 	"states":{"init":0,"mark":1,"value":2},
 	"rules":[
 		{"old state":"init","new state":"init","type":"comment","regex":"\\s*[#!][^\\r\\n]*"},
-		{"old state":"init","new state":"mark","type":"key","regex":"\\s*([^=:\\\\]|\\\\.)*"},
-		{"old state":"mark","new state":"value","type":"delimiter","regex":"[=:][ \\t]*"},
-		{"old state":"value","new state":"init","type":"value","regex":"\\s*([^\\\\\\r\\n]|\\\\.)*"}
+		{"old state":"init","new state":"mark","type":"key","regex":"\\s*([^=:\\\\\\t ]|\\\\.)*"},
+		{"old state":"mark","new state":"value","type":"delimiter","regex":"[=: \\t][ \\t]*"},
+		{"old state":"value","new state":"init","type":"value","regex":"([^\\\\\\r\\n]|\\\\.)*"}
 		]
 }
