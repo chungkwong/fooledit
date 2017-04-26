@@ -24,7 +24,7 @@ import java.util.function.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class NaiveParser implements Parser{
-	public static final boolean DEBUG=false;
+	public static final boolean DEBUG=true;
 	public static final ParserFactory FACTORY=(g)->new NaiveParser(g);
 	private final ContextFreeGrammar grammar;
 	private final boolean nullable;
@@ -39,82 +39,76 @@ public class NaiveParser implements Parser{
 		List<ProductionRule> rules=new ArrayList<>(grammar.getRules());
 		rules.add(new ProductionRule(start,new String[]{grammar.getStartSymbol()},(v)->v[0]));
 		removeNullRules(rules);
-		removeEqualRule(rules);
+		removeEqualRules(rules,grammar.getTerminals());
 		rewriteRules(rules);
 		return new ContextFreeGrammar(start,rules,grammar.getTerminals());
 	}
 	private static void removeNullRules(List<ProductionRule> rules){
-		while(true){
-			String cand=null;
+		outer:while(true){
 			Iterator<ProductionRule> iter=rules.iterator();
 			while(iter.hasNext()){
 				ProductionRule curr=iter.next();
 				if(curr.getMember().length==0&&!curr.getTarget().equals("$0")){
-					cand=curr.getTarget();
 					iter.remove();
-					break;
+					removeNullRule(curr,rules);
+					continue outer;
 				}
 			}
-			if(cand==null)
-				break;
-			boolean changed=true;
-			while(changed){
-				changed=false;
-				for(int i=0;i<rules.size();i++){
-					ProductionRule rule=rules.get(i);
-					String[] comp=rule.getMember();
-					for(int j=0;j<comp.length;j++){
-						if(comp[j].equals(cand)){
-							String[] reducedComp=arrayDelete(j,comp);
-							int k=j;
-							rules.add(new ProductionRule(rule.getTarget(),reducedComp,
-									(a)->rule.apply((SymbolInstance[])arrayInsert(k,zip(a,rule))).getSemanticValue()));
-							break;
-						}
-					}
+			break;
+		}
+	}
+	private static void removeNullRule(ProductionRule curr,List<ProductionRule> rules){
+		String cand=curr.getTarget();
+		for(int i=0;i<rules.size();i++){
+			ProductionRule rule=rules.get(i);
+				System.err.println(rule);
+			String[] comp=rule.getMember();
+			for(int j=0;j<comp.length;j++){
+				if(comp[j].equals(cand)){
+					String[] reducedComp=arrayDelete(j,comp);
+					int k=j;
+					rules.add(new ProductionRule(rule.getTarget(),reducedComp,
+							(a)->rule.getAction().apply(arrayInsert(k,curr.getAction().apply(EMPTY_ARRAY),a))));
 				}
 			}
 		}
 	}
-	private static SymbolInstance[] zip(Object[] objects,ProductionRule rule){
-		SymbolInstance[] instances=new SymbolInstance[objects.length];
-		for(int i=0;i<objects.length;i++)
-			instances[i]=new SymbolInstance(rule.getMember()[i],objects[i]);
-		return instances;
-	}
+	private static final Object[] EMPTY_ARRAY=new Object[0];
 	private static String[] arrayDelete(int index,String[] array){
 		String[] deleted=new String[array.length-1];
 		System.arraycopy(array,0,deleted,0,index);
 		System.arraycopy(array,index+1,deleted,index,array.length-index-1);
 		return deleted;
 	}
-	private static SymbolInstance[] arrayInsert(int index,SymbolInstance[] array){
-		SymbolInstance[] inserted=new SymbolInstance[array.length+1];
+	private static Object[] arrayInsert(int index,Object element,Object[] array){
+		Object[] inserted=new Object[array.length+1];
 		System.arraycopy(array,0,inserted,0,index);
+		inserted[index]=element;
 		System.arraycopy(array,index,inserted,index+1,array.length-index);
 		return inserted;
 	}
-	private static void removeEqualRule(List<ProductionRule> rules){
-		while(true){
-			String to=null,from=null;
+	private static void removeEqualRules(List<ProductionRule> rules,Map<String,Function<String,Object>> terminals){
+		outer:while(true){
 			Iterator<ProductionRule> iter=rules.iterator();
 			while(iter.hasNext()){
 				ProductionRule curr=iter.next();
-				if(curr.getMember().length==1&&curr.getMember()[0]instanceof String){
-					to=curr.getTarget();
-					from=(String)curr.getMember()[0];
+				if(curr.getMember().length==1&&!terminals.containsKey(curr.getMember()[0])){
 					iter.remove();
-					break;
+					removeEqualRule(curr,rules);
+					continue outer;
 				}
 			}
-			if(to==null)
-				break;
-			int len=rules.size();
-			for(int i=0;i<len;i++){
-				ProductionRule rule=rules.get(i);
-				if(rule.getTarget().equals(from))
-					rules.add(new ProductionRule(to,rule.getMember(),rule.getAction()));
-			}
+			break;
+		}
+	}
+	private static void removeEqualRule(ProductionRule curr,List<ProductionRule> rules){
+		int len=rules.size();
+		String to=curr.getTarget();
+		String from=curr.getMember()[0];
+		for(int i=0;i<len;i++){
+			ProductionRule rule=rules.get(i);
+			if(rule.getTarget().equals(from))
+				rules.add(new ProductionRule(to,rule.getMember(),rule.getAction().andThen((o)->curr.getAction().apply(new Object[]{o}))));
 		}
 	}
 	private static void rewriteRules(List<ProductionRule> rules){
@@ -127,14 +121,14 @@ public class NaiveParser implements Parser{
 			if(len>2){
 				iter.remove();
 				String prev;
-				String curr=new String("$"+(++count));
+				String curr="$"+(++count);
 				iter.add(new ProductionRule(rule.getTarget(),new String[]{comp[0],curr},(p)->{
 					((Object[])p[1])[0]=p[0];
 					return rule.getAction().apply((Object[])p[1]);
 				}));
 				for(int i=1;i<len-2;i++){
 					prev=curr;
-					curr=new String("$"+(++count));
+					curr="$"+(++count);
 					int k=i;
 					iter.add(new ProductionRule(prev,new String[]{comp[i],curr},(p)->{
 						((Object[])p[1])[k]=p[0];

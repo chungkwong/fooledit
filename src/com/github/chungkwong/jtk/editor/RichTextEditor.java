@@ -51,16 +51,16 @@ public class RichTextEditor extends Application{
 		Popup popup=new Popup();
 		popup.getContent().add(new Label("hello"));
 		Scene scene=new Scene(new VirtualizedScrollPane(editor));
-		//NaiveParser parser=new NaiveParser(getExampleGrammar());
+		NaiveParser parser=new NaiveParser(getExampleGrammar());
 		scene.getStylesheets().add(RichTextEditor.class.getResource("highlight.css").toExternalForm());
 		stage.setScene(scene);
 		stage.show();
 		editor.requestFocus();
-		/*stage.focusedProperty().addListener((e,o,n)->{
+		stage.focusedProperty().addListener((e,o,n)->{
 			if(n==false){
 				System.out.println(parser.parse(lex.split(editor.getText())));
 			}
-		});*/
+		});
 	}
 	/**
 	 * @param args the command line arguments
@@ -78,11 +78,12 @@ public class RichTextEditor extends Application{
 		return lex;
 	}
 	private static ContextFreeGrammar getExampleGrammar(){
-		String start="root";
+		String start="properties";
 		List<ProductionRule> rules=new ArrayList<>();
 		rules.add(new ProductionRule("property",new String[]{"key","value"},(o)->new Pair<>(o[0],o[1])));
 		rules.add(new ProductionRule("properties",new String[]{},(o)->new LinkedList<Object>()));
 		rules.add(new ProductionRule("properties",new String[]{"properties","property"},(o)->{
+			System.err.println(Arrays.toString(o));
 			((LinkedList)o[0]).add(o[1]);
 			return o[0];
 		}));
