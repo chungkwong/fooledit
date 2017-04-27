@@ -24,7 +24,7 @@ import java.util.function.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class NaiveParser implements Parser{
-	public static final boolean DEBUG=true;
+	public static final boolean DEBUG=false;
 	public static final ParserFactory FACTORY=(g)->new NaiveParser(g);
 	private final ContextFreeGrammar grammar;
 	private final boolean nullable;

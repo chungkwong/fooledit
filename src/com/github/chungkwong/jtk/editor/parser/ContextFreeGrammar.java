@@ -40,6 +40,9 @@ public class ContextFreeGrammar{
 	public Map<String,Function<String,Object>> getTerminals(){
 		return terminals;
 	}
+	public List<String> getNonterminals(){
+		return rules.stream().map(ProductionRule::getTarget).collect(Collectors.toList());
+	}
 	@Override
 	public String toString(){
 		return rules.stream().map(ProductionRule::toString).collect(Collectors.joining("\n",startSymbol+"\n",""));

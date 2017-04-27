@@ -81,11 +81,13 @@ public class RichTextEditor extends Application{
 		String start="properties";
 		List<ProductionRule> rules=new ArrayList<>();
 		rules.add(new ProductionRule("property",new String[]{"key","value"},(o)->new Pair<>(o[0],o[1])));
-		rules.add(new ProductionRule("properties",new String[]{},(o)->new LinkedList<Object>()));
+		rules.add(new ProductionRule("properties",new String[]{},(o)->Collections.emptyList()));
 		rules.add(new ProductionRule("properties",new String[]{"properties","property"},(o)->{
-			System.err.println(Arrays.toString(o));
-			((LinkedList)o[0]).add(o[1]);
-			return o[0];
+			Collection<Object> o0=(Collection<Object>)o[0];
+			ArrayList<Object> list=new ArrayList<>(o0.size()+1);
+			list.addAll(o0);
+			list.add(o[1]);
+			return list;
 		}));
 		Map<String,Function<String,Object>> terminals=new HashMap<>();
 		terminals.put("key",(s)->s.trim());
