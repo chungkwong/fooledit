@@ -51,7 +51,7 @@ public class RichTextEditor extends Application{
 		Popup popup=new Popup();
 		popup.getContent().add(new Label("hello"));
 		Scene scene=new Scene(new VirtualizedScrollPane(editor));
-		NaiveParser parser=new NaiveParser(getExampleGrammar());
+		Parser parser=new LL1Parser(getExampleGrammar());
 		scene.getStylesheets().add(RichTextEditor.class.getResource("highlight.css").toExternalForm());
 		stage.setScene(scene);
 		stage.show();
@@ -82,11 +82,11 @@ public class RichTextEditor extends Application{
 		List<ProductionRule> rules=new ArrayList<>();
 		rules.add(new ProductionRule("property",new String[]{"key","value"},(o)->new Pair<>(o[0],o[1])));
 		rules.add(new ProductionRule("properties",new String[]{},(o)->Collections.emptyList()));
-		rules.add(new ProductionRule("properties",new String[]{"properties","property"},(o)->{
-			Collection<Object> o0=(Collection<Object>)o[0];
+		rules.add(new ProductionRule("properties",new String[]{"property","properties"},(o)->{
+			Collection<Object> o0=(Collection<Object>)o[1];
 			ArrayList<Object> list=new ArrayList<>(o0.size()+1);
+			list.add(o[0]);
 			list.addAll(o0);
-			list.add(o[1]);
 			return list;
 		}));
 		Map<String,Function<String,Object>> terminals=new HashMap<>();

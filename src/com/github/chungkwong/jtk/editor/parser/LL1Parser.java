@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.editor.parser;
+import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.editor.lex.*;
 import com.github.chungkwong.jtk.util.*;
 import java.util.*;
@@ -24,6 +25,7 @@ import java.util.function.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class LL1Parser implements Parser{
+	private static final boolean DEBUG=true;
 	public static final ParserFactory FACTORY=(g)->new LL1Parser(g);
 	private final String start;
 	private final Map<Pair<String,String>,ProductionRule> table=new HashMap<>();
@@ -34,7 +36,7 @@ public class LL1Parser implements Parser{
 		List<ProductionRule> rules=grammar.getRules();
 		Set<String> nullableSymbols=getNullableSymbols(rules);
 		MultiMap<String,String> first=getFirst(rules,nullableSymbols);
-		MultiMap<String,String> follow=getFollow(rules,nullableSymbols,first);
+		MultiMap<String,String> follow=getFollow(rules,start,nullableSymbols,first);
 		for(ProductionRule rule:rules){
 			String[] comp=rule.getMember();
 			for(int i=0;i<comp.length;i++){
@@ -66,10 +68,14 @@ public class LL1Parser implements Parser{
 				}
 			}
 		}
+		if(DEBUG){
+			System.err.println("nullable:"+set);
+		}
 		return set;
 	}
 	private MultiMap<String,String> getFirst(List<ProductionRule> rules,Set<String> nullableSymbols){
 		MultiMap<String,String> targets=new MultiMap<>();
+		terminals.keySet().forEach((t)->targets.add(t,t));
 		boolean changed=true;
 		while(changed){
 			changed=false;
@@ -95,10 +101,13 @@ public class LL1Parser implements Parser{
 				}
 			}
 		}
+		if(DEBUG)
+			System.err.println("first:"+targets.getMap());
 		return targets;
 	}
-	private MultiMap<String,String> getFollow(List<ProductionRule> rules,Set<String> nullableSymbols,MultiMap<String,String> first){
+	private MultiMap<String,String> getFollow(List<ProductionRule> rules,String start,Set<String> nullableSymbols,MultiMap<String,String> first){
 		MultiMap<String,String> targets=new MultiMap<>();
+		targets.get(start).add("");
 		for(ProductionRule rule:rules){
 			String[] comp=rule.getMember();
 			for(int i=1;i<comp.length;i++){
@@ -116,12 +125,14 @@ public class LL1Parser implements Parser{
 			for(ProductionRule rule:rules){
 				String[] comp=rule.getMember();
 				for(int i=comp.length-1;i>=0;i--){
-					changed|=targets.add(rule.getTarget(),targets.get(comp[i]));
+					changed|=targets.add(comp[i],targets.get(rule.getTarget()));
 					if(!nullableSymbols.contains(comp[i]))
 						break;
 				}
 			}
 		}
+		if(DEBUG)
+			System.err.println("follow:"+targets.getMap());
 		return targets;
 	}
 	@Override
@@ -129,52 +140,45 @@ public class LL1Parser implements Parser{
 		return parse(iter,start).getKey();
 	}
 	private Pair<Object,Token> parse(Iterator<Token> iter,String symbol){
-		return parse(iter,symbol,iter.next());
+		Token tmp=null;
+		while(iter.hasNext()){
+			tmp=iter.next();
+			if(terminals.containsKey(tmp.getType())){
+				return parse(iter,symbol,tmp);
+			}
+		}
+		return parse(iter,symbol,new Token("",""));
 	}
 	private Pair<Object,Token> parse(Iterator<Token> iter,String symbol,Token forward){
 		if(forward.getType().equals(symbol)){
 			return new Pair<>(terminals.get(symbol).apply(forward.getText()),null);
 		}
+		if(DEBUG){
+			System.err.println(symbol+"-"+forward);
+		}
 		ProductionRule rule=table.get(new Pair<>(symbol,forward.getType()));
 		String[] member=rule.getMember();
 		Object[] comp=new Object[member.length];
 		for(int i=0;i<member.length;i++){
-			Pair<Object,Token> tmp=forward==null?parse(iter,symbol):parse(iter,member[i],forward);
+			Pair<Object,Token> tmp=forward==null?parse(iter,member[i]):parse(iter,member[i],forward);
 			comp[i]=tmp.getKey();
 			forward=tmp.getValue();
 		}
 		return new Pair<>(rule.getAction().apply(comp),forward);
 	}
-}
-class MultiMap<K,V>{
-	private final Map<K,Set<V>> map=new HashMap<>();
-	public boolean add(K key,Set<V> values){
-		Set<V> set=get(key);
-		if(set.containsAll(values)){
-			return false;
-		}else{
-			set.addAll(values);
-			return true;
-		}
-	}
-	public boolean add(K key,V values){
-		Set<V> set=get(key);
-		if(set.contains(values)){
-			return false;
-		}else{
-			set.add(values);
-			return true;
-		}
-	}
-	public Set<V> get(K key){
-		Set<V> set=map.get(key);
-		if(set==null){
-			set=new HashSet<>();
-			map.put(key,set);
-		}
-		return set;
-	}
-	public Map<K,Set<V>> getMap(){
-		return map;
+	public static void main(String[] args){
+		String start="START";
+		String word="WORD",number="NUMBER",other="OTHER";
+		ArrayList<ProductionRule> rules=new ArrayList<>();
+		rules.add(new ProductionRule(start,new String[]{word,other,number},
+				(a)->a[0].toString().substring(Integer.parseInt(a[2].toString()))));
+		ContextFreeGrammar cfg=new ContextFreeGrammar(start,rules,Helper.hashMap(
+				word,Function.identity(),number,Function.identity(),other,Function.identity()));
+		Parser parser=new LL1Parser(cfg);
+		RegularExpressionLex lex=new RegularExpressionLex();
+		lex.addType(Lex.INIT,"[0-9]+","NUMBER",Lex.INIT);
+		lex.addType(Lex.INIT,"[a-zA-Z]+","WORD",Lex.INIT);
+		lex.addType(Lex.INIT,"[^0-9a-zA-Z]","OTHER",Lex.INIT);
+		System.out.println(parser.parse(lex.split("abcd-2")));
 	}
 }

@@ -17,8 +17,10 @@
 package com.github.chungkwong.jtk.editor.parser;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.editor.lex.*;
+import com.github.chungkwong.jtk.util.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -61,7 +63,6 @@ public class NaiveParser implements Parser{
 		String cand=curr.getTarget();
 		for(int i=0;i<rules.size();i++){
 			ProductionRule rule=rules.get(i);
-				System.err.println(rule);
 			String[] comp=rule.getMember();
 			for(int j=0;j<comp.length;j++){
 				if(comp[j].equals(cand)){
@@ -88,28 +89,39 @@ public class NaiveParser implements Parser{
 		return inserted;
 	}
 	private static void removeEqualRules(List<ProductionRule> rules,Map<String,Function<String,Object>> terminals){
-		outer:while(true){
-			Iterator<ProductionRule> iter=rules.iterator();
-			while(iter.hasNext()){
-				ProductionRule curr=iter.next();
-				if(curr.getMember().length==1&&!terminals.containsKey(curr.getMember()[0])){
-					iter.remove();
-					removeEqualRule(curr,rules);
-					continue outer;
+		MultiMap<String,String> pairs=new MultiMap<>();
+		Map<Pair<String,String>,Function<Object,Object>> actions=new HashMap<>();
+		Iterator<ProductionRule> iter=rules.iterator();
+		while(iter.hasNext()){
+			ProductionRule curr=iter.next();
+			if(curr.getMember().length==1&&!terminals.containsKey(curr.getMember()[0])){
+				iter.remove();
+				String from=curr.getMember()[0],to=curr.getTarget();
+				pairs.add(from,to);
+				actions.put(new Pair<>(from,to),(o)->curr.getAction().apply(new Object[]{o}));
+			}
+		}
+		boolean changed=true;
+		while(changed){
+			changed=false;
+			for(Map.Entry<String,Set<String>> entry:pairs.getMap().entrySet()){
+				Set<String> old=entry.getValue();
+				Set<Pair<String,String>> cand=old.stream().map((m)->pairs.get(m).stream().map((t)->new Pair<>(m,t))).flatMap((s)->s).collect(Collectors.toSet());
+				for(Pair<String,String> pair:cand){
+					if(!old.contains(pair.getValue())){
+						old.add(pair.getValue());
+						Function<Object,Object> step2=actions.get(pair);
+						Function<Object,Object> step1=actions.get(new Pair<>(entry.getKey(),pair.getKey()));
+						actions.put(new Pair<>(entry.getKey(),pair.getValue()),step1.andThen(step2));
+						changed=true;
+					}
 				}
 			}
-			break;
 		}
-	}
-	private static void removeEqualRule(ProductionRule curr,List<ProductionRule> rules){
-		int len=rules.size();
-		String to=curr.getTarget();
-		String from=curr.getMember()[0];
-		for(int i=0;i<len;i++){
-			ProductionRule rule=rules.get(i);
-			if(rule.getTarget().equals(from))
-				rules.add(new ProductionRule(to,rule.getMember(),rule.getAction().andThen((o)->curr.getAction().apply(new Object[]{o}))));
-		}
+		List<ProductionRule> newRules=rules.stream().map((rule)->pairs.get(rule.getTarget()).stream().
+				map((t)->new ProductionRule(t,rule.getMember(),rule.getAction().andThen(actions.get(new Pair<>(rule.getTarget(),t)))))).
+				flatMap((s)->s).collect(Collectors.toList());
+		rules.addAll(newRules);
 	}
 	private static void rewriteRules(List<ProductionRule> rules){
 		int count=0;
