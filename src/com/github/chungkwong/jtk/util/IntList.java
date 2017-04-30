@@ -641,4 +641,13 @@ public interface IntList{
     default Spliterator.OfInt spliterator() {
         return Spliterators.spliterator(toArray(), Spliterator.ORDERED);
     }
+	default int top(){
+		return get(size()-1);
+	}
+	default int pop(){
+		return removeIndex(size()-1);
+	}
+	default void push(int element){
+		add(element);
+	}
 }

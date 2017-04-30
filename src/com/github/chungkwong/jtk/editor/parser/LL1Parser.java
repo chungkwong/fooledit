@@ -25,7 +25,7 @@ import java.util.function.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class LL1Parser implements Parser{
-	private static final boolean DEBUG=true;
+	private static final boolean DEBUG=false;
 	public static final ParserFactory FACTORY=(g)->new LL1Parser(g);
 	private final String start;
 	private final Map<Pair<String,String>,ProductionRule> table=new HashMap<>();
@@ -35,7 +35,7 @@ public class LL1Parser implements Parser{
 		this.terminals=grammar.getTerminals();
 		List<ProductionRule> rules=grammar.getRules();
 		Set<String> nullableSymbols=getNullableSymbols(rules);
-		MultiMap<String,String> first=getFirst(rules,nullableSymbols);
+		MultiMap<String,String> first=getFirst(rules,nullableSymbols,terminals);
 		MultiMap<String,String> follow=getFollow(rules,start,nullableSymbols,first);
 		for(ProductionRule rule:rules){
 			String[] comp=rule.getMember();
@@ -55,7 +55,7 @@ public class LL1Parser implements Parser{
 			throw new RuntimeException();
 		}
 	}
-	private Set<String> getNullableSymbols(List<ProductionRule> rules){
+	static Set<String> getNullableSymbols(List<ProductionRule> rules){
 		Set<String> set=new HashSet<>();
 		rules.stream().filter((rule)->rule.getMember().length==0).forEach((rule)->set.add(rule.getTarget()));//Not really needed
 		boolean changed=true;
@@ -73,7 +73,7 @@ public class LL1Parser implements Parser{
 		}
 		return set;
 	}
-	private MultiMap<String,String> getFirst(List<ProductionRule> rules,Set<String> nullableSymbols){
+	static MultiMap<String,String> getFirst(List<ProductionRule> rules,Set<String> nullableSymbols,Map<String,Function<String,Object>> terminals){
 		MultiMap<String,String> targets=new MultiMap<>();
 		terminals.keySet().forEach((t)->targets.add(t,t));
 		boolean changed=true;
@@ -105,7 +105,7 @@ public class LL1Parser implements Parser{
 			System.err.println("first:"+targets.getMap());
 		return targets;
 	}
-	private MultiMap<String,String> getFollow(List<ProductionRule> rules,String start,Set<String> nullableSymbols,MultiMap<String,String> first){
+	static MultiMap<String,String> getFollow(List<ProductionRule> rules,String start,Set<String> nullableSymbols,MultiMap<String,String> first){
 		MultiMap<String,String> targets=new MultiMap<>();
 		targets.get(start).add("");
 		for(ProductionRule rule:rules){
