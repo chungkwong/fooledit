@@ -15,26 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.editor.parser;
+import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.editor.lex.*;
 import com.github.chungkwong.jtk.util.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class LR1Parser implements Parser{
-	private static final boolean DEBUG=false;
+	private static final boolean DEBUG=true;
 	public static final ParserFactory FACTORY=(g)->new LR1Parser(g);
 	private final HashMap<String,Action>[] actions;
-	private final HashMap<String,Integer>[] gotos;
+	private HashMap<String,Integer>[] gotos;
 	private final Map<String,Function<String,Object>> terminals;
 	public LR1Parser(ContextFreeGrammar grammar){
 		this.terminals=grammar.getTerminals();
 		List<Set<Tuple<ProductionRule,Integer,String>>> items=getItems(grammar);
 		int len=items.size();
 		actions=new HashMap[len];
-		gotos=new HashMap[len];
 		for(int i=0;i<len;i++){
 			actions[i]=new HashMap<>();
 			for(Tuple<ProductionRule,Integer,String> item:items.get(i)){
@@ -50,35 +51,74 @@ public class LR1Parser implements Parser{
 				}else{
 					String a=rule.getMember()[i];
 					if(terminals.containsKey(a)){
-						actions[i].put(a,new MoveIn(items.indexOf(getGotos(items.get(i),a))));//FIXME too slow
+						actions[i].put(a,new MoveIn(gotos[i].get(a)));
 					}
 				}
 			}
-			gotos[i]=new HashMap<>();//TODO
-
+		}
+		if(DEBUG)
+			printTable();
+	}
+	private void printTable(){
+		for(int i=0;i<actions.length;i++){
+			System.err.print(i);
+			System.err.print(actions[i]);
+			System.err.println(gotos[i]);
 		}
 	}
-	public List<Set<Tuple<ProductionRule,Integer,String>>> getItems(ContextFreeGrammar grammar){
+	private List<Set<Tuple<ProductionRule,Integer,String>>> getItems(ContextFreeGrammar grammar){
+		Set<String> nullable=LL1Parser.getNullableSymbols(grammar.getRules());
+		MultiMap<String,String> first=LL1Parser.getFirst(grammar.getRules(),nullable,terminals);
 		List<Set<Tuple<ProductionRule,Integer,String>>> items=new ArrayList<>();
+		List<HashMap<String,Integer>> gotos0=new ArrayList<>();
 		Set<Tuple<ProductionRule,Integer,String>> init=new HashSet<>();
 		init.add(new Tuple<>(new ProductionRule("$0",new String[]{grammar.getStartSymbol()},(o)->o[0]),0,""));
-		toClosure(init);
-		items.add(init);
-		boolean changed=true;
-		while(changed){
-			changed=false;
-			for(int i=0;i<items)
-		}
-
+		searchItems(init,items,gotos0,nullable,first,grammar.getRules());
+		gotos=gotos0.toArray(new HashMap[0]);//can shrink
 		return items;
 	}
-	public List<Set<Tuple<ProductionRule,Integer,String>>> getGotos(Set<Tuple<ProductionRule,Integer,String>> set,String symbol){
-
+	private void searchItems(Set<Tuple<ProductionRule,Integer,String>> start,List<Set<Tuple<ProductionRule,Integer,String>>> items,
+			List<HashMap<String,Integer>> gotos0,Set<String> nullable,MultiMap<String,String> first,List<ProductionRule> rules){
+		start=toClosure(start,nullable,first,rules);
+		items.add(start);
+		HashMap<String,Integer> next=new HashMap<>();
+		gotos0.add(next);
+		Map<String,Set<Tuple<ProductionRule,Integer,String>>> group=start.stream().
+				filter((entry)->entry.getSecond()<entry.getFirst().getMember().length).
+				map((entry)->new Tuple<>(entry.getFirst(),entry.getSecond()+1,entry.getThird())).
+				collect(Collectors.groupingBy((entry)->entry.getFirst().getMember()[entry.getSecond()-1],Collectors.toSet()));
+		for(Map.Entry<String,Set<Tuple<ProductionRule,Integer,String>>> entry:group.entrySet()){
+			next.put(entry.getKey(),items.size());
+			searchItems(entry.getValue(),items,gotos0,nullable,first,rules);
+		}
 	}
-	public void toClosure(Set<Tuple<ProductionRule,Integer,String>> set){
-
+	public Set<Tuple<ProductionRule,Integer,String>> toClosure(Set<Tuple<ProductionRule,Integer,String>> set,
+			Set<String> nullable,MultiMap<String,String> first,List<ProductionRule> rules){
+		Set<Tuple<ProductionRule,Integer,String>> closure=new HashSet<>();
+		ArrayList<Tuple<ProductionRule,Integer,String>> cand=new ArrayList<>(set);
+		while(closure.addAll(cand)){
+			cand.clear();
+			for(Tuple<ProductionRule,Integer,String> entry:set){
+				String[] members=entry.getFirst().getMember();
+				if(entry.getSecond()>=members.length)
+					continue;
+				String target=members[entry.getSecond()];
+				findFirst:for(ProductionRule rule:rules){
+					if(rule.getTarget().equals(target)){
+						for(int i=entry.getSecond()+1;i<members.length;i++){
+							String symbol=members[i];
+							for(String lookahead:first.get(symbol))
+								cand.add(new Tuple<>(rule,0,lookahead));
+							if(!nullable.contains(symbol))
+								continue findFirst;
+						}
+						cand.add(new Tuple<>(rule,0,entry.getThird()));
+					}
+				}
+			}
+		}
+		return closure;
 	}
-
 	@Override
 	public Object parse(Iterator<Token> iter){
 		DefaultIntList stack=new DefaultIntList();
@@ -123,6 +163,10 @@ public class LR1Parser implements Parser{
 		public int getState(){
 			return state;
 		}
+		@Override
+		public String toString(){
+			return "m"+state;
+		}
 	}
 	class Reduce implements Action{
 		private final ProductionRule rule;
@@ -132,6 +176,30 @@ public class LR1Parser implements Parser{
 		public ProductionRule getRule(){
 			return rule;
 		}
+		@Override
+		public String toString(){
+			return "r"+rule;
+		}
 	}
-	class End implements Action{}
+	class End implements Action{
+		@Override
+		public String toString(){
+			return "acc";
+		}
+	}
+	public static void main(String[] args){
+		String start="START";
+		String word="WORD",number="NUMBER",other="OTHER";
+		ArrayList<ProductionRule> rules=new ArrayList<>();
+		rules.add(new ProductionRule(start,new String[]{word,other,number},
+				(a)->a[0].toString().substring(Integer.parseInt(a[2].toString()))));
+		ContextFreeGrammar cfg=new ContextFreeGrammar(start,rules,Helper.hashMap(
+				word,Function.identity(),number,Function.identity(),other,Function.identity()));
+		Parser parser=new LR1Parser(cfg);
+		RegularExpressionLex lex=new RegularExpressionLex();
+		lex.addType(Lex.INIT,"[0-9]+","NUMBER",Lex.INIT);
+		lex.addType(Lex.INIT,"[a-zA-Z]+","WORD",Lex.INIT);
+		lex.addType(Lex.INIT,"[^0-9a-zA-Z]","OTHER",Lex.INIT);
+		System.out.println(parser.parse(lex.split("abcd-2")));
+	}
 }
