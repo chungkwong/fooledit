@@ -51,4 +51,8 @@ public class MultiMap<K,V>{
 	public Map<K,Set<V>> getMap(){
 		return map;
 	}
+	@Override
+	public String toString(){
+		return map.toString();
+	}
 }

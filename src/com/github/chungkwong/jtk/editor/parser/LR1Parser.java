@@ -49,7 +49,7 @@ public class LR1Parser implements Parser{
 						actions[i].put(t,new Reduce(rule));
 					}
 				}else{
-					String a=rule.getMember()[i];
+					String a=rule.getMember()[item.getSecond()];
 					if(terminals.containsKey(a)){
 						actions[i].put(a,new MoveIn(gotos[i].get(a)));
 					}
@@ -73,13 +73,12 @@ public class LR1Parser implements Parser{
 		List<HashMap<String,Integer>> gotos0=new ArrayList<>();
 		Set<Tuple<ProductionRule,Integer,String>> init=new HashSet<>();
 		init.add(new Tuple<>(new ProductionRule("$0",new String[]{grammar.getStartSymbol()},(o)->o[0]),0,""));
-		searchItems(init,items,gotos0,nullable,first,grammar.getRules());
+		searchItems(toClosure(init,nullable,first,grammar.getRules()),items,gotos0,nullable,first,grammar.getRules());
 		gotos=gotos0.toArray(new HashMap[0]);//can shrink
 		return items;
 	}
 	private void searchItems(Set<Tuple<ProductionRule,Integer,String>> start,List<Set<Tuple<ProductionRule,Integer,String>>> items,
 			List<HashMap<String,Integer>> gotos0,Set<String> nullable,MultiMap<String,String> first,List<ProductionRule> rules){
-		start=toClosure(start,nullable,first,rules);
 		items.add(start);
 		HashMap<String,Integer> next=new HashMap<>();
 		gotos0.add(next);
@@ -88,8 +87,14 @@ public class LR1Parser implements Parser{
 				map((entry)->new Tuple<>(entry.getFirst(),entry.getSecond()+1,entry.getThird())).
 				collect(Collectors.groupingBy((entry)->entry.getFirst().getMember()[entry.getSecond()-1],Collectors.toSet()));
 		for(Map.Entry<String,Set<Tuple<ProductionRule,Integer,String>>> entry:group.entrySet()){
-			next.put(entry.getKey(),items.size());
-			searchItems(entry.getValue(),items,gotos0,nullable,first,rules);
+			Set<Tuple<ProductionRule,Integer,String>> item=toClosure(entry.getValue(),nullable,first,rules);
+			int index=items.indexOf(item);
+			if(items.contains(item)){
+				next.put(entry.getKey(),index);
+			}else{
+				next.put(entry.getKey(),items.size());
+				searchItems(item,items,gotos0,nullable,first,rules);
+			}
 		}
 	}
 	public Set<Tuple<ProductionRule,Integer,String>> toClosure(Set<Tuple<ProductionRule,Integer,String>> set,
@@ -98,7 +103,7 @@ public class LR1Parser implements Parser{
 		ArrayList<Tuple<ProductionRule,Integer,String>> cand=new ArrayList<>(set);
 		while(closure.addAll(cand)){
 			cand.clear();
-			for(Tuple<ProductionRule,Integer,String> entry:set){
+			for(Tuple<ProductionRule,Integer,String> entry:closure){
 				String[] members=entry.getFirst().getMember();
 				if(entry.getSecond()>=members.length)
 					continue;

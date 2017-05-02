@@ -51,7 +51,7 @@ public class RichTextEditor extends Application{
 		Popup popup=new Popup();
 		popup.getContent().add(new Label("hello"));
 		Scene scene=new Scene(new VirtualizedScrollPane(editor));
-		Parser parser=new LL1Parser(getExampleGrammar());
+		Parser parser=new LR1Parser(getExampleGrammar());
 		scene.getStylesheets().add(RichTextEditor.class.getResource("highlight.css").toExternalForm());
 		stage.setScene(scene);
 		stage.show();

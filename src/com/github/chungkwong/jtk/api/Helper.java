@@ -31,6 +31,9 @@ public class Helper{
 			map.put(val[i],val[i+1]);
 		return map;
 	}
+	public static String readText(String resource){
+		return readText(new InputStreamReader(Helper.class.getResourceAsStream(resource),StandardCharsets.UTF_8));
+	}
 	public static String readText(Reader in){
 		return new BufferedReader(in).lines().collect(Collectors.joining("\n"));
 	}
