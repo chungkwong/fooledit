@@ -31,36 +31,32 @@ import static javafx.application.Application.launch;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
-import org.fxmisc.flowless.*;
-import org.fxmisc.richtext.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class RichTextEditor extends Application{
+public class Demo extends Application{
 	@Override
 	public void start(Stage stage) throws Exception{
-		CodeArea editor=new CodeArea();
-		editor.setParagraphGraphicFactory(LineNumberFactory.get(editor));
-		Lex lex=getExampleLex();
-		new SyntaxHighlightSupport(lex).apply(editor);
-		new CompleteSupport(AutoCompleteProvider.createSimple(Arrays.asList(
+		CodeEditor editor=new CodeEditor();
+		editor.setLex(getExampleLex());
+		editor.setAutoCompleteProvider(AutoCompleteProvider.createSimple(Arrays.asList(
 				AutoCompleteHint.create("c","c","doc: c"),
 				AutoCompleteHint.create("cd","cd","doc: cd")
-		))).apply(editor);
+		)));
 		Popup popup=new Popup();
 		popup.getContent().add(new Label("hello"));
-		Scene scene=new Scene(new VirtualizedScrollPane(editor));
+		Scene scene=new Scene(editor);
 		Parser parser=new LR1Parser(getExampleGrammar());
-		scene.getStylesheets().add(RichTextEditor.class.getResource("highlight.css").toExternalForm());
+		scene.getStylesheets().add(Demo.class.getResource("highlight.css").toExternalForm());
 		stage.setScene(scene);
 		stage.show();
 		editor.requestFocus();
-		stage.focusedProperty().addListener((e,o,n)->{
+		/*stage.focusedProperty().addListener((e,o,n)->{
 			if(n==false){
 				System.out.println(parser.parse(lex.split(editor.getText())));
 			}
-		});
+		});*/
 	}
 	/**
 	 * @param args the command line arguments
@@ -71,7 +67,7 @@ public class RichTextEditor extends Application{
 	private static Lex getExampleLex(){
 		NaiveLex lex=new NaiveLex();
 		try{
-			LexBuilder.fromJSON(Helper.readText(new InputStreamReader(RichTextEditor.class.getResourceAsStream("lex.json"),StandardCharsets.UTF_8)),lex);
+			LexBuilder.fromJSON(Helper.readText(new InputStreamReader(Demo.class.getResourceAsStream("lex.json"),StandardCharsets.UTF_8)),lex);
 		}catch(IOException|SyntaxException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}

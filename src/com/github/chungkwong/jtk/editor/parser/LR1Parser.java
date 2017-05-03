@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.editor.parser;
-import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.editor.lex.*;
 import com.github.chungkwong.jtk.util.*;
 import java.util.*;
@@ -26,7 +25,7 @@ import java.util.stream.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class LR1Parser implements Parser{
-	private static final boolean DEBUG=true;
+	private static final boolean DEBUG=false;
 	public static final ParserFactory FACTORY=(g)->new LR1Parser(g);
 	private final HashMap<String,Action>[] actions;
 	private HashMap<String,Integer>[] gotos;
@@ -191,20 +190,5 @@ public class LR1Parser implements Parser{
 		public String toString(){
 			return "acc";
 		}
-	}
-	public static void main(String[] args){
-		String start="START";
-		String word="WORD",number="NUMBER",other="OTHER";
-		ArrayList<ProductionRule> rules=new ArrayList<>();
-		rules.add(new ProductionRule(start,new String[]{word,other,number},
-				(a)->a[0].toString().substring(Integer.parseInt(a[2].toString()))));
-		ContextFreeGrammar cfg=new ContextFreeGrammar(start,rules,Helper.hashMap(
-				word,Function.identity(),number,Function.identity(),other,Function.identity()));
-		Parser parser=new LR1Parser(cfg);
-		RegularExpressionLex lex=new RegularExpressionLex();
-		lex.addType(Lex.INIT,"[0-9]+","NUMBER",Lex.INIT);
-		lex.addType(Lex.INIT,"[a-zA-Z]+","WORD",Lex.INIT);
-		lex.addType(Lex.INIT,"[^0-9a-zA-Z]","OTHER",Lex.INIT);
-		System.out.println(parser.parse(lex.split("abcd-2")));
 	}
 }

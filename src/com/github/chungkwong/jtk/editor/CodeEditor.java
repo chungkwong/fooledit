@@ -15,21 +15,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.editor;
+import com.github.chungkwong.jtk.control.*;
 import com.github.chungkwong.jtk.editor.lex.*;
+import com.github.chungkwong.jtk.editor.parser.*;
 import java.util.*;
+import java.util.logging.*;
+import javafx.beans.value.*;
+import javafx.scene.layout.*;
+import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.*;
 import org.fxmisc.richtext.model.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SyntaxHighlightSupport{
-	private final Lex lex;
-	public SyntaxHighlightSupport(Lex lex){
-		this.lex=lex;
+public class CodeEditor extends BorderPane{
+	private final CodeArea area=new CodeArea();
+	private Lex lex;
+	private Parser parser;
+	public CodeEditor(){
+		area.setParagraphGraphicFactory(LineNumberFactory.get(area));
+		setCenter(new VirtualizedScrollPane(area));
 	}
-	public void apply(CodeArea editor){
-		editor.textProperty().addListener((e,o,n)->editor.setStyleSpans(0,computeHighlighting(n)));
+	private final ChangeListener<String> updateHighlight=(e,o,n)->{
+		if(lex!=null)
+			try{
+				area.setStyleSpans(0,computeHighlighting(n));
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.FINEST,"",ex);
+			}
+	};
+	public void setLex(Lex lex){
+		if(this.lex==null)
+			area.textProperty().addListener(updateHighlight);
+		this.lex=lex;
+		if(lex==null)
+			area.textProperty().removeListener(updateHighlight);
 	}
 	private StyleSpans<Collection<String>> computeHighlighting(String text){
 		StyleSpansBuilder<Collection<String>> spansBuilder=new StyleSpansBuilder<>();
@@ -39,5 +60,9 @@ public class SyntaxHighlightSupport{
 			spansBuilder.add(Collections.singleton(token.getType()),token.getText().length());
 		}
 		return spansBuilder.create();
+	}
+
+	public void setAutoCompleteProvider(AutoCompleteProvider provider){
+		new CompleteSupport(provider).apply(area);
 	}
 }

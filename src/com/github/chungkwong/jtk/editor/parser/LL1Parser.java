@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.editor.parser;
-import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.editor.lex.*;
 import com.github.chungkwong.jtk.util.*;
 import java.util.*;
@@ -165,20 +164,5 @@ public class LL1Parser implements Parser{
 			forward=tmp.getValue();
 		}
 		return new Pair<>(rule.getAction().apply(comp),forward);
-	}
-	public static void main(String[] args){
-		String start="START";
-		String word="WORD",number="NUMBER",other="OTHER";
-		ArrayList<ProductionRule> rules=new ArrayList<>();
-		rules.add(new ProductionRule(start,new String[]{word,other,number},
-				(a)->a[0].toString().substring(Integer.parseInt(a[2].toString()))));
-		ContextFreeGrammar cfg=new ContextFreeGrammar(start,rules,Helper.hashMap(
-				word,Function.identity(),number,Function.identity(),other,Function.identity()));
-		Parser parser=new LL1Parser(cfg);
-		RegularExpressionLex lex=new RegularExpressionLex();
-		lex.addType(Lex.INIT,"[0-9]+","NUMBER",Lex.INIT);
-		lex.addType(Lex.INIT,"[a-zA-Z]+","WORD",Lex.INIT);
-		lex.addType(Lex.INIT,"[^0-9a-zA-Z]","OTHER",Lex.INIT);
-		System.out.println(parser.parse(lex.split("abcd-2")));
 	}
 }

@@ -84,5 +84,4 @@ public class ParserTest{
 		Object result=parser.parse(lex.split("gj=78 3\nbdn: 780"));
 		Assert.assertEquals(result,Helper.hashMap("gj","78 3","bdn","780"));
 	}
-
 }
