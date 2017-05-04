@@ -40,6 +40,8 @@ public class Demo extends Application{
 	public void start(Stage stage) throws Exception{
 		CodeEditor editor=new CodeEditor();
 		editor.setLex(getExampleLex());
+		editor.setParser(new LR1Parser(getExampleGrammar()));
+		editor.syntaxTree().addListener((e,o,n)->System.out.println(n));
 		editor.setAutoCompleteProvider(AutoCompleteProvider.createSimple(Arrays.asList(
 				AutoCompleteHint.create("c","c","doc: c"),
 				AutoCompleteHint.create("cd","cd","doc: cd")
@@ -47,16 +49,10 @@ public class Demo extends Application{
 		Popup popup=new Popup();
 		popup.getContent().add(new Label("hello"));
 		Scene scene=new Scene(editor);
-		Parser parser=new LR1Parser(getExampleGrammar());
 		scene.getStylesheets().add(Demo.class.getResource("highlight.css").toExternalForm());
 		stage.setScene(scene);
 		stage.show();
 		editor.requestFocus();
-		/*stage.focusedProperty().addListener((e,o,n)->{
-			if(n==false){
-				System.out.println(parser.parse(lex.split(editor.getText())));
-			}
-		});*/
 	}
 	/**
 	 * @param args the command line arguments
