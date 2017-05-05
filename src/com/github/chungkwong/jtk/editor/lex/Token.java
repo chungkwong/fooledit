@@ -23,15 +23,20 @@ package com.github.chungkwong.jtk.editor.lex;
 public class Token{
 	private final String text;
 	private final String type;
-	public Token(String text,String type){
+	private final int position;
+	public Token(String text,String type,int position){
 		this.text=text;
 		this.type=type;
+		this.position=position;
 	}
 	public String getText(){
 		return text;
 	}
 	public String getType(){
 		return type;
+	}
+	public int getPosition(){
+		return position;
 	}
 	@Override
 	public String toString(){

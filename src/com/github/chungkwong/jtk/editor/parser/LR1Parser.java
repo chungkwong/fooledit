@@ -156,7 +156,7 @@ public class LR1Parser implements Parser{
 			if(terminals.containsKey(curr.getType()))
 				return curr;
 		}
-		return new Token("","");
+		return new Token("","",-1);
 	}
 	interface Action{}
 	class MoveIn implements Action{

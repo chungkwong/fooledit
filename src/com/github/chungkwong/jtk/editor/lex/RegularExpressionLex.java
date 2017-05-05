@@ -44,6 +44,7 @@ public class RegularExpressionLex implements Lex{
 	}
 	private class TokenIterator implements Iterator<Token>{
 		private final IntCheckPointIterator src;
+		private int index=0;
 		public TokenIterator(IntCheckPointIterator src){
 			this.src=src;
 		}
@@ -53,7 +54,11 @@ public class RegularExpressionLex implements Lex{
 			if(pair.getKey()!=null){
 				String type=pair.getKey().getTag();
 				String text=pair.getValue();
-				return new Token(text,type);
+				Token token=new Token(text,type,index);
+				index+=text.length();
+				return token;
+			}else if(src.hasNext()){
+				return new Token(new String(new int[]{src.nextInt()},0,1),Lex.UNKNOWN,index++);
 			}else
 				return null;
 		}

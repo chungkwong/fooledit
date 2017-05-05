@@ -16,18 +16,27 @@
  */
 package com.github.chungkwong.jtk.editor;
 import com.github.chungkwong.jtk.control.*;
+import com.github.chungkwong.jtk.editor.LineNumberFactory;
 import com.github.chungkwong.jtk.editor.lex.*;
 import com.github.chungkwong.jtk.editor.parser.*;
 import com.github.chungkwong.jtk.util.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.logging.*;
 import javafx.application.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.text.*;
 import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.*;
 import org.fxmisc.richtext.model.*;
+import org.reactfx.collection.*;
+import org.reactfx.value.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -37,8 +46,13 @@ public class CodeEditor extends BorderPane{
 	private Lex lex;
 	private Parser parser;
 	public CodeEditor(){
-		area.setParagraphGraphicFactory(LineNumberFactory.get(area));
+		area.setParagraphGraphicFactory(new LineNumberFactory(area));
 		setCenter(new VirtualizedScrollPane(area));
+	}
+	@Override
+	public void requestFocus(){
+		super.requestFocus();
+		area.requestFocus();
 	}
 	private final RealTimeTask<String> hightlightTask=new RealTimeTask<>((text)->{
 		Platform.runLater(()->{
@@ -62,8 +76,8 @@ public class CodeEditor extends BorderPane{
 	}
 	private StyleSpans<Collection<String>> computeHighlighting(String text){
 		StyleSpansBuilder<Collection<String>> spansBuilder=new StyleSpansBuilder<>();
-		Iterator<Token> iter=lex.split(text);
-		while(iter.hasNext()&&!Thread.interrupted()){
+		Iterator<Token> iter=new InteruptableIterator<>(lex.split(text));
+		while(iter.hasNext()){
 			Token token=iter.next();
 			spansBuilder.add(Collections.singleton(token.getType()),token.getText().length());
 		}
@@ -94,7 +108,7 @@ public class CodeEditor extends BorderPane{
 	}
 	private final Property<Object> syntaxTree=new SimpleObjectProperty<>();
 	private void computeSyntaxTree(String text){
-		syntaxTree.setValue(parser.parse(lex.split(text)));
+		syntaxTree.setValue(parser.parse(new InteruptableIterator<>(lex.split(text))));
 	}
 	public Property<Object> syntaxTree(){
 		return syntaxTree;
@@ -107,10 +121,34 @@ class InteruptableIterator<T> implements Iterator<T>{
 	}
 	@Override
 	public boolean hasNext(){
-		return iter.hasNext()&&!Thread.interrupted();
+		if(Thread.currentThread().isInterrupted()){
+			System.err.println("oop");
+			throw new RuntimeException();
+		}
+		return iter.hasNext();
 	}
 	@Override
 	public T next(){
 		return iter.next();
+	}
+}
+class LineNumberFactory implements IntFunction<Node>{
+	private static final Insets DEFAULT_INSETS=new Insets(0.0,5.0,0.0,5.0);
+	private static final Background BACKGROUND=new Background(new BackgroundFill(Color.LIGHTGRAY,null,null));
+	private static final Font FONT=Font.font("monospace");
+	private final Val<Integer> nParagraphs;
+	LineNumberFactory(CodeArea area){
+		nParagraphs=LiveList.sizeOf(area.getParagraphs());
+	}
+	@Override
+	public Node apply(int idx){
+		Val<String> formatted=nParagraphs.map(n->Integer.toString(idx+1));
+		Label lineNo=new Label();
+		lineNo.setFont(FONT);
+		lineNo.setBackground(BACKGROUND);
+		lineNo.setPadding(DEFAULT_INSETS);
+		lineNo.getStyleClass().add("lineno");
+        lineNo.textProperty().bind(formatted.conditionOnShowing(lineNo));
+		return lineNo;
 	}
 }

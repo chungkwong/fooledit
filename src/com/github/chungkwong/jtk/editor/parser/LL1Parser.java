@@ -146,7 +146,7 @@ public class LL1Parser implements Parser{
 				return parse(iter,symbol,tmp);
 			}
 		}
-		return parse(iter,symbol,new Token("",""));
+		return parse(iter,symbol,new Token("","",-1));
 	}
 	private Pair<Object,Token> parse(Iterator<Token> iter,String symbol,Token forward){
 		if(forward.getType().equals(symbol)){

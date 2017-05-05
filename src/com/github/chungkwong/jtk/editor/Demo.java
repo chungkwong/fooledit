@@ -52,7 +52,6 @@ public class Demo extends Application{
 		scene.getStylesheets().add(Demo.class.getResource("highlight.css").toExternalForm());
 		stage.setScene(scene);
 		stage.show();
-		editor.requestFocus();
 	}
 	/**
 	 * @param args the command line arguments

@@ -56,11 +56,15 @@ public class NaiveLex implements Lex{
 				Matcher matcher=entry.getKey().matcher(text);
 				matcher.region(index,text.length());
 				if(matcher.lookingAt()){
-					token=new Token(matcher.group(),entry.getValue().getKey());
+					token=new Token(matcher.group(),entry.getValue().getKey(),index);
 					index=matcher.end();
 					status=entry.getValue().getValue();
 					return true;
 				}
+			}
+			if(index<text.length()){
+				token=new Token(text.substring(index,index+1),Lex.UNKNOWN,index++);
+				return true;
 			}
 			return false;
 		}

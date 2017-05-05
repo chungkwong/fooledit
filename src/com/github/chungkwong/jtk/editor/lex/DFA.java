@@ -46,7 +46,7 @@ public class DFA{
 		}
 		input.endPrereadBackward();
 		String text=buf.toString();
-		return lastAccept!=null?new Token(text,lastAccept.getTokenType()):null;
+		return lastAccept!=null?new Token(text,lastAccept.getTokenType(),0):null;
 	}
 	public boolean isAccepted(IntCheckPointIterator input){
 		return run(input)!=null&&!input.hasNext();
