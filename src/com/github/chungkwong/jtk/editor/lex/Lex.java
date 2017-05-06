@@ -24,5 +24,8 @@ public interface Lex{
 	static final int INIT=0;
 	static final String UNKNOWN="unknown";
 	void addType(int status,String regex,String type,int newStatus);
-	Iterator<Token> split(String text);
+	Iterator<Token> split(String text,int state,int begin);
+	default Iterator<Token> split(String text){
+		return split(text,INIT,0);
+	}
 }

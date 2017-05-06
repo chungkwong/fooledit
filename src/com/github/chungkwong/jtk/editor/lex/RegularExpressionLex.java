@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.editor.lex;
+import com.github.chungkwong.jtk.editor.lex.NFA.State;
 import com.github.chungkwong.jtk.util.*;
 import java.util.*;
 /**
@@ -24,38 +25,48 @@ import java.util.*;
 public class RegularExpressionLex implements Lex{
 	private final NFA machine=new NFA();
 	private boolean changed=true;
+	private final Map<Integer,State> states=new HashMap<Integer,State>();
 	public RegularExpressionLex(){
 	}
 	@Override
 	public void addType(int status,String regex,String type,int newStatus){
 		changed=true;
 		NFA child=RegularExpression.parseRegularExpression(regex).toNFA();
-		machine.getInitState().addLambdaTransition(child.getInitState());
+		if(states.containsKey(status)){
+			states.get(status).addLambdaTransition(child.getInitState());
+		}else{
+			machine.getInitState().addLambdaTransition(child.getInitState());
+			states.put(status,child.getInitState());
+		}
 		child.getAcceptState().addLambdaTransition(machine.getAcceptState());
-		child.getAcceptState().addLambdaTransition(new NFA.TaggedState(type));
+		child.getAcceptState().addLambdaTransition(new NFA.TaggedState(type,newStatus));
 	}
 	@Override
-	public Iterator<Token> split(String text){
+	public Iterator<Token> split(String text,int state,int begin){
 		if(changed){
 			machine.prepareForRun();
 			changed=false;
 		}
-		return new TokenIterator(new IntCheckPointIterator(text.codePoints().iterator()));//FIXME
+		return new TokenIterator(new IntCheckPointIterator(text.codePoints().iterator()),state,begin);//FIXME
 	}
 	private class TokenIterator implements Iterator<Token>{
 		private final IntCheckPointIterator src;
-		private int index=0;
-		public TokenIterator(IntCheckPointIterator src){
+		private int index;
+		private int status;
+		public TokenIterator(IntCheckPointIterator src,int state,int begin){
 			this.src=src;
+			index=begin;
+			status=state;
 		}
 		@Override
 		public Token next(){
-			Pair<NFA.StateSet,String> pair=machine.run(src);
+			Pair<NFA.StateSet,String> pair=machine.run(src,states.get(status));
 			if(pair.getKey()!=null){
-				String type=pair.getKey().getTag();
+				NFA.TaggedState type=pair.getKey().getTaggedState();
 				String text=pair.getValue();
-				Token token=new Token(text,type,index);
+				Token token=new Token(text,type.getTag(),index);
 				index+=text.length();
+				status=type.getId();
 				return token;
 			}else if(src.hasNext()){
 				return new Token(new String(new int[]{src.nextInt()},0,1),Lex.UNKNOWN,index++);

@@ -76,8 +76,10 @@ public final class NFA{
 	}
 	public void prepareForRun(){
 		findLambdaClosure();
-		if(DEBUG)
+		if(DEBUG){
 			buildDebugSymbols();
+			System.out.println(this);
+		}
 	}
 	private void findLambdaClosure(){
 		boolean changed=true;
@@ -150,11 +152,16 @@ public final class NFA{
 	}
 	public static class TaggedState extends State{
 		private final String tag;
-		public TaggedState(String tag){
+		private final int id;
+		public TaggedState(String tag,int id){
 			this.tag=tag;
+			this.id=id;
 		}
 		public String getTag(){
 			return tag;
+		}
+		public int getId(){
+			return id;
 		}
 	}
 	public static class StateSet{
@@ -180,8 +187,8 @@ public final class NFA{
 			spare=tmp;
 			spare.clear();
 		}
-		public String getTag(){
-			return set.stream().filter((s)->s instanceof TaggedState).findAny().map((s)->((TaggedState)s).getTag()).orElse(null);
+		public TaggedState getTaggedState(){
+			return (TaggedState)set.stream().filter((s)->s instanceof TaggedState).findAny().orElse(null);
 		}
 		@Override
 		protected StateSet clone(){

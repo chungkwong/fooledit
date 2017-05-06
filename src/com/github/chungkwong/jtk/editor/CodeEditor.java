@@ -19,13 +19,9 @@ import com.github.chungkwong.jtk.control.*;
 import com.github.chungkwong.jtk.editor.LineNumberFactory;
 import com.github.chungkwong.jtk.editor.lex.*;
 import com.github.chungkwong.jtk.editor.parser.*;
-import com.github.chungkwong.jtk.util.*;
 import java.util.*;
 import java.util.function.*;
-import java.util.logging.*;
-import javafx.application.*;
 import javafx.beans.property.*;
-import javafx.beans.value.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -34,7 +30,6 @@ import javafx.scene.paint.*;
 import javafx.scene.text.*;
 import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.*;
-import org.fxmisc.richtext.model.*;
 import org.reactfx.collection.*;
 import org.reactfx.value.*;
 /**
@@ -43,9 +38,11 @@ import org.reactfx.value.*;
  */
 public class CodeEditor extends BorderPane{
 	private final CodeArea area=new CodeArea();
-	private Lex lex;
-	private Parser parser;
-	public CodeEditor(){
+	private final HighlightSupport highlighter;
+	private final SyntaxSupport tree;
+	public CodeEditor(Parser parser,Lex lex){
+		highlighter=lex!=null?new HighlightSupport(lex,area):null;
+		tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
 		area.setParagraphGraphicFactory(new LineNumberFactory(area));
 		setCenter(new VirtualizedScrollPane(area));
 	}
@@ -53,65 +50,15 @@ public class CodeEditor extends BorderPane{
 	public void requestFocus(){
 		super.requestFocus();
 		area.requestFocus();
-	}
-	private final RealTimeTask<String> hightlightTask=new RealTimeTask<>((text)->{
-		Platform.runLater(()->{
-			try{
-				area.setStyleSpans(0,computeHighlighting(text));
-			}catch(Exception ex){
-				Logger.getGlobal().log(Level.FINEST,"",ex);
-			}
+		area.plainTextChanges().subscribe((e)->{
+
 		});
-	});
-	private final ChangeListener<String> updateHighlight=(e,o,n)->{
-		if(lex!=null)
-			hightlightTask.summit(n);
-	};
-	public void setLex(Lex lex){
-		if(this.lex==null)
-			area.textProperty().addListener(updateHighlight);
-		this.lex=lex;
-		if(lex==null)
-			area.textProperty().removeListener(updateHighlight);
-	}
-	private StyleSpans<Collection<String>> computeHighlighting(String text){
-		StyleSpansBuilder<Collection<String>> spansBuilder=new StyleSpansBuilder<>();
-		Iterator<Token> iter=new InteruptableIterator<>(lex.split(text));
-		while(iter.hasNext()){
-			Token token=iter.next();
-			spansBuilder.add(Collections.singleton(token.getType()),token.getText().length());
-		}
-		return spansBuilder.create();
 	}
 	public void setAutoCompleteProvider(AutoCompleteProvider provider){
 		new CompleteSupport(provider).apply(area);
 	}
-	private final RealTimeTask<String> syntaxTask=new RealTimeTask<>((text)->{
-		Platform.runLater(()->{
-			try{
-				computeSyntaxTree(text);
-			}catch(Exception ex){
-				Logger.getGlobal().log(Level.FINEST,"",ex);
-			}
-		});
-	});
-	private final ChangeListener<String> updateSyntaxTree=(e,o,n)->{
-		if(parser!=null)
-			syntaxTask.summit(n);
-	};
-	public void setParser(Parser parser){
-		if(this.parser==null)
-			area.textProperty().addListener(updateSyntaxTree);
-		this.parser=parser;
-		if(parser==null)
-			area.textProperty().removeListener(updateSyntaxTree);
-	}
-	private final Property<Object> syntaxTree=new SimpleObjectProperty<>();
-	private void computeSyntaxTree(String text){
-		syntaxTree.setValue(parser.parse(new InteruptableIterator<>(lex.split(text))));
-	}
 	public Property<Object> syntaxTree(){
-		return syntaxTree;
+		return tree.syntaxTree();
 	}
 }
 class InteruptableIterator<T> implements Iterator<T>{

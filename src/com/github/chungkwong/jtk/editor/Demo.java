@@ -38,10 +38,8 @@ import javafx.stage.*;
 public class Demo extends Application{
 	@Override
 	public void start(Stage stage) throws Exception{
-		CodeEditor editor=new CodeEditor();
-		editor.setLex(getExampleLex());
-		editor.setParser(new LR1Parser(getExampleGrammar()));
-		editor.syntaxTree().addListener((e,o,n)->System.out.println(n));
+		CodeEditor editor=new CodeEditor(new LR1Parser(getExampleGrammar()),getExampleLex());
+		//editor.syntaxTree().addListener((e,o,n)->System.out.println(n));
 		editor.setAutoCompleteProvider(AutoCompleteProvider.createSimple(Arrays.asList(
 				AutoCompleteHint.create("c","c","doc: c"),
 				AutoCompleteHint.create("cd","cd","doc: cd")
@@ -60,7 +58,7 @@ public class Demo extends Application{
 		launch(args);
 	}
 	private static Lex getExampleLex(){
-		NaiveLex lex=new NaiveLex();
+		Lex lex=new NaiveLex();
 		try{
 			LexBuilder.fromJSON(Helper.readText(new InputStreamReader(Demo.class.getResourceAsStream("lex.json"),StandardCharsets.UTF_8)),lex);
 		}catch(IOException|SyntaxException ex){

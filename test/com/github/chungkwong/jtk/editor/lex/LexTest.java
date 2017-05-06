@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.editor.lex;
+import com.github.chungkwong.json.*;
+import com.github.chungkwong.jtk.api.*;
+import java.io.*;
 import java.util.*;
+import java.util.logging.*;
 import java.util.stream.*;
 import org.junit.*;
 /**
@@ -25,17 +29,28 @@ import org.junit.*;
 public class LexTest{
 	@Test
 	public void testNFALex(){
-		testLex(new RegularExpressionLex());
+		testLex1(new RegularExpressionLex());
+		testLex2(new RegularExpressionLex());
 	}
 	@Test
 	public void testNaiveLex(){
-		testLex(new NaiveLex());
+		testLex1(new NaiveLex());
+		testLex2(new NaiveLex());
 	}
-	private void testLex(Lex lex){
+	private void testLex1(Lex lex){
 		lex.addType(Lex.INIT,"[0-9]+","NUMBER",Lex.INIT);
 		lex.addType(Lex.INIT,"[a-zA-Z]+","WORD",Lex.INIT);
 		lex.addType(Lex.INIT,"[^0-9a-zA-Z]","OTHER",Lex.INIT);
 		assertSplit(lex,"log67m=!","log","67","m","=","!");
+	}
+	private void testLex2(Lex lex){
+		try{
+			LexBuilder.fromJSON(Helper.readText("/com/github/chungkwong/jtk/editor/parser/mf.json"),lex);
+		}catch(IOException|SyntaxException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+		assertSplit(lex,"hello","hello");
+		assertSplit(lex,"hello=ui","hello","=","ui");
 	}
 	private void assertSplit(Lex lex,String text,String... tokens){
 		Object[] result=StreamSupport.stream(Spliterators.spliteratorUnknownSize(lex.split(text),0),false).

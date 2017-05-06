@@ -37,16 +37,18 @@ public class NaiveLex implements Lex{
 		map.put(Pattern.compile(regex,Pattern.DOTALL|Pattern.MULTILINE),new Pair<>(type,newStatus));
 	}
 	@Override
-	public Iterator<Token> split(String text){
-		return new TokenIterator(text);
+	public Iterator<Token> split(String text,int state,int begin){
+		return new TokenIterator(text,state,begin);
 	}
 	private class TokenIterator implements Iterator<Token>{
 		private final String text;
-		private int index=0;
+		private int index;
 		private Token token;
-		private int status=INIT;
-		public TokenIterator(String text){
+		private int status;
+		public TokenIterator(String text,int state,int begin){
 			this.text=text;
+			index=begin;
+			status=state;
 		}
 		@Override
 		public boolean hasNext(){

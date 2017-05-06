@@ -8,5 +8,5 @@
     -fx-fill: green;
 }
 .unknown {
-	-fx-background-color: red;
+	-fx-fill: red;
 }
