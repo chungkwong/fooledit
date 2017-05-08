@@ -59,7 +59,7 @@ public class AutoCompleteService extends Application{
 			else
 				popupHint.hideHints();
 		});*/
-		comp.caretPositionProperty().addListener((e,o,n)->updateHint(n.intValue()));
+		comp.caretPositionProperty().addListener((e,o,n)->{try{updateHint(n.intValue());}catch(Exception ex){}});
 	}
 	public void updateHint(int pos){
 		task.summit(new HintContext(hints,comp.getText(),pos,comp));

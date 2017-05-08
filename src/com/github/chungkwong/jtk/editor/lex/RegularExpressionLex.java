@@ -42,18 +42,18 @@ public class RegularExpressionLex implements Lex{
 		child.getAcceptState().addLambdaTransition(new NFA.TaggedState(type,newStatus));
 	}
 	@Override
-	public Iterator<Token> split(String text,int state,int begin){
+	public TokenIterator split(String text,int state,int begin){
 		if(changed){
 			machine.prepareForRun();
 			changed=false;
 		}
-		return new TokenIterator(new IntCheckPointIterator(text.codePoints().iterator()),state,begin);//FIXME
+		return new RETokenIterator(new IntCheckPointIterator(text.codePoints().iterator()),state,begin);//FIXME
 	}
-	private class TokenIterator implements Iterator<Token>{
+	private class RETokenIterator implements TokenIterator{
 		private final IntCheckPointIterator src;
 		private int index;
 		private int status;
-		public TokenIterator(IntCheckPointIterator src,int state,int begin){
+		public RETokenIterator(IntCheckPointIterator src,int state,int begin){
 			this.src=src;
 			index=begin;
 			status=state;
@@ -76,6 +76,10 @@ public class RegularExpressionLex implements Lex{
 		@Override
 		public boolean hasNext(){
 			return src.hasNext();
+		}
+		@Override
+		public int getState(){
+			return status;
 		}
 	}
 }

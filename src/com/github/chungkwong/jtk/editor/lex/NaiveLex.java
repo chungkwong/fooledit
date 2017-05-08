@@ -37,15 +37,15 @@ public class NaiveLex implements Lex{
 		map.put(Pattern.compile(regex,Pattern.DOTALL|Pattern.MULTILINE),new Pair<>(type,newStatus));
 	}
 	@Override
-	public Iterator<Token> split(String text,int state,int begin){
-		return new TokenIterator(text,state,begin);
+	public TokenIterator split(String text,int state,int begin){
+		return new NaiveTokenIterator(text,state,begin);
 	}
-	private class TokenIterator implements Iterator<Token>{
+	private class NaiveTokenIterator implements TokenIterator{
 		private final String text;
 		private int index;
 		private Token token;
 		private int status;
-		public TokenIterator(String text,int state,int begin){
+		public NaiveTokenIterator(String text,int state,int begin){
 			this.text=text;
 			index=begin;
 			status=state;
@@ -79,6 +79,10 @@ public class NaiveLex implements Lex{
 			}else{
 				throw new NoSuchElementException();
 			}
+		}
+		@Override
+		public int getState(){
+			return status;
 		}
 	}
 }

@@ -17,7 +17,6 @@
 package com.github.chungkwong.jtk.editor;
 import com.github.chungkwong.json.*;
 import com.github.chungkwong.jtk.api.*;
-import com.github.chungkwong.jtk.control.*;
 import com.github.chungkwong.jtk.editor.lex.*;
 import com.github.chungkwong.jtk.editor.parser.*;
 import com.github.chungkwong.jtk.util.*;
@@ -40,10 +39,10 @@ public class Demo extends Application{
 	public void start(Stage stage) throws Exception{
 		CodeEditor editor=new CodeEditor(new LR1Parser(getExampleGrammar()),getExampleLex());
 		//editor.syntaxTree().addListener((e,o,n)->System.out.println(n));
-		editor.setAutoCompleteProvider(AutoCompleteProvider.createSimple(Arrays.asList(
+		/*editor.setAutoCompleteProvider(AutoCompleteProvider.createSimple(Arrays.asList(
 				AutoCompleteHint.create("c","c","doc: c"),
 				AutoCompleteHint.create("cd","cd","doc: cd")
-		)));
+		)));*/
 		Popup popup=new Popup();
 		popup.getContent().add(new Label("hello"));
 		Scene scene=new Scene(editor);

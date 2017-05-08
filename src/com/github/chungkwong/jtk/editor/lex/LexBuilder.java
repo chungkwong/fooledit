@@ -26,14 +26,44 @@ public class LexBuilder{
 	public static void fromJSON(String json,Lex lex) throws IOException, SyntaxException{
 		Map<String,Object> obj=(Map<String,Object>)JSONDecoder.decode(json);
 		Map<String,Number> states=(Map<String,Number>)obj.get("states");
+		Map<String,String> shorthands=buildSubstTable((List<String>)obj.get("shorthands"));
 		List<Map<String,Object>> rules=(List<Map<String,Object>>)obj.get("rules");
 		for(Map<String,Object> rule:rules){
 			String name=(String)rule.get("type");
 			String regex=(String)rule.get("regex");
 			Integer oldState=toState(rule.get("old state"),states);
 			Integer newState=toState(rule.get("new state"),states);
-			lex.addType(oldState,regex,name,newState);
+			lex.addType(oldState,subst(regex,shorthands),name,newState);
 		}
+	}
+	private static Map<String,String> buildSubstTable(List<String> in){
+		Map<String,String> shorthands=new HashMap<>();
+		if(in!=null){
+			for(Iterator<String> iterator=in.iterator();iterator.hasNext();){
+				String next=iterator.next();
+				shorthands.put(next,subst(iterator.next(),shorthands));
+			}
+		}
+		return shorthands;
+	}
+	private static String subst(String regex,Map<String,String> shorthands){
+		if(shorthands.isEmpty()||regex.indexOf('}')==-1)
+			return regex;
+		StringBuilder buf=new StringBuilder();
+		for(int i=0;i<regex.length();i++){
+			char c=regex.charAt(i);
+			if(c=='\\'){
+				buf.append(c);
+				buf.append(regex.charAt(i+1));
+				++i;
+			}else if(c=='{'){
+				int j=regex.indexOf('}',i);
+				String key=regex.substring(i+1,j);
+				buf.append(shorthands.get(key));
+				i=j;
+			}
+		}
+		return buf.toString();
 	}
 	private static int toState(Object state,Map<String,Number> states){
 		if(state==null)

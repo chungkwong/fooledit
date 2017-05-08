@@ -29,35 +29,29 @@ import org.fxmisc.richtext.model.*;
 public class HighlightSupport{
 	private final CodeArea area;
 	private final Lex lex;
-	private final RealTimeTask<Pair<PlainTextChange,String>> task;
-	private TreeMap<Integer,Integer> checkpoint;
-	private static final int CHECKPOINT_INTERVAL=1024;
+	private final RealTimeTask<String> task;
 	public HighlightSupport(Lex lex,CodeArea area){
 		this.area=area;
 		this.lex=lex;
-		this.task=new RealTimeTask<>((p)->updateHighlighting(p.getKey(),p.getValue()));
-		checkpoint.put(0,Lex.INIT);
-		area.plainTextChanges().subscribe((e)->task.summit(new Pair<>(e,area.getText())));
-	}
-	private void updateHighlighting(PlainTextChange e,String text){
-		StyleSpans<Collection<String>> highlighting=computeHighlighting(text);
-		Platform.runLater(()->{
-			try{
-				area.setStyleSpans(0,highlighting);
-			}catch(Exception ex){
-				Logger.getGlobal().log(Level.FINEST,"",ex);
-			}
+		this.task=new RealTimeTask<>((text)->{
+			StyleSpans<Collection<String>> highlighting=computeHighlighting(text);
+			Platform.runLater(()->{
+				try{
+					area.setStyleSpans(0,highlighting);
+				}catch(Exception ex){
+					Logger.getGlobal().log(Level.FINEST,"",ex);
+				}
+			});
 		});
+		area.textProperty().addListener((e,o,n)->task.summit(n));
 	}
 	private StyleSpans<Collection<String>> computeHighlighting(String text){
-		//long t=System.nanoTime();
 		StyleSpansBuilder<Collection<String>> spansBuilder=new StyleSpansBuilder<>();
 		Iterator<Token> iter=new InteruptableIterator<>(lex.split(text));
 		while(iter.hasNext()){
 			Token token=iter.next();
 			spansBuilder.add(Collections.singleton(token.getType()),token.getText().length());
 		}
-		//System.err.println(System.nanoTime()-t);
 		return spansBuilder.create();
 	}
 

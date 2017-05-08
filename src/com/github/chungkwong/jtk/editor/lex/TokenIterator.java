@@ -20,12 +20,6 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface Lex{
-	static final int INIT=0;
-	static final String UNKNOWN="unknown";
-	void addType(int status,String regex,String type,int newStatus);
-	TokenIterator split(String text,int state,int begin);
-	default Iterator<Token> split(String text){
-		return split(text,INIT,0);
-	}
+public interface TokenIterator extends Iterator<Token>{
+	int getState();
 }
