@@ -10,3 +10,33 @@
 .unknown {
 	-fx-fill: red;
 }
+.whitespace {
+	-fx-fill: white;
+}
+.name {
+	-fx-fill: darkblue;
+}
+.variable {
+	-fx-fill: purple;
+}
+.integer {
+	-fx-fill: sandybrown;
+}
+.float{
+	-fx-fill: brown;
+}
+.string{
+	-fx-fill: darkred;
+}
+.other{
+	-fx-fill: darkgreen;
+}
+.command{
+	-fx-fill: darkblue;
+}
+.plain{
+	-fx-fill: black;
+}
+.math{
+	-fx-fill: purple;
+}

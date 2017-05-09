@@ -1,0 +1,21 @@
+{
+	"states":{"normal":0,"math":1,"inline":2},
+	"rules":[
+		{"old state":"normal","new state":"normal","type":"comment","regex":"%[^\\r\\n]*"},
+		{"old state":"math","new state":"math","type":"comment","regex":"%[^\\r\\n]*"},
+		{"old state":"inline","new state":"inline","type":"comment","regex":"%[^\\r\\n]*"},
+		{"old state":"normal","new state":"normal","type":"command","regex":"\\\\[^a-zA-Z]|\\\\[a-zA-Z]+"},
+		{"old state":"math","new state":"math","type":"command","regex":"\\\\[^a-zA-Z]|\\\\[a-zA-Z]+"},
+		{"old state":"inline","new state":"inline","type":"command","regex":"\\\\[^a-zA-Z]|\\\\[a-zA-Z]+"},
+		{"old state":"normal","new state":"math","type":"other","regex":"\\$\\$"},
+		{"old state":"math","new state":"normal","type":"other","regex":"\\$\\$"},
+		{"old state":"normal","new state":"inline","type":"other","regex":"\\$(?=[^$])"},
+		{"old state":"inline","new state":"normal","type":"other","regex":"\\$"},
+		{"old state":"normal","new state":"normal","type":"plain","regex":"[^%\\\\\\{\\}&^_~#$]+"},
+		{"old state":"math","new state":"math","type":"math","regex":"[^%\\\\\\{\\}&^_~#$]+"},
+		{"old state":"inline","new state":"inline","type":"math","regex":"[^%\\\\\\{\\}&^_~#$]+"},
+		{"old state":"normal","new state":"normal","type":"other","regex":"[\\{\\}&^_~#]"},
+		{"old state":"math","new state":"math","type":"other","regex":"[\\{\\}&^_~#]"},
+		{"old state":"inline","new state":"inline","type":"other","regex":"[\\{\\}&^_~#]"}
+		]
+}

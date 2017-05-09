@@ -37,7 +37,8 @@ import javafx.stage.*;
 public class Demo extends Application{
 	@Override
 	public void start(Stage stage) throws Exception{
-		CodeEditor editor=new CodeEditor(new LR1Parser(getExampleGrammar()),getExampleLex());
+		CodeEditor editor=new CodeEditor(null,getExampleLex());
+		//CodeEditor editor=new CodeEditor(new LR1Parser(getExampleGrammar()),getExampleLex());
 		//editor.syntaxTree().addListener((e,o,n)->System.out.println(n));
 		/*editor.setAutoCompleteProvider(AutoCompleteProvider.createSimple(Arrays.asList(
 				AutoCompleteHint.create("c","c","doc: c"),

@@ -54,13 +54,14 @@ public class LexBuilder{
 			char c=regex.charAt(i);
 			if(c=='\\'){
 				buf.append(c);
-				buf.append(regex.charAt(i+1));
-				++i;
+				buf.append(regex.charAt(++i));
 			}else if(c=='{'){
 				int j=regex.indexOf('}',i);
 				String key=regex.substring(i+1,j);
 				buf.append(shorthands.get(key));
 				i=j;
+			}else{
+				buf.append(c);
 			}
 		}
 		return buf.toString();

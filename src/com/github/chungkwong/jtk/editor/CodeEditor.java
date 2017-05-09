@@ -69,7 +69,7 @@ class InteruptableIterator<T> implements Iterator<T>{
 	@Override
 	public boolean hasNext(){
 		if(Thread.currentThread().isInterrupted()){
-			System.err.println("oop");
+			//System.err.println("oop");
 			throw new RuntimeException();
 		}
 		return iter.hasNext();
