@@ -58,7 +58,10 @@ public class LexBuilder{
 			}else if(c=='{'){
 				int j=regex.indexOf('}',i);
 				String key=regex.substring(i+1,j);
-				buf.append(shorthands.get(key));
+				if(shorthands.containsKey(key))
+					buf.append(shorthands.get(key));
+				else
+					buf.append('{').append(key).append('}');
 				i=j;
 			}else{
 				buf.append(c);

@@ -1,0 +1,20 @@
+{
+	"states":{"init":0,"tag":1,"cdata":2},
+	"shorthands":["s","[ \t\r\n]","nameStart","[:_a-zA-Z]",
+		"nameRemain","[-\\.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040{nameStart}]",
+		"name","{nameStart}{nameRemain}*"],
+	"rules":[
+		{"old state":"init","new state":"init","type":"comment","regex":"<!--(([^-]|-[^-])*)*-->"},
+		{"old state":"tag","new state":"tag","type":"whitespace","regex":"{s}+"},
+		{"old state":"init","new state":"tag","type":"name","regex":"<{name}"},
+		{"old state":"init","new state":"tag","type":"name","regex":"<?{name}"},
+		{"old state":"init","new state":"cdata","type":"name","regex":"<![CDATA["},
+		{"old state":"cdata","new state":"init","type":"name","regex":"]]>"},
+		{"old state":"tag","new state":"init","type":"name","regex":"{name}>"},
+		{"old state":"tag","new state":"init","type":"name","regex":"{name}?>"},
+		{"old state":"tag","new state":"tag","type":"key","regex":"{name}="},
+		{"old state":"tag","new state":"tag","type":"value","regex":"\"[^\"]*\"|'[^']*'"},
+		{"old state":"init","new state":"init","type":"plain","regex":"([^\\]]|\\][^\\]]|\\]\\][^>])+"},
+		{"old state":"cdata","new state":"cdata","type":"plain","regex":"[^<]+"}
+		]
+}

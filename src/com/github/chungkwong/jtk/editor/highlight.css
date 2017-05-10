@@ -1,10 +1,16 @@
 .comment {
     -fx-fill: gray;
 }
+.id {
+    -fx-fill: blue;
+}
 .key {
     -fx-fill: blue;
 }
 .value {
+    -fx-fill: green;
+}
+.keyword {
     -fx-fill: green;
 }
 .unknown {
@@ -14,7 +20,7 @@
 	-fx-fill: white;
 }
 .name {
-	-fx-fill: darkblue;
+	-fx-fill: navy;
 }
 .variable {
 	-fx-fill: purple;
@@ -39,4 +45,20 @@
 }
 .math{
 	-fx-fill: purple;
+}
+.boolean{
+	-fx-fill: coral;
+}
+.null{
+	-fx-fill: darkred;
+}
+.ignored{
+	-fx-fill: yellow;
+}
+.url{
+	-fx-fill: blue;
+	-fx-underline: true;
+}
+.range{
+	-fx-fill: darkviolet;
 }
