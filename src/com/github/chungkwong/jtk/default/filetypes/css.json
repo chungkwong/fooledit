@@ -2,7 +2,7 @@
 	"states":{"init":0},
 	"shorthands":["escape","\\\\[0-9a-fA-F]{1,6}\\s?|\\\\[^0-9a-fA-F\r\n\f]",
 		"id","-?({escape}|[_a-zA-Z[^\\p{ASCII}]])({escape}|[-_0-9a-zA-Z[^\\p{ASCII}]])*",
-		"string","\"([^\\\\\"]|{escape}|\\\\(\r|\n|\r\n|\f))*\"|'([^\\\\']|{escape}|\\\\(\r|\n|\r\n|\f))*'",
+		"string","\"([^\\\\\"]|{escape}|\\\\(\r\n|\r|\n|\f))*\"|'([^\\\\']|{escape}|\\\\(\r\n|\r|\n|\f))*'",
 		"url","([^()'\"\\\\\\s]|{escape})+",
 		"number","[+-]?([0-9]+|\\.[0-9]+|[0-9]+\\.[0-9]+)([eE][-+]?[0-9]+)?",
 		"hex","[0-9a-fA-F]"],
@@ -13,7 +13,7 @@
 		{"old state":"init","new state":"init","type":"keyword","regex":"@({id})"},
 		{"old state":"init","new state":"init","type":"string","regex":"{string}"},
 		{"old state":"init","new state":"init","type":"url","regex":"url\\(\\s*({string}|{url})?\\s*\\)"},
-		{"old state":"init","new state":"init","type":"float","regex":"{number}({id}?|%)?"},
+		{"old state":"init","new state":"init","type":"float","regex":"{number}({id}|%)?"},
 		{"old state":"init","new state":"init","type":"range","regex":"[uU]\\+({hex}{1,6}(-{hex}{1,6})?|{hex}{1}\\?{5}|{hex}{2}\\?{4}|{hex}{3}\\?{3}|{hex}{4}\\?{2}|{hex}{5}\\?{1})"},
 		{"old state":"init","new state":"init","type":"other","regex":"[,:;\\[\\]\\{\\}\\(\\)]|\\^=|\\*=|\\$=|\\|=|\\~=|\\|\\|"},
 		{"old state":"init","new state":"init","type":"ignored","regex":"<!--|-->"}

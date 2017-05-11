@@ -31,7 +31,7 @@ public class NaiveLex implements Lex{
 	public void addType(int status,String regex,String type,int newStatus){
 		Map<Pattern,Pair<String,Integer>> map=types.get(status);
 		if(map==null){
-			map=new HashMap<>();
+			map=new LinkedHashMap<>();
 			types.put(status,map);
 		}
 		map.put(Pattern.compile(regex,Pattern.DOTALL|Pattern.MULTILINE),new Pair<>(type,newStatus));
@@ -84,5 +84,10 @@ public class NaiveLex implements Lex{
 		public int getState(){
 			return status;
 		}
+	}
+	public static void main(String[] args){
+		Matcher matcher=Pattern.compile("ifndef|if").matcher("ifndef");
+		if(matcher.lookingAt())
+			System.err.println(matcher.end());
 	}
 }

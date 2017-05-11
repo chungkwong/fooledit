@@ -25,6 +25,7 @@ import javafx.beans.property.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.text.*;
@@ -43,6 +44,12 @@ public class CodeEditor extends BorderPane{
 	public CodeEditor(Parser parser,Lex lex){
 		highlighter=lex!=null?new HighlightSupport(lex,area):null;
 		tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
+		area.setInputMethodRequests(new InputMethodRequestsObject());
+		area.setOnInputMethodTextChanged((e)->{
+			if(e.getCommitted()!=""){
+				area.insertText(area.getCaretPosition(),e.getCommitted());
+			}
+		});
 		area.setParagraphGraphicFactory(new LineNumberFactory(area));
 		setCenter(new VirtualizedScrollPane(area));
 	}
@@ -59,6 +66,23 @@ public class CodeEditor extends BorderPane{
 	}
 	public Property<Object> syntaxTree(){
 		return tree.syntaxTree();
+	}
+	class InputMethodRequestsObject implements InputMethodRequests{
+		@Override
+		public String getSelectedText(){
+			return "";
+		}
+		@Override
+		public int getLocationOffset(int x,int y){
+			return 0;
+		}
+		@Override
+		public void cancelLatestCommittedText(){
+		}
+		@Override
+		public Point2D getTextLocation(int offset){
+			return new Point2D(0,0);
+		}
 	}
 }
 class InteruptableIterator<T> implements Iterator<T>{

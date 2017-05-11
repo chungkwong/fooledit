@@ -11,7 +11,7 @@
     -fx-fill: green;
 }
 .keyword {
-    -fx-fill: green;
+    -fx-fill: blue;
 }
 .unknown {
 	-fx-fill: red;
@@ -61,4 +61,10 @@
 }
 .range{
 	-fx-fill: darkviolet;
+}
+.directive {
+	-fx-fill: darkgray;
+}
+.char {
+	-fx-fill: sienna;
 }
