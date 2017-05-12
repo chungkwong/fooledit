@@ -24,7 +24,7 @@
 		{"old_state":"children","new_state":"children","type":"other","regex":"{s}*[?*+,|)(]"},
 		{"old_state":"children","new_state":"init","type":"keyword","regex":"{s}*>"},
 		{"old_state":"elementEnd","new_state":"init","type":"keyword","regex":"{s}*>"},
-		{"old_state":"init","new_state":"attlistName","type":"keyword","regex":"<!ATTLIST{s}+"},
+		{"old_state":"init","new_state":"attlistName","type":"keyword","regex":"`<!ATTLIST{s}+"},
 		{"old_state":"attlistName","new_state":"attlist","type":"key","regex":"{name}"},
 		{"old_state":"attlist","new_state":"atttype","type":"key","regex":"{s}+{name}"},
 		{"old_state":"atttype","new_state":"attdef","type":"type","regex":"{s}+(CDATA|IDREFS|IDREF|ID|ENTITY|ENTITIES|NMTOKENS|NMTOKEN|NOTATION{s}+\\({s}*{name}({s}*\\|{s}*{name})*{s}*\\)|\\({s}*{nmtoken}({s}*\\|{s}*{nmtoken})*\\))"},

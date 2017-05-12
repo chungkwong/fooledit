@@ -33,6 +33,13 @@ public class RealTimeTask<K> implements Runnable{
 		if(thread==null){
 			thread=new Thread(this);
 			thread.setDaemon(true);
+			thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+				@Override
+				public void uncaughtException(Thread t,Throwable e){
+					Logger.getGlobal().log(Level.INFO,null,e);
+					synchronized(RealTimeTask.this){thread=null;}
+				}
+			});
 			thread.start();
 		}else
 			thread.interrupt();

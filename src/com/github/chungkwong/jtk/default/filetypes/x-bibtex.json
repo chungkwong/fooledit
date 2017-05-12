@@ -1,0 +1,11 @@
+{
+    "states":{"init":0},
+	"rules":[
+		{"old state":"init","new state":"init","type":"comment","regex":"%[^\\r\\n]*"},
+		{"old_state":"init","new_state":"init","type":"type","regex":"@(ARTICLE|BOOK|BOOKLET|CONFERENCE|INBOOK|INCOLLECTION|INPROCEEDINGS|MANUAL|MASTERSTHESIS|MISC|PHDTHESIS|PROCEEDINGS|TECHREPORT|UNPUBLISHED)"},
+	    {"old_state":"init","new_state":"init","type":"key","regex":"address|annote|author|booktitle|chapter|crossref|edition|editor|howpublished|institution|journal|key|month|note|number|organization|pages|publisher|school|series|title|type|volume|year"},
+		{"old_state":"init","new_state":"init","type":"other","regex":"[=\\{\\}#\"]"},
+		{"old state":"init","new state":"init","type":"command","regex":"\\\\[^a-zA-Z]|\\\\[a-zA-Z]+"},
+		{"old_state":"init","new_state":"init","type":"plain","regex":"[^%=\\{\\}#\"\\\\]"}
+	]
+}

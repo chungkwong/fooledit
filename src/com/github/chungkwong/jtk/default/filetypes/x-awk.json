@@ -1,0 +1,16 @@
+{
+    "states":{"init":0},
+	"rules":[
+		{"old_state":"init","new_state":"init","type":"keyword","regex":"function|(BEGIN|END)(FILE)?|if|while|for|break|continue|delete|exit|switch|case|default|in|return"},
+		{"old_state":"init","new_state":"init","type":"variable","regex":"ARGC|ARGIND|ARGV|BINMODE|CONVFMT|ENVIRON|ERRNO|FIELDWIDTHS|FILENAME|FNR|FPAT|FS|FUNCTAB|IGNORECASE|LINT|NF|NR|OFMT|OFS|ORS|PREC|PROCINFO|ROUNDMODE|RS|RT|RSTAT|RLENGTH|SUBSEP|SYMTAB|TEXTDOMAIN"},
+		{"old_state":"init","new_state":"init","type":"function","regex":"close|getline|next|nextfile|print[f]|system|fflush|atan2|cos|exp|int|log|rand|sin|sqrt|srand|asort[i]|gensub|gsub|index|length|match|patsplit|split|sprintf|strtonum|sub[str]|tolower|toupper|mktime|strftime|systime|and|compl|lshift|or|rshift|xor|isarray|bindtextdomain|dc[n]gettext"},
+		{"old_state":"init","new_state":"init","type":"directive","regex":"@include|@load"},
+		{"old_state":"init","new_state":"init","type":"comment","regex":"#[^\\r\\n]*"},
+		{"old_state":"init","new_state":"init","type":"whitespace","regex":"\\s+"},
+		{"old_state":"init","new_state":"init","type":"string","regex":"\"([^\"\\\\]|\\\\.)*\""},
+		{"old_state":"init","new_state":"init","type":"name","regex":"[_a-zA-Z][_0-9a-zA-Z]*"},
+		{"old_state":"init","new_state":"init","type":"regex","regex":"/([^/\\\\]|\\\\.)*/"},
+	    {"old_state":"init","new_state":"init","type":"float","regex":"0[xX][0-9a-fA-F]+|([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][-+]?[0-9]+)?"},
+	    {"old_state":"init","new_state":"init","type":"other","regex":"[-+*/%^<>!?,:)(\\{\\}\\[\\]\\|\\&=~\\$]"}
+	]
+}

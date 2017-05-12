@@ -1,0 +1,17 @@
+{
+	"states":{"init":0},
+	"shorthands":["char","[^\\\\'\"\\r\\n]|\\\\[\\r\\n]+|\\\\."],
+	"rules":[
+		{"old_state":"init","new_state":"init","type":"keyword","regex":"break|do|in|typeof|case|else|instanceof|var|catch|export|new|void|class|extends|return|while|const|finally|super|with|continue|for|switch|yield|debugger|function|this|default|if|throw|delete|import|try|enum|await"},
+		{"old_state":"init","new_state":"init","type":"boolean","regex":"true|false"},
+		{"old_state":"init","new_state":"init","type":"null","regex":"null"},
+		{"old_state":"init","new_state":"init","type":"comment","regex":"//[^\\r\\n]*|/\\*([^*]|\\*+[^*/])*\\*+/"},
+		{"old_state":"init","new_state":"init","type":"whitespace","regex":"\\s+"},
+		{"old_state":"init","new_state":"init","type":"string","regex":"\"('|{char})*\"|'('\"|{char})*'"},
+		{"old_state":"init","new_state":"init","type":"name","regex":"[_\\$\\p{javaUnicodeIdentifierStart}][_\\$\\u200c\\u200d\\p{javaUnicodeIdentifierPart}]*"},
+		{"old_state":"init","new_state":"init","type":"regex","regex":"/([^*/\\r\\n][^/\\r\\n])?/[_\\$\\u200c\\u200d\\p{javaUnicodeIdentifierPart}]*"},
+	    {"old_state":"init","new_state":"init","type":"float","regex":"0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][-+]?[0-9]+)?"},
+	    {"old_state":"init","new_state":"init","type":"string","regex":"`[^`]*`"},
+		{"old_state":"init","new_state":"init","type":"other","regex":"===|!==|(<<|>>|>>>|\\*\\*)=?|=>|@|::|\\.\\.\\.|->|\\+\\+|--|&&|\\|\\||[-+*/%=><!&^\\|\\&]=?|[\\(\\)\\[\\]\\{\\};:,\\.?~=]"}
+	]
+}

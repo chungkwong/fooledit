@@ -40,6 +40,9 @@
 .command{
 	-fx-fill: darkblue;
 }
+.function{
+	-fx-fill: darkblue;
+}
 .plain{
 	-fx-fill: black;
 }
@@ -67,4 +70,7 @@
 }
 .char {
 	-fx-fill: sienna;
+}
+.type {
+	-fx-fill: darkolivegreen;
 }
