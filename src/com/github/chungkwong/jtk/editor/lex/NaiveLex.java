@@ -56,6 +56,7 @@ public class NaiveLex implements Lex{
 				return true;
 			for(Map.Entry<Pattern,Pair<String,Integer>> entry:types.get(status).entrySet()){
 				Matcher matcher=entry.getKey().matcher(text);
+				matcher.useTransparentBounds(true);
 				matcher.region(index,text.length());
 				if(matcher.lookingAt()){
 					token=new Token(matcher.group(),entry.getValue().getKey(),index);

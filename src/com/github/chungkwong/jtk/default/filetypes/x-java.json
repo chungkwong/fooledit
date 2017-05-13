@@ -1,6 +1,6 @@
 {
 	"states":{"init":0},
-	"shorthands":["char","[^\\\\'\"\\r\\n]|\\\\([btnfr'\"\\\\]|u[0-9a-zA-Z]{4}|[0-3]?[0-7]{1,2})"],
+	"shorthands":["char","[^\\\\'\"\\r\\n]|\\\\([btnfr'\"\\\\]|u[0-9a-fA-F]{4}|[0-3]?[0-7]{1,2})"],
 	"rules":[
 		{"old_state":"init","new_state":"init","type":"keyword","regex":"abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|extends|final|finally|float|for|if|goto|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|void|volatile|while"},
 		{"old_state":"init","new_state":"init","type":"boolean","regex":"true|false"},

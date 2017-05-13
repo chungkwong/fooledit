@@ -1,0 +1,9 @@
+{
+	"states":{"init":0},
+	"rules":[
+		{"old_state":"init","new_state":"init","type":"string","regex":"\"([^\"]|\"\")*\""},
+		{"old_state":"init","new_state":"init","type":"string","regex":"[^,\"\\r\\n]+"},
+		{"old_state":"init","new_state":"init","type":"whitespace","regex":"[\\r\\n]+"},
+		{"old_state":"init","new_state":"init","type":"other","regex":","}
+	]
+}

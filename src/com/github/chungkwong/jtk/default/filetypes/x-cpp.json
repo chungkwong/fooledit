@@ -1,0 +1,18 @@
+{
+	"states":{"init":0},
+	"shorthands":["char","[^\\\\'\"\\r\\n]|\\\\([ntvbrfa?'\"\\\\]|x[0-9a-fA-F]+|[0-7]{1,3})"],
+	"rules":[
+		{"old_state":"init","new_state":"init","type":"keyword","regex":"and(_eq)?|asm|auto|bitand|bitor|bool|break|case|catch|char|class|compl|const(_cast)?|continue|default|delete|do(uble)?|dynamic_case|else|enum|explicit|export|extern|float|for|friend|goto|if|inline|int|long|mutable|namespace|new|not(_eq)?|operator|or(_eq)?|private|protected|public|register|reinterpret_cast|return|short|signed|sizeof|static(_cast)?|struct|switch|template|this|throw|try|typedef|typeid|typename|union|unsigned|using|virtual|void|volatile|wchar_t|while|xor(_eq)?"},
+		{"old_state":"init","new_state":"init","type":"comment","regex":"//[^\\r\\n]*|/\\*([^*]|\\*+[^*/])*\\*+/"},
+		{"old_state":"init","new_state":"init","type":"whitespace","regex":"\\s+"},
+		{"old_state":"init","new_state":"init","type":"char","regex":"L?'(\"|{char})'"},
+		{"old_state":"init","new_state":"init","type":"string","regex":"L?\"('|{char})*\""},
+		{"old_state":"init","new_state":"init","type":"boolean","regex":"true|false"},
+		{"old_state":"init","new_state":"init","type":"name","regex":"([_a-zA-Z]|\\\\u[0-9a-fA-F]{4}|\\\\U[0-9a-fA-F]{8})([_0-9a-zA-Z]|\\\\u[0-9a-fA-F]{4}|\\\\U[0-9a-fA-F]{8})*"},
+		{"old_state":"init","new_state":"init","type":"float","regex":"([0-9]+\\.[0-9]*|\\.[0-9]+)([eE][-+]?[0-9]+)?[lLfF]?"},
+		{"old_state":"init","new_state":"init","type":"float","regex":"[0-9]+[eE][-+]?[0-9]+[lLfF]?"},
+		{"old_state":"init","new_state":"init","type":"integer","regex":"([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)([lL][uU]?|[uU][lL]?)?"},
+		{"old_state":"init","new_state":"init","type":"directive","regex":"^\\s*#[ \\t]*(define|include|line|error|pragma|if|ifdef|ifndef|elif|else|\\r(\\n)?|\\n)"},
+		{"old_state":"init","new_state":"init","type":"other","regex":"%:%|\\.\\.\\.|->\\*?|(<<|>>)=?|<:|--|\\+\\+|\\|\\||&&|:>|<%|%>|%:|::|.\\*|##?|[-+*/%^!=\\&\\|<>]=?|[\\{\\}\\[\\]\\(\\):;?\\.,~]"}
+	]
+}
