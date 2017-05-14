@@ -1,15 +1,15 @@
 {
 	"states":{"init":0,"string":1},
 	"rules":[
-		{"old_state":"init","new_state":"init","type":"comment","regex":"^\\s*#[^\\r\\n]*"},
-		{"old_state":"init","new_state":"init","type":"plain","regex":"([^\\{\\[\\]\\};\"\\s\\$\\\\]|\\\\.)([^\\]\\}\";\\s\\$\\\\]*|\\\\.)"},
-		{"old_state":"init","new_state":"init","type":"whitespace","regex":"\\s+"},
-		{"old_state":"init","new_state":"string","type":"string","regex":"\""},
-		{"old_state":"string","new_state":"string","type":"string","regex":"\"([^\"\\\\\\$\\[\\]]|\\\\.)+"},
-		{"old_state":"string","new_state":"string","type":"variable","regex":"\\$([_a-zA-Z0-9]+\\(?|\\{[^\\}]*\\})"},
-		{"old_state":"string","new_state":"string","type":"other","regex":"[\\[\\]]"},
-		{"old_state":"string","new_state":"init","type":"string","regex":"\""},
-		{"old_state":"init","new_state":"init","type":"variable","regex":"\\$([_a-zA-Z0-9]+\\(?|\\{[^\\}]*\\})"},
-		{"old_state":"init","new_state":"init","type":"other","regex":"[;\\[\\]\\{\\}]"}
+		{"old state":"init","new state":"init","type":"comment","regex":"^\\s*#[^\\r\\n]*"},
+		{"old state":"init","new state":"init","type":"plain","regex":"([^\\{\\[\\]\\};\"\\s\\$\\\\]|\\\\.)([^\\]\\}\";\\s\\$\\\\]*|\\\\.)"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+		{"old state":"init","new state":"string","type":"string","regex":"\""},
+		{"old state":"string","new state":"string","type":"string","regex":"([^\"\\\\\\$\\[\\]]|\\\\.)+"},
+		{"old state":"string","new state":"string","type":"variable","regex":"\\$([_a-zA-Z0-9]*\\(?|\\{[^\\}]*\\})"},
+		{"old state":"string","new state":"string","type":"other","regex":"[\\[\\]]"},
+		{"old state":"string","new state":"init","type":"string","regex":"\""},
+		{"old state":"init","new state":"init","type":"variable","regex":"\\$([_a-zA-Z0-9]*\\(?|\\{[^\\}]*\\})"},
+		{"old state":"init","new state":"init","type":"other","regex":"[;\\[\\]\\{\\}]"}
 	]
 }

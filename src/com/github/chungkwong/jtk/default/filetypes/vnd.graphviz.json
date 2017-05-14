@@ -1,11 +1,11 @@
 {
     "states":{"init":0},
 	"rules":[
-		{"old_state":"init","new_state":"init","type":"comment","regex":"#[^\\r\\n]*|/\\*([^*]|\\*+[^*/])*\\*+/"},
-		{"old_state":"init","new_state":"init","type":"whitespace","regex":"\\s+"},
-		{"old_state":"init","new_state":"init","type":"type","regex":"strict|digraph|graph|subgraph|node|edge"},
-		{"old_state":"init","new_state":"init","type":"key","regex":"arrowhead|arrowtail|bgcolor|center|color|constraint|decorate|dir|distortion|epsilon|fillcolor|fixedsize|fontcolor|fontname|fontsize|headclip|headhref|headlabel|headtarget|headtooltip|headURL|height|href|K|label|labelangle|labeldistance|layer|layout|len|margin|maxiter|mindist|minlen|nodesep|ordering|orientation|overlap|peripheries|pin|rank|rankdir|ranksep|ratio|regular|root|rotate|samehead|sametail|shape|sides|size|skew|splines|start|style|stylesheet|tailclip|tailhref|taillabel|tailtarget|tailtooltip|tailURL|target|tooltip|URL|w|weight|width"},
-		{"old_state":"init","new_state":"init","type":"name","regex":"[_a-zA-Z\\u0080-\\uFFFF][_0-9a-zA-Z\\u0080-\\uFFFF]*|-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)|\"([^\\\\\"]|\\\\.)*\""},
-		{"old_state":"init","new_state":"init","type":"other","regex":"(:(ne|se|sw|nw|[neswc_]))|--|->|[:=,;\\{\\}\\[\\]<>]"}
+		{"old state":"init","new state":"init","type":"comment","regex":"#[^\\r\\n]*|/\\*([^*]|\\*+[^*/])*\\*+/"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+		{"old state":"init","new state":"init","type":"type","regex":"strict|digraph|graph|subgraph|node|edge"},
+		{"old state":"init","new state":"init","type":"key","regex":"arrowhead|arrowtail|bgcolor|center|color|constraint|decorate|dir|distortion|epsilon|fillcolor|fixedsize|fontcolor|fontname|fontsize|headclip|headhref|headlabel|headtarget|headtooltip|headURL|height|href|K|label|labelangle|labeldistance|layer|layout|len|margin|maxiter|mindist|minlen|nodesep|ordering|orientation|overlap|peripheries|pin|rank|rankdir|ranksep|ratio|regular|root|rotate|samehead|sametail|shape|sides|size|skew|splines|start|style|stylesheet|tailclip|tailhref|taillabel|tailtarget|tailtooltip|tailURL|target|tooltip|URL|w|weight|width"},
+		{"old state":"init","new state":"init","type":"name","regex":"[_a-zA-Z\\u0080-\\uFFFF][_0-9a-zA-Z\\u0080-\\uFFFF]*|-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)|\"([^\\\\\"]|\\\\.)*\""},
+		{"old state":"init","new state":"init","type":"other","regex":"(:(ne|se|sw|nw|[neswc_]))|--|->|[:=,;\\{\\}\\[\\]<>]"}
 	]
 }

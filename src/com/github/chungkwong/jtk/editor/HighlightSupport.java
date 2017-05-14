@@ -50,7 +50,6 @@ public class HighlightSupport{
 		Iterator<Token> iter=new InteruptableIterator<>(lex.split(text));
 		while(iter.hasNext()){
 			Token token=iter.next();
-			System.err.println(token);
 			spansBuilder.add(Collections.singleton(token.getType()),token.getText().length());
 		}
 		return spansBuilder.create();

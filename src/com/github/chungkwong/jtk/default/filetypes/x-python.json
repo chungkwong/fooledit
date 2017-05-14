@@ -2,19 +2,19 @@
 	"states":{"init":0},
 	"shorthands":["digits","[0-9](_?[0-9])*"],
 	"rules":[
-		{"old_state":"init","new_state":"init","type":"keyword","regex":"and|as(sert)?|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield"},
-		{"old_state":"init","new_state":"init","type":"comment","regex":"#[^\\r\\n]*"},
-		{"old_state":"init","new_state":"init","type":"whitespace","regex":"\\s+"},
-		{"old_state":"init","new_state":"init","type":"string","regex":"([rR]|[fF][rR]|[fF][rR])('''[^\\\\]*?'''|\"\"\"[^\\\\]*?\"\"\"|\"[^\\r\\n\"]*\"|'[^\\r\\n']*')"},
-		{"old_state":"init","new_state":"init","type":"string","regex":"([uU]|[fF])?('''([^\\\\]|\\\\.)*?'''|\"\"\"([^\\\\]|\\\\.)*?\"\"\"|\"([^\\\\\\r\\n\"]|\\\\.)*\"|'([^\\\\\\r\\n']|\\\\.)*')"},
-		{"old_state":"init","new_state":"init","type":"binary","regex":"([rR][bB]|[bB][rR])('''[\\p{ASCII}]*?'''|\"\"\"[\\p{ASCII}]*?\"\"\"|\"[\\p{ASCII}&&[^\\r\\n\"]]*\"|'[\\p{ASCII}&&[^\\r\\n']]*')"},
-		{"old_state":"init","new_state":"init","type":"binary","regex":"[bB]?('''([\\p{ASCII}&&[^\\\\]]|\\\\[\\p{ASCII}])*?'''|\"\"\"([\\p{ASCII}&&[^\\\\]]|\\\\[\\p{ASCII}])*?\"\"\"|\"([\\p{ASCII}&&[^\\\\\\r\\n\"]]|\\\\[\\p{ASCII}])*\"|'([\\p{ASCII}&&[^\\\\\\r\\n']]|\\\\[\\p{ASCII}])*')"},
-	    {"old_state":"init","new_state":"init","type":"boolean","regex":"True|False"},
-		{"old_state":"init","new_state":"init","type":"null","regex":"None"},
-		{"old_state":"init","new_state":"init","type":"name","regex":"[_\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lm}\\p{Lo}\\p{Nl}\\p{javaUnicodeIdentifierStart}][_\\p{Mn}\\p{Mc}\\p{Nd}\\p{Pc}\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lm}\\p{Lo}\\p{Nl}\\p{javaUnicodeIdentifierPart}]*"},
-		{"old_state":"init","new_state":"init","type":"float","regex":"({digits}\\.({digits})?|\\.{digits})([eE][-+]?{digits})?[jJ]?"},
-		{"old_state":"init","new_state":"init","type":"float","regex":"{digits}[eE][-+]?[0-9]+[jJ]?"},
-		{"old_state":"init","new_state":"init","type":"integer","regex":"([1-9](_?[0-9])*|0[xX](_?[0-9a-fA-F])+|0[bB](_?[01])+|0[oO](_?[0-7])+|0(_?0)*)[jJ]?"},
-		{"old_state":"init","new_state":"init","type":"other","regex":"\\\\$|->|!=|(//|>>|>>|\\*\\*|[-+*/%@=^\\|\\&<>])=?|[\\(\\)\\[\\]\\{\\},:\\.;~]"}
+		{"old state":"init","new state":"init","type":"keyword","regex":"and|as(sert)?|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield"},
+		{"old state":"init","new state":"init","type":"comment","regex":"#[^\\r\\n]*"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+		{"old state":"init","new state":"init","type":"string","regex":"([rR]|[fF][rR]|[fF][rR])('''[^\\\\]*?'''|\"\"\"[^\\\\]*?\"\"\"|\"[^\\r\\n\"]*\"|'[^\\r\\n']*')"},
+		{"old state":"init","new state":"init","type":"string","regex":"([uU]|[fF])?('''([^\\\\]|\\\\.)*?'''|\"\"\"([^\\\\]|\\\\.)*?\"\"\"|\"([^\\\\\\r\\n\"]|\\\\.)*\"|'([^\\\\\\r\\n']|\\\\.)*')"},
+		{"old state":"init","new state":"init","type":"binary","regex":"([rR][bB]|[bB][rR])('''[\\p{ASCII}]*?'''|\"\"\"[\\p{ASCII}]*?\"\"\"|\"[\\p{ASCII}&&[^\\r\\n\"]]*\"|'[\\p{ASCII}&&[^\\r\\n']]*')"},
+		{"old state":"init","new state":"init","type":"binary","regex":"[bB]?('''([\\p{ASCII}&&[^\\\\]]|\\\\[\\p{ASCII}])*?'''|\"\"\"([\\p{ASCII}&&[^\\\\]]|\\\\[\\p{ASCII}])*?\"\"\"|\"([\\p{ASCII}&&[^\\\\\\r\\n\"]]|\\\\[\\p{ASCII}])*\"|'([\\p{ASCII}&&[^\\\\\\r\\n']]|\\\\[\\p{ASCII}])*')"},
+	    {"old state":"init","new state":"init","type":"boolean","regex":"True|False"},
+		{"old state":"init","new state":"init","type":"null","regex":"None"},
+		{"old state":"init","new state":"init","type":"name","regex":"[_\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lm}\\p{Lo}\\p{Nl}\\p{javaUnicodeIdentifierStart}][_\\p{Mn}\\p{Mc}\\p{Nd}\\p{Pc}\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lm}\\p{Lo}\\p{Nl}\\p{javaUnicodeIdentifierPart}]*"},
+		{"old state":"init","new state":"init","type":"float","regex":"({digits}\\.({digits})?|\\.{digits})([eE][-+]?{digits})?[jJ]?"},
+		{"old state":"init","new state":"init","type":"float","regex":"{digits}[eE][-+]?[0-9]+[jJ]?"},
+		{"old state":"init","new state":"init","type":"integer","regex":"([1-9](_?[0-9])*|0[xX](_?[0-9a-fA-F])+|0[bB](_?[01])+|0[oO](_?[0-7])+|0(_?0)*)[jJ]?"},
+		{"old state":"init","new state":"init","type":"other","regex":"\\\\$|->|!=|(//|>>|>>|\\*\\*|[-+*/%@=^\\|\\&<>])=?|[\\(\\)\\[\\]\\{\\},:\\.;~]"}
 	]
 }

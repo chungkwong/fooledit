@@ -1,18 +1,18 @@
 {
 	"states":{"init":0},
 	"rules":[
-		{"old_state":"init","new_state":"init","type":"keyword","regex":"!|case|do|done|elif|else|esac|fi|for|function|if|in|select|then|until|while|\\{|\\}|time|\\[\\[|\\]\\]"},
-		{"old_state":"init","new_state":"init","type":"comment","regex":"#[^\\r\\n]*"},
-		{"old_state":"init","new_state":"init","type":"whitespace","regex":"\\s+"},
-		{"old_state":"init","new_state":"init","type":"string","regex":"\\$?'[^']*'"},
-		{"old_state":"init","new_state":"init","type":"string","regex":"\\$?\"([^\"\\\\]|\\\\.)*\""},
-		{"old_state":"init","new_state":"init","type":"variable","regex":"\\$[_a-zA-Z][_0-9a-zA-Z]*"},
-		{"old_state":"init","new_state":"init","type":"variable","regex":"\\$[-0-9@*#?$!]"},
-		{"old_state":"init","new_state":"init","type":"variable","regex":"\\$\\(\\([^\\)]*\\)\\)"},
-		{"old_state":"init","new_state":"init","type":"variable","regex":"\\$\\([^\\)]*\\)"},
-		{"old_state":"init","new_state":"init","type":"variable","regex":"\\$\\{[^\\}]*\\}"},
-		{"old_state":"init","new_state":"init","type":"variable","regex":"`([^`\\\\]|\\\\.)*`"},
-		{"old_state":"init","new_state":"init","type":"other","regex":"[<>;\\|\\&\\(\\)\\[\\]]"},
-		{"old_state":"init","new_state":"init","type":"plain","regex":"[^#`'\"$<>;\\|\\&\\(\\)\\[\\]\\s][^`'\"$<>;\\|\\&\\(\\)\\s]*"}
+		{"old state":"init","new state":"init","type":"keyword","regex":"!|case|do|done|elif|else|esac|fi|for|function|if|in|select|then|until|while|\\{|\\}|time|\\[\\[|\\]\\]"},
+		{"old state":"init","new state":"init","type":"comment","regex":"#[^\\r\\n]*"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+		{"old state":"init","new state":"init","type":"string","regex":"\\$?'[^']*'"},
+		{"old state":"init","new state":"init","type":"string","regex":"\\$?\"([^\"\\\\]|\\\\.)*\""},
+		{"old state":"init","new state":"init","type":"variable","regex":"\\$[_a-zA-Z][_0-9a-zA-Z]*"},
+		{"old state":"init","new state":"init","type":"variable","regex":"\\$[-0-9@*#?$!]"},
+		{"old state":"init","new state":"init","type":"variable","regex":"\\$\\(\\([^\\)]*\\)\\)"},
+		{"old state":"init","new state":"init","type":"variable","regex":"\\$\\([^\\)]*\\)"},
+		{"old state":"init","new state":"init","type":"variable","regex":"\\$\\{[^\\}]*\\}"},
+		{"old state":"init","new state":"init","type":"variable","regex":"`([^`\\\\]|\\\\.)*`"},
+		{"old state":"init","new state":"init","type":"other","regex":"[<>;\\|\\&\\(\\)\\[\\]]"},
+		{"old state":"init","new state":"init","type":"plain","regex":"[^#`'\"$<>;\\|\\&\\(\\)\\[\\]\\s][^`'\"$<>;\\|\\&\\(\\)\\s]*"}
 	]
 }

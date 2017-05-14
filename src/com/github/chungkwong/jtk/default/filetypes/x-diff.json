@@ -1,10 +1,10 @@
 {
 	"states":{"init":0},
 	"rules":[
-		{"old_state":"init","new_state":"init","type":"key","regex":"^[-<][ \\t][^\\r\\n]*"},
-		{"old_state":"init","new_state":"init","type":"value","regex":"^[+>!][ \\t][^\\r\\n]*"},
-		{"old_state":"init","new_state":"init","type":"plain","regex":"^ [^\\r\\n]*"},
-		{"old_state":"init","new_state":"init","type":"other","regex":"^([^-+<>!\\r\\n]|--)[^\\r\\n]*"},
-		{"old_state":"init","new_state":"init","type":"whitespace","regex":"[\\r\\n]+"}
+		{"old state":"init","new state":"init","type":"key","regex":"^[-<][ \\t][^\\r\\n]*"},
+		{"old state":"init","new state":"init","type":"value","regex":"^[+>!][ \\t][^\\r\\n]*"},
+		{"old state":"init","new state":"init","type":"plain","regex":"^ [^\\r\\n]*"},
+		{"old state":"init","new state":"init","type":"other","regex":"^([^-+<>!\\r\\n]|--)[^\\r\\n]*"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"[\\r\\n]+"}
 	]
 }
