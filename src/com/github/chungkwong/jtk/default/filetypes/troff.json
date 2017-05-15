@@ -1,0 +1,10 @@
+{
+    "states":{"init":0},
+	"rules":[
+	    {"old state":"init","new state":"init","type":"command","regex":"^[\\.'].*?$"},
+	    {"old state":"init","new state":"init","type":"comment","regex":"\\\\[#\"].*?$"},
+	    {"old state":"init","new state":"init","type":"command","regex":"\\\\([^\\(\\[]|\\[[^\\]]*\\]|\\(..)([0-9a-zA-Z]|\\[[^\\]]*\\]|'[^']'|\\(..)?"},
+	    {"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+	    {"old state":"init","new state":"init","type":"plain","regex":"[^\\\\\\r\\n]+"}
+	]
+}

@@ -1,0 +1,22 @@
+{
+	"states":{"init":0,"tag":1},
+	"shorthands":["s","[ \\t\\r\\n]","name","[a-zA-Z][0-9a-zA-Z]*"],
+	"rules":[
+		{"old state":"init","new state":"init","type":"comment","regex":"<!--(([^-]|-[^-])*)*-->"},
+		{"old state":"init","new state":"tag","type":"name","regex":"<{name}(?=[ \\t\\r\\n>])"},
+		{"old state":"tag","new state":"init","type":"name","regex":">"},
+		{"old state":"tag","new state":"tag","type":"key","regex":"{name}"},
+		{"old state":"tag","new state":"tag","type":"other","regex":"="},
+		{"old state":"tag","new state":"tag","type":"value","regex":"\"[^\"]*\"|'[^']*'"},
+		{"old state":"init","new state":"init","type":"keyword","regex":"^\\s*#+[^\\r\\n]*|^[^\\r\\n]*(\\r(\\n)?|\\n)(=+|-+)$"},
+		{"old state":"init","new state":"init","type":"integer","regex":"^\\s*([0-9]+\\.|[-+*])"},
+		{"old state":"init","new state":"init","type":"other","regex":"^[ \\t]*([-_*][ \\t]*){3,}$"},
+		{"old state":"init","new state":"init","type":"string","regex":"^\\s*>.*?$"},
+		{"old state":"init","new state":"init","type":"string","regex":"(`+).*?\\1"},
+		{"old state":"init","new state":"init","type":"string","regex":"([_*]{1,2})[^ \\t]([ \\t]*[^ \\t])*?\\1"},
+		{"old state":"init","new state":"init","type":"url","regex":"!?\\[([^\\]\\\\]|\\\\.)*\\](\\[([^\\]\\\\]|\\\\.)*\\]|\\(([^\\)\\\\]|\\\\.)*\\))"},
+		{"old state":"init","new state":"init","type":"url","regex":"<[^>]*>|^(\\s)*\\[([^\\]\\\\]|\\\\.)*\\]:.*?$(|\\1[ \\t].*?$)"},
+		{"old state":"init","new state":"init","type":"plain","regex":"[^-*!<_\\[`\\r\\n]+"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"[\\r\\n]"}
+	]
+}

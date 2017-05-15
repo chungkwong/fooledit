@@ -1,0 +1,20 @@
+{
+    "states":{"init":0,"prerequisites":1,"recipe":2},
+	"rules":[
+		{"old state":"init","new state":"init","type":"comment","regex":"#.*?$"},
+		{"old state":"init","new state":"init","type":"keyword","regex":"define|else|endef|endif|ifeq|ifneq|ifdef|ifndef"},
+		{"old state":"init","new state":"init","type":"other","regex":"\\+=|\\?=|[\\(\\),=]"},
+		{"old state":"init","new state":"init","type":"string","regex":"'([^'\\\\]|\\\\.)*'|\"([^'\\\\]|\\\\.)*\""},
+		{"old state":"init","new state":"init","type":"variable","regex":"\\$\\([^\\)]*\\)|\\$\\{[^\\}]*\\}"},
+		{"old state":"init","new state":"init","type":"command","regex":"([^+?='\"\\s\\$:\\\\\\(\\),]|\\\\.)+"},
+		{"old state":"init","new state":"prerequisites","type":"other","regex":":{1,2}"},
+	    {"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+		{"old state":"prerequisites","new state":"prerequisites","type":"other","regex":"\\+=|\\?=|="},
+		{"old state":"prerequisites","new state":"prerequisites","type":"url","regex":"([^\\r\\n\\\\;\\$]|\\\\.)+"},
+		{"old state":"prerequisites","new state":"prerequisites","type":"variable","regex":"\\$[@%<?^+*\\$]|\\$\\([^\\)]*\\)|\\$\\{[^\\}]*\\}"},
+	    {"old state":"prerequisites","new state":"recipe","type":"other","regex":";|$(\\r(\\n)?|\\n)\\t"},
+	    {"old state":"prerequisites","new state":"init","type":"other","regex":"$[\\r\\n]*"},
+	    {"old state":"recipe","new state":"recipe","type":"plain","regex":"([^\\r\\n\\\\]|\\\\.)+|$(\\r(\\n)?|\\n)\\t"},
+		{"old state":"recipe","new state":"init","type":"whitespace","regex":"[\\r\\n]"}
+	]
+}
