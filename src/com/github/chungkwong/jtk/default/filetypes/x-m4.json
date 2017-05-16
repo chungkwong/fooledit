@@ -1,0 +1,14 @@
+{
+    "states":{"init":0},
+	"shorthands":["c0","`[^`']*'",
+		"c1","`([^`']|{c0})*'",
+		"c2","`([^`']|{c1})*'",
+		"c3","`([^`']|{c2})*'",
+		"c4","`([^`']|{c3})*'"],
+    "rules":[
+		{"old state":"init","new state":"init","type":"comment","regex":"#.*?$"},
+		{"old state":"init","new state":"init","type":"name","regex":"[_a-zA-Z][_0-9a-zA-Z]*"},
+		{"old state":"init","new state":"init","type":"other","regex":"{c4}"},
+		{"old state":"init","new state":"init","type":"other","regex":"[^#_a-zA-Z`']+"}
+	]
+}
