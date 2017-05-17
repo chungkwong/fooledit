@@ -19,6 +19,7 @@ import com.github.chungkwong.jtk.control.*;
 import com.github.chungkwong.jtk.editor.LineNumberFactory;
 import com.github.chungkwong.jtk.editor.lex.*;
 import com.github.chungkwong.jtk.editor.parser.*;
+import java.text.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.beans.property.*;
@@ -104,22 +105,35 @@ class InteruptableIterator<T> implements Iterator<T>{
 	}
 }
 class LineNumberFactory implements IntFunction<Node>{
-	private static final Insets DEFAULT_INSETS=new Insets(0.0,5.0,0.0,5.0);
+	private static final Insets INSETS=new Insets(0.0,5.0,0.0,5.0);
 	private static final Background BACKGROUND=new Background(new BackgroundFill(Color.LIGHTGRAY,null,null));
 	private static final Font FONT=Font.font("monospace");
-	private final Val<Integer> nParagraphs;
+	private final NumberFormat format=NumberFormat.getIntegerInstance();
+	private final Val<Integer> paragraphs;
 	LineNumberFactory(CodeArea area){
-		nParagraphs=LiveList.sizeOf(area.getParagraphs());
+		paragraphs=LiveList.sizeOf(area.getParagraphs());
+		paragraphs.addListener((e,o,n)->format.setMinimumIntegerDigits(getNumberOfDigit(n)));
 	}
 	@Override
 	public Node apply(int idx){
-		Val<String> formatted=nParagraphs.map(n->Integer.toString(idx+1));
+		Val<String> formatted=paragraphs.map((n)->format.format(idx+1));
 		Label lineNo=new Label();
 		lineNo.setFont(FONT);
 		lineNo.setBackground(BACKGROUND);
-		lineNo.setPadding(DEFAULT_INSETS);
+		lineNo.setPadding(INSETS);
 		lineNo.getStyleClass().add("lineno");
         lineNo.textProperty().bind(formatted.conditionOnShowing(lineNo));
 		return lineNo;
+	}
+	private static int getNumberOfDigit(int n){
+		if(n<10)return 1;
+		else if(n<100)return 2;
+		else if(n<1000)return 3;
+		else if(n<10000)return 4;
+		else if(n<100000)return 5;
+		else if(n<1000000)return 6;
+		else if(n<10000000)return 7;
+		else if(n<100000000)return 8;
+		else return 9;
 	}
 }

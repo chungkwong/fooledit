@@ -1,0 +1,16 @@
+{
+    "states":{"init":0},
+    	"rules":[
+		{"old state":"init","new state":"init","type":"keyword","regex":"ACCESS|ACTION|ADVANCE|ALLOCATABLE|ALLOCATED?|ASSIGN(MENT)?|BACKSPACE|BLANK|BLOCK|CALL|CASE|CHARACTER|CLOSE|COMMON|COMPLEX|CONTAINS|CONTINUE|CYCLE|DATA|DEALLOCATE|DEFAULT|DELIM|DIMENSION|DIRECT|DO|DOUBLE|ELSE(IF|WHERE)?|END(IF|DO|FILE)?|ENTRY|EOR|EQUIVALENCE|ERR|EXIT|EXIST|EXPLICIT|EXTERNAL|FMT|FORALL|FORM(AT(TED)?)?|FROM|FUNCTION|GO|IF|IMPLICIT|INQUIRE|IN(OUT|TEGER|TENT|TERFACE|TRINSIC)?|IOLENGTH|IOSTAT|KIND|LEN|LOGICAL|MODULE|NAME(D|LIST)?|NEXTREC|NML|NONE|NUMBER|ONLY|OPEN(ED)?|OPERATOR|OPTIONAL|OUT|PAD|PARAMETER|PAUSE|POINTER|POSITION|PRECISION|PRINT|PRIVATE|PROCEDURE|PROGRAM|PUBLIC|READ|REAL|REC(L|URSIVE)?|RESULT|RETURN|REWIND|SAVE|SELECT|SEQUENCE|SEQUENTIAL|SIZE|STAT(US)?|STOP|SUBROUTINE|TARGET|THEN|TO|TYPE|USE|UNIT|UNFORMATTED|WHERE|WHILE|WRITE"},
+	    {"old state":"init","new state":"init","type":"boolean","regex":"\\.(TRUE|FALSE)\\."},
+	    {"old state":"init","new state":"init","type":"float","regex":"([0-9]+\\.[0-9]*|\\.[0-9]+)([eEdD][-+]?[0-9]+)?"},
+	    {"old state":"init","new state":"init","type":"float","regex":"[0-9]+[eEdD][-+]?[0-9]+"},
+	    {"old state":"init","new state":"init","type":"integer","regex":"([0-9]+)"},
+		{"old state":"init","new state":"init","type":"string","regex":"'([^']|'')*'|\"([^\"]|\"\")*\""},
+		{"old state":"init","new state":"init","type":"directive","regex":"^\\s*INCLUDE"},
+		{"old state":"init","new state":"init","type":"comment","regex":"!.*?$"},
+		{"old state":"init","new state":"init","type":"name","regex":"[A-Za-z][_a-zA-Z0-9]*"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+	    {"old state":"init","new state":"init","type":"other","regex":"\\.[a-zA-Z]+\\.|[-+*/=\\(\\)\\.,:%\\&;<>?\\$]"}
+	]
+}

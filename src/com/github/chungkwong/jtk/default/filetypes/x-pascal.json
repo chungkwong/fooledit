@@ -1,0 +1,15 @@
+{
+    "states":{"init":0},
+   	"rules":[
+		{"old state":"init","new state":"init","type":"keyword","regex":"and(_then)?|array|begin|bindable|case|const|div|do(wnto)?|else|end|export|file|for|function|goto|if|import|in|label|mod(ule)?|nil|not|of|only|or(_else)?|otherwise|packed|pow|procedure|program|protected|qualified|record|repeat|restricted|set|then|to|type|until|value|var|while|with"},
+	    {"old state":"init","new state":"init","type":"float","regex":"[-+]?[0-9]+\\.[0-9]+([eE][-+]?[0-9]+)?"},
+	    {"old state":"init","new state":"init","type":"float","regex":"[-+]?[0-9]+[eE][-+]?[0-9]+"},
+	    {"old state":"init","new state":"init","type":"float","regex":"[-+]?0[xX]([0-9a-fA-F]+(\\.[0-9a-fA-F]*)?|\\.[0-9a-fA-F]+)[pP][-+]?[0-9]+"},
+		{"old state":"init","new state":"init","type":"integer","regex":"[-+]?[0-9]+(#[0-9a-zA-Z]+)?"},
+		{"old state":"init","new state":"init","type":"string","regex":"'([^']|'')*'"},
+		{"old state":"init","new state":"init","type":"name","regex":"[A-Za-z][_a-zA-Z0-9]*"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+		{"old state":"init","new state":"init","type":"comment","regex":"(\\{|\\(\\*)[^*\\}]*(\\}|\\*\\))"},
+	    {"old state":"init","new state":"init","type":"other","regex":"\\*\\*|<>|<=|>=|:=|\\.\\.|\\(\\.|\\.\\)|><|=>|[-+*/=<>\\[\\]\\.,:;\\|\\(\\)@]"}
+	]
+}
