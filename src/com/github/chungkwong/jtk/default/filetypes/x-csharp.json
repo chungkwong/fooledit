@@ -1,0 +1,21 @@
+{
+    "states":{"init":0},
+    "shorthands":["escape","\\\\([0abfnrtv'\"\\\\]|x[0-9a-fA-F]{1,4}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8})",
+		  "whitespace","[\\u0009\\u000B\\u000C\\p{Zs}]"],
+    "rules":[
+		{"old state":"init","new state":"init","type":"keyword","regex":"abstract|as|base|bool|break|byte|case|catch|char|checked|class|const|continue|decimal|default|delegate|do(uble)?|else|enum|event|explicit|extern|finally|fixed|float|for(each)?|goto|if|implicit|in|in(t(erface|ernal)?)?|is|lock|long|namespace|new|object|operator|out|override|params|private|protected|public|readonly|ref|return|sbyte|sealed|short|sizeof|stackalloc|static|string|struct|switch|this|throw|try|typeof|uint|ulong|unchecked|unsafe|ushort|using( static)?|void|volatile|while"},
+		{"old state":"init","new state":"init","type":"boolean","regex":"true|false"},
+		{"old state":"init","new state":"init","type":"null","regex":"null"},
+		{"old state":"init","new state":"init","type":"char","regex":"'([^'\\\\]|{escape})'"},
+		{"old state":"init","new state":"init","type":"string","regex":"@\"([^\"]|\"\")*\"|\"([^\"\\\\]|{escape})*\""},
+		{"old state":"init","new state":"init","type":"name","regex":"@?([_\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lm}\\p{Lo}\\p{Nl}]|\\\\u[0-9a-fA-F]{4}|\\\\U[0-9a-fA-F]{8})([\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lm}\\p{Lo}\\p{Nl}\\p{Nd}\\p{Pc}\\p{Mc}\\p{Mn}\\p{Cf}]|\\\\u[0-9a-fA-F]{4}|\\\\U[0-9a-fA-F]{8})*"},
+		{"old state":"init","new state":"init","type":"float","regex":"[0-9]*\\.[0-9]+([eE][-+]?[0-9]+)?[FfDdMm]?"},
+		{"old state":"init","new state":"init","type":"float","regex":"[0-9]+[eE][-+]?[0-9]+[FfDdMm]?"},
+		{"old state":"init","new state":"init","type":"float","regex":"[0-9]+[FfDdMm]"},
+		{"old state":"init","new state":"init","type":"integer","regex":"(0[xX][0-9a-fA-F]+|[0-9]+)([uU][lL]?|[lL][uU]?)?"},
+		{"old state":"init","new state":"init","type":"comment","regex":"//.*?$|/\\*.*?\\*/"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+		{"old state":"init","new state":"init","type":"directive","regex":"^{whitespace}*#{whitespace}*(if|else|elif|endif|define|undef|warning|error|line|region|endregion|pragma)"},
+		{"old state":"init","new state":"init","type":"other","regex":"=>|->|\\?\\.|[-+?\\|\\&:]{2}|(<<|>>|[-+*/%\\&\\|^=!><])=?|[=?,:;\\(\\)\\[\\]\\{\\}~\\$\\.]"}
+	]
+}

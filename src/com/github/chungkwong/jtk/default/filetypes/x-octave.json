@@ -1,0 +1,16 @@
+{
+	"states":{"init":0},
+	"rules":[
+		{"old state":"init","new state":"init","type":"keyword","regex":"__FILE__|__LINE__|break|case|catch|classdef|continue|do|else(if)?|end(_try_catch|_unwind_protect|classdef|enumeration|events|for|function|if|methods|parfor|properties|switch|while)?|enumeration|events|for|function|global|if|methods|otherwise|parfor|persistent|properties|return|switch|try|until|unwind_protect(_cleanup)?|while"},
+		{"old state":"init","new state":"init","type":"comment","regex":"[#%].*?$|#\\{.*?#\\}|%\\{.*?%\\}"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+		{"old state":"init","new state":"init","type":"boolean","regex":"true|false"},
+		{"old state":"init","new state":"init","type":"null","regex":"NA"},
+		{"old state":"init","new state":"init","type":"string","regex":"'([^']|'')*'|\"([^\"\\\\]|\\\\([\"'\\\\abfnrtv]|x[0-9a-fA-F]+|[0-7]{1,3}))*\""},
+		{"old state":"init","new state":"init","type":"float","regex":"NaN|Inf|([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][-+]?[0-9]+)?[ijIJ]?"},
+		{"old state":"init","new state":"init","type":"float","regex":"[0-9]+[eE][-+]?[0-9]+[ijIJ]?"},
+		{"old state":"init","new state":"init","type":"integer","regex":"(0[xX][0-9a-fA-F](_?[0-9a-fA-F])*|0[bB][01](_?[01])*|[0-9](_?[0-9])*)[ijIJ]?"},
+		{"old state":"init","new state":"init","type":"name","regex":"[_a-zA-Z][_0-9a-zA-Z]*"},
+		{"old state":"init","new state":"init","type":"other","regex":"\\.\\.\\.|\\.\\*\\*|[-+*\\|\\&]{2}|\\.'|(\\.[*/\\\\^]|[-+*/!><=~^\\\\^\\|\\&])=?|[,;:\\(\\)\\[\\]\\{\\}\\.']"}
+	]
+}

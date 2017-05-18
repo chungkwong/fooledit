@@ -1,0 +1,15 @@
+{
+    "states":{"init":0},
+	"shorthands":["numeral10","[0-9](_?[0-9])*","numeral","[0-9a-fA-F](_?[0-9a-fA-F])*"],
+    "rules":[
+		{"old state":"init","new state":"init","type":"keyword","regex":"abort|abs(tract)?|accept|access|aliased|all|and|array|at|begin|body|case|constant|declare|delay|delta|digits|do|else|elsif|end|entry|exception|exit|for|function|generic|goto|if|in(terface)?|is|limited|loop|mod|new|not|null|of|or|others|out|overriding|package|pragma|private|procedure|protected|raise|range|record|rem|renames|requeue|return|reverse|select|separate|some|subtype|synchronized|tagged|task|terminate|then|type|until|use|when|while|with|xor"},
+		{"old state":"init","new state":"init","type":"string","regex":"\"([^\"]|\"\")*\""},
+		{"old state":"init","new state":"init","type":"char","regex":"'[^']'"},
+		{"old state":"init","new state":"init","type":"float","regex":"{numeral10}#{numeral}(\\.{numeral})?#([eE][-+]?{numeral10})?"},
+		{"old state":"init","new state":"init","type":"float","regex":"{numeral10}(\\.{numeral10})?([eE][-+]?{numeral10})?"},
+		{"old state":"init","new state":"init","type":"name","regex":"[\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lo}\\p{Lm}\\p{Nl}][\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lo}\\p{Lm}\\p{Nl}\\p{Mn}\\p{Mc}\\p{Nd}\\p{Pc}]*"},
+		{"old state":"init","new state":"init","type":"comment","regex":"--.*?$"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+		{"old state":"init","new state":"init","type":"other","regex":"=>|\\.\\.|\\*\\*|:=|/=|>=|<=|<<|>>|<>|[-+*/\\&'\\(\\),\\./:;<=>\\|]"}
+	]
+}

@@ -1,0 +1,25 @@
+{
+    "states":{"init":0},
+    "shorthands":["escape","\\\\([nrtb'\" \\\\]|x[0-9a-fA-F]{2}|o[0-3][0-7]{2}|[0-9]{3})",
+		  "op","[-+*/!\\$%\\&\\./:<=>?@^\\|~]",
+		  "block0","\\(\\*([^*\\(]|\\*+(?!\\))|\\(+(?!\\*))*\\*\\)",
+		  "block1","\\(\\*([^*\\(]|\\*+(?!\\))|\\(+(?!\\*)|{block0})*\\*\\)",
+		  "block2","\\(\\*([^*\\(]|\\*+(?!\\))|\\(+(?!\\*)|{block1})*\\*\\)",
+		  "block3","\\(\\*([^*\\(]|\\*+(?!\\))|\\(+(?!\\*)|{block2})*\\*\\)",
+		  "block4","\\(\\*([^*\\(]|\\*+(?!\\))|\\(+(?!\\*)|{block3})*\\*\\)"],
+    "rules":[
+		{"old state":"init","new state":"init","type":"keyword","regex":"and|as(sert|r)?|begin|class|constraint|do(ne|wnto)?|else|end|exception|external|for|fun(ction|ctor)?|if|in(clude|herit|itializer)?|land|lazy|let|lor|lsl|lsr|lxor|match|method|mod(ule)?|mutable|new|nonrec|object|of|open|or|private|rec|sig|struct|then|to|try|type|val|virtual|when|while|with"},
+		{"old state":"init","new state":"init","type":"boolean","regex":"true|false"},
+		{"old state":"init","new state":"init","type":"char","regex":"'([^'\\\\]|{escape})'"},
+		{"old state":"init","new state":"init","type":"string","regex":"\"([^\"\\\\]|{escape}|\\\\(\\r\\n?|\\n))*\""},
+		{"old state":"init","new state":"init","type":"name","regex":"[A-Z][_0-9a-zA-Z']*"},
+		{"old state":"init","new state":"init","type":"name","regex":"[?~]?[_a-z][_0-9a-zA-Z']*"},
+		{"old state":"init","new state":"init","type":"float","regex":"0[xX][0-9a-fA-F][_0-9a-fA-F]*\\.[_0-9a-fA-F]*([pP][-+]?[0-9][_0-9]*)?|[0-9][_0-9]*\\.[_0-9]*([eE][-+]?[0-9][_0-9]*)?"},
+		{"old state":"init","new state":"init","type":"float","regex":"0[xX][0-9a-fA-F][_0-9a-fA-F]*[pP][-+]?[0-9][_0-9]*|[0-9][_0-9]*[eE][-+]?[0-9][_0-9]*"},
+		{"old state":"init","new state":"init","type":"integer","regex":"0[xX][0-9a-fA-F][_0-9a-fA-F]*|0[oO][0-7][_0-7]*|0[bB][01][_01]*|[0-9][_0-9]*"},
+		{"old state":"init","new state":"init","type":"comment","regex":"{block4}"},
+		{"old state":"init","new state":"init","type":"whitespace","regex":"\\s+"},
+		{"old state":"init","new state":"init","type":"other","regex":"[-+*/\\$%=<>@^\\|\\&!]{op}*|[#?~]{op}+"},
+		{"old state":"init","new state":"init","type":"other","regex":"[\\&\\|:;\\.]{2}|!=|:=|:>|-\\.|->|<-|>\\]|>\\}|\\[<|\\[>|\\[\\||\\{<|\\|\\]|[-+*/_~`,':#=?\\&\\(\\)\\[\\]<>\\{\\}]"}
+	]
+}

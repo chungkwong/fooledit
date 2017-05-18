@@ -1,0 +1,9 @@
+{
+    "states":{"init":0},
+    "shorthands":["name","@(\\w+|[\\p{Punct}[^\\p{ASCII}]])"],
+    "rules":[
+		{"old state":"init","new state":"init","type":"command","regex":"{name}"},
+		{"old state":"init","new state":"init","type":"other","regex":"[\\{\\}]"},
+		{"old state":"init","new state":"init","type":"plain","regex":"[^\\{\\}@]+"}
+	]
+}
