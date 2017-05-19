@@ -23,6 +23,7 @@ import java.text.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.beans.property.*;
+import javafx.beans.value.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -67,6 +68,9 @@ public class CodeEditor extends BorderPane{
 	}
 	public Property<Object> syntaxTree(){
 		return tree.syntaxTree();
+	}
+	public ObservableValue<String> textProperty(){
+		return area.textProperty();
 	}
 	class InputMethodRequestsObject implements InputMethodRequests{
 		@Override

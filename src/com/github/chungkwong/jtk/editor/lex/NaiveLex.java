@@ -54,18 +54,21 @@ public class NaiveLex implements Lex{
 		public boolean hasNext(){
 			if(token!=null)
 				return true;
+			int tmpIndex=index;
 			for(Map.Entry<Pattern,Pair<String,Integer>> entry:types.get(status).entrySet()){
 				Matcher matcher=entry.getKey().matcher(text);
 				matcher.useTransparentBounds(true);
 				matcher.region(index,text.length());
 				if(matcher.lookingAt()&&(token==null||matcher.group().length()>token.getText().length())){
 					token=new Token(matcher.group(),entry.getValue().getKey(),index);
-					index=matcher.end();
+					tmpIndex=matcher.end();
 					status=entry.getValue().getValue();
 				}
 			}
-			if(token!=null)
+			if(token!=null){
+				index=tmpIndex;
 				return true;
+			}
 			if(index<text.length()){
 				token=new Token(text.substring(index,index+1),Lex.UNKNOWN,index++);
 				return true;
