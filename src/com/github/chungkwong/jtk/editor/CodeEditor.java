@@ -22,6 +22,7 @@ import com.github.chungkwong.jtk.editor.parser.*;
 import java.text.*;
 import java.util.*;
 import java.util.function.*;
+import javafx.beans.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.geometry.*;
@@ -43,6 +44,7 @@ public class CodeEditor extends BorderPane{
 	private final CodeArea area=new CodeArea();
 	private final HighlightSupport highlighter;
 	private final SyntaxSupport tree;
+	private final StringProperty textProperty=new PlainTextProperty();
 	public CodeEditor(Parser parser,Lex lex){
 		highlighter=lex!=null?new HighlightSupport(lex,area):null;
 		tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
@@ -69,8 +71,9 @@ public class CodeEditor extends BorderPane{
 	public Property<Object> syntaxTree(){
 		return tree.syntaxTree();
 	}
-	public ObservableValue<String> textProperty(){
-		return area.textProperty();
+
+	public StringProperty textProperty(){
+		return textProperty;
 	}
 	class InputMethodRequestsObject implements InputMethodRequests{
 		@Override
@@ -87,6 +90,72 @@ public class CodeEditor extends BorderPane{
 		@Override
 		public Point2D getTextLocation(int offset){
 			return new Point2D(0,0);
+		}
+	}
+	class PlainTextProperty extends StringProperty{
+		private ObservableValue<? extends String> observable=null;
+		private InvalidationListener listener=null;
+		@Override
+		public String get(){
+			return area.getText();
+		}
+		@Override
+		public void addListener(ChangeListener<? super String> cl){
+			area.textProperty().addListener(cl);
+		}
+		@Override
+		public void removeListener(ChangeListener<? super String> cl){
+			area.textProperty().removeListener(cl);
+		}
+		@Override
+		public void addListener(InvalidationListener il){
+			area.textProperty().addListener(il);
+		}
+		@Override
+		public void removeListener(InvalidationListener il){
+			area.textProperty().removeListener(il);
+		}
+		@Override
+		public Object getBean(){
+			return CodeEditor.this;
+		}
+		@Override
+		public String getName(){
+			return "text";
+		}
+		@Override
+		public void bind(ObservableValue<? extends String> observable){
+			if(observable==null){
+				throw new NullPointerException("Cannot bind to null");
+			}
+			if(!observable.equals(this.observable)){
+				unbind();
+				this.observable=observable;
+				if(listener==null){
+					listener=(e)->area.replaceText(observable.getValue());
+				}
+				this.observable.addListener(listener);
+				area.replaceText(observable.getValue());
+			}
+		}
+		@Override
+		public void unbind(){
+			if(observable!=null){
+				area.replaceText(observable.getValue());
+				observable.removeListener(listener);
+				observable=null;
+			}
+		}
+		@Override
+		public boolean isBound(){
+			return observable!=null;
+		}
+		@Override
+		public void set(String t){
+			if(isBound()){
+				throw new java.lang.RuntimeException("A bound value cannot be set.");
+			}
+			area.replaceText(t);
 		}
 	}
 }

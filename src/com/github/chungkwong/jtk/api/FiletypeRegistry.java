@@ -14,24 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.example.text;
-import com.github.chungkwong.jtk.api.*;
-import com.github.chungkwong.jtk.editor.*;
-import com.github.chungkwong.jtk.model.*;
-import javafx.scene.*;
+package com.github.chungkwong.jtk.api;
+import com.github.chungkwong.jtk.util.*;
+import java.nio.file.*;
+import java.util.*;
+import java.util.regex.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class StructuredTextEditor implements DataEditor<TextObject>{
-	@Override
-	public Node edit(TextObject data){
-		CodeEditor codeEditor=new CodeEditor(null,null);
-		data.getText().bindBidirectional(codeEditor.textProperty());
-		return codeEditor;
+public class FiletypeRegistry{
+	private static final TreeMap<String,List<String>> ext2mime=new TreeMap<>();
+	private static final List<Pair<Pattern,String>> pattern2mime=new ArrayList<>();
+	public static void registerPathPattern(String regex,String mime){
+		pattern2mime.add(new Pair<>(Pattern.compile(regex),mime));
 	}
-	@Override
-	public String getName(){
-		return MessageRegistry.getString("CODE_EDITOR");
+	public static String probeMimeType(Path path){
+		return null;
 	}
 }
