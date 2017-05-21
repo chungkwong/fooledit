@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.model;
-import com.github.chungkwong.jtk.*;
+import com.github.chungkwong.jschememin.type.*;
 import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class Command implements Consumer<Main>{
+public abstract class Command implements Consumer<ScmPairOrNil>{
 	public abstract String getDisplayName();
-	public static Command create(String name,Consumer<Main> action){
+	public static Command create(String name,Consumer<ScmPairOrNil> action){
 		return new SimpleCommand(name,action);
 	}
 	private static class SimpleCommand extends Command{
 		private final String name;
-		private final Consumer<Main> action;
-		public SimpleCommand(String name,Consumer<Main> action){
+		private final Consumer<ScmPairOrNil> action;
+		public SimpleCommand(String name,Consumer<ScmPairOrNil> action){
 			this.action=action;
 			this.name=name;
 		}
@@ -38,9 +38,8 @@ public abstract class Command implements Consumer<Main>{
 			return name;
 		}
 		@Override
-		public void accept(Main t){
+		public void accept(ScmPairOrNil t){
 			action.accept(t);
 		}
-
 	}
 }

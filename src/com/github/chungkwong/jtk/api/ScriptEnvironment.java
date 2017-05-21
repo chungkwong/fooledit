@@ -113,7 +113,7 @@ public class ScriptEnvironment implements Bindings{
 	}
 	private ScmObject pack(Command command){
 		return new NativeEvaluable((o)->{
-			command.accept(main);
+			command.accept(ScmNil.NIL);
 			return ScmNil.NIL;
 		});
 	}

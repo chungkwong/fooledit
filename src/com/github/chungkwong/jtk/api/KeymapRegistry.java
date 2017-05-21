@@ -15,61 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
-import com.github.chungkwong.jtk.*;
-import com.github.chungkwong.jtk.model.*;
 import java.util.*;
-import javafx.scene.*;
 import javafx.scene.input.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class KeymapRegistry{
-	private final Node node;
-	private final Main main;
 	private final TreeMap<String,String> map=new TreeMap<>();
-	private String curr=null;
 	private static final StringBuilder buf=new StringBuilder();
-	boolean ignore=false;
-	public KeymapRegistry(Object json,Node node,Main main){
-		this.node=node;
-		this.main=main;
-		map.putAll((Map<String,String>)json);
-		node.addEventFilter(KeyEvent.ANY,(KeyEvent e)->{
-			if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
-				if(ignore){
-					ignore=false;
-					e.consume();
-				}
-			}else if(e.getEventType().equals(KeyEvent.KEY_PRESSED)){
-				if(e.getCode().isModifierKey()){
-					e.consume();
-					return;
-				}
-				String code=curr==null?encode(e):curr+' '+encode(e);
-				String next=map.ceilingKey(code);
-				if(code.equals(next)){
-					e.consume();
-					curr=null;
-					Command command=main.getCommand(map.get(code));
-					main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
-					command.accept(main);
-					main.getNotifier().notify(MessageRegistry.getString("EXECUTED")+command.getDisplayName());
-					ignore=true;
-				}else if(next!=null&&next.startsWith(code+' ')){
-					e.consume();
-					curr=code;
-					main.getNotifier().notify(MessageRegistry.getString("ENTERED")+code);
-					ignore=true;
-				}else{
-					curr=null;
-					main.getNotifier().notify("");
-					ignore=false;
-				}
-			}
-		});
+	public void registerKey(String key,String command){
+		map.put(key,key);
 	}
-	private static String encode(KeyEvent evt){
+	public void registerKeys(Map<String,String> keys){
+		map.putAll(keys);
+	}
+	public Map.Entry<String,String> ceilingEntry(String keycode){
+		return map.ceilingEntry(keycode);
+	}
+	public static String encode(KeyEvent evt){
 		buf.setLength(0);
 		if(evt.isControlDown()||evt.isShortcutDown())
 			buf.append("C-");

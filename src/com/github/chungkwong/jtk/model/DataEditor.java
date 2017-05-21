@@ -26,5 +26,8 @@ public interface DataEditor<T extends DataObject>{
 	default CommandRegistry getCommandRegistry(){
 		return new CommandRegistry();
 	}
+	default KeymapRegistry getKeymapRegistry(){
+		return new KeymapRegistry();
+	}
 	String getName();
 }

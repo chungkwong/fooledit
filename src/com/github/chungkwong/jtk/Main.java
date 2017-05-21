@@ -16,7 +16,9 @@
  */
 package com.github.chungkwong.jtk;
 
+import com.github.chungkwong.jschememin.type.*;
 import com.github.chungkwong.json.*;
+import static com.github.chungkwong.jtk.api.KeymapRegistry.encode;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.command.*;
 import com.github.chungkwong.jtk.control.*;
@@ -38,6 +40,7 @@ import javafx.scene.Node;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 /**
@@ -84,7 +87,9 @@ public class Main extends Application{
 		//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
 		this.fileCommands=new FileCommands(this);
 		registerStandardCommand();
-		keymapRegistry=new KeymapRegistry(loadJSON("keymap.json"),root,this);
+		keymapRegistry=new KeymapRegistry();
+		keymapRegistry.registerKeys((Map<String,String>)(Object)loadJSON("keymap.json"));
+		new KeymapSupport();
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
@@ -103,6 +108,9 @@ public class Main extends Application{
 		commandRegistry.put("command",()->input.requestFocus());
 		commandRegistry.put("next_buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
 		commandRegistry.put("previous_buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
+		commandRegistry.put("register_path_pattern",(o)->{
+			FiletypeRegistry.registerPathPattern(((ScmString)ScmList.first(o)).getValue(),((ScmString)ScmList.second(o)).getValue());
+		});
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
@@ -145,7 +153,7 @@ public class Main extends Application{
 	}
 	private MenuItem createCommandMenuItem(String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase()));
-		item.setOnAction((e)->commandRegistry.get(name).accept(this));
+		item.setOnAction((e)->commandRegistry.get(name).accept(ScmNil.NIL));
 		return item;
 	}
 	private void updateCurrentNode(Node node){
@@ -193,6 +201,12 @@ public class Main extends Application{
 	}
 	private CommandRegistry getLocalCommandRegistry(){
 		return getCurrentWorkSheet().getDataEditor().getCommandRegistry();
+	}
+	private KeymapRegistry getGlobalKeymapRegistry(){
+		return keymapRegistry;
+	}
+	private KeymapRegistry getLocalKeymapRegistry(){
+		return getCurrentWorkSheet().getDataEditor().getKeymapRegistry();
 	}
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
@@ -272,5 +286,58 @@ public class Main extends Application{
 	}
 	public CommandRegistry getCommandRegistry(){
 		return commandRegistry;
+	}
+	class KeymapSupport{
+		private String curr=null;
+		boolean ignore=false;
+		public KeymapSupport(){
+			root.addEventFilter(KeyEvent.ANY,(KeyEvent e)->{
+				if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
+					if(ignore){
+						ignore=false;
+						e.consume();
+					}
+				}else if(e.getEventType().equals(KeyEvent.KEY_PRESSED)){
+					if(e.getCode().isModifierKey()){
+						e.consume();
+						return;
+					}
+					String code=curr==null?encode(e):curr+' '+encode(e);
+					Map.Entry<String,String> localEntry=getLocalKeymapRegistry().ceilingEntry(code);
+					Map.Entry<String,String> globalEntry=getGlobalKeymapRegistry().ceilingEntry(code);
+					String next;
+					String commandName;
+					if(localEntry!=null){
+						if(globalEntry!=null&&globalEntry.getKey().compareTo(localEntry.getKey())<0){
+							next=globalEntry.getKey();commandName=globalEntry.getValue();
+						}else{
+							next=localEntry.getKey();commandName=localEntry.getValue();
+						}
+					}else if(globalEntry!=null){
+						next=globalEntry.getKey();commandName=globalEntry.getValue();
+					}else{
+						next=null;commandName=null;
+					}
+					if(code.equals(next)){
+						e.consume();
+						curr=null;
+						Command command=getCommand(commandName);
+						getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
+						command.accept(ScmNil.NIL);
+						getNotifier().notify(MessageRegistry.getString("EXECUTED")+command.getDisplayName());
+						ignore=true;
+					}else if(next!=null&&next.startsWith(code+' ')){
+						e.consume();
+						curr=code;
+						getNotifier().notify(MessageRegistry.getString("ENTERED")+code);
+						ignore=true;
+					}else{
+						curr=null;
+						getNotifier().notify("");
+						ignore=false;
+					}
+				}
+			});
+		}
 	}
 }

@@ -42,7 +42,6 @@ public class TextEditor extends Application implements DataEditor<TextObject>{
 	}
 	private static final Cache<CommandRegistry> COMMANDS=new Cache<>(()->{
 		CommandRegistry registry=new CommandRegistry();
-		registry.put("clear",(t)->((TextArea)t.getCurrentNode()).setText(""));
 		return registry;
 	});
 	@Override

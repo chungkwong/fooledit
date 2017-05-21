@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
-import com.github.chungkwong.jtk.*;
+import com.github.chungkwong.jschememin.type.*;
 import com.github.chungkwong.jtk.model.*;
 import java.util.*;
 import java.util.function.*;
@@ -24,7 +24,7 @@ import java.util.function.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CommandRegistry extends HashMap<String,Command>{
-	public void put(String name,Consumer<Main> action){
+	public void put(String name,Consumer<ScmPairOrNil> action){
 		put(name,Command.create(MessageRegistry.getString(name.toUpperCase()),action));
 	}
 	public void put(String name,Runnable action){

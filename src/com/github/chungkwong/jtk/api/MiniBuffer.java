@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
+import com.github.chungkwong.jschememin.type.*;
 import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.control.*;
 import com.github.chungkwong.jtk.model.*;
@@ -55,7 +56,7 @@ public class MiniBuffer extends BorderPane{
 			Command command=main.getCommand(input.getText());
 			if(command!=null){
 				main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
-				main.getCommand(input.getText()).accept(main);
+				main.getCommand(input.getText()).accept(ScmNil.NIL);
 				main.getNotifier().notify(MessageRegistry.getString("EXECUTED")+command.getDisplayName());
 			}else{
 				try{

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
+import com.github.chungkwong.jschememin.type.*;
 import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.control.*;
 import java.util.*;
@@ -46,7 +47,7 @@ public class MenuRegistry{
 				}else if(props.containsKey(COMMAND)){
 					String commandName=(String)props.get(COMMAND);
 					MenuItem mi=new MenuItem(getName(props));
-					mi.setOnAction((e)->main.getCommand(commandName).accept(main));
+					mi.setOnAction((e)->main.getCommand(commandName).accept(ScmNil.NIL));
 					items.add(mi);
 				}else{
 					items.add(makeMenu(props));

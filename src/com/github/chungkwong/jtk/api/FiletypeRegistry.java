@@ -18,18 +18,25 @@ package com.github.chungkwong.jtk.api;
 import com.github.chungkwong.jtk.util.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.regex.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class FiletypeRegistry{
-	private static final TreeMap<String,List<String>> ext2mime=new TreeMap<>();
-	private static final List<Pair<Pattern,String>> pattern2mime=new ArrayList<>();
+	private static final List<Pair<Predicate<String>,String>> pattern2mime=new ArrayList<>();
 	public static void registerPathPattern(String regex,String mime){
-		pattern2mime.add(new Pair<>(Pattern.compile(regex),mime));
+		registerPathPattern(Pattern.compile(regex).asPredicate(),mime);
 	}
-	public static String probeMimeType(Path path){
-		return null;
+	public static void registerPathPattern(Predicate<String> pred,String mime){
+		pattern2mime.add(new Pair<>(pred,mime));
+	}
+	public static List<String> probeMimeType(Path path){
+		String name=path.toString();
+		List<String> candidates=pattern2mime.stream().filter((pair)->pair.getKey().test(name)).
+				map(Pair::getValue).collect(Collectors.toList());
+		return candidates;
 	}
 }
