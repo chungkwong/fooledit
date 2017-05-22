@@ -22,21 +22,22 @@ import java.util.*;
 import java.util.function.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
+import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MenuRegistry{
-	private final MenuBar bar;
-	private final Main main;
+	private final MenuBar bar=new MenuBar();
 	private final Map<String,Consumer<ObservableList<MenuItem>>> dynamic=new HashMap<>();
-	public MenuRegistry(Map<Object,Object> json,Main main){
-		this.main=main;
-		this.bar=new MenuBar();
-		List<Map<Object,Object>> menus=(List<Map<Object,Object>>)json.get(CHILDREN);
-		bar.getMenus().setAll(menus.stream().map((e)->makeMenu(e)).toArray(Menu[]::new));
+	public MenuRegistry(){
+		HBox.setHgrow(bar,Priority.NEVER);
 	}
-	private Menu makeMenu(Map<Object,Object> json){
+	public void setMenus(Map<Object,Object> json){
+		List<Map<Object,Object>> menus=(List<Map<Object,Object>>)json.get(CHILDREN);
+		bar.getMenus().setAll(menus.stream().map((e)->addMenu(e)).toArray(Menu[]::new));
+	}
+	public Menu addMenu(Map<Object,Object> json){
 		if(json.containsKey(CHILDREN)){
 			Menu menu=new Menu(getName(json));
 			List<Map<Object,Object>> children=(List<Map<Object,Object>>)json.get(CHILDREN);
@@ -47,10 +48,10 @@ public class MenuRegistry{
 				}else if(props.containsKey(COMMAND)){
 					String commandName=(String)props.get(COMMAND);
 					MenuItem mi=new MenuItem(getName(props));
-					mi.setOnAction((e)->main.getCommand(commandName).accept(ScmNil.NIL));
+					mi.setOnAction((e)->Main.INSTANCE.getCommand(commandName).accept(ScmNil.NIL));
 					items.add(mi);
 				}else{
-					items.add(makeMenu(props));
+					items.add(addMenu(props));
 				}
 			}
 			return menu;
@@ -62,11 +63,11 @@ public class MenuRegistry{
 	private static String getName(Map<Object,Object> json){
 		return MessageRegistry.getString((String)json.get(NAME));
 	}
-	public MenuBar getMenuBar(){
-		return bar;
-	}
 	public void registerDynamicMenu(String id,Consumer<ObservableList<MenuItem>> provider){
 		dynamic.put(id,provider);
+	}
+	public MenuBar getMenuBar(){
+		return bar;
 	}
 	private static final String CHILDREN="children";
 	private static final String NAME="name";

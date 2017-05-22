@@ -48,19 +48,22 @@ import javafx.stage.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Main extends Application{
+	public static Main INSTANCE;
 	private static final File PATH=new File(System.getProperty("user.home"),".jtk");
 	private final CommandRegistry commandRegistry=new CommandRegistry();
-	private final MenuRegistry menuRegistry;
+	private MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
 	private final FileCommands fileCommands;
 	private final Notifier notifier;
 	private final BorderPane root;
-	private final MiniBuffer input;
+	private MiniBuffer input;
+	private HBox commander;
 	private final ScriptAPI script;
 	private final Scene scene;
 	private Stage stage;
 	private Node currentNode;
 	public Main(){
+		INSTANCE=this;
 		notifier=new Notifier(this);
 		Logger.getGlobal().setLevel(Level.INFO);
 		try{
@@ -71,17 +74,8 @@ public class Main extends Application{
 		Logger.getGlobal().addHandler(notifier);
 		script=new ScriptAPI(this);
 		runScript();
-		input=new MiniBuffer(this);
-		menuRegistry=new MenuRegistry(loadJSON("menu.json"),this);
-		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
-		menuRegistry.registerDynamicMenu("file_history",getHistoryMenu());
-		MenuBar bar=menuRegistry.getMenuBar();
-		HBox commander=new HBox(bar,input);
-		HBox.setHgrow(bar,Priority.NEVER);
-		HBox.setHgrow(input,Priority.ALWAYS);
-		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
 		root=new BorderPane(getDefaultWorkSheet());
-		root.setTop(commander);
+		initMenuBar();
 		root.setBottom(notifier.getStatusBar());
 		scene=new Scene(root);
 		//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
@@ -92,6 +86,17 @@ public class Main extends Application{
 		new KeymapSupport();
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
+	}
+	private void initMenuBar(){
+		menuRegistry=new MenuRegistry();
+		menuRegistry.setMenus(loadJSON("menu.json"));
+		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
+		menuRegistry.registerDynamicMenu("file_history",getHistoryMenu());
+		input=new MiniBuffer(this);
+		MenuBar bar=menuRegistry.getMenuBar();
+		commander=new HBox(bar,new Label(),input);
+		HBox.setHgrow(input,Priority.ALWAYS);
+		root.setTop(commander);
 	}
 	private void registerStandardCommand(){
 		commandRegistry.put("new",()->fileCommands.create());
@@ -160,8 +165,10 @@ public class Main extends Application{
 		while(!(node instanceof WorkSheet)&&node!=null){
 			node=node.getParent();
 		}
-		if(node!=null)
+		if(node!=null){
 			currentNode=((WorkSheet)node).getCenter();
+			commander.getChildren().set(1,((WorkSheet)node).getDataEditor().getMenuRegistry().getMenuBar());
+		}
 	}
 	public void addAndShow(DataObject data,Map<String,String> prop){
 		DataObjectRegistry.addDataObject(data,prop);
@@ -183,6 +190,7 @@ public class Main extends Application{
 		return (WorkSheet)currentNode.getParent();
 	}
 	private WorkSheet getDefaultWorkSheet(){
+		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
 		return (WorkSheet)PersistenceStatusManager.getOrDefault("layout.json",()->{
 			String msg=MessageRegistry.getString("WELCOME");
 			TextObject welcome=new TextObject(msg);

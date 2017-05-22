@@ -19,11 +19,20 @@ import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.editor.*;
 import com.github.chungkwong.jtk.model.*;
 import javafx.scene.*;
+import javafx.scene.control.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class StructuredTextEditor implements DataEditor<TextObject>{
+	private final MenuRegistry menuRegistry=new MenuRegistry();
+	public StructuredTextEditor(){
+		menuRegistry.getMenuBar().getMenus().add(new Menu("Code"));
+	}
+	@Override
+	public MenuRegistry getMenuRegistry(){
+		return menuRegistry;
+	}
 	@Override
 	public Node edit(TextObject data){
 		CodeEditor codeEditor=new CodeEditor(null,null);

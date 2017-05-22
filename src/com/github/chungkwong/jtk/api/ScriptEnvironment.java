@@ -19,6 +19,7 @@ import com.github.chungkwong.jschememin.lib.*;
 import com.github.chungkwong.jschememin.type.*;
 import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.model.*;
+import com.github.chungkwong.jtk.util.*;
 import java.util.*;
 import java.util.stream.*;
 import javax.script.*;
@@ -48,11 +49,11 @@ public class ScriptEnvironment implements Bindings{
 	}
 	@Override
 	public boolean containsKey(Object key){
-		return bindings.containsKey(key)||commands.containsKey(key);
+		return bindings.containsKey(key)||commands.containsKey((String)key);
 	}
 	@Override
 	public Object get(Object key){
-		return bindings.containsKey(key)?bindings.get(key):pack(commands.get(key));
+		return bindings.containsKey(key)?bindings.get(key):pack(commands.get((String)key));
 	}
 	@Override
 	public Object remove(Object key){
@@ -85,31 +86,6 @@ public class ScriptEnvironment implements Bindings{
 	@Override
 	public Set<Entry<String,Object>> entrySet(){
 		return new BiSet<>(bindings.entrySet(),commands.entrySet().stream().collect(Collectors.toMap((e)->e.getKey(),(e)->pack(e.getValue()))).entrySet());
-	}
-	private static class BiSet<T> extends AbstractSet<T>{
-		private final Collection<T> set1,set2;
-		public BiSet(Collection set1,Collection set2){
-			this.set1=set1;
-			this.set2=set2;
-		}
-		@Override
-		public Iterator<T> iterator(){
-			return new Iterator<T>(){
-				Iterator<T> iter1=set1.iterator(),iter2=set2.iterator();
-				@Override
-				public boolean hasNext(){
-					return iter1.hasNext()||iter2.hasNext();
-				}
-				@Override
-				public T next(){
-					return iter1.hasNext()?iter1.next():iter2.next();
-				}
-			};
-		}
-		@Override
-		public int size(){
-			return set1.size()+set2.size();
-		}
 	}
 	private ScmObject pack(Command command){
 		return new NativeEvaluable((o)->{

@@ -14,23 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.model;
-import com.github.chungkwong.jtk.api.*;
-import javafx.scene.*;
+package com.github.chungkwong.jtk.util;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface DataEditor<T extends DataObject>{
-	Node edit(T data);
-	default CommandRegistry getCommandRegistry(){
-		return new CommandRegistry();
+public class BiSet<T> extends AbstractSet<T>{
+	private final Collection<T> set1, set2;
+	public BiSet(Collection set1,Collection set2){
+		this.set1=set1;
+		this.set2=set2;
 	}
-	default KeymapRegistry getKeymapRegistry(){
-		return new KeymapRegistry();
+	@Override
+	public Iterator<T> iterator(){
+		return new Iterator<T>(){
+			Iterator<T> iter1=set1.iterator(), iter2=set2.iterator();
+			@Override
+			public boolean hasNext(){
+				return iter1.hasNext()||iter2.hasNext();
+			}
+			@Override
+			public T next(){
+				return iter1.hasNext()?iter1.next():iter2.next();
+			}
+		};
 	}
-	default MenuRegistry getMenuRegistry(){
-		return new MenuRegistry();
+	@Override
+	public int size(){
+		return set1.size()+set2.size();
 	}
-	String getName();
 }

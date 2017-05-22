@@ -31,6 +31,14 @@ import javafx.stage.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class TextEditor extends Application implements DataEditor<TextObject>{
+	private final MenuRegistry menuRegistry=new MenuRegistry();
+	public TextEditor(){
+		menuRegistry.getMenuBar().getMenus().add(new Menu("Text"));
+	}
+	@Override
+	public MenuRegistry getMenuRegistry(){
+		return menuRegistry;
+	}
 	public Node edit(TextObject obj){
 		TextArea textArea=new TextArea();
 		textArea.textProperty().bindBidirectional(obj.getText());
