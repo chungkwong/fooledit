@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.example.text;
+import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.editor.*;
+import com.github.chungkwong.jtk.editor.lex.*;
 import com.github.chungkwong.jtk.model.*;
+import java.util.function.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 /**
@@ -26,16 +29,42 @@ import javafx.scene.control.*;
  */
 public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final MenuRegistry menuRegistry=new MenuRegistry();
-	public StructuredTextEditor(){
+	private final CommandRegistry commandRegistry=new CommandRegistry();
+	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
+	private final Lex lex;
+	public StructuredTextEditor(Lex lex){
+		this.lex=lex;
 		menuRegistry.getMenuBar().getMenus().add(new Menu("Code"));
+		addCommand("undo",(area)->area.getArea().undo());
+		addCommand("redo",(area)->area.getArea().redo());
+		addCommand("cut",(area)->area.getArea().cut());
+		addCommand("copy",(area)->area.getArea().copy());
+		addCommand("paste",(area)->area.getArea().paste());
+		addCommand("select-all",(area)->area.getArea().selectAll());
+		addCommand("select-physical-line",(area)->area.getArea().selectLine());
+		addCommand("select-logical-line",(area)->area.getArea().selectParagraph());
+		addCommand("delete-next-character",(area)->area.getArea().deleteNextChar());
+		addCommand("select-previous-character",(area)->area.getArea().deletePreviousChar());
+		keymapRegistry.registerKey("C-L","select-line");
+	}
+	private void addCommand(String name,Consumer<CodeEditor> action){
+		commandRegistry.put(name,()->action.accept((CodeEditor)Main.INSTANCE.getCurrentNode()));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
 	}
 	@Override
+	public CommandRegistry getCommandRegistry(){
+		return commandRegistry;
+	}
+	@Override
+	public KeymapRegistry getKeymapRegistry(){
+		return keymapRegistry;
+	}
+	@Override
 	public Node edit(TextObject data){
-		CodeEditor codeEditor=new CodeEditor(null,null);
+		CodeEditor codeEditor=new CodeEditor(null,lex);
 		data.getText().bindBidirectional(codeEditor.textProperty());
 		return codeEditor;
 	}

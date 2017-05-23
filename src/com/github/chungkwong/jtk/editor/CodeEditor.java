@@ -71,7 +71,9 @@ public class CodeEditor extends BorderPane{
 	public Property<Object> syntaxTree(){
 		return tree.syntaxTree();
 	}
-
+	public CodeArea getArea(){
+		return area;
+	}
 	public StringProperty textProperty(){
 		return textProperty;
 	}

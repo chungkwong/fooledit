@@ -330,9 +330,9 @@ public class Main extends Application{
 						e.consume();
 						curr=null;
 						Command command=getCommand(commandName);
-						getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
+						getNotifier().notifyStarted(command.getDisplayName());
 						command.accept(ScmNil.NIL);
-						getNotifier().notify(MessageRegistry.getString("EXECUTED")+command.getDisplayName());
+						getNotifier().notifyFinished(command.getDisplayName());
 						ignore=true;
 					}else if(next!=null&&next.startsWith(code+' ')){
 						e.consume();

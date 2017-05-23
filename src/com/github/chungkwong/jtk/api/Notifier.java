@@ -45,6 +45,12 @@ public class Notifier extends Handler{
 	public void notify(String msg){
 		Platform.runLater(()->label.setText(msg));
 	}
+	public void notifyStarted(String task){
+		notify(MessageRegistry.getString("EXECUTING")+task);
+	}
+	public void notifyFinished(String task){
+		notify(MessageRegistry.getString("EXECUTED")+task);
+	}
 	@Override
 	public void publish(LogRecord record){
 		notify(USER_FORMATTER.format(record));
