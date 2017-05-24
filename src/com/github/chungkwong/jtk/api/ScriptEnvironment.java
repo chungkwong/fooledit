@@ -34,10 +34,6 @@ public class ScriptEnvironment implements Bindings{
 	public ScriptEnvironment(Main main){
 		this.main=main;
 		this.commands=main.getCommandRegistry();
-		bindings.put("registerFilenamePattern",new NativeEvaluable((o)->{
-			FiletypeRegistry.registerPathPattern(((ScmString)ScmList.first(o)).getValue(),((ScmString)ScmList.second(o)).getValue());
-			return ScmBoolean.TRUE;
-		}));
 	}
 	@Override
 	public Object put(String name,Object value){

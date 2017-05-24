@@ -15,18 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
-import com.github.chungkwong.jtk.util.*;
+import java.io.*;
 import java.nio.file.*;
-import java.util.*;
-import java.util.function.*;
-import java.util.regex.*;
-import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class FiletypeRegistry{
-	private static final List<Pair<Predicate<String>,String>> pattern2mime=new ArrayList<>();
+	/*private static final List<Pair<Predicate<String>,String>> pattern2mime=new ArrayList<>();
 	public static void registerPathPattern(String regex,String mime){
 		registerPathPattern(Pattern.compile(regex).asPredicate(),mime);
 	}
@@ -38,5 +34,8 @@ public class FiletypeRegistry{
 		List<String> candidates=pattern2mime.stream().filter((pair)->pair.getKey().test(name)).
 				map(Pair::getValue).collect(Collectors.toList());
 		return candidates;
+	}*/
+	public static void main(String[] args) throws IOException{
+		System.out.println(Files.probeContentType(new File("/home/kwong/print").toPath()));
 	}
 }

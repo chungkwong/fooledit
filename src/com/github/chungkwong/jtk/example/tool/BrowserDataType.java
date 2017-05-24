@@ -29,14 +29,6 @@ public class BrowserDataType implements DataObjectType<BrowserData>{
 	private BrowserDataType(){
 	}
 	@Override
-	public boolean canHandleMIME(String mime){
-		return mime.equals(MIME);
-	}
-	@Override
-	public String[] getPreferedMIME(){
-		return new String[]{MIME};
-	}
-	@Override
 	public boolean canRead(){
 		return true;
 	}

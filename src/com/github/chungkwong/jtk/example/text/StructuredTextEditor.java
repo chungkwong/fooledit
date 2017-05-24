@@ -15,12 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.example.text;
+import com.github.chungkwong.json.*;
 import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.editor.*;
 import com.github.chungkwong.jtk.editor.lex.*;
 import com.github.chungkwong.jtk.model.*;
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
 import java.util.function.*;
+import java.util.logging.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 /**
@@ -31,9 +36,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final MenuRegistry menuRegistry=new MenuRegistry();
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
-	private final Lex lex;
-	public StructuredTextEditor(Lex lex){
-		this.lex=lex;
+	private final Map<String,String> highlightFiles=new HashMap<>();
+	public StructuredTextEditor(){
 		menuRegistry.getMenuBar().getMenus().add(new Menu("Code"));
 		addCommand("undo",(area)->area.getArea().undo());
 		addCommand("redo",(area)->area.getArea().redo());
@@ -46,6 +50,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("delete-next-character",(area)->area.getArea().deleteNextChar());
 		addCommand("select-previous-character",(area)->area.getArea().deletePreviousChar());
 		keymapRegistry.registerKey("C-L","select-line");
+		Map<String,List<String>> json=(Map<String,List<String>>)(Object)Main.loadJSON("highlight.json");
+		json.forEach((file,mimes)->mimes.stream().forEach((mime)->highlightFiles.put(mime,file)));
 	}
 	private void addCommand(String name,Consumer<CodeEditor> action){
 		commandRegistry.put(name,()->action.accept((CodeEditor)Main.INSTANCE.getCurrentNode()));
@@ -64,6 +70,15 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	}
 	@Override
 	public Node edit(TextObject data){
+		Lex lex=new NaiveLex();
+		String file="/com/github/chungkwong/jtk/default/filetypes/"+highlightFiles.get(DataObjectRegistry.getMIME(data));
+		try{
+			LexBuilder.fromJSON(Helper.readText(new InputStreamReader(
+					getClass().getResourceAsStream("/com/github/chungkwong/jtk/default/filetypes/"+"lex.json"),StandardCharsets.UTF_8)),lex);
+		}catch(IOException|SyntaxException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			lex=null;
+		}
 		CodeEditor codeEditor=new CodeEditor(null,lex);
 		data.getText().bindBidirectional(codeEditor.textProperty());
 		return codeEditor;

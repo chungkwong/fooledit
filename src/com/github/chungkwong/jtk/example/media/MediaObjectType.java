@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.example.audio;
+package com.github.chungkwong.jtk.example.media;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
 import javafx.scene.media.*;
@@ -25,14 +25,6 @@ import javafx.scene.media.*;
 public class MediaObjectType implements DataObjectType<MediaObject>{
 	public static final MediaObjectType INSTANCE=new MediaObjectType();
 	private MediaObjectType(){
-	}
-	@Override
-	public boolean canHandleMIME(String mime){
-		return mime.startsWith("audio/")||mime.startsWith("video/");
-	}
-	@Override
-	public String[] getPreferedMIME(){
-		return new String[]{};
 	}
 	@Override
 	public boolean canRead(){

@@ -28,14 +28,6 @@ public class TextObjectType implements DataObjectType<TextObject>{
 
 	}
 	@Override
-	public boolean canHandleMIME(String mime){
-		return mime.startsWith("text/");
-	}
-	@Override
-	public String[] getPreferedMIME(){
-		return new String[]{"text/plain"};
-	}
-	@Override
 	public boolean canRead(){
 		return true;
 	}

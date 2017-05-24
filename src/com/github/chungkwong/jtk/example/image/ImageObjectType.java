@@ -29,14 +29,6 @@ public class ImageObjectType implements DataObjectType<ImageObject>{
 	private ImageObjectType(){
 	}
 	@Override
-	public boolean canHandleMIME(String mime){
-		return mime.startsWith("image/");
-	}
-	@Override
-	public String[] getPreferedMIME(){
-		return new String[]{"image/png","image/jpeg","image/gif","image/bmp",};
-	}
-	@Override
 	public boolean canRead(){
 		return true;
 	}

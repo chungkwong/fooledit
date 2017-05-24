@@ -14,17 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.jtk.model;
-import java.io.*;
+package com.github.chungkwong.jtk.example.media;
+import com.github.chungkwong.jtk.model.*;
+import javafx.beans.property.*;
+import javafx.scene.media.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface DataObjectType<T extends DataObject>{
-	boolean canRead();
-	boolean canWrite();
-	boolean canCreate();
-	T create();
-	void writeTo(T data,OutputStream out)throws Exception;
-	T readFrom(InputStream in)throws Exception;
+public class MediaObject implements DataObject<MediaObject>{
+	private final Property<MediaPlayer> property;
+	public MediaObject(MediaPlayer audio){
+		this.property=new SimpleObjectProperty<>(audio);
+	}
+	public Property<MediaPlayer> getProperty(){
+		return property;
+	}
+	@Override
+	public DataObjectType<MediaObject> getDataObjectType(){
+		return MediaObjectType.INSTANCE;
+	}
 }

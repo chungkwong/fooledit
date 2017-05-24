@@ -15,58 +15,55 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
-import com.github.chungkwong.jtk.example.audio.*;
 import com.github.chungkwong.jtk.example.image.*;
+import com.github.chungkwong.jtk.example.media.*;
 import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.example.tool.*;
 import com.github.chungkwong.jtk.model.*;
+import com.github.chungkwong.jtk.util.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class DataObjectTypeRegistry{
-	private static final HashMap<Class<? extends DataObject>,List<DataEditor>> editors=new HashMap<>();
-	private static final HashMap<String,List<DataObjectType>> mime2type=new HashMap<>();
+	private static final HashMap<Class<? extends DataObject>,List<Cache<DataEditor>>> editors=new HashMap<>();
 	private static final List<DataObjectType> types=new ArrayList<>();
 	public static void addDataObjectType(DataObjectType type){
 		types.add(type);
-		for(String mime:type.getPreferedMIME())
-			addDataObjectType(type,mime);
 	}
-	private static void addDataObjectType(DataObjectType type,String mime){
-		if(!mime2type.containsKey(mime))
-			mime2type.put(mime,new LinkedList<>());
-		mime2type.get(mime).add(0,type);
-	}
-	public static void addDataEditor(DataEditor editor,Class<? extends DataObject> objectClass){
+	public static void addDataEditor(Supplier<DataEditor> editor,Class<? extends DataObject> objectClass){
 		if(!editors.containsKey(objectClass))
 			editors.put(objectClass,new LinkedList<>());
-		editors.get(objectClass).add(0,editor);
+		editors.get(objectClass).add(0,new Cache<>(editor));
 	}
 	public static List<DataEditor> getDataEditors(Class<? extends DataObject> cls){
-		return editors.getOrDefault(cls,Collections.EMPTY_LIST);
+		return ((List<Cache<DataEditor>>)editors.getOrDefault(cls,Collections.EMPTY_LIST)).stream().map((c)->c.get()).collect(Collectors.toList());
 	}
 	public static List<DataObjectType> getPreferedDataObjectType(String mime){
-		return mime2type.getOrDefault(mime,Collections.EMPTY_LIST);
-	}
-	public static List<DataObjectType> getFallbackDataObjectType(String mime){
-		List<DataObjectType> prefered=getPreferedDataObjectType(mime);
-		return types.stream().filter((t)->t.canHandleMIME(mime)&&!prefered.contains(t)).collect(Collectors.toList());
+		LinkedList<DataObjectType> cand=new LinkedList<DataObjectType>();
+		if(mime.startsWith("video/")||mime.startsWith("audio/"))
+			cand.add(MediaObjectType.INSTANCE);
+		else if(mime.startsWith("image/"))
+			cand.add(ImageObjectType.INSTANCE);
+		else if(mime.startsWith("text/"))
+			cand.add(TextObjectType.INSTANCE);
+		return cand;
 	}
 	public static List<DataObjectType> getDataObjectTypes(){
 		return types;
 	}
 	static{
 		addDataObjectType(TextObjectType.INSTANCE);
-		addDataEditor(new StructuredTextEditor(null),TextObject.class);
-		addDataEditor(new TextEditor(),TextObject.class);
+		addDataEditor(()->new StructuredTextEditor(),TextObject.class);
+		addDataEditor(()->new TextEditor(),TextObject.class);
 		addDataObjectType(ImageObjectType.INSTANCE);
-		addDataEditor(new IconEditor(),ImageObject.class);
-		addDataEditor(new ImageEditor(),ImageObject.class);
+		addDataEditor(()->new IconEditor(),ImageObject.class);
+		addDataEditor(()->new ImageEditor(),ImageObject.class);
 		addDataObjectType(MediaObjectType.INSTANCE);
-		addDataEditor(new MediaEditor(),MediaObject.class);
-		addDataEditor(new Browser(),BrowserData.class);
+		addDataEditor(()->new MediaEditor(),MediaObject.class);
+		addDataEditor(()->new Browser(),BrowserData.class);
 	}
 }

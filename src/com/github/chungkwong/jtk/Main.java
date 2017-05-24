@@ -113,9 +113,6 @@ public class Main extends Application{
 		commandRegistry.put("command",()->input.requestFocus());
 		commandRegistry.put("next_buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
 		commandRegistry.put("previous_buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
-		commandRegistry.put("register_path_pattern",(o)->{
-			FiletypeRegistry.registerPathPattern(((ScmString)ScmList.first(o)).getValue(),((ScmString)ScmList.second(o)).getValue());
-		});
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
@@ -269,6 +266,7 @@ public class Main extends Application{
 		installFile("menu.json");
 		installFile("module.json");
 		installFile("suffix.json");
+		installFile("highlight.json");
 		installFile("locale/base.properties");
 		installFile("locale/base_zh_CN.properties");
 	}

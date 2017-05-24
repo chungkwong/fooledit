@@ -54,10 +54,6 @@ public class FileCommands{
 			if(tryOpen(file,type,mime))
 				return;
 		}
-		for(DataObjectType type:DataObjectTypeRegistry.getFallbackDataObjectType(mime)){
-			if(tryOpen(file,type,mime))
-				return;
-		}
 	}
 	public void save(){
 		DataObject data=(DataObject)main.getCurrentWorkSheet().getChildren().get(0).getUserData();
