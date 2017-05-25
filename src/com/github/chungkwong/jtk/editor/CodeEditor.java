@@ -103,7 +103,7 @@ public class CodeEditor extends BorderPane{
 		}
 		@Override
 		public void addListener(ChangeListener<? super String> cl){
-			area.textProperty().addListener(cl);
+			area.textProperty().addListener((e,o,n)->cl.changed(PlainTextProperty.this,o,n));
 		}
 		@Override
 		public void removeListener(ChangeListener<? super String> cl){
@@ -111,7 +111,7 @@ public class CodeEditor extends BorderPane{
 		}
 		@Override
 		public void addListener(InvalidationListener il){
-			area.textProperty().addListener(il);
+			area.textProperty().addListener((e)->il.invalidated(PlainTextProperty.this));
 		}
 		@Override
 		public void removeListener(InvalidationListener il){

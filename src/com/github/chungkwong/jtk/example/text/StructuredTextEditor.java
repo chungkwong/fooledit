@@ -70,17 +70,21 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	}
 	@Override
 	public Node edit(TextObject data){
-		Lex lex=new NaiveLex();
-		String file="/com/github/chungkwong/jtk/default/filetypes/"+highlightFiles.get(DataObjectRegistry.getMIME(data));
-		try{
-			LexBuilder.fromJSON(Helper.readText(new InputStreamReader(
-					getClass().getResourceAsStream("/com/github/chungkwong/jtk/default/filetypes/"+"lex.json"),StandardCharsets.UTF_8)),lex);
-		}catch(IOException|SyntaxException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-			lex=null;
+		Lex lex=null;
+		String highlightFile=highlightFiles.get(DataObjectRegistry.getMIME(data));
+		if(highlightFile!=null){
+			lex=new NaiveLex();
+			String file="/com/github/chungkwong/jtk/default/filetypes/"+highlightFiles.get(DataObjectRegistry.getMIME(data));
+			try{
+				LexBuilder.fromJSON(Helper.readText(new InputStreamReader(
+						getClass().getResourceAsStream(file),StandardCharsets.UTF_8)),lex);
+			}catch(NullPointerException|IOException|SyntaxException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+				lex=null;
+			}
 		}
 		CodeEditor codeEditor=new CodeEditor(null,lex);
-		data.getText().bindBidirectional(codeEditor.textProperty());
+		codeEditor.textProperty().bindBidirectional(data.getText());
 		return codeEditor;
 	}
 	@Override

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.jtk.api;
+import com.github.chungkwong.jtk.example.binary.*;
 import com.github.chungkwong.jtk.example.image.*;
 import com.github.chungkwong.jtk.example.media.*;
 import com.github.chungkwong.jtk.example.text.*;
@@ -48,8 +49,10 @@ public class DataObjectTypeRegistry{
 			cand.add(MediaObjectType.INSTANCE);
 		else if(mime.startsWith("image/"))
 			cand.add(ImageObjectType.INSTANCE);
-		else if(mime.startsWith("text/"))
+		else if(mime.startsWith("text/")||mime.startsWith("application/"))
 			cand.add(TextObjectType.INSTANCE);
+		else
+			cand.add(BinaryObjectType.INSTANCE);
 		return cand;
 	}
 	public static List<DataObjectType> getDataObjectTypes(){
@@ -64,6 +67,8 @@ public class DataObjectTypeRegistry{
 		addDataEditor(()->new ImageEditor(),ImageObject.class);
 		addDataObjectType(MediaObjectType.INSTANCE);
 		addDataEditor(()->new MediaEditor(),MediaObject.class);
+		addDataObjectType(BinaryObjectType.INSTANCE);
+		addDataEditor(()->new BinaryEditor(),BinaryObject.class);
 		addDataEditor(()->new Browser(),BrowserData.class);
 	}
 }

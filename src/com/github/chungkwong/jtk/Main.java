@@ -255,9 +255,9 @@ public class Main extends Application{
 		launch(args);
 	}
 	private static void checkInstall(){
-		if(!PATH.exists()){
+		//if(!PATH.exists()){
 			restoreToDefault();
-		}//FIXME remove command
+		//}//FIXME remove command
 	}
 	private static void restoreToDefault(){
 		PATH.mkdir();
