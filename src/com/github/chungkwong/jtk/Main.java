@@ -26,6 +26,7 @@ import com.github.chungkwong.jtk.example.text.*;
 import com.github.chungkwong.jtk.example.tool.*;
 import com.github.chungkwong.jtk.model.*;
 import com.github.chungkwong.jtk.setting.*;
+import com.github.chungkwong.jtk.util.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
@@ -141,7 +142,7 @@ public class Main extends Application{
 					try{
 						File file=new File(new URI(prop.get(DataObjectRegistry.URI)));
 						if(prop.containsKey(DataObjectRegistry.MIME)){
-							fileCommands.open(file,prop.get(DataObjectRegistry.MIME));
+							fileCommands.open(file,MimeType.fromString(prop.get(DataObjectRegistry.MIME)));
 						}else{
 							fileCommands.open(file);
 						}

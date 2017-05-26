@@ -18,9 +18,9 @@ package com.github.chungkwong.jtk.command;
 import com.github.chungkwong.jtk.*;
 import com.github.chungkwong.jtk.api.*;
 import com.github.chungkwong.jtk.model.*;
+import com.github.chungkwong.jtk.util.*;
 import java.io.*;
 import java.net.*;
-import java.nio.file.*;
 import java.util.logging.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
@@ -41,15 +41,9 @@ public class FileCommands{
 		open(file);
 	}
 	public void open(File file){
-		String mime;
-		try{
-			mime=Files.probeContentType(file.toPath());
-		}catch(IOException ex){
-			mime=geussContentType(file);
-		}
-		open(file,mime);
+		open(file,MimeDetector.probeMimeType(file));
 	}
-	public void open(File file,String mime){
+	public void open(File file,MimeType mime){
 		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
 			if(tryOpen(file,type,mime))
 				return;
@@ -64,9 +58,9 @@ public class FileCommands{
 			Logger.getLogger(FileCommands.class.getName()).log(Level.SEVERE,null,ex);
 		}
 	}
-	private boolean tryOpen(File f,DataObjectType type,String mime){
+	private boolean tryOpen(File f,DataObjectType type,MimeType mime){
 		try(FileInputStream in=new FileInputStream(f)){
-			main.addAndShow(type.readFrom(in),DataObjectRegistry.createProperties(f.getName(),f.toURI().toString(),mime,type.getClass().getName()));
+			main.addAndShow(type.readFrom(in),DataObjectRegistry.createProperties(f.getName(),f.toURI().toString(),mime.toString(),type.getClass().getName()));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return false;

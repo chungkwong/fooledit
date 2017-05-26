@@ -57,7 +57,7 @@ public class BinaryObjectType implements DataObjectType<BinaryObject>{
 			bufs.add(buf);
 			lens.add(c);
 			buf=new byte[4096];
-			c+=total;
+			total+=c;
 		}
 		byte[] data=new byte[total];
 		for(int i=0,j=0;i<lens.size();i++){

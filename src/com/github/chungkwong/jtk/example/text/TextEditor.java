@@ -42,7 +42,6 @@ public class TextEditor extends Application implements DataEditor<TextObject>{
 	public Node edit(TextObject obj){
 		TextArea textArea=new TextArea();
 		textArea.textProperty().bindBidirectional(obj.getText());
-		textArea.textProperty().addListener((e,o,n)->System.err.println("o"+n));
 		return textArea;
 	}
 	@Override

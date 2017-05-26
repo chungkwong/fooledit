@@ -43,16 +43,16 @@ public class DataObjectTypeRegistry{
 	public static List<DataEditor> getDataEditors(Class<? extends DataObject> cls){
 		return ((List<Cache<DataEditor>>)editors.getOrDefault(cls,Collections.EMPTY_LIST)).stream().map((c)->c.get()).collect(Collectors.toList());
 	}
-	public static List<DataObjectType> getPreferedDataObjectType(String mime){
+	public static List<DataObjectType> getPreferedDataObjectType(MimeType mime){
 		LinkedList<DataObjectType> cand=new LinkedList<DataObjectType>();
-		if(mime.startsWith("video/")||mime.startsWith("audio/"))
+		String type=mime.getType();
+		if(type.equals("video")||type.equals("audio"))
 			cand.add(MediaObjectType.INSTANCE);
-		else if(mime.startsWith("image/"))
+		else if(type.equals("image"))
 			cand.add(ImageObjectType.INSTANCE);
-		else if(mime.startsWith("text/")||mime.startsWith("application/"))
+		if(type.equals("text")||mime.getParameters().containsKey("charset"))
 			cand.add(TextObjectType.INSTANCE);
-		else
-			cand.add(BinaryObjectType.INSTANCE);
+		cand.add(BinaryObjectType.INSTANCE);
 		return cand;
 	}
 	public static List<DataObjectType> getDataObjectTypes(){
