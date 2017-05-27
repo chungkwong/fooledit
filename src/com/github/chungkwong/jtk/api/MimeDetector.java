@@ -67,6 +67,17 @@ public class MimeDetector{
 			}
 		}).map(CharsetDecoder::toString).collect(Collectors.toList());
 	}
+	public static void main(String[] args) throws IOException{
+		Scanner in=new Scanner(System.in);
+		List<CharsetDecoder> candidates=Charset.availableCharsets().values().stream().map((set)->set.newDecoder()).collect(Collectors.toList());
+		System.out.println(candidates.size());
+		while(in.hasNextLine()){
+			String next=in.next();
+			if(next.isEmpty())
+				break;
+			System.out.println(probeEncodings(Files.readAllBytes(new File(next).toPath()),candidates));
+		}
+	}
 	static{
 		prefered.add(StandardCharsets.UTF_8.newDecoder());
 		prefered.add(StandardCharsets.UTF_16.newDecoder());

@@ -80,6 +80,7 @@ public class Main extends Application{
 		root.setBottom(notifier.getStatusBar());
 		scene=new Scene(root);
 		//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
+		scene.getStylesheets().add("/com/github/chungkwong/jtk/editor/highlight.css");
 		this.fileCommands=new FileCommands(this);
 		registerStandardCommand();
 		keymapRegistry=new KeymapRegistry();

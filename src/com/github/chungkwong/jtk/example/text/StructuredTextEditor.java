@@ -72,9 +72,10 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	public Node edit(TextObject data){
 		Lex lex=null;
 		String highlightFile=highlightFiles.get(DataObjectRegistry.getMIME(data));
+		System.out.println(highlightFile);
 		if(highlightFile!=null){
 			lex=new NaiveLex();
-			String file="/com/github/chungkwong/jtk/default/filetypes/"+highlightFiles.get(DataObjectRegistry.getMIME(data));
+			String file="/com/github/chungkwong/jtk/default/filetypes/"+highlightFile;
 			try{
 				LexBuilder.fromJSON(Helper.readText(new InputStreamReader(
 						getClass().getResourceAsStream(file),StandardCharsets.UTF_8)),lex);

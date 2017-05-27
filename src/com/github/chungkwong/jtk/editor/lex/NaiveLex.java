@@ -79,7 +79,7 @@ public class NaiveLex implements Lex{
 		public Token next(){
 			if(hasNext()){
 				Token tmp=token;
-				System.out.println(status+":"+token);
+				//System.out.println(status+":"+token);
 				token=null;
 				return tmp;
 			}else{
