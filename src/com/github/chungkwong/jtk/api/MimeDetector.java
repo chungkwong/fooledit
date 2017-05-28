@@ -38,44 +38,47 @@ public class MimeDetector{
 			return new MimeType("application","octet-stream",Collections.emptyMap());
 		}
 	}
-	public static String probeEncoding(byte[] data){
-		return probeEncoding(data,prefered);
+	public static String probeEncoding(byte[] data,int offset,int length){
+		return probeEncoding(data,offset,length,prefered);
 	}
-	public static String probeEncoding(byte[] data,List<CharsetDecoder> candidates){
-		ByteBuffer buf=ByteBuffer.wrap(data);
+	public static String probeEncoding(byte[] data,int offset,int length,List<CharsetDecoder> candidates){
+		ByteBuffer buf=ByteBuffer.wrap(data,offset,length);
+		CharBuffer chars=CharBuffer.allocate(data.length);
 		for(CharsetDecoder decoder:candidates){
-			try{
-				decoder.decode(buf);
+			if(isPrefered(buf,chars,decoder))
 				return decoder.charset().name();
-			}catch(CharacterCodingException ex){
-
-			}
 		}
 		return null;
 	}
-	public static Collection<String> probeEncodings(byte[] data){
-		return probeEncodings(data,prefered);
+	public static Collection<String> probeEncodings(byte[] data,int offset,int length){
+		return probeEncodings(data,offset,length,prefered);
 	}
-	public static Collection<String> probeEncodings(byte[] data,List<CharsetDecoder> candidates){
-		ByteBuffer buf=ByteBuffer.wrap(data);
-		return candidates.stream().filter((decoder)->{
-			try{
-				decoder.decode(buf);
-				return true;
-			}catch(CharacterCodingException ex){
-				return false;
-			}
-		}).map(CharsetDecoder::toString).collect(Collectors.toList());
+	public static Collection<String> probeEncodings(byte[] data,int offset,int length,List<CharsetDecoder> candidates){
+		ByteBuffer buf=ByteBuffer.wrap(data,offset,length);
+		CharBuffer chars=CharBuffer.allocate(data.length);
+		return candidates.stream().filter((decoder)->isPrefered(buf,chars,decoder)).
+				map((decoder)->decoder.charset().name()).collect(Collectors.toList());
+	}
+	private static boolean isPrefered(ByteBuffer buf,CharBuffer chars,CharsetDecoder decoder){
+		buf.rewind();
+		chars.rewind();
+		CoderResult result=decoder.decode(buf,chars,false);
+		return buf.position()>buf.limit()-4;
+	}
+	public static List<CharsetDecoder> getAllDecoders(){
+		return Charset.availableCharsets().values().stream().map((set)->set.newDecoder()).collect(Collectors.toList());
 	}
 	public static void main(String[] args) throws IOException{
 		Scanner in=new Scanner(System.in);
-		List<CharsetDecoder> candidates=Charset.availableCharsets().values().stream().map((set)->set.newDecoder()).collect(Collectors.toList());
+		List<CharsetDecoder> candidates=getAllDecoders();
 		System.out.println(candidates.size());
+		byte[] buf=new byte[4096];
 		while(in.hasNextLine()){
-			String next=in.next();
+			String next=in.nextLine();
 			if(next.isEmpty())
 				break;
-			System.out.println(probeEncodings(Files.readAllBytes(new File(next).toPath()),candidates));
+			int len=new FileInputStream(new File(next)).read(buf);
+			System.out.println(probeEncodings(buf,0,len,candidates));
 		}
 	}
 	static{
@@ -85,5 +88,24 @@ public class MimeDetector{
 		prefered.add(StandardCharsets.UTF_16BE.newDecoder());
 		prefered.add(StandardCharsets.ISO_8859_1.newDecoder());
 		prefered.add(Charset.defaultCharset().newDecoder());
+	}
+	private static final Map<String,String> aliases=new HashMap<>();
+	public static void registerAlias(String alias,String standard){
+		aliases.put(alias,standard);
+	}
+	public static String normalize(String type){
+		return aliases.get(type);
+	}
+	private static final Map<String,String> subclasses=new HashMap<>();
+	public static void registerSubclass(String subclass,String parent){
+		subclasses.put(subclass,parent);
+	}
+	public static boolean isSubclassOf(String type,String ancestor){
+		while(type!=null){
+			if(type.equals(ancestor))
+				return true;
+			type=subclasses.get(type);
+		}
+		return false;
 	}
 }
