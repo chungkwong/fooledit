@@ -44,6 +44,7 @@ public class CodeEditor extends BorderPane{
 	private final CodeArea area=new CodeArea();
 	private final HighlightSupport highlighter;
 	private final SyntaxSupport tree;
+	private final LineNumberFactory header=new LineNumberFactory(area);
 	private final StringProperty textProperty=new PlainTextProperty();
 	public CodeEditor(Parser parser,Lex lex){
 		highlighter=lex!=null?new HighlightSupport(lex,area):null;
@@ -54,7 +55,7 @@ public class CodeEditor extends BorderPane{
 				area.insertText(area.getCaretPosition(),e.getCommitted());
 			}
 		});
-		area.setParagraphGraphicFactory(new LineNumberFactory(area));
+		area.setParagraphGraphicFactory(header);
 		setCenter(new VirtualizedScrollPane(area));
 	}
 	@Override
@@ -76,6 +77,9 @@ public class CodeEditor extends BorderPane{
 	}
 	public StringProperty textProperty(){
 		return textProperty;
+	}
+	Map<Integer,Node> annotations(){
+		return header.getMarks();
 	}
 	class InputMethodRequestsObject implements InputMethodRequests{
 		@Override
@@ -185,12 +189,18 @@ class LineNumberFactory implements IntFunction<Node>{
 	private static final Font FONT=Font.font("monospace");
 	private final NumberFormat format=NumberFormat.getIntegerInstance();
 	private final Val<Integer> paragraphs;
+	private final Map<Integer,Node> marks=new HashMap<>();
 	LineNumberFactory(CodeArea area){
 		paragraphs=LiveList.sizeOf(area.getParagraphs());
 		paragraphs.addListener((e,o,n)->format.setMinimumIntegerDigits(getNumberOfDigit(n)));
 	}
+	public Map<Integer,Node> getMarks(){
+		return marks;
+	}
 	@Override
 	public Node apply(int idx){
+		if(marks.containsKey(idx))
+			return marks.get(idx);
 		Val<String> formatted=paragraphs.map((n)->format.format(idx+1));
 		Label lineNo=new Label();
 		lineNo.setFont(FONT);

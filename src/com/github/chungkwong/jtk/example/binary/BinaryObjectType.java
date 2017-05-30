@@ -44,7 +44,7 @@ public class BinaryObjectType implements DataObjectType<BinaryObject>{
 	}
 	@Override
 	public void writeTo(BinaryObject data,OutputStream out) throws Exception{
-		out.write(data.getData());
+		out.write(data.dataProperty().getValue());
 	}
 	@Override
 	public BinaryObject readFrom(InputStream in) throws Exception{
@@ -61,7 +61,9 @@ public class BinaryObjectType implements DataObjectType<BinaryObject>{
 		}
 		byte[] data=new byte[total];
 		for(int i=0,j=0;i<lens.size();i++){
-			System.arraycopy(bufs.get(i),0,data,j,lens.get(i));
+			int len=lens.get(i);
+			System.arraycopy(bufs.get(i),0,data,j,len);
+			j+=len;
 		}
 		return new BinaryObject(data);
 	}

@@ -33,6 +33,7 @@ public class MimeDetector{
 	}
 	public static MimeType probeMimeType(File file){
 		try{
+
 			return MimeType.fromString(Files.probeContentType(file.toPath()));
 		}catch(IOException ex){
 			return new MimeType("application","octet-stream",Collections.emptyMap());
@@ -94,17 +95,19 @@ public class MimeDetector{
 		aliases.put(alias,standard);
 	}
 	public static String normalize(String type){
-		return aliases.get(type);
+		return aliases.getOrDefault(type,type);
 	}
 	private static final Map<String,String> subclasses=new HashMap<>();
 	public static void registerSubclass(String subclass,String parent){
 		subclasses.put(subclass,parent);
 	}
 	public static boolean isSubclassOf(String type,String ancestor){
+		type=normalize(type);
+		ancestor=normalize(ancestor);
 		while(type!=null){
 			if(type.equals(ancestor))
 				return true;
-			type=subclasses.get(type);
+			type=normalize(subclasses.get(type));
 		}
 		return false;
 	}

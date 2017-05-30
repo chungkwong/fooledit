@@ -16,17 +16,18 @@
  */
 package com.github.chungkwong.jtk.example.binary;
 import com.github.chungkwong.jtk.model.*;
+import javafx.beans.property.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class BinaryObject implements DataObject<BinaryObject>{
-	private final byte[] data;
+	private final Property<byte[]> property;
 	public BinaryObject(byte[] data){
-		this.data=data;
+		this.property=new SimpleObjectProperty<>(this,"data",data);
 	}
-	public byte[] getData(){
-		return data;
+	public Property<byte[]> dataProperty(){
+		return property;
 	}
 	@Override
 	public DataObjectType<BinaryObject> getDataObjectType(){
