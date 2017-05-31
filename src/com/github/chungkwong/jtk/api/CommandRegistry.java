@@ -36,7 +36,7 @@ public class CommandRegistry{
 		autoload.remove(name);
 	}
 	public void put(String name,Consumer<ScmPairOrNil> action){
-		loaded.put(name,Command.create(MessageRegistry.getString(name.toUpperCase()),action));
+		loaded.put(name,Command.create(MessageRegistry.getString(name.toUpperCase().replace('-','_')),action));
 		autoload.remove(name);
 	}
 	public void putOnDemand(String name,Supplier<Command> supplier){

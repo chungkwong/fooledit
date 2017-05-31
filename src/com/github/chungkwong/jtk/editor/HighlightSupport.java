@@ -54,5 +54,4 @@ public class HighlightSupport{
 		}
 		return spansBuilder.create();
 	}
-
 }

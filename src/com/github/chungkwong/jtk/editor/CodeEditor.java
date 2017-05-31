@@ -45,6 +45,7 @@ public class CodeEditor extends BorderPane{
 	private final HighlightSupport highlighter;
 	private final SyntaxSupport tree;
 	private final LineNumberFactory header=new LineNumberFactory(area);
+	private final IndentPolicy indentPolicy;
 	private final StringProperty textProperty=new PlainTextProperty();
 	public CodeEditor(Parser parser,Lex lex){
 		highlighter=lex!=null?new HighlightSupport(lex,area):null;
@@ -56,6 +57,7 @@ public class CodeEditor extends BorderPane{
 			}
 		});
 		area.setParagraphGraphicFactory(header);
+		indentPolicy=IndentPolicy.AS_PREVIOUS;
 		setCenter(new VirtualizedScrollPane(area));
 	}
 	@Override
@@ -80,6 +82,17 @@ public class CodeEditor extends BorderPane{
 	}
 	Map<Integer,Node> annotations(){
 		return header.getMarks();
+	}
+	public void newline(){
+		area.insertText(area.getCaretPosition(),"\n");
+		indentLine(area.getCurrentParagraph());
+	}
+	public void unindentLine(int line){
+		area.deleteText(line,0,line,area.getText(line).replaceFirst("\\S.*","").length());
+	}
+	public void indentLine(int line){
+		unindentLine(line);
+		area.insertText(line,0,indentPolicy.apply(area,line));
 	}
 	class InputMethodRequestsObject implements InputMethodRequests{
 		@Override

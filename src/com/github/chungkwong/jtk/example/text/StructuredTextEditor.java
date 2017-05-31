@@ -49,7 +49,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("select-logical-line",(area)->area.getArea().selectParagraph());
 		addCommand("delete-next-character",(area)->area.getArea().deleteNextChar());
 		addCommand("select-previous-character",(area)->area.getArea().deletePreviousChar());
+		addCommand("new-line",(area)->area.newline());
 		keymapRegistry.registerKey("C-L","select-line");
+		keymapRegistry.registerKey("Enter","new-line");
 		Map<String,List<String>> json=(Map<String,List<String>>)(Object)Main.loadJSON("highlight.json");
 		json.forEach((file,mimes)->mimes.stream().forEach((mime)->highlightFiles.put(mime,file)));
 	}
