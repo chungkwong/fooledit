@@ -50,8 +50,12 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("delete-next-character",(area)->area.getArea().deleteNextChar());
 		addCommand("select-previous-character",(area)->area.getArea().deletePreviousChar());
 		addCommand("new-line",(area)->area.newline());
+		addCommand("next-word",(area)->area.nextWord());
+		addCommand("previous-word",(area)->area.previousWord());
 		keymapRegistry.registerKey("C-L","select-line");
 		keymapRegistry.registerKey("Enter","new-line");
+		keymapRegistry.registerKey("C-Right","next-word");
+		keymapRegistry.registerKey("C-Left","previous-word");
 		Map<String,List<String>> json=(Map<String,List<String>>)(Object)Main.loadJSON("highlight.json");
 		json.forEach((file,mimes)->mimes.stream().forEach((mime)->highlightFiles.put(mime,file)));
 	}

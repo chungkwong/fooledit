@@ -34,6 +34,7 @@ import javafx.scene.paint.*;
 import javafx.scene.text.*;
 import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.*;
+import org.fxmisc.richtext.model.*;
 import org.reactfx.collection.*;
 import org.reactfx.value.*;
 /**
@@ -90,9 +91,22 @@ public class CodeEditor extends BorderPane{
 	public void unindentLine(int line){
 		area.deleteText(line,0,line,area.getText(line).replaceFirst("\\S.*","").length());
 	}
-	public void indentLine(int line){
+	public void reindentLine(int line){
 		unindentLine(line);
+		indentLine(line);
+	}
+	public void indentLine(int line){
 		area.insertText(line,0,indentPolicy.apply(area,line));
+	}
+	public void nextWord(){
+		int pos=area.getCaretPosition();
+		StyleSpans<Collection<String>> styleSpans=area.getStyleSpans(pos,area.getLength());
+		area.moveTo(styleSpans.getSpanCount()==0?area.getLength():pos+styleSpans.getStyleSpan(0).getLength());
+	}
+	public void previousWord(){
+		int pos=area.getCaretPosition();
+		StyleSpans<Collection<String>> styleSpans=area.getStyleSpans(0,pos);
+		area.moveTo(styleSpans.getSpanCount()==0?0:pos-styleSpans.getStyleSpan(styleSpans.getSpanCount()-1).getLength());
 	}
 	class InputMethodRequestsObject implements InputMethodRequests{
 		@Override
