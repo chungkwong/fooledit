@@ -7,7 +7,7 @@
 	"C-Z":"iconify_frame",
 	"M-X":"command",
 	"C-N":"new",
-	"C-X 4":"full_screen",
-	"C-X 5":"split_horizontally",
-	"C-X C-D":"split_vertically"
+	"C-X+4":"full_screen",
+	"C-X+5":"split_horizontally",
+	"C-X+C-D":"split_vertically"
 }

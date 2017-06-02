@@ -28,6 +28,7 @@ import java.util.function.*;
 import java.util.logging.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import org.fxmisc.richtext.model.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -45,17 +46,70 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("copy",(area)->area.getArea().copy());
 		addCommand("paste",(area)->area.getArea().paste());
 		addCommand("select-all",(area)->area.getArea().selectAll());
-		addCommand("select-physical-line",(area)->area.getArea().selectLine());
-		addCommand("select-logical-line",(area)->area.getArea().selectParagraph());
+		addCommand("select-word",(area)->area.getArea().selectWord());
+		addCommand("select-line",(area)->area.getArea().selectLine());
+		addCommand("select-paragraph",(area)->area.getArea().selectParagraph());
 		addCommand("delete-next-character",(area)->area.getArea().deleteNextChar());
-		addCommand("select-previous-character",(area)->area.getArea().deletePreviousChar());
+		addCommand("delete-previous-character",(area)->area.getArea().deletePreviousChar());
 		addCommand("new-line",(area)->area.newline());
-		addCommand("next-word",(area)->area.nextWord());
-		addCommand("previous-word",(area)->area.previousWord());
+		addCommand("next-word",(area)->area.nextWord(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("previous-word",(area)->area.previousWord(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("next-character",(area)->area.getArea().nextChar(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("previous-character",(area)->area.getArea().previousChar(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("next-page",(area)->area.getArea().nextPage(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("previous-page",(area)->area.getArea().prevPage(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("end-line",(area)->area.getArea().lineEnd(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("begin-line",(area)->area.getArea().lineStart(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("end-paragraph",(area)->area.getArea().paragraphEnd(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("begin-paragraph",(area)->area.getArea().paragraphStart(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("end-file",(area)->area.getArea().end(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("begin-file",(area)->area.getArea().start(NavigationActions.SelectionPolicy.CLEAR));
+
+		addCommand("select-next-word",(area)->area.nextWord(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-previous-word",(area)->area.previousWord(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-next-character",(area)->area.getArea().nextChar(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-previous-character",(area)->area.getArea().previousChar(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-next-page",(area)->area.getArea().nextPage(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-previous-page",(area)->area.getArea().prevPage(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-end-line",(area)->area.getArea().lineEnd(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-begin-line",(area)->area.getArea().lineStart(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-end-paragraph",(area)->area.getArea().paragraphEnd(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-begin-paragraph",(area)->area.getArea().paragraphStart(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-end-file",(area)->area.getArea().end(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-begin-file",(area)->area.getArea().start(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("deselect",(area)->area.getArea().deselect());
+		keymapRegistry.registerKey("C-Z","undo");
+		keymapRegistry.registerKey("C-Y","redo");
+		keymapRegistry.registerKey("C-A","select-all");
 		keymapRegistry.registerKey("C-L","select-line");
+		keymapRegistry.registerKey("C-W","select-word");
 		keymapRegistry.registerKey("Enter","new-line");
 		keymapRegistry.registerKey("C-Right","next-word");
 		keymapRegistry.registerKey("C-Left","previous-word");
+		keymapRegistry.registerKey("Right","next-character");
+		keymapRegistry.registerKey("Left","previous-character");
+		keymapRegistry.registerKey("Page Down","next-page");
+		keymapRegistry.registerKey("Page Up","previous-page");
+		keymapRegistry.registerKey("Home","begin-line");
+		keymapRegistry.registerKey("End","end-line");
+		keymapRegistry.registerKey("M-A","begin-paragraph");
+		keymapRegistry.registerKey("M-E","end-paragraph");
+		keymapRegistry.registerKey("C-Home","begin-line");
+		keymapRegistry.registerKey("C-End","end-line");
+
+		keymapRegistry.registerKey("C-S-Right","select-next-word");
+		keymapRegistry.registerKey("C-S-Left","select-previous-word");
+		keymapRegistry.registerKey("S-Right","select-next-character");
+		keymapRegistry.registerKey("S-Left","select-previous-character");
+		keymapRegistry.registerKey("S-Page Down","select-next-page");
+		keymapRegistry.registerKey("S-Page Up","select-previous-page");
+		keymapRegistry.registerKey("S-Home","select-begin-line");
+		keymapRegistry.registerKey("S-End","select-end-line");
+		keymapRegistry.registerKey("S-M-A","select-begin-paragraph");
+		keymapRegistry.registerKey("M-S-E","select-end-paragraph");
+		keymapRegistry.registerKey("C-S-Home","select-begin-file");
+		keymapRegistry.registerKey("C-S-End","select-end-file");
+
 		Map<String,List<String>> json=(Map<String,List<String>>)(Object)Main.loadJSON("highlight.json");
 		json.forEach((file,mimes)->mimes.stream().forEach((mime)->highlightFiles.put(mime,file)));
 	}

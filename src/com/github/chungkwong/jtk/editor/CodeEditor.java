@@ -98,15 +98,15 @@ public class CodeEditor extends BorderPane{
 	public void indentLine(int line){
 		area.insertText(line,0,indentPolicy.apply(area,line));
 	}
-	public void nextWord(){
+	public void nextWord(NavigationActions.SelectionPolicy policy){
 		int pos=area.getCaretPosition();
 		StyleSpans<Collection<String>> styleSpans=area.getStyleSpans(pos,area.getLength());
-		area.moveTo(styleSpans.getSpanCount()==0?area.getLength():pos+styleSpans.getStyleSpan(0).getLength());
+		area.moveTo(styleSpans.getSpanCount()==0?area.getLength():pos+styleSpans.getStyleSpan(0).getLength(),policy);
 	}
-	public void previousWord(){
+	public void previousWord(NavigationActions.SelectionPolicy policy){
 		int pos=area.getCaretPosition();
 		StyleSpans<Collection<String>> styleSpans=area.getStyleSpans(0,pos);
-		area.moveTo(styleSpans.getSpanCount()==0?0:pos-styleSpans.getStyleSpan(styleSpans.getSpanCount()-1).getLength());
+		area.moveTo(styleSpans.getSpanCount()==0?0:pos-styleSpans.getStyleSpan(styleSpans.getSpanCount()-1).getLength(),policy);
 	}
 	class InputMethodRequestsObject implements InputMethodRequests{
 		@Override

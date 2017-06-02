@@ -310,7 +310,7 @@ public class Main extends Application{
 						e.consume();
 						return;
 					}
-					String code=curr==null?encode(e):curr+' '+encode(e);
+					String code=curr==null?encode(e):curr+'+'+encode(e);
 					Map.Entry<String,String> localEntry=getLocalKeymapRegistry().ceilingEntry(code);
 					Map.Entry<String,String> globalEntry=getGlobalKeymapRegistry().ceilingEntry(code);
 					String next;
