@@ -83,7 +83,7 @@ public class ScriptEnvironment implements Bindings{
 	public Set<Entry<String,Object>> entrySet(){
 		return new BiSet<>(bindings.entrySet(),commands.entrySet().stream().collect(Collectors.toMap((e)->e.getKey(),(e)->pack(e.getValue()))).entrySet());
 	}
-	private ScmObject pack(Command command){
+	private Object pack(Command command){
 		return new NativeEvaluable((o)->{
 			command.accept(ScmNil.NIL);
 			return ScmNil.NIL;

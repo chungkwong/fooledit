@@ -22,7 +22,7 @@ import java.util.*;
  */
 public class BiSet<T> extends AbstractSet<T>{
 	private final Collection<T> set1, set2;
-	public BiSet(Collection set1,Collection set2){
+	public BiSet(Collection<T> set1,Collection<T> set2){
 		this.set1=set1;
 		this.set2=set2;
 	}

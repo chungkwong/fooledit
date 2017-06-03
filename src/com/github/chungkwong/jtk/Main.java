@@ -201,7 +201,7 @@ public class Main extends Application{
 		return getLocalCommandRegistry().getOrDefault(key,getGlobalCommandRegistry().get(key));
 	}
 	public Stream<String> getCommandKeys(){
-		return Arrays.asList(getLocalCommandRegistry(),getGlobalCommandRegistry()).stream().flatMap((m)->m.keySet().stream());
+		return new BiSet<>(getLocalCommandRegistry().keySet(),getGlobalCommandRegistry().keySet()).stream();
 	}
 	private CommandRegistry getGlobalCommandRegistry(){
 		return commandRegistry;
@@ -263,6 +263,7 @@ public class Main extends Application{
 	}
 	private static void restoreToDefault(){
 		PATH.mkdir();
+		System.out.println(Helper.readText(new InputStreamReader(Main.class.getResourceAsStream("/junk.txt"))));
 		installFile("init.scm");
 		installFile("keymap.json");
 		installFile("menu.json");
