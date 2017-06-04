@@ -29,9 +29,9 @@ is divided into following sections:
         </condition>
     </fail>
     <target depends="test,jar,javadoc" description="Build and test whole project." name="default"/>
-    <!-- 
+    <!--
                 ======================
-                INITIALIZATION SECTION 
+                INITIALIZATION SECTION
                 ======================
             -->
     <target name="-pre-init">
@@ -826,6 +826,7 @@ is divided into following sections:
                 </pathconvert>
                 <pathconvert pathsep=" " property="jar.classpath">
                     <path path="${run.classpath.without.build.classes.dir}"/>
+                    <path path="${data.dir}"/>
                     <chainedmapper>
                         <flattenmapper/>
                         <filtermapper>
