@@ -30,7 +30,6 @@ import com.github.chungkwong.jtk.util.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
-import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
@@ -50,7 +49,7 @@ import javafx.stage.*;
  */
 public class Main extends Application{
 	public static Main INSTANCE;
-	private static final File PATH=new File(System.getProperty("user.home"),".jtk");
+	private static final File PATH=computePath();
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
@@ -239,10 +238,29 @@ public class Main extends Application{
 	public static File getPath(){
 		return PATH;
 	}
+	private static File computePath(){
+		URL url=Main.class.getResource("");
+		if(url.getProtocol().equals("file")){
+			File file=new File(url.getFile());
+			while(!new File(file,"lib").exists()){
+				file=file.getParentFile();
+				if(file==null)
+					return new File(System.getProperty("user.home"),".jtk");
+			}
+			return file;
+		}else{
+			try{
+				return new File(URLDecoder.decode(url.toString().substring(9,url.toString().indexOf('!')),"UTF-8")).getParentFile();
+			}catch(UnsupportedEncodingException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+				return new File(System.getProperty("user.home"),".jtk");
+			}
+		}
+	}
 	public static Map<Object,Object> loadJSON(String name){
 		Map<Object,Object> obj;
 		try{
-			obj=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(new File(getPath(),name)),StandardCharsets.UTF_8));
+			obj=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(new File(new File(getPath(),"data"),name)),StandardCharsets.UTF_8));
 		}catch(IOException|SyntaxException ex){
 			obj=Collections.emptyMap();
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
@@ -253,35 +271,7 @@ public class Main extends Application{
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args){
-		checkInstall();
 		launch(args);
-	}
-	private static void checkInstall(){
-		//if(!PATH.exists()){
-			restoreToDefault();
-		//}//FIXME remove command
-	}
-	private static void restoreToDefault(){
-		PATH.mkdir();
-		System.out.println(Helper.readText(new InputStreamReader(Main.class.getResourceAsStream("/junk.txt"))));
-		installFile("init.scm");
-		installFile("keymap.json");
-		installFile("menu.json");
-		installFile("module.json");
-		installFile("suffix.json");
-		installFile("highlight.json");
-		installFile("locale/base.properties");
-		installFile("locale/base_zh_CN.properties");
-	}
-	private static void installFile(String filename){
-		try{
-			String from="/com/github/chungkwong/jtk/default/"+filename;
-			File to=new File(PATH,filename);
-			to.getParentFile().mkdirs();
-			Files.copy(Main.class.getResourceAsStream(from),to.toPath(),StandardCopyOption.REPLACE_EXISTING);
-		}catch(IOException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
 	}
 	private void runScript(){
 		try{
