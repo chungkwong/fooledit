@@ -55,5 +55,9 @@
 		<copy todir="${dist.dir}${file.separator}data" preservelastmodified="true" overwrite="true">
 			<fileset dir="${data.dir}"/>
 		</copy>
+		<delete dir="${dist.dir}${file.separator}etc" includeEmptyDirs="true" quiet="true"/>
+		<copy todir="${dist.dir}${file.separator}etc" preservelastmodified="true" overwrite="true">
+			<fileset dir="etc"/>
+		</copy>
 	</target>
 </project>

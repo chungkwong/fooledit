@@ -49,7 +49,9 @@ import javafx.stage.*;
  */
 public class Main extends Application{
 	public static Main INSTANCE;
-	private static final File PATH=computePath();
+	private static final File SYSTEM_PATH=computePath();
+	private static final File DATA_PATH=new File(SYSTEM_PATH,"data");
+	private static final File USER_PATH=new File(System.getProperty("user.home"),".jtk");
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
@@ -67,7 +69,7 @@ public class Main extends Application{
 		notifier=new Notifier(this);
 		Logger.getGlobal().setLevel(Level.INFO);
 		try{
-			Logger.getGlobal().addHandler(new StreamHandler(new FileOutputStream(new File(PATH,"LOG")),new Notifier.SystemLogFormatter()));
+			Logger.getGlobal().addHandler(new StreamHandler(new FileOutputStream(new File(USER_PATH,"LOG")),new Notifier.SystemLogFormatter()));
 		}catch(FileNotFoundException ex){
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
 		}
@@ -83,7 +85,7 @@ public class Main extends Application{
 		this.fileCommands=new FileCommands(this);
 		registerStandardCommand();
 		keymapRegistry=new KeymapRegistry();
-		keymapRegistry.registerKeys((Map<String,String>)(Object)loadJSON("keymap.json"));
+		keymapRegistry.registerKeys((Map<String,String>)(Object)loadJSON("keymaps/core/default.json"));
 		new KeymapSupport();
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
@@ -235,8 +237,14 @@ public class Main extends Application{
 		primaryStage.setMaximized(true);
 		primaryStage.show();
 	}
-	public static File getPath(){
-		return PATH;
+	public static File getSystemPath(){
+		return SYSTEM_PATH;
+	}
+	public static File getDataPath(){
+		return DATA_PATH;
+	}
+	public static File getUserPath(){
+		return USER_PATH;
 	}
 	private static File computePath(){
 		URL url=Main.class.getResource("");
@@ -245,7 +253,7 @@ public class Main extends Application{
 			while(!new File(file,"lib").exists()){
 				file=file.getParentFile();
 				if(file==null)
-					return new File(System.getProperty("user.home"),".jtk");
+					return USER_PATH;
 			}
 			return file;
 		}else{
@@ -253,14 +261,14 @@ public class Main extends Application{
 				return new File(URLDecoder.decode(url.toString().substring(9,url.toString().indexOf('!')),"UTF-8")).getParentFile();
 			}catch(UnsupportedEncodingException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				return new File(System.getProperty("user.home"),".jtk");
+				return USER_PATH;
 			}
 		}
 	}
 	public static Map<Object,Object> loadJSON(String name){
 		Map<Object,Object> obj;
 		try{
-			obj=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(new File(new File(getPath(),"data"),name)),StandardCharsets.UTF_8));
+			obj=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(new File(DATA_PATH,name)),StandardCharsets.UTF_8));
 		}catch(IOException|SyntaxException ex){
 			obj=Collections.emptyMap();
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
@@ -275,7 +283,7 @@ public class Main extends Application{
 	}
 	private void runScript(){
 		try{
-			script.eval(new InputStreamReader(new FileInputStream(new File(getPath(),"init.scm")),StandardCharsets.UTF_8));
+			script.eval(new InputStreamReader(new FileInputStream(new File(new File(getSystemPath(),"etc"),"init.scm")),StandardCharsets.UTF_8));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,"Error in init script",ex);
 		}

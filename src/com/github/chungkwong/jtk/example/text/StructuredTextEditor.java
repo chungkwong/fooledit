@@ -22,7 +22,6 @@ import com.github.chungkwong.jtk.editor.*;
 import com.github.chungkwong.jtk.editor.lex.*;
 import com.github.chungkwong.jtk.model.*;
 import java.io.*;
-import java.nio.charset.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
@@ -78,37 +77,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("select-end-file",(area)->area.getArea().end(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-begin-file",(area)->area.getArea().start(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("deselect",(area)->area.getArea().deselect());
-		keymapRegistry.registerKey("C-Z","undo");
-		keymapRegistry.registerKey("C-Y","redo");
-		keymapRegistry.registerKey("C-A","select-all");
-		keymapRegistry.registerKey("C-L","select-line");
-		keymapRegistry.registerKey("C-W","select-word");
-		keymapRegistry.registerKey("Enter","new-line");
-		keymapRegistry.registerKey("C-Right","next-word");
-		keymapRegistry.registerKey("C-Left","previous-word");
-		keymapRegistry.registerKey("Right","next-character");
-		keymapRegistry.registerKey("Left","previous-character");
-		keymapRegistry.registerKey("Page Down","next-page");
-		keymapRegistry.registerKey("Page Up","previous-page");
-		keymapRegistry.registerKey("Home","begin-line");
-		keymapRegistry.registerKey("End","end-line");
-		keymapRegistry.registerKey("M-A","begin-paragraph");
-		keymapRegistry.registerKey("M-E","end-paragraph");
-		keymapRegistry.registerKey("C-Home","begin-line");
-		keymapRegistry.registerKey("C-End","end-line");
 
-		keymapRegistry.registerKey("C-S-Right","select-next-word");
-		keymapRegistry.registerKey("C-S-Left","select-previous-word");
-		keymapRegistry.registerKey("S-Right","select-next-character");
-		keymapRegistry.registerKey("S-Left","select-previous-character");
-		keymapRegistry.registerKey("S-Page Down","select-next-page");
-		keymapRegistry.registerKey("S-Page Up","select-previous-page");
-		keymapRegistry.registerKey("S-Home","select-begin-line");
-		keymapRegistry.registerKey("S-End","select-end-line");
-		keymapRegistry.registerKey("S-M-A","select-begin-paragraph");
-		keymapRegistry.registerKey("M-S-E","select-end-paragraph");
-		keymapRegistry.registerKey("C-S-Home","select-begin-file");
-		keymapRegistry.registerKey("C-S-End","select-end-file");
+		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON("keymaps/code-editor/default.json"));
 
 		Map<String,List<String>> json=(Map<String,List<String>>)(Object)Main.loadJSON("highlight.json");
 		json.forEach((file,mimes)->mimes.stream().forEach((mime)->highlightFiles.put(mime,file)));
@@ -134,10 +104,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		String highlightFile=highlightFiles.get(DataObjectRegistry.getMIME(data));
 		if(highlightFile!=null){
 			lex=new NaiveLex();
-			String file="/com/github/chungkwong/jtk/default/filetypes/"+highlightFile;
+			File file=new File(Main.getSystemPath(),"data/modes/"+highlightFile);
 			try{
-				LexBuilder.fromJSON(Helper.readText(new InputStreamReader(
-						getClass().getResourceAsStream(file),StandardCharsets.UTF_8)),lex);
+				LexBuilder.fromJSON(Helper.readText(file),lex);
 			}catch(NullPointerException|IOException|SyntaxException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 				lex=null;

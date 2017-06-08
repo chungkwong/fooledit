@@ -69,7 +69,7 @@ public class ModuleRegistry{
 		return new URL(getDataDirectory().toURI().toURL(),url);
 	}
 	public static File getDataDirectory(){
-		return new File(Main.getPath(),"modules");
+		return new File(Main.getUserPath(),"modules");
 	}
 	public File download(ModuleDescriptor module) throws IOException{
 		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL(module.getURL()).openStream()),StandardCharsets.UTF_8)){

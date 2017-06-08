@@ -44,7 +44,7 @@ public class SettingManager{
 		GROUPS.entrySet().stream().filter((e)->e.getValue().isModified()).forEach((e)->e.getValue().store());
 	}
 	private static File getFile(String key){
-		return new File(new File(Main.getPath(),"settings"),key);
+		return new File(new File(Main.getSystemPath(),"etc"),key);
 	}
 	public static Set<String> getChildren(String parent){
 		if(parent.isEmpty()){

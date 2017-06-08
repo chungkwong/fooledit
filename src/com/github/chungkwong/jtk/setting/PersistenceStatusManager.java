@@ -87,7 +87,7 @@ public class PersistenceStatusManager{
 		if(objects.containsKey(key))
 			Logger.getGlobal().info(key+" is going to be replaced");
 	}
-	private static final File DIRECTORY=new File(Main.getPath(),"status");
+	private static final File DIRECTORY=new File(Main.getUserPath(),"status");
 	private static File getFile(String key){
 		File f=new File(DIRECTORY,key);
 		f.getParentFile().mkdirs();

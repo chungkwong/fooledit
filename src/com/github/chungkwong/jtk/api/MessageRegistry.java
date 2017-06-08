@@ -43,7 +43,7 @@ public class MessageRegistry{
 	static{
 		try{
 			addBundle(ResourceBundle.getBundle("locale.base",Locale.getDefault(),
-					new URLClassLoader(new URL[]{Main.getPath().toURI().toURL()})));
+					new URLClassLoader(new URL[]{Main.getDataPath().toURI().toURL()})));
 		}catch(MalformedURLException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
