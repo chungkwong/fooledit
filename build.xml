@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- You may freely edit this file. See commented blocks below for --><!-- some examples of how to customize the build. --><!-- (If you delete it and reopen the project it will be recreated.) --><!-- By default, only the Clean and Build commands use this build script. --><project name="jtk" default="default" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
-    <description>Builds, tests, and runs the project jtk.</description>
+<?xml version="1.0" encoding="UTF-8"?><!-- You may freely edit this file. See commented blocks below for --><!-- some examples of how to customize the build. --><!-- (If you delete it and reopen the project it will be recreated.) --><!-- By default, only the Clean and Build commands use this build script. --><project name="fooledit" default="default" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+    <description>Builds, tests, and runs the project fooledit.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
 
@@ -51,9 +51,9 @@
 
     -->
 	<target name="-post-jar">
-		<delete dir="${dist.dir}${file.separator}data" includeEmptyDirs="true" quiet="true"/>
-		<copy todir="${dist.dir}${file.separator}data" preservelastmodified="true" overwrite="true">
-			<fileset dir="${data.dir}"/>
+		<delete dir="${dist.dir}${file.separator}modules" includeEmptyDirs="true" quiet="true"/>
+		<copy todir="${dist.dir}${file.separator}modules" preservelastmodified="true" overwrite="true">
+			<fileset dir="modules"/>
 		</copy>
 		<delete dir="${dist.dir}${file.separator}etc" includeEmptyDirs="true" quiet="true"/>
 		<copy todir="${dist.dir}${file.separator}etc" preservelastmodified="true" overwrite="true">

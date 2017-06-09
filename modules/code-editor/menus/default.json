@@ -1,0 +1,10 @@
+{
+	"children":[
+		{
+			"name":"goto",
+			"children":[
+				{"name":"NEXT_WORD","command":"next-word"}
+			]
+		}
+	]
+}

@@ -1,0 +1,58 @@
+/*
+ * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.github.chungkwong.fooledit.editor.parser;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
+/**
+ *
+ * @author Chan Chung Kwong <1m02math@126.com>
+ */
+public class ProductionRule{
+	private final String target;
+	private final String[] member;
+	private final Function<Object[],Object> action;
+	public ProductionRule(String target,String[] member,Function<Object[],Object> action){
+		this.target=target;
+		this.member=member;
+		this.action=action;
+	}
+	public String[] getMember(){
+		return member;
+	}
+	public String getTarget(){
+		return target;
+	}
+	public boolean isApplicable(String... comp){
+		if(comp.length!=member.length)
+			return false;
+		for(int i=0;i<comp.length;i++)
+			if(!comp[i].equals(member[i]))
+				return false;
+		return true;
+	}
+	Function<Object[],Object> getAction(){
+		return action;
+	}
+	public SymbolInstance apply(SymbolInstance... comp){
+		return new SymbolInstance(target,action.apply(Arrays.stream(comp).map(SymbolInstance::getSemanticValue).toArray()));
+	}
+	@Override
+	public String toString(){
+		return Arrays.stream(member).collect(Collectors.joining(" ",target+":",""));
+	}
+}
