@@ -1,9 +1,62 @@
 {
 	"children":[
 		{
-			"name":"goto",
+			"name":"EDIT",
 			"children":[
-				{"name":"NEXT_WORD","command":"next-word"}
+				{"name":"UNDO","command":"undo"},
+				{"name":"REDO","command":"redo"},
+				{},
+				{"name":"CUT","command":"cut"},
+				{"name":"COPY","command":"copy"},
+				{"name":"PASTE","command":"paste"},
+				{},
+				{"name":"MOVE_TO","children":[
+					{"name":"NEXT_CHARACTER","command":"move-to-next-character"},
+					{"name":"PREVIOUS_CHARACTER","command":"move-to-previous-character"},
+					{"name":"NEXT_WORD","command":"move-to-next-word"},
+					{"name":"PREVIOUS_WORD","command":"move-to-previous-word"},
+					{"name":"LINE_END","command":"move-to-line-end"},
+					{"name":"LINE_BEGIN","command":"move-to-line-begin"},
+					{"name":"PARAGRAPH_END","command":"move-to-paragraph-end"},
+					{"name":"PARAGRAPH_BEGIN","command":"move-to-paragraph-begin"},
+					{"name":"NEXT_PAGE","command":"move-to-next-page"},
+					{"name":"PREVIOUS_PAGE","command":"move-to-previous-page"},
+					{"name":"FILE_END","command":"move-to-file-end"},
+					{"name":"FILE_BEGIN","command":"move-to-file-begin"}
+				]},
+				{"name":"SELECT_TO","children":[
+					{"name":"NEXT_CHARACTER","command":"select-to-next-character"},
+					{"name":"PREVIOUS_CHARACTER","command":"select-to-previous-character"},
+					{"name":"NEXT_WORD","command":"select-to-next-word"},
+					{"name":"PREVIOUS_WORD","command":"select-to-previous-word"},
+					{"name":"LINE_END","command":"select-to-line-end"},
+					{"name":"LINE_BEGIN","command":"select-to-line-begin"},
+					{"name":"PARAGRAPH_END","command":"select-to-paragraph-end"},
+					{"name":"PARAGRAPH_BEGIN","command":"select-to-paragraph-begin"},
+					{"name":"NEXT_PAGE","command":"select-to-next-page"},
+					{"name":"PREVIOUS_PAGE","command":"select-to-previous-page"},
+					{"name":"FILE_END","command":"select-to-file-end"},
+					{"name":"FILE_BEGIN","command":"select-to-file-begin"}
+				]},
+				{"name":"SELECT","children":[
+					{"name":"WORD","command":"select-word"},
+					{"name":"LINE","command":"select-line"},
+					{"name":"PARAGRAPH","command":"select-paragraph"},
+					{"name":"ALL","command":"select-all"}
+				]},
+				{"name":"DESELECT","command":"deselect"},
+				{},
+				{"name":"INSERT","children":[
+					{"name":"NEW_LINE","command":"new-line"}
+				]},
+				{"name":"DELETE","children":[
+					{"name":"DELETE_NEXT_CHARACTER","command":"delete-next-character"},
+					{"name":"DELETE_PREVIOUS_CHARACTER","command":"delete-previous-character"}
+				]},
+				{"name":"TRANSFORM","children":[
+					{"name":"TO_UPPERCASE","command":"to-uppercase"},
+					{"name":"TO_LOWERCASE","command":"to-lowercase"}
+				]}
 			]
 		}
 	]

@@ -15,25 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.example.text;
-import com.github.chungkwong.fooledit.model.DataEditor;
-import com.github.chungkwong.fooledit.editor.lex.LexBuilder;
-import com.github.chungkwong.fooledit.editor.lex.NaiveLex;
-import com.github.chungkwong.fooledit.editor.lex.Lex;
-import com.github.chungkwong.fooledit.editor.CodeEditor;
-import com.github.chungkwong.fooledit.api.Helper;
-import com.github.chungkwong.fooledit.api.KeymapRegistry;
-import com.github.chungkwong.fooledit.api.MenuRegistry;
-import com.github.chungkwong.fooledit.api.MessageRegistry;
-import com.github.chungkwong.fooledit.api.CommandRegistry;
-import com.github.chungkwong.fooledit.api.DataObjectRegistry;
-import com.github.chungkwong.fooledit.Main;
+import com.github.chungkwong.fooledit.*;
+import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.editor.*;
+import com.github.chungkwong.fooledit.editor.lex.*;
+import com.github.chungkwong.fooledit.model.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
 import javafx.scene.*;
-import javafx.scene.control.*;
 import org.fxmisc.richtext.model.*;
 /**
  *
@@ -45,7 +38,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
 	private final Map<String,String> highlightFiles=new HashMap<>();
 	public StructuredTextEditor(){
-		menuRegistry.getMenuBar().getMenus().add(new Menu("Code"));
+		menuRegistry.setMenus(Main.loadJSON("code-editor/menus/default.json"));
 		addCommand("undo",(area)->area.getArea().undo());
 		addCommand("redo",(area)->area.getArea().redo());
 		addCommand("cut",(area)->area.getArea().cut());
@@ -58,32 +51,51 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("delete-next-character",(area)->area.getArea().deleteNextChar());
 		addCommand("delete-previous-character",(area)->area.getArea().deletePreviousChar());
 		addCommand("new-line",(area)->area.newline());
-		addCommand("next-word",(area)->area.nextWord(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("previous-word",(area)->area.previousWord(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("next-character",(area)->area.getArea().nextChar(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("previous-character",(area)->area.getArea().previousChar(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("next-page",(area)->area.getArea().nextPage(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("previous-page",(area)->area.getArea().prevPage(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("end-line",(area)->area.getArea().lineEnd(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("begin-line",(area)->area.getArea().lineStart(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("end-paragraph",(area)->area.getArea().paragraphEnd(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("begin-paragraph",(area)->area.getArea().paragraphStart(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("end-file",(area)->area.getArea().end(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("begin-file",(area)->area.getArea().start(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-next-word",(area)->area.nextWord(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-previous-word",(area)->area.previousWord(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-next-character",(area)->area.getArea().nextChar(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-previous-character",(area)->area.getArea().previousChar(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-next-page",(area)->area.getArea().nextPage(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-previous-page",(area)->area.getArea().prevPage(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-line-end",(area)->area.getArea().lineEnd(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-line-begin",(area)->area.getArea().lineStart(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-paragraph-end",(area)->area.getArea().paragraphEnd(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-paragraph-begin",(area)->area.getArea().paragraphStart(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-file-end",(area)->area.getArea().end(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-file-begin",(area)->area.getArea().start(NavigationActions.SelectionPolicy.CLEAR));
 
-		addCommand("select-next-word",(area)->area.nextWord(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-previous-word",(area)->area.previousWord(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-next-character",(area)->area.getArea().nextChar(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-previous-character",(area)->area.getArea().previousChar(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-next-page",(area)->area.getArea().nextPage(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-previous-page",(area)->area.getArea().prevPage(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-end-line",(area)->area.getArea().lineEnd(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-begin-line",(area)->area.getArea().lineStart(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-end-paragraph",(area)->area.getArea().paragraphEnd(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-begin-paragraph",(area)->area.getArea().paragraphStart(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-end-file",(area)->area.getArea().end(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-begin-file",(area)->area.getArea().start(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-next-word",(area)->area.nextWord(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-previous-word",(area)->area.previousWord(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-next-character",(area)->area.getArea().nextChar(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-previous-character",(area)->area.getArea().previousChar(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-next-page",(area)->area.getArea().nextPage(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-previous-page",(area)->area.getArea().prevPage(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-line-end",(area)->area.getArea().lineEnd(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-line-begin",(area)->area.getArea().lineStart(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-paragraph-end",(area)->area.getArea().paragraphEnd(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-paragraph-begin",(area)->area.getArea().paragraphStart(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-file-end",(area)->area.getArea().end(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-file-begin",(area)->area.getArea().start(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("deselect",(area)->area.getArea().deselect());
+
+		addCommand("to-lowercase",(area)->area.transform(String::toLowerCase));
+		addCommand("to-uppercase",(area)->area.transform(String::toUpperCase));
+		addCommand("encode-url",(area)->area.transform((url)->{
+			try{
+				return URLEncoder.encode(url,"UTF-8");
+			}catch(UnsupportedEncodingException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+				return "";
+			}
+		}));
+		addCommand("decode-url",(area)->area.transform((url)->{
+			try{
+				return URLDecoder.decode(url,"UTF-8");
+			}catch(UnsupportedEncodingException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+				return "";
+			}
+		}));
 
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON("code-editor/keymaps/default.json"));
 

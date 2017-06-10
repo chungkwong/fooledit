@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.editor;
-import com.github.chungkwong.fooledit.editor.parser.Parser;
-import com.github.chungkwong.fooledit.editor.lex.Lex;
-import com.github.chungkwong.fooledit.control.AutoCompleteProvider;
+import com.github.chungkwong.fooledit.control.*;
 import com.github.chungkwong.fooledit.editor.LineNumberFactory;
+import com.github.chungkwong.fooledit.editor.lex.*;
+import com.github.chungkwong.fooledit.editor.parser.*;
 import java.text.*;
 import java.util.*;
 import java.util.function.*;
@@ -107,6 +107,9 @@ public class CodeEditor extends BorderPane{
 		int pos=area.getCaretPosition();
 		StyleSpans<Collection<String>> styleSpans=area.getStyleSpans(0,pos);
 		area.moveTo(styleSpans.getSpanCount()==0?0:pos-styleSpans.getStyleSpan(styleSpans.getSpanCount()-1).getLength(),policy);
+	}
+	public void transform(Function<String,String> transformer){
+		area.replaceSelection(transformer.apply(area.getSelectedText()));
 	}
 	class InputMethodRequestsObject implements InputMethodRequests{
 		@Override
