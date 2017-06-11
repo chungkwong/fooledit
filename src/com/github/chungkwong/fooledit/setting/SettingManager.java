@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.setting;
-import com.github.chungkwong.fooledit.util.Cache;
-import com.github.chungkwong.fooledit.api.EventManager;
-import com.github.chungkwong.fooledit.Main;
+import com.github.chungkwong.fooledit.*;
+import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.util.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.nio.charset.*;
@@ -26,14 +26,13 @@ import java.util.logging.*;
 import java.util.stream.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class SettingManager{
 	private static final Map<String,SettingEditorFactory> EDITORS=new HashMap<>();
-	private static final Map<String,StringConverter> CONVERTORS=new HashMap<>();
+	private static final Map<String,ValueConverter> CONVERTORS=new HashMap<>();
 	private static final Map<String,Group> GROUPS=new HashMap<>();
 	public static Group getOrCreate(String key){
 		if(!GROUPS.containsKey(key))
@@ -43,8 +42,14 @@ public class SettingManager{
 	public static void sync(){
 		GROUPS.entrySet().stream().filter((e)->e.getValue().isModified()).forEach((e)->e.getValue().store());
 	}
-	private static File getFile(String key){
-		return new File(new File(Main.getSystemPath(),"etc"),key);
+	private static File getPropertiesFile(String module){
+		return new File(getModuleDirectory(module),"module.properties");
+	}
+	private static File getDescriptorsFile(String module){
+		return new File(getModuleDirectory(module),"module.json");
+	}
+	private static File getModuleDirectory(String module){
+		return new File(Main.getDataPath(),module);
 	}
 	public static Set<String> getChildren(String parent){
 		if(parent.isEmpty()){
@@ -68,7 +73,7 @@ public class SettingManager{
 		int i=grp.lastIndexOf('.');
 		return i==-1?grp:grp.substring(i+1);
 	}
-	public static void registerSettingType(String type,StringConverter converter){
+	public static void registerSettingType(String type,ValueConverter converter){
 		CONVERTORS.put(type,converter);
 	}
 	public static void registerSettingEditorFactory(String type,SettingEditorFactory editorFactory){
@@ -84,7 +89,7 @@ public class SettingManager{
 			this.id=id;
 			this.meta=new Cache<>(()->{
 				try{
-					Map<Object,Object> json=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(getFile(id+".json")),StandardCharsets.UTF_8));
+					Map<Object,Object> json=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(getDescriptorsFile(id)),StandardCharsets.UTF_8));
 					return json.entrySet().stream().collect(Collectors.toMap((e)->(String)e.getKey(),(e)->OptionDescriptor.fromJSONObject((Map<Object,Object>)e.getValue())));
 				}catch(IOException|SyntaxException ex){
 					Logger.getGlobal().log(Level.SEVERE,null,ex);
@@ -92,16 +97,16 @@ public class SettingManager{
 				}
 			});
 			meta.get().forEach((k,d)->{
-				settings.put(k,CONVERTORS.get(d.getType()).fromString(d.getDefaultValue()));
+				settings.put(k,CONVERTORS.get(d.getType()).fromString(d.getDefaultValue(),id));
 				types.put(k,d.getType());
 			});
 			try{
-				File f=getFile(id+".properties");
+				File f=getPropertiesFile(id);
 				Properties properties=new Properties();
 				properties.load(new InputStreamReader(new FileInputStream(f),StandardCharsets.UTF_8));
-				properties.forEach((key,value)->settings.put(key.toString(),CONVERTORS.get(getType(key.toString())).fromString(value.toString())));
+				properties.forEach((key,value)->settings.put(key.toString(),CONVERTORS.get(getType(key.toString())).fromString(value.toString(),id)));
 			}catch(IOException ex){
-				Logger.getGlobal().log(Level.SEVERE,"A new group is created",ex);
+				Logger.getGlobal().log(Level.INFO,"A new group is created",ex);
 			}
 		}
 		public boolean isModified(){
@@ -128,10 +133,10 @@ public class SettingManager{
 		}
 		public void store(){
 			try{
-				File f=getFile(id+".properties");
+				File f=getPropertiesFile(id);
 				f.getParentFile().mkdirs();
 				Properties properties=new Properties();
-				settings.entrySet().forEach((e)->properties.put(e.getKey(),CONVERTORS.get(getType(e.getKey())).toString(e.getValue())));
+				settings.entrySet().forEach((e)->properties.put(e.getKey(),CONVERTORS.get(getType(e.getKey())).toString(e.getValue(),id)));
 				properties.store(new OutputStreamWriter(new FileOutputStream(f),StandardCharsets.UTF_8),null);
 				modified=false;
 			}catch(IOException ex){
@@ -140,26 +145,36 @@ public class SettingManager{
 		}
 	}
 	static{
-		StringConverter stdConvertor=new StringConverter() {
+		ValueConverter stdConvertor=new ValueConverter() {
 			@Override
-			public String toString(Object t){
+			public String toString(Object t,String module){
 				return t.toString();
 			}
 			@Override
-			public Object fromString(String string){
+			public Object fromString(String string,String module){
 				return string;
 			}
 		};
 		CONVERTORS.put(null,stdConvertor);
 		CONVERTORS.put("string",stdConvertor);
-		CONVERTORS.put("boolean",new StringConverter() {
+		CONVERTORS.put("boolean",new ValueConverter() {
 			@Override
-			public String toString(Object t){
+			public String toString(Object t,String module){
 				return ((Boolean)t).toString();
 			}
 			@Override
-			public Boolean fromString(String string){
+			public Boolean fromString(String string,String module){
 				return Boolean.parseBoolean(string);
+			}
+		});
+		CONVERTORS.put("file",new ValueConverter() {
+			@Override
+			public String toString(Object t,String module){
+				return getModuleDirectory(module).toPath().relativize(((File)t).toPath()).toString();
+			}
+			@Override
+			public File fromString(String string,String module){
+				return new File(getModuleDirectory(module),string);
 			}
 		});
 		EDITORS.put("boolean",(key,grp)->{
@@ -174,12 +189,12 @@ public class SettingManager{
 	}
 	private static final SettingEditorFactory DEFAULT_EDITOR_FACTORY=(key,grp)->{
 		TextArea node=new TextArea();
-		String text=CONVERTORS.get(grp.getType(key)).toString(grp.get(key,""));
+		String text=CONVERTORS.get(grp.getType(key)).toString(grp.get(key,""),grp.id);
 		node.setText(text);
 		node.setPrefRowCount(node.getParagraphs().size());
 		node.textProperty().addListener((e,o,n)->{
 			try{
-				grp.put(key,CONVERTORS.get(grp.getType(key)).fromString(n));
+				grp.put(key,CONVERTORS.get(grp.getType(key)).fromString(n,grp.id));
 			}catch(Exception ex){
 			}
 		});
@@ -187,6 +202,7 @@ public class SettingManager{
 	};
 	public static void main(String[] args){
 		//load("recent");
-		//getOrCreate("recent").put("78"," ");
+		System.out.println(getOrCreate("core").get("keymap-file",""));
+		System.out.println(getOrCreate("core").get("menubar-file",""));
 	}
 }

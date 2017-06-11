@@ -80,22 +80,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 
 		addCommand("to-lowercase",(area)->area.transform(String::toLowerCase));
 		addCommand("to-uppercase",(area)->area.transform(String::toUpperCase));
-		addCommand("encode-url",(area)->area.transform((url)->{
-			try{
-				return URLEncoder.encode(url,"UTF-8");
-			}catch(UnsupportedEncodingException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				return "";
-			}
-		}));
-		addCommand("decode-url",(area)->area.transform((url)->{
-			try{
-				return URLDecoder.decode(url,"UTF-8");
-			}catch(UnsupportedEncodingException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				return "";
-			}
-		}));
+		addCommand("encode-url",(area)->area.transform(StructuredTextEditor::encodeURL));
+		addCommand("decode-url",(area)->area.transform(StructuredTextEditor::decodeURL));
 
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON("code-editor/keymaps/default.json"));
 
@@ -138,5 +124,21 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	@Override
 	public String getName(){
 		return MessageRegistry.getString("CODE_EDITOR");
+	}
+	private static String encodeURL(String url){
+		try{
+			return URLEncoder.encode(url,"UTF-8");
+		}catch(UnsupportedEncodingException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			return url;
+		}
+	}
+	private static String decodeURL(String url){
+		try{
+			return URLDecoder.decode(url,"UTF-8");
+		}catch(UnsupportedEncodingException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			return url;
+		}
 	}
 }

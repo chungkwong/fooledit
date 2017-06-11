@@ -89,14 +89,14 @@ public class Main extends Application{
 		this.fileCommands=new FileCommands(this);
 		registerStandardCommand();
 		keymapRegistry=new KeymapRegistry();
-		keymapRegistry.registerKeys((Map<String,String>)(Object)loadJSON("core/keymaps/default.json"));
+		keymapRegistry.registerKeys((Map<String,String>)(Object)loadJSON((File)SettingManager.getOrCreate("core").get("keymap-file",null)));
 		new KeymapSupport();
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
 	private void initMenuBar(){
 		menuRegistry=new MenuRegistry();
-		menuRegistry.setMenus(loadJSON("core/menus/default.json"));
+		menuRegistry.setMenus(loadJSON((File)SettingManager.getOrCreate("core").get("menubar-file",null)));
 		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
 		menuRegistry.registerDynamicMenu("file_history",getHistoryMenu());
 		input=new MiniBuffer(this);
@@ -274,9 +274,12 @@ public class Main extends Application{
 		}
 	}
 	public static Map<Object,Object> loadJSON(String name){
+		return loadJSON(new File(getDataPath(),name));
+	}
+	public static Map<Object,Object> loadJSON(File file){
 		Map<Object,Object> obj;
 		try{
-			obj=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(new File(MODULE_PATH,name)),StandardCharsets.UTF_8));
+			obj=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(file),StandardCharsets.UTF_8));
 		}catch(IOException|SyntaxException ex){
 			obj=Collections.emptyMap();
 			Logger.getGlobal().log(Level.SEVERE,null,ex);

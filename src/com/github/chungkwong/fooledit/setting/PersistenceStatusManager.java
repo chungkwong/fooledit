@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.setting;
-import com.github.chungkwong.fooledit.api.Helper;
-import com.github.chungkwong.fooledit.api.EventManager;
-import com.github.chungkwong.fooledit.Main;
+import com.github.chungkwong.fooledit.*;
+import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.util.*;
@@ -88,9 +87,8 @@ public class PersistenceStatusManager{
 		if(objects.containsKey(key))
 			Logger.getGlobal().info(key+" is going to be replaced");
 	}
-	private static final File DIRECTORY=new File(Main.getUserPath(),"status");
 	private static File getFile(String key){
-		File f=new File(DIRECTORY,key);
+		File f=new File(Main.getUserPath(),key);
 		f.getParentFile().mkdirs();
 		return f;
 	}
