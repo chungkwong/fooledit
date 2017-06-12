@@ -57,11 +57,11 @@ public class Main extends Application{
 	private final KeymapRegistry keymapRegistry;
 	private final FileCommands fileCommands;
 	private final Notifier notifier;
-	private final BorderPane root;
+	private static final BorderPane root=new BorderPane();
 	private MiniBuffer input;
 	private HBox commander;
 	private final ScriptAPI script;
-	private final Scene scene;
+	private static final Scene scene=new Scene(root);
 	private Stage stage;
 	private Node currentNode;
 	public Main(){
@@ -76,16 +76,9 @@ public class Main extends Application{
 		Logger.getGlobal().addHandler(notifier);
 		script=new ScriptAPI(this);
 		runScript();
-		root=new BorderPane(getDefaultWorkSheet());
+		root.setCenter(getDefaultWorkSheet());
 		initMenuBar();
 		root.setBottom(notifier.getStatusBar());
-		scene=new Scene(root);
-		try{
-			//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
-			scene.getStylesheets().add(new File(MODULE_PATH,"code-editor/stylesheets/default-highlight.css").toURI().toURL().toString());
-		}catch(MalformedURLException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
 		this.fileCommands=new FileCommands(this);
 		registerStandardCommand();
 		keymapRegistry=new KeymapRegistry();
@@ -225,6 +218,9 @@ public class Main extends Application{
 	}
 	public MiniBuffer getMiniBuffer(){
 		return input;
+	}
+	public static Scene getScene(){
+		return scene;
 	}
 	public Stage getStage(){
 		return stage;

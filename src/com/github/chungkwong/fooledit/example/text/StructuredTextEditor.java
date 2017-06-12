@@ -20,6 +20,7 @@ import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.editor.*;
 import com.github.chungkwong.fooledit.editor.lex.*;
 import com.github.chungkwong.fooledit.model.*;
+import com.github.chungkwong.fooledit.setting.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
@@ -37,8 +38,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
 	private final Map<String,String> highlightFiles=new HashMap<>();
+	private static final String MODULE_NAME="code-editor";
 	public StructuredTextEditor(){
-		menuRegistry.setMenus(Main.loadJSON("code-editor/menus/default.json"));
+		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(MODULE_NAME).get("menubar-file",null)));
 		addCommand("undo",(area)->area.getArea().undo());
 		addCommand("redo",(area)->area.getArea().redo());
 		addCommand("cut",(area)->area.getArea().cut());
@@ -83,7 +85,14 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("encode-url",(area)->area.transform(StructuredTextEditor::encodeURL));
 		addCommand("decode-url",(area)->area.transform(StructuredTextEditor::decodeURL));
 
-		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON("code-editor/keymaps/default.json"));
+		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(MODULE_NAME).get("keymap-file",null)));
+
+		try{
+			//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
+			Main.getScene().getStylesheets().add(((File)SettingManager.getOrCreate(MODULE_NAME).get("stylesheet-file",null)).toURI().toURL().toString());
+		}catch(MalformedURLException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
 
 		Map<String,List<String>> json=(Map<String,List<String>>)(Object)Main.loadJSON("code-editor/highlight.json");
 		json.forEach((file,mimes)->mimes.stream().forEach((mime)->highlightFiles.put(mime,file)));

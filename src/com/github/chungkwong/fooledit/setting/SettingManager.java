@@ -105,8 +105,10 @@ public class SettingManager{
 				Properties properties=new Properties();
 				properties.load(new InputStreamReader(new FileInputStream(f),StandardCharsets.UTF_8));
 				properties.forEach((key,value)->settings.put(key.toString(),CONVERTORS.get(getType(key.toString())).fromString(value.toString(),id)));
+			}catch(FileNotFoundException ex){
+				Logger.getGlobal().log(Level.FINEST,"A new group is created",ex);
 			}catch(IOException ex){
-				Logger.getGlobal().log(Level.INFO,"A new group is created",ex);
+				Logger.getGlobal().log(Level.INFO,"Setting file is malformed",ex);
 			}
 		}
 		public boolean isModified(){

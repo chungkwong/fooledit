@@ -10,5 +10,11 @@
 		"long_description":"",
 		"type":"file",
 		"default_value":"menus/default.json"
+	},
+	"stylesheet-file":{
+		"short_description":"Stylesheet",
+		"long_description":"",
+		"type":"file",
+		"default_value":"stylesheets/default.css"
 	}
 }
