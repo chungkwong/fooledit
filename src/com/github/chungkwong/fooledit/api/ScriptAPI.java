@@ -17,8 +17,6 @@
 package com.github.chungkwong.fooledit.api;
 import com.github.chungkwong.jschememin.*;
 import java.io.*;
-import java.util.*;
-import java.util.stream.*;
 import javax.script.*;
 /**
  *
@@ -36,17 +34,5 @@ public class ScriptAPI{
 	}
 	public Object eval(String code) throws ScriptException{
 		return SCHEME_ENGINE.eval(code,CONTEXT);
-	}
-	public static void main(String[] args) throws ScriptException{
-		ScriptEngine engine=new ScriptEngineManager().getEngineFactories().get(0).getScriptEngine();
-		Bindings bindings=new SimpleBindings();
-		bindings.put("junk",new ScriptFunction() {
-			@Override
-			public String apply(String... s0){
-				return Arrays.stream(s0).collect(Collectors.joining());
-			}
-		});
-		engine.setBindings(bindings,ScriptContext.GLOBAL_SCOPE);
-		System.out.println(engine.eval("junk(\"aa\")"));
 	}
 }

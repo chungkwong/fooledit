@@ -30,5 +30,9 @@
 	"C-S-Home":"select-to-file-begin",
 	"C-S-End":"select-to-file-end",
 	"M-U":"to-uppercase",
-	"M-l":"to-lowercase"
+	"M-l":"to-lowercase",
+	"C-G":"cancel",
+	"F3":"start-record",
+	"F4":"stop-record",
+	"F5":"replay"
 }

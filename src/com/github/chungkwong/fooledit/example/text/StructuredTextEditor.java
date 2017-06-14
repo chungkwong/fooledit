@@ -41,6 +41,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private static final String MODULE_NAME="code-editor";
 	public StructuredTextEditor(){
 		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(MODULE_NAME).get("menubar-file",null)));
+
 		addCommand("undo",(area)->area.getArea().undo());
 		addCommand("redo",(area)->area.getArea().redo());
 		addCommand("cut",(area)->area.getArea().cut());
