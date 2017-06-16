@@ -68,6 +68,7 @@ public class Main extends Application{
 	private boolean recording=false;
 	public Main(){
 		INSTANCE=this;
+		System.setProperty("user.dir",SYSTEM_PATH.toString());
 		notifier=new Notifier(this);
 		Logger.getGlobal().setLevel(Level.INFO);
 		try{
