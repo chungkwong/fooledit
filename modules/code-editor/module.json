@@ -16,5 +16,11 @@
 		"long_description":"",
 		"type":"file",
 		"default_value":"stylesheets/default.css"
+	},
+	"template-index":{
+		"short_description":"template",
+		"long_description":"",
+		"type":"file",
+		"default_value":"templates.json"
 	}
 }

@@ -15,27 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.api;
-import com.github.chungkwong.fooledit.util.Cache;
-import com.github.chungkwong.fooledit.util.MimeType;
-import com.github.chungkwong.fooledit.model.DataObjectType;
-import com.github.chungkwong.fooledit.model.DataEditor;
-import com.github.chungkwong.fooledit.model.DataObject;
-import com.github.chungkwong.fooledit.example.tool.BrowserData;
-import com.github.chungkwong.fooledit.example.tool.Browser;
-import com.github.chungkwong.fooledit.example.text.StructuredTextEditor;
-import com.github.chungkwong.fooledit.example.text.TextObjectType;
-import com.github.chungkwong.fooledit.example.text.TextEditor;
-import com.github.chungkwong.fooledit.example.text.TextObject;
-import com.github.chungkwong.fooledit.example.media.MediaEditor;
-import com.github.chungkwong.fooledit.example.media.MediaObject;
-import com.github.chungkwong.fooledit.example.media.MediaObjectType;
-import com.github.chungkwong.fooledit.example.image.ImageEditor;
-import com.github.chungkwong.fooledit.example.image.ImageObjectType;
-import com.github.chungkwong.fooledit.example.image.IconEditor;
-import com.github.chungkwong.fooledit.example.image.ImageObject;
-import com.github.chungkwong.fooledit.example.binary.BinaryObjectType;
-import com.github.chungkwong.fooledit.example.binary.BinaryObject;
-import com.github.chungkwong.fooledit.example.binary.BinaryEditor;
+import com.github.chungkwong.fooledit.control.*;
+import com.github.chungkwong.fooledit.example.binary.*;
+import com.github.chungkwong.fooledit.example.image.*;
+import com.github.chungkwong.fooledit.example.media.*;
+import com.github.chungkwong.fooledit.example.text.*;
+import com.github.chungkwong.fooledit.example.tool.*;
+import com.github.chungkwong.fooledit.model.*;
+import com.github.chungkwong.fooledit.util.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -84,5 +71,7 @@ public class DataObjectTypeRegistry{
 		addDataObjectType(BinaryObjectType.INSTANCE);
 		addDataEditor(()->new BinaryEditor(),BinaryObject.class);
 		addDataEditor(()->new Browser(),BrowserData.class);
+		addDataObjectType(FileTypeChooser.INSTANCE);
+		addDataEditor(()->FileTypeChooser.INSTANCE,FileTypeChooser.class);
 	}
 }

@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.control;
+import static com.github.chungkwong.fooledit.Main.loadJSON;
 import com.github.chungkwong.fooledit.example.text.*;
 import com.github.chungkwong.fooledit.model.*;
+import com.github.chungkwong.fooledit.setting.*;
+import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 import javafx.scene.control.*;
@@ -25,13 +28,10 @@ import javafx.scene.layout.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FileTypeChooser extends BorderPane{
-	private final TreeView templates;
-	public FileTypeChooser(Map<Object,Object> obj){
-		templates=new TreeView(buildTree(obj));
-		templates.setShowRoot(false);
-		templates.setCellFactory((p)->new TemplateCell());
-		setCenter(templates);
+public class FileTypeChooser extends Prompt{
+	public static final FileTypeChooser INSTANCE=new FileTypeChooser();
+	private FileTypeChooser(){
+
 	}
 	private TreeItem buildTree(Map<Object,Object> obj){
 		TreeItem item;
@@ -46,7 +46,20 @@ public class FileTypeChooser extends BorderPane{
 		}
 		return item;
 	}
-	private static class TemplateCell extends TreeTableCell<Object,Object>{
+	@Override
+	public javafx.scene.Node edit(Prompt data){
+		BorderPane pane=new BorderPane();
+		TreeView templates=new TreeView(buildTree(loadJSON((File)SettingManager.getOrCreate("code-editor").get("template-index",null))));
+		templates.setShowRoot(false);
+		templates.setCellFactory((p)->new TemplateCell());
+		pane.setCenter(templates);
+		return pane;
+	}
+	@Override
+	public String getName(){
+		return "TEMPLATES";
+	}
+	private static class TemplateCell extends TreeCell<Object>{
 		public TemplateCell(){
 		}
 		@Override

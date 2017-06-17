@@ -202,9 +202,9 @@ public class SettingManager{
 		});
 		return node;
 	};
-	public static void main(String[] args){
+	public static void main(String[] args) throws IOException{
 		//load("recent");
-		System.out.println(getOrCreate("core").get("keymap-file",""));
-		System.out.println(getOrCreate("core").get("menubar-file",""));
+		//System.out.println(getOrCreate("core").get("keymap-file",""));
+		//System.out.println(getOrCreate("core").get("menubar-file",""));
 	}
 }

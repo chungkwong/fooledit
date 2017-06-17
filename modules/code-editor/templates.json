@@ -1,0 +1,19 @@
+{
+	"name":"",
+	"children":[
+		{
+			"name":"LICENSE",
+			"children":[
+				{"type":"text","name":"Apache-2.0","description":"","file":"modes/license/Apache-2.0"},
+				{"type":"text","name":"BSD","description":"","file":"modes/license/BSD"},
+				{"type":"text","name":"GFDL-1.2","description":"","file":"modes/license/GFDL-1.2"},
+				{"type":"text","name":"GFDL-1.3","description":"","file":"modes/license/GFDL-1.3"},
+				{"type":"text","name":"GPL-2","description":"","file":"modes/license/GPL-2"},
+				{"type":"text","name":"GPL-3","description":"","file":"modes/license/GPL-3"},
+				{"type":"text","name":"LGPL-2","description":"","file":"modes/license/LGPL-2"},
+				{"type":"text","name":"LGPL-3","description":"","file":"modes/license/LGPL-3"},
+				{"type":"text","name":"MIT","description":"","file":"modes/license/MIT"}
+			]
+		}
+	]
+}
