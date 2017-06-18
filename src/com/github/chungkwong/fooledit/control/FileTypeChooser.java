@@ -15,12 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.control;
+import com.github.chungkwong.fooledit.*;
 import static com.github.chungkwong.fooledit.Main.loadJSON;
+import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.example.image.*;
 import com.github.chungkwong.fooledit.example.text.*;
 import com.github.chungkwong.fooledit.model.*;
 import com.github.chungkwong.fooledit.setting.*;
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -30,34 +34,70 @@ import javafx.scene.layout.*;
  */
 public class FileTypeChooser extends Prompt{
 	public static final FileTypeChooser INSTANCE=new FileTypeChooser();
+	private static final Map<String,Function<Map<Object,Object>,Template>> templateTypes=new HashMap<>();
+	//private static final List<Map<Object,Object>> recent=(List<Map<Object,Object>>)PersistenceStatusManager.getOrDefault("template",()->Collections.emptyList());
+	static{
+		registerTemplateType("text",(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file")));
+		registerTemplateType("image",(obj)->new ImageTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file")));
+		//PersistenceStatusManager.registerConvertor("template",);
+	}
 	private FileTypeChooser(){
 
-	}
-	private TreeItem buildTree(Map<Object,Object> obj){
-		TreeItem item;
-		if(obj.containsKey("children")){
-			item=new TreeItem(obj.get("name"));
-			List<Map<Object,Object>> children=(List<Map<Object,Object>>)obj.get("children");
-			item.getChildren().setAll(children.stream().map(this::buildTree).collect(Collectors.toList()));
-		}else if(obj.get("type").equals("text")){
-			item=new TreeItem(new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file")));
-		}else{
-			item=new TreeItem();
-		}
-		return item;
 	}
 	@Override
 	public javafx.scene.Node edit(Prompt data){
 		BorderPane pane=new BorderPane();
 		TreeView templates=new TreeView(buildTree(loadJSON((File)SettingManager.getOrCreate("code-editor").get("template-index",null))));
+		templates.setOnMouseClicked((e)->{
+			System.out.println(e);
+			if(e.getClickCount()==2){
+				choose(templates);
+			}
+		});
 		templates.setShowRoot(false);
 		templates.setCellFactory((p)->new TemplateCell());
 		pane.setCenter(templates);
 		return pane;
 	}
 	@Override
+	public KeymapRegistry getKeymapRegistry(){
+		KeymapRegistry keymap=new KeymapRegistry();
+		keymap.registerKey("Enter","create");
+		return keymap;
+	}
+	@Override
+	public CommandRegistry getCommandRegistry(){
+		CommandRegistry commands=new CommandRegistry();
+		commands.put("create",(area)->choose((TreeView)((BorderPane)Main.INSTANCE.getCurrentNode()).getCenter()));
+		return commands;
+	}
+	private void choose(TreeView templates){
+		Object item=((TreeItem)templates.getSelectionModel().getSelectedItem()).getValue();
+		System.out.println(item);
+		if(item instanceof Template){
+			DataObject obj=((Template)item).apply(null);
+			Main.addAndShow(obj,Helper.hashMap(DataObjectRegistry.TYPE,obj.getDataObjectType()));
+		}
+	}
+	private TreeItem buildTree(Map<Object,Object> obj){
+		TreeItem item;
+		if(obj.containsKey("children")){
+			item=new TreeItem(MessageRegistry.getString((String)obj.get("name")));
+			List<Map<Object,Object>> children=(List<Map<Object,Object>>)obj.get("children");
+			item.getChildren().setAll(children.stream().map(this::buildTree).collect(Collectors.toList()));
+		}else if(templateTypes.containsKey((String)obj.get("type"))){
+			item=new TreeItem(templateTypes.get((String)obj.get("type")).apply(obj));
+		}else{
+			item=new TreeItem();
+		}
+		return item;
+	}
+	@Override
 	public String getName(){
 		return "TEMPLATES";
+	}
+	public static void registerTemplateType(String key,Function<Map<Object,Object>,Template> type){
+		templateTypes.put(key,type);
 	}
 	private static class TemplateCell extends TreeCell<Object>{
 		public TemplateCell(){
@@ -69,7 +109,7 @@ public class FileTypeChooser extends Prompt{
 				setText(null);
 				setGraphic(null);
 			}else if(item instanceof Template){
-				setText(((Template)item).getName());
+				setText(MessageRegistry.getString(((Template)item).getName()));
 			}else if(item instanceof String){
 				setText((String)item);
 			}

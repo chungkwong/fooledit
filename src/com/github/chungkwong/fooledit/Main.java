@@ -63,7 +63,7 @@ public class Main extends Application{
 	private final ScriptAPI script;
 	private static final Scene scene=new Scene(root);
 	private Stage stage;
-	private Node currentNode;
+	private static Node currentNode;
 	private List<KeyEvent> macro=new ArrayList<>();
 	private boolean recording=false;
 	public Main(){
@@ -174,26 +174,26 @@ public class Main extends Application{
 			commander.getChildren().set(1,((WorkSheet)node).getDataEditor().getMenuRegistry().getMenuBar());
 		}
 	}
-	public void addAndShow(DataObject data,Map<String,String> prop){
+	public static void addAndShow(DataObject data,Map<String,String> prop){
 		DataObjectRegistry.addDataObject(data,prop);
 		showDefault(data);
 	}
-	private void showDefault(DataObject data){
+	private static void showDefault(DataObject data){
 		getCurrentWorkSheet().keepOnly(data,getDefaultEditor(data));
 	}
-	public DataEditor getDefaultEditor(DataObject data){
+	public static DataEditor getDefaultEditor(DataObject data){
 		return DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0);
 	}
-	public DataObject getCurrentDataObject(){
+	public static DataObject getCurrentDataObject(){
 		return getCurrentWorkSheet().getDataObject();
 	}
 	public Node getCurrentNode(){
 		return currentNode;
 	}
-	public WorkSheet getCurrentWorkSheet(){
+	public static WorkSheet getCurrentWorkSheet(){
 		return (WorkSheet)currentNode.getParent();
 	}
-	private WorkSheet getDefaultWorkSheet(){
+	private static WorkSheet getDefaultWorkSheet(){
 		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
 		return (WorkSheet)PersistenceStatusManager.getOrDefault("layout.json",()->{
 			String msg=MessageRegistry.getString("WELCOME");
@@ -256,6 +256,12 @@ public class Main extends Application{
 	}
 	public static File getUserPath(){
 		return USER_PATH;
+	}
+	public static File getFile(String path,String module){
+		return new File(getModulePath(module),path);
+	}
+	public static File getModulePath(String module){
+		return new File(MODULE_PATH,module);
 	}
 	private static File computePath(){
 		URL url=Main.class.getResource("");

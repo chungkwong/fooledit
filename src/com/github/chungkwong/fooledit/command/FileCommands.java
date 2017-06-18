@@ -15,18 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.command;
-import com.github.chungkwong.fooledit.util.MimeType;
-import com.github.chungkwong.fooledit.model.DataObjectType;
-import com.github.chungkwong.fooledit.model.DataObject;
-import com.github.chungkwong.fooledit.api.DataObjectTypeRegistry;
-import com.github.chungkwong.fooledit.api.Helper;
-import com.github.chungkwong.fooledit.api.MimeDetector;
-import com.github.chungkwong.fooledit.api.DataObjectRegistry;
-import com.github.chungkwong.fooledit.Main;
+import com.github.chungkwong.fooledit.*;
+import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.control.*;
+import com.github.chungkwong.fooledit.model.*;
+import com.github.chungkwong.fooledit.util.*;
 import java.io.*;
 import java.net.*;
 import java.util.logging.*;
-import javafx.scene.control.*;
 import javafx.stage.*;
 /**
  *
@@ -75,13 +71,6 @@ public class FileCommands{
 		return "";
 	}
 	public void create(){
-		ListView<DataObjectType> types=new ListView<>();
-		types.getItems().setAll(DataObjectTypeRegistry.getDataObjectTypes());
-		Dialog dia=new Dialog();
-		dia.getDialogPane().setContent(types);
-		dia.getDialogPane().getButtonTypes().add(ButtonType.OK);
-		dia.showAndWait();
-		DataObjectType type=types.getSelectionModel().getSelectedItem();
-		main.addAndShow(type.create(),Helper.hashMap(DataObjectRegistry.TYPE,type));
+		main.addAndShow(FileTypeChooser.INSTANCE,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("TEMPLATE")));
 	}
 }

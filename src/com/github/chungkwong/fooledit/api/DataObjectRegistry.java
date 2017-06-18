@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.api;
-import com.github.chungkwong.fooledit.setting.PersistenceStatusManager;
-import com.github.chungkwong.fooledit.model.DataObjectType;
-import com.github.chungkwong.fooledit.model.DataObject;
+import com.github.chungkwong.fooledit.model.*;
+import com.github.chungkwong.fooledit.setting.*;
 import java.net.*;
 import java.util.*;
 import java.util.logging.*;
@@ -80,6 +79,8 @@ public class DataObjectRegistry{
 		return object;
 	}
 	public static void addDataObject(DataObject data,Map<String,String> prop){
+		if(properties.containsKey(data))
+			return;
 		String name=(String)prop.getOrDefault(DEFAULT_NAME,UNTITLED);
 		if(objects.containsKey(name)){
 			for(int i=1;;i++){

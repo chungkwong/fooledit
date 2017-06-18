@@ -14,9 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.fooledit.example.text;
+package com.github.chungkwong.fooledit.example.image;
 import com.github.chungkwong.fooledit.*;
-import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.model.*;
 import java.io.*;
 import java.util.*;
@@ -25,16 +24,15 @@ import java.util.logging.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TextTemplate implements Template<TextObject>{
+public class ImageTemplate implements Template<ImageObject>{
 	private final String name;
 	private final String description;
 	private final String file;
-	public TextTemplate(String name,String description,String file){
+	public ImageTemplate(String name,String description,String file){
 		this.name=name;
 		this.description=description;
 		this.file=file;
 	}
-
 	@Override
 	public String getName(){
 		return name;
@@ -48,15 +46,12 @@ public class TextTemplate implements Template<TextObject>{
 		return Collections.emptySet();
 	}
 	@Override
-	public TextObject apply(Properties properties){
-		String text;
+	public ImageObject apply(Properties properties){
 		try{
-			text=Helper.readText(Main.getFile(file,"code-editor"));
-		}catch(IOException ex){
-			Logger.getLogger(TextTemplate.class.getName()).log(Level.INFO,null,ex);
-			text="";
+			return ImageObjectType.INSTANCE.readFrom(new FileInputStream(Main.getFile(file,"image-editor")));
+		}catch(Exception ex){
+			Logger.getLogger(ImageTemplate.class.getName()).log(Level.SEVERE,null,ex);
+			return ImageObjectType.INSTANCE.create();
 		}
-		return new TextObject(text);
 	}
-
 }
