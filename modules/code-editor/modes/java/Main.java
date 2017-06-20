@@ -14,16 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.fooledit.model;
-import java.util.*;
+package com.github.chungkwong.fooledit;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface Template<T extends DataObject>{
-	String getName();
-	String getDescription();
-	Collection<String> getParameters();
-	T apply(Properties properties);
-	String getMimeType();
+public class Main{
+	/**
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args){
+		
+	}
 }

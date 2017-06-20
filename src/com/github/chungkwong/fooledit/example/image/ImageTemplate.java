@@ -28,10 +28,12 @@ public class ImageTemplate implements Template<ImageObject>{
 	private final String name;
 	private final String description;
 	private final String file;
-	public ImageTemplate(String name,String description,String file){
+	private final String mime;
+	public ImageTemplate(String name,String description,String file,String mime){
 		this.name=name;
 		this.description=description;
 		this.file=file;
+		this.mime=mime;
 	}
 	@Override
 	public String getName(){
@@ -40,6 +42,9 @@ public class ImageTemplate implements Template<ImageObject>{
 	@Override
 	public String getDescription(){
 		return description;
+	}
+	public String getMimeType(){
+		return mime;
 	}
 	@Override
 	public Collection<String> getParameters(){

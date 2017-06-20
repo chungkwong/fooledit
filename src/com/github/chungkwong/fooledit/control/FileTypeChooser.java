@@ -37,8 +37,8 @@ public class FileTypeChooser extends Prompt{
 	private static final Map<String,Function<Map<Object,Object>,Template>> templateTypes=new HashMap<>();
 	//private static final List<Map<Object,Object>> recent=(List<Map<Object,Object>>)PersistenceStatusManager.getOrDefault("template",()->Collections.emptyList());
 	static{
-		registerTemplateType("text",(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file")));
-		registerTemplateType("image",(obj)->new ImageTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file")));
+		registerTemplateType("text",(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
+		registerTemplateType("image",(obj)->new ImageTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
 		//PersistenceStatusManager.registerConvertor("template",);
 	}
 	private FileTypeChooser(){
@@ -49,13 +49,13 @@ public class FileTypeChooser extends Prompt{
 		BorderPane pane=new BorderPane();
 		TreeView templates=new TreeView(buildTree(loadJSON((File)SettingManager.getOrCreate("code-editor").get("template-index",null))));
 		templates.setOnMouseClicked((e)->{
-			System.out.println(e);
 			if(e.getClickCount()==2){
 				choose(templates);
 			}
 		});
 		templates.setShowRoot(false);
 		templates.setCellFactory((p)->new TemplateCell());
+
 		pane.setCenter(templates);
 		return pane;
 	}
@@ -73,10 +73,12 @@ public class FileTypeChooser extends Prompt{
 	}
 	private void choose(TreeView templates){
 		Object item=((TreeItem)templates.getSelectionModel().getSelectedItem()).getValue();
-		System.out.println(item);
 		if(item instanceof Template){
-			DataObject obj=((Template)item).apply(null);
-			Main.addAndShow(obj,Helper.hashMap(DataObjectRegistry.TYPE,obj.getDataObjectType()));
+			Template template=(Template)item;
+			DataObject obj=template.apply(null);
+			System.out.println(template.getMimeType());
+			Main.addAndShow(obj,Helper.hashMap(DataObjectRegistry.TYPE,obj.getDataObjectType(),
+					DataObjectRegistry.MIME,template.getMimeType()));
 		}
 	}
 	private TreeItem buildTree(Map<Object,Object> obj){
@@ -114,5 +116,8 @@ public class FileTypeChooser extends Prompt{
 				setText((String)item);
 			}
 		}
+	}
+	public static void main(String[] args){
+		System.out.println(System.getProperties());
 	}
 }

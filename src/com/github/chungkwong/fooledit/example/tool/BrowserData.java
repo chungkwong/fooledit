@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.example.tool;
-import com.github.chungkwong.fooledit.model.DataObjectType;
-import com.github.chungkwong.fooledit.model.DataObject;
+import com.github.chungkwong.fooledit.*;
+import com.github.chungkwong.fooledit.model.*;
 import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -32,6 +32,7 @@ public class BrowserData implements DataObject<BrowserData>{
 	public BrowserData(){
 		WebView browser=new WebView();
 		engine=browser.getEngine();
+		engine.getLoadWorker().messageProperty().addListener((e,o,n)->{if(n!=null)Main.INSTANCE.getNotifier().notify(n);});
 		Button reload=new Button("↺");
 		reload.setOnAction((e)->engine.reload());
 		Button back=new Button("<");

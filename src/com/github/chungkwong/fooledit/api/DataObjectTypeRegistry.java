@@ -61,8 +61,8 @@ public class DataObjectTypeRegistry{
 	}
 	static{
 		addDataObjectType(TextObjectType.INSTANCE);
+		//addDataEditor(()->new TextEditor(),TextObject.class);
 		addDataEditor(()->new StructuredTextEditor(),TextObject.class);
-		addDataEditor(()->new TextEditor(),TextObject.class);
 		addDataObjectType(ImageObjectType.INSTANCE);
 		addDataEditor(()->new IconEditor(),ImageObject.class);
 		addDataEditor(()->new ImageEditor(),ImageObject.class);

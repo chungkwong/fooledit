@@ -2,20 +2,26 @@
 	"name":"",
 	"children":[
 		{
-			"name":"PLAIN_TEXT",
+			"name":"Java",
 			"children":[
-				{"type":"text","name":"Apache-2.0","description":"","file":"modes/plain/Apache-2.0"},
-				{"type":"text","name":"BSD","description":"","file":"modes/plain/BSD"},
-				{"type":"text","name":"GFDL-1.2","description":"","file":"modes/plain/GFDL-1.2"},
-				{"type":"text","name":"GFDL-1.3","description":"","file":"modes/plain/GFDL-1.3"},
-				{"type":"text","name":"GPL-2","description":"","file":"modes/plain/GPL-2"},
-				{"type":"text","name":"GPL-3","description":"","file":"modes/plain/GPL-3"},
-				{"type":"text","name":"LGPL-2","description":"","file":"modes/plain/LGPL-2"},
-				{"type":"text","name":"LGPL-3","description":"","file":"modes/plain/LGPL-3"},
-				{"type":"text","name":"MIT","description":"","file":"modes/plain/MIT"}
+				{"type":"text","mime":"text/x-java","name":"Main class","description":"","file":"modes/java/Main.java"}
 			]
 		},
-		{"type":"text","name":"EMPTY_PLAIN_TEXT","description":"","file":"modes/plain/EMPTY"},
-		{"type":"image","name":"IMAGE","description":"","file":""}
+		{
+			"name":"PLAIN_TEXT",
+			"children":[
+				{"type":"text","mime":"text/plain","name":"Apache-2.0","description":"","file":"modes/plain/Apache-2.0"},
+				{"type":"text","mime":"text/plain","name":"BSD","description":"","file":"modes/plain/BSD"},
+				{"type":"text","mime":"text/plain","name":"GFDL-1.2","description":"","file":"modes/plain/GFDL-1.2"},
+				{"type":"text","mime":"text/plain","name":"GFDL-1.3","description":"","file":"modes/plain/GFDL-1.3"},
+				{"type":"text","mime":"text/plain","name":"GPL-2","description":"","file":"modes/plain/GPL-2"},
+				{"type":"text","mime":"text/plain","name":"GPL-3","description":"","file":"modes/plain/GPL-3"},
+				{"type":"text","mime":"text/plain","name":"LGPL-2","description":"","file":"modes/plain/LGPL-2"},
+				{"type":"text","mime":"text/plain","name":"LGPL-3","description":"","file":"modes/plain/LGPL-3"},
+				{"type":"text","mime":"text/plain","name":"MIT","description":"","file":"modes/plain/MIT"}
+			]
+		},
+		{"type":"text","mime":"text/plain","name":"EMPTY_PLAIN_TEXT","description":"","file":"modes/plain/EMPTY"},
+		{"type":"image","mime":"image/png","name":"IMAGE","description":"","file":""}
 	]
 }
