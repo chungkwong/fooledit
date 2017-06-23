@@ -20,36 +20,23 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
-import javafx.application.*;
-import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FileSystemViewer extends Application{
-	private final TreeView<File> tree=new TreeView<>();
+public class FileSystemViewer extends TreeView<File>{
 	public FileSystemViewer(){
-		tree.setCellFactory((t)->new FileCell());
+		setCellFactory((t)->new FileCell());
 		TreeItem<File> root=new LazyTreeItem<File>(()->Arrays.stream(File.listRoots()).sorted().map((r)->new LazyTreeItem<>(()->getChildren(r),r)).collect(Collectors.toList()),null);
-		tree.setShowRoot(false);
-		tree.setRoot(root);
+		setShowRoot(false);
+		setRoot(root);
 	}
 	private static Collection<TreeItem<File>> getChildren(File item){
 		return Arrays.stream(item.listFiles()).sorted()
 				.map((f)->f.isDirectory()?new LazyTreeItem<File>(()->getChildren(f),f):new TreeItem<>(f))
 				.collect(Collectors.toList());
-	}
-	public static void main(String[] args){
-		launch(args);
-	}
-	@Override
-	public void start(Stage stage) throws Exception{
-		stage.setScene(new Scene(new BorderPane(tree)));
-		stage.show();
 	}
 	static class FileCell extends TreeCell<File>{
 		private TreeItem<File> src;

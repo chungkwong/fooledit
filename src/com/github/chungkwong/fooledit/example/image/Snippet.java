@@ -14,26 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.fooledit.setting;
-import javafx.application.*;
-import javafx.scene.*;
-import javafx.stage.*;
+package com.github.chungkwong.fooledit.example.image;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PreferenceEditorTest extends Application{
-	@Override
-	public void start(Stage stage) throws Exception{
-		stage.setScene(new Scene(new PreferenceEditor()));
-		stage.show();
-	}
-	public static void main(String[] args){
-		SettingManager.getOrCreate("com");
-		SettingManager.getOrCreate("com.github.chungkwong");
-		SettingManager.getOrCreate("xyz.hh");
-		SettingManager.getOrCreate("xyz.pp");
+public class Snippet{
 
-		launch(args);
-	}
 }

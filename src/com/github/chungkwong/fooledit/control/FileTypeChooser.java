@@ -47,6 +47,7 @@ public class FileTypeChooser extends Prompt{
 	@Override
 	public javafx.scene.Node edit(Prompt data){
 		BorderPane pane=new BorderPane();
+		pane.setLeft(new FileSystemViewer());
 		TreeView templates=new TreeView(buildTree(loadJSON((File)SettingManager.getOrCreate("code-editor").get("template-index",null))));
 		templates.setOnMouseClicked((e)->{
 			if(e.getClickCount()==2){

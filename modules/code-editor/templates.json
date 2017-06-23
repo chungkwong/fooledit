@@ -4,7 +4,8 @@
 		{
 			"name":"Java",
 			"children":[
-				{"type":"text","mime":"text/x-java","name":"Main class","description":"","file":"modes/java/Main.java"}
+				{"type":"text","mime":"text/x-java","name":"Main class","description":"","file":"modes/java/Main.java"},
+				{"type":"text","mime":"text/x-java","name":"Package","description":"","file":"modes/java/package.scm"}
 			]
 		},
 		{

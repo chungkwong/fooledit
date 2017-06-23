@@ -18,9 +18,11 @@ package com.github.chungkwong.fooledit.example.text;
 import com.github.chungkwong.fooledit.*;
 import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.model.*;
+import com.github.chungkwong.jschememin.type.*;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+import javax.script.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -55,8 +57,9 @@ public class TextTemplate implements Template<TextObject>{
 	public TextObject apply(Properties properties){
 		String text;
 		try{
-			text=Helper.readText(Main.getFile(file,"code-editor"));
-		}catch(IOException ex){
+			String code=Helper.readText(Main.getFile(file,"code-editor"));
+			text=((ScmString)Main.INSTANCE.getScriptAPI().eval(code)).getValue();
+		}catch(IOException|ScriptException ex){
 			Logger.getLogger(TextTemplate.class.getName()).log(Level.INFO,null,ex);
 			text="";
 		}
