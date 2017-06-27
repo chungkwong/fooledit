@@ -48,6 +48,7 @@ public class CodeEditor extends BorderPane{
 	private final LineNumberFactory header=new LineNumberFactory(area);
 	private final IndentPolicy indentPolicy;
 	private final StringProperty textProperty=new PlainTextProperty();
+	private final TreeSet<Marker> markers=new TreeSet<>();
 	public CodeEditor(Parser parser,Lex lex){
 		highlighter=lex!=null?new HighlightSupport(lex,area):null;
 		tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
@@ -59,15 +60,15 @@ public class CodeEditor extends BorderPane{
 		});
 		area.setParagraphGraphicFactory(header);
 		indentPolicy=IndentPolicy.AS_PREVIOUS;
+
+		area.plainTextChanges().subscribe((e)->update(e));
+
 		setCenter(new VirtualizedScrollPane(area));
 	}
 	@Override
 	public void requestFocus(){
 		super.requestFocus();
 		area.requestFocus();
-		area.plainTextChanges().subscribe((e)->{
-
-		});
 	}
 	public void setAutoCompleteProvider(AutoCompleteProvider provider){
 		new CompleteSupport(provider).apply(area);
@@ -110,6 +111,50 @@ public class CodeEditor extends BorderPane{
 	}
 	public void transform(Function<String,String> transformer){
 		area.replaceSelection(transformer.apply(area.getSelectedText()));
+	}
+	private void update(PlainTextChange e){
+		if(markers.isEmpty())
+			return;;
+		int oldPos;
+		int newPos;
+		switch(e.getType()){
+			case DELETION:
+				oldPos=e.getRemovalEnd();
+				newPos=e.getPosition();
+				markers.subSet(new Marker(e.getPosition(),null),new Marker(e.getRemovalEnd(),null)).clear();
+				break;
+			case INSERTION:
+				oldPos=e.getPosition();
+				newPos=e.getInsertionEnd();
+				break;
+			case REPLACEMENT:
+				oldPos=e.getRemovalEnd();
+				newPos=e.getInsertionEnd();
+				markers.subSet(new Marker(e.getPosition(),null),new Marker(e.getRemovalEnd(),null)).clear();
+				break;
+			default:
+				throw new RuntimeException();
+		}
+		int diff=newPos-oldPos;
+		if(diff<0){
+			Marker marker=markers.ceiling(new Marker(oldPos,null));
+			while(marker!=null){
+				marker.setOffset(marker.getOffset()+diff);
+				marker=markers.higher(marker);
+			}
+		}else if(diff>0){
+			Marker marker=markers.last();
+			while(marker!=null&&marker.getOffset()>=oldPos){
+				marker.setOffset(marker.getOffset()+diff);
+				marker=markers.lower(marker);
+			}
+		}
+	}
+	public void mark(int offset,String tag){
+		markers.add(new Marker(offset,tag));
+	}
+	public TreeSet<Marker> getMarkers(){
+		return markers;
 	}
 	class InputMethodRequestsObject implements InputMethodRequests{
 		@Override
