@@ -71,6 +71,6 @@ public class FileCommands{
 		return "";
 	}
 	public void create(){
-		main.addAndShow(FileTypeChooser.INSTANCE,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("TEMPLATE")));
+		main.addAndShow(TemplateChooser.INSTANCE,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("TEMPLATE")));
 	}
 }

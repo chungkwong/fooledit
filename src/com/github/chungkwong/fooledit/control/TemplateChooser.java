@@ -32,8 +32,8 @@ import javafx.scene.layout.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FileTypeChooser extends Prompt{
-	public static final FileTypeChooser INSTANCE=new FileTypeChooser();
+public class TemplateChooser extends Prompt{
+	public static final TemplateChooser INSTANCE=new TemplateChooser();
 	private static final Map<String,Function<Map<Object,Object>,Template>> templateTypes=new HashMap<>();
 	//private static final List<Map<Object,Object>> recent=(List<Map<Object,Object>>)PersistenceStatusManager.getOrDefault("template",()->Collections.emptyList());
 	static{
@@ -41,7 +41,7 @@ public class FileTypeChooser extends Prompt{
 		registerTemplateType("image",(obj)->new ImageTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
 		//PersistenceStatusManager.registerConvertor("template",);
 	}
-	private FileTypeChooser(){
+	private TemplateChooser(){
 
 	}
 	@Override

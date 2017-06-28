@@ -18,11 +18,9 @@ package com.github.chungkwong.fooledit.example.text;
 import com.github.chungkwong.fooledit.*;
 import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.model.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.script.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -51,17 +49,50 @@ public class TextTemplate implements Template<TextObject>{
 	}
 	@Override
 	public Collection<String> getParameters(){
+		try{
+			String text=Helper.readText(Main.getFile(file,"code-editor"));
+			Set<String> parameters=new HashSet<>();
+			int pos=0;
+			while((pos=text.indexOf('$',pos))!=-1){
+				if(text.charAt(pos+1)=='$'){
+					++pos;
+				}else{
+					int newpos=text.indexOf('}',pos);
+					parameters.add(text.substring(pos+2,newpos));
+					pos=newpos;
+				}
+			}
+			return parameters;
+		}catch(IOException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
 		return Collections.emptySet();
 	}
 	@Override
 	public TextObject apply(Properties properties){
 		String text;
 		try{
-			String code=Helper.readText(Main.getFile(file,"code-editor"));
-			text=((ScmString)Main.INSTANCE.getScriptAPI().eval(code)).getValue();
-		}catch(IOException|ScriptException ex){
+			text=Helper.readText(Main.getFile(file,"code-editor"));
+		}catch(IOException ex){
 			Logger.getLogger(TextTemplate.class.getName()).log(Level.INFO,null,ex);
 			text="";
+		}
+		StringBuilder buf=new StringBuilder();
+		for(int i=0;i<text.length();i++){
+			char c=text.charAt(i);
+			if(c=='$'){
+				if(text.charAt(i+1)=='$'){
+					++i;
+					buf.append('$');
+				}else{
+					int j=text.indexOf('}',i);
+					String key=text.substring(i+2,j);
+					buf.append(properties.getProperty(key,key));
+					i=j;
+				}
+			}else{
+				buf.append(c);
+			}
 		}
 		return new TextObject(text);
 	}

@@ -71,7 +71,7 @@ public class DataObjectTypeRegistry{
 		addDataObjectType(BinaryObjectType.INSTANCE);
 		addDataEditor(()->new BinaryEditor(),BinaryObject.class);
 		addDataEditor(()->new Browser(),BrowserData.class);
-		addDataObjectType(FileTypeChooser.INSTANCE);
-		addDataEditor(()->FileTypeChooser.INSTANCE,FileTypeChooser.class);
+		addDataObjectType(TemplateChooser.INSTANCE);
+		addDataEditor(()->TemplateChooser.INSTANCE,TemplateChooser.class);
 	}
 }
