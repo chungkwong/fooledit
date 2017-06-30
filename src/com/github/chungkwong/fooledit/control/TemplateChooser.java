@@ -58,6 +58,7 @@ public class TemplateChooser extends Prompt{
 		templates.setCellFactory((p)->new TemplateCell());
 
 		pane.setCenter(templates);
+		TextField filename=new TextField();
 		return pane;
 	}
 	@Override

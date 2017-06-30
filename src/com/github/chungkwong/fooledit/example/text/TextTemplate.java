@@ -17,7 +17,8 @@
 package com.github.chungkwong.fooledit.example.text;
 import com.github.chungkwong.fooledit.*;
 import com.github.chungkwong.fooledit.api.*;
-import com.github.chungkwong.fooledit.model.*;
+import com.github.chungkwong.fooledit.model.Template;
+import freemarker.template.*;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -26,6 +27,7 @@ import java.util.logging.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class TextTemplate implements Template<TextObject>{
+	private static final Configuration ENGINE;
 	private final String name;
 	private final String description;
 	private final String file;
@@ -49,51 +51,40 @@ public class TextTemplate implements Template<TextObject>{
 	}
 	@Override
 	public Collection<String> getParameters(){
-		try{
-			String text=Helper.readText(Main.getFile(file,"code-editor"));
-			Set<String> parameters=new HashSet<>();
-			int pos=0;
-			while((pos=text.indexOf('$',pos))!=-1){
-				if(text.charAt(pos+1)=='$'){
-					++pos;
-				}else{
-					int newpos=text.indexOf('}',pos);
-					parameters.add(text.substring(pos+2,newpos));
-					pos=newpos;
-				}
-			}
-			return parameters;
-		}catch(IOException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
 		return Collections.emptySet();
 	}
 	@Override
 	public TextObject apply(Properties properties){
-		String text;
 		try{
-			text=Helper.readText(Main.getFile(file,"code-editor"));
+			StringWriter out=new StringWriter();
+			freemarker.template.Template template=ENGINE.getTemplate(file);
+			Map<String,Object> props=new HashMap<>();
+			template.process(props,out);
+			return new TextObject(out.toString());
+		}catch(IOException|TemplateException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			return null;
+		}
+	}
+	static{
+		ENGINE=new Configuration(new Version(2,3,26));
+		ENGINE.setDefaultEncoding("UTF-8");
+		try{
+			ENGINE.setDirectoryForTemplateLoading(new File(Main.getModulePath("code-editor"),"modes"));
 		}catch(IOException ex){
-			Logger.getLogger(TextTemplate.class.getName()).log(Level.INFO,null,ex);
-			text="";
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
-		StringBuilder buf=new StringBuilder();
-		for(int i=0;i<text.length();i++){
-			char c=text.charAt(i);
-			if(c=='$'){
-				if(text.charAt(i+1)=='$'){
-					++i;
-					buf.append('$');
-				}else{
-					int j=text.indexOf('}',i);
-					String key=text.substring(i+2,j);
-					buf.append(properties.getProperty(key,key));
-					i=j;
-				}
-			}else{
-				buf.append(c);
-			}
-		}
-		return new TextObject(text);
+	}
+	public static void main(String[] args) throws IOException, TemplateException{
+		Configuration configuration=new Configuration(new Version(2,3,26));
+		configuration.setDefaultEncoding("UTF-8");
+		configuration.setDirectoryForTemplateLoading(new File(Main.getModulePath("code-editor"),"modes"));
+		freemarker.template.Template template=configuration.getTemplate("java/Main.java");
+		Map<String,Object> props=new HashMap<>();
+		props.put("name","Name");
+		props.put("project",Helper.hashMap("licensePath","../headers/GPL-3"));
+		props.put("date","2017-6-29");
+		props.put("user","kwong");
+		template.process(props,new OutputStreamWriter(System.out));
 	}
 }

@@ -20,8 +20,9 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Project{
-	public Properties getProperties(){
-		return new Properties();
+public class ProjectTypeManager{
+	private static final Collection<ProjectType> TYPES=new ArrayList<>();
+	public void registerProjectType(ProjectType type){
+		TYPES.add(type);
 	}
 }
