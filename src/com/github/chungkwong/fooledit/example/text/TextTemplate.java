@@ -18,6 +18,7 @@ package com.github.chungkwong.fooledit.example.text;
 import com.github.chungkwong.fooledit.*;
 import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.model.Template;
+import freemarker.core.*;
 import freemarker.template.*;
 import java.io.*;
 import java.util.*;
@@ -51,20 +52,55 @@ public class TextTemplate implements Template<TextObject>{
 	}
 	@Override
 	public Collection<String> getParameters(){
-		return Collections.emptySet();
+		List<String> parameters=new ArrayList<>();
+		Properties properties=new Properties();
+		while(true){
+			try{
+				tryToApply(properties);
+			}catch(InvalidReferenceException ex){
+				String name=ex.getBlamedExpressionString();
+				getBranch(name,properties).put(getLeaf(name),"");
+				parameters.add(name);
+				continue;
+			}catch(NonHashException ex){
+				String name=ex.getBlamedExpressionString();
+				getBranch(name,properties).put(getLeaf(name),new HashMap<Object,Object>());
+				continue;
+			}catch(IOException|TemplateException ex){
+
+			}
+			break;
+		}
+		return parameters;
+	}
+	private static Map getBranch(String name,Map<Object,Object> props){
+		int i=0;
+		int j=name.indexOf('.');
+		while(j!=-1){
+			props=(Map<Object,Object>)props.get(name.substring(i,j));
+			i=j+1;
+			j=name.indexOf('.',i);
+		}
+		return props;
+	}
+	private static String getLeaf(String name){
+		int i=name.lastIndexOf('.');
+		return i==-1?name:name.substring(i+1);
 	}
 	@Override
 	public TextObject apply(Properties properties){
 		try{
-			StringWriter out=new StringWriter();
-			freemarker.template.Template template=ENGINE.getTemplate(file);
-			Map<String,Object> props=new HashMap<>();
-			template.process(props,out);
-			return new TextObject(out.toString());
+			return new TextObject(tryToApply(properties));
 		}catch(IOException|TemplateException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
-			return null;
+			return new TextObject("");
 		}
+	}
+	private String tryToApply(Properties properties) throws TemplateException,IOException{
+		StringWriter out=new StringWriter();
+		freemarker.template.Template template=ENGINE.getTemplate(file);
+		template.process(properties,out);
+		return out.toString();
 	}
 	static{
 		ENGINE=new Configuration(new Version(2,3,26));
@@ -85,6 +121,5 @@ public class TextTemplate implements Template<TextObject>{
 		props.put("project",Helper.hashMap("licensePath","../headers/GPL-3"));
 		props.put("date","2017-6-29");
 		props.put("user","kwong");
-		template.process(props,new OutputStreamWriter(System.out));
 	}
 }

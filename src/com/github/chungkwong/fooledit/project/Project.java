@@ -20,8 +20,7 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Project{
-	public Properties getProperties(){
-		return new Properties();
-	}
+public interface Project{
+	public Properties getProperties();
+	public Map<String,Runnable> getTargets();
 }

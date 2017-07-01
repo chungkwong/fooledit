@@ -77,7 +77,14 @@ public class TemplateChooser extends Prompt{
 		Object item=((TreeItem)templates.getSelectionModel().getSelectedItem()).getValue();
 		if(item instanceof Template){
 			Template template=(Template)item;
-			DataObject obj=template.apply(null);
+			System.out.println(template.getParameters());
+			Properties props=new Properties();
+			props.put("package","xyz.beold");
+			props.put("name","Name");
+			props.put("project",Helper.hashMap("licensePath","../headers/GPL-3"));
+			props.put("date","2017-6-29");
+			props.put("user","kwong");
+			DataObject obj=template.apply(props);
 			System.out.println(template.getMimeType());
 			Main.addAndShow(obj,Helper.hashMap(DataObjectRegistry.TYPE,obj.getDataObjectType(),
 					DataObjectRegistry.MIME,template.getMimeType()));
