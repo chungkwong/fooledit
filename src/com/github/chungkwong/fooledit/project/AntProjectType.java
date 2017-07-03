@@ -21,8 +21,25 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface Project{
-	public File getDirectory();
-	public Properties getProperties();
-	public Map<String,Runnable> getTargets();
+public class AntProjectType implements ProjectType<AntProject>{
+	@Override
+	public AntProject createProject(File directory){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public Optional<AntProject> gaussDirectory(File file){
+		if(!file.isDirectory())
+			file=file.getParentFile();
+		while(file!=null){
+			if(new File(file,"build.xml").exists())
+				return Optional.of(new AntProject(file));
+			file=file.getParentFile();
+		}
+		return Optional.empty();
+	}
+	@Override
+	public String getName(){
+		return "Ant";
+	}
+
 }

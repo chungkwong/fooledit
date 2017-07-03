@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.project;
+import java.io.*;
 import java.util.*;
 /**
  *
@@ -22,7 +23,15 @@ import java.util.*;
  */
 public class ProjectTypeManager{
 	private static final Collection<ProjectType> TYPES=new ArrayList<>();
-	public void registerProjectType(ProjectType type){
+	public static void registerProjectType(ProjectType type){
 		TYPES.add(type);
+	}
+	public static Optional<Project> gaussProject(File file){
+		for(ProjectType type:TYPES){
+			Optional<Project> directory=type.gaussDirectory(file);
+			if(directory.isPresent())
+				return directory;
+		}
+		return Optional.empty();
 	}
 }

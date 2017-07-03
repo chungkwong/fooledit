@@ -15,11 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.project;
-
+import java.io.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface ProjectType{
-	
+public interface ProjectType<T extends Project>{
+	T createProject(File directory);
+	Optional<T> gaussDirectory(File file);
+	String getName();
 }

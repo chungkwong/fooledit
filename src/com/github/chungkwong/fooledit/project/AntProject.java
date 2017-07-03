@@ -21,8 +21,21 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface Project{
-	public File getDirectory();
-	public Properties getProperties();
-	public Map<String,Runnable> getTargets();
+public class AntProject implements Project{
+	private final File directory;
+	public AntProject(File directory){
+		this.directory=directory;
+	}
+	@Override
+	public File getDirectory(){
+		return directory;
+	}
+	@Override
+	public Properties getProperties(){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public Map<String,Runnable> getTargets(){
+		return Collections.emptyMap();
+	}
 }

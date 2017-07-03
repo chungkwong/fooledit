@@ -18,7 +18,6 @@ package com.github.chungkwong.fooledit.example.text;
 import com.github.chungkwong.fooledit.*;
 import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.model.Template;
-import freemarker.core.*;
 import freemarker.template.*;
 import java.io.*;
 import java.util.*;
@@ -52,7 +51,7 @@ public class TextTemplate implements Template<TextObject>{
 	}
 	@Override
 	public Collection<String> getParameters(){
-		List<String> parameters=new ArrayList<>();
+		/*List<String> parameters=new ArrayList<>();
 		Properties properties=new Properties();
 		while(true){
 			try{
@@ -71,7 +70,8 @@ public class TextTemplate implements Template<TextObject>{
 			}
 			break;
 		}
-		return parameters;
+		return parameters;*/
+		return Collections.emptySet();
 	}
 	private static Map getBranch(String name,Map<Object,Object> props){
 		int i=0;
