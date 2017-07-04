@@ -36,8 +36,8 @@ public class DataObjectRegistry{
 	private static final String ENTRIES="entries";
 	private static final TreeMap<String,DataObject> objects=new TreeMap<>();
 	private static final IdentityHashMap<DataObject,Map<String,String>> properties=new IdentityHashMap<>();
-	private static final Map<String,Object> HISTORY=(Map<String,Object>)PersistenceStatusManager.getOrDefault(KEY,
-			()->Helper.hashMap(LIMIT,20,ENTRIES,new LinkedList<>()));
+	private static final Map<String,Object> HISTORY=(Map<String,Object>)PersistenceStatusManager.USER.
+			getOrDefault(KEY,()->Helper.hashMap(LIMIT,20,ENTRIES,new LinkedList<>()));
 	public static DataObject getDataObject(String name){
 		return objects.get(name);
 	}

@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.api;
-import com.github.chungkwong.fooledit.Main;
+import com.github.chungkwong.fooledit.*;
+import com.github.chungkwong.fooledit.setting.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
@@ -31,29 +32,34 @@ import java.util.zip.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ModuleRegistry{
-	private static final HashMap<String,Module> modules=new HashMap<>();
-	private static final Preferences paths=Preferences.userNodeForPackage(ModuleRegistry.class).node("module/classpath");
-	private static final Preferences dirs=Preferences.userNodeForPackage(ModuleRegistry.class).node("module/directory");
-	public static void ensureLoaded(String cls)throws MalformedURLException,ReflectiveOperationException{
-		if(!modules.containsKey(cls)){
-			Module module=getInstance(cls);
-			module.onLoad();
-			modules.put(cls,module);
+	private static final HashMap<String,Module> loadedModules=new HashMap<>();
+	private static final Map<String,Object> MODULES=(Map<String,Object>)PersistenceStatusManager.CORE.getOrDefault("modules",null);
+	private static final Map<String,Map<Object,Object>> INSTALLED=(Map<String,Map<Object,Object>>)MODULES.get("installed");
+	public static void ensureLoaded(String cls){
+		if(!loadedModules.containsKey(cls)){
+			try{
+				loadedModules.put(cls,null);
+				getModuleDescriptor(cls).getDependency().forEach((s)->ensureLoaded(s));
+				Module module=getInstance(cls);
+				module.onLoad();
+				loadedModules.put(cls,module);
+			}catch(ReflectiveOperationException|MalformedURLException ex){
+				Logger.getLogger(ModuleRegistry.class.getName()).log(Level.SEVERE,null,ex);
+			}
 		}
 	}
 	public static void unLoad(String cls){
-		Module module=modules.remove(cls);
+		Module module=loadedModules.remove(cls);
 		module.onUnLoad();
 	}
 	public static Map<String,Module> getModules(){
-		return Collections.unmodifiableMap(modules);
+		return Collections.unmodifiableMap(loadedModules);
 	}
-	public static List<ModuleDescriptor> listInstalled() throws BackingStoreException, ReflectiveOperationException, MalformedURLException{
-		ArrayList<ModuleDescriptor> installed=new ArrayList<>();
-		for(String m:paths.keys()){
-			installed.add(getInstance(m).getModuleDescriptor());
-		}
-		return installed;
+	public static ModuleDescriptor getModuleDescriptor(String name){
+		return ModuleDescriptor.fromJSON(INSTALLED.get(name));
+	}
+	public static Map<String,Map<Object,Object>> getInstalledModules(){
+		return INSTALLED;
 	}
 	public static List<ModuleDescriptor> listDownloadable(){
 		String url=(String)Main.loadJSON("module.json").get("repository");
@@ -65,15 +71,12 @@ public class ModuleRegistry{
 			return Collections.emptyList();
 		}
 	}
-	public static URL resolveURL(String url) throws MalformedURLException{
-		return new URL(getDataDirectory().toURI().toURL(),url);
-	}
-	public static File getDataDirectory(){
-		return new File(Main.getUserPath(),"modules");
+	public static URL resolveURL(String url,String module) throws MalformedURLException{
+		return new URL(Main.getModulePath(module).toURI().toURL(),url);
 	}
 	public File download(ModuleDescriptor module) throws IOException{
 		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL(module.getURL()).openStream()),StandardCharsets.UTF_8)){
-			File base=File.createTempFile("module",module.getName(),getDataDirectory());
+			File base=File.createTempFile("module",module.getName(),Main.getDataPath());
 			base.mkdirs();
 			ZipEntry entry;
 			byte[] buf=new byte[4096];
@@ -97,14 +100,10 @@ public class ModuleRegistry{
 		Map<Object,Object> object=(Map<Object,Object>)JSONDecoder.decode(manifest);
 		String cls=(String)object.get("class");
 		String path=new URL(dir.toURI().toURL(),(String)object.get("classpath")).toString();
-		paths.put(cls,path);
-		paths.flush();
-		dirs.put(cls,dir.getAbsolutePath());
-		dirs.flush();
 	}
 	private static Module getInstance(String cls) throws ReflectiveOperationException, MalformedURLException{
-		String path=paths.get(cls,null);
-		ClassLoader loader=path!=null?new URLClassLoader(new URL[]{resolveURL(path)}):ModuleRegistry.class.getClassLoader();
+		//String path=paths.get(cls,null);
+		ClassLoader loader=cls!=null?new URLClassLoader(new URL[]{resolveURL(cls,cls)}):ModuleRegistry.class.getClassLoader();
 		return (Module)loader.loadClass(cls).newInstance();
 	}
 }

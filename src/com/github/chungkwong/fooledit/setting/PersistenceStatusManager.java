@@ -28,13 +28,20 @@ import javafx.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class PersistenceStatusManager{
-	private static final Map<String,Object> objects=new HashMap<>();
+	private final Map<String,Object> objects=new HashMap<>();
 	private static final Map<String,StringConverter> covertors=new HashMap<>();
-	public static boolean tryLoad(String key){
+	private final File directory;
+	public static PersistenceStatusManager USER=new PersistenceStatusManager(Main.getUserPath());
+	public static PersistenceStatusManager CORE=new PersistenceStatusManager(Main.getModulePath("core"));
+	public PersistenceStatusManager(File directory){
+		this.directory=directory;
+		EventManager.addEventListener(EventManager.SHUTDOWN,()->sync());
+	}
+	public boolean tryLoad(String key){
 		warnExists(key);
 		return load(key);
 	}
-	public static boolean load(String key){
+	public boolean load(String key){
 		try{
 			objects.put(key,getConvertor(key).fromString(Helper.readText(getFile(key))));
 			return true;
@@ -42,22 +49,22 @@ public class PersistenceStatusManager{
 			return false;
 		}
 	}
-	public static boolean containsKey(String key){
+	public boolean containsKey(String key){
 		return objects.containsKey(key)||load(key);
 	}
-	public static Object getOrDefault(String key,Supplier<Object> def){
+	public Object getOrDefault(String key,Supplier<Object> def){
 		if(!containsKey(key))
 			objects.put(key,def.get());
 		return objects.get(key);
 	}
-	public static Object put(String key,Object obj){
+	public Object put(String key,Object obj){
 		warnExists(key);
 		return objects.put(key,obj);
 	}
 	public static void registerConvertor(String key,StringConverter converter){
 		covertors.put(key,converter);
 	}
-	private static final StringConverter DEFAULT_CONVERTER=new StringConverter() {
+	private static final StringConverter JSON_CONVERTOR=new StringConverter() {
 		@Override
 		public String toString(Object t){
 			return JSONEncoder.encode(t);
@@ -72,9 +79,9 @@ public class PersistenceStatusManager{
 		}
 	};
 	private static StringConverter getConvertor(String key){
-		return covertors.getOrDefault(key,DEFAULT_CONVERTER);
+		return covertors.getOrDefault(key,JSON_CONVERTOR);
 	}
-	public static void sync(){
+	public void sync(){
 		objects.entrySet().stream().forEach((e)->{
 			try{
 				Helper.writeText(getConvertor(e.getKey()).toString(e.getValue()),getFile(e.getKey()));
@@ -83,16 +90,13 @@ public class PersistenceStatusManager{
 			}
 		});
 	}
-	private static void warnExists(String key){
+	private void warnExists(String key){
 		if(objects.containsKey(key))
 			Logger.getGlobal().info(key+" is going to be replaced");
 	}
-	private static File getFile(String key){
-		File f=new File(Main.getUserPath(),key);
+	private File getFile(String key){
+		File f=new File(directory,key);
 		f.getParentFile().mkdirs();
 		return f;
-	}
-	static{
-		EventManager.addEventListener(EventManager.SHUTDOWN,()->sync());
 	}
 }

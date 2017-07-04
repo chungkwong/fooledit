@@ -195,7 +195,7 @@ public class Main extends Application{
 	}
 	private static WorkSheet getDefaultWorkSheet(){
 		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
-		return (WorkSheet)PersistenceStatusManager.getOrDefault("layout.json",()->{
+		return (WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
 			String msg=MessageRegistry.getString("WELCOME");
 			TextObject welcome=new TextObject(msg);
 			DataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,msg,DataObjectRegistry.TYPE,TextObjectType.class.getName()));

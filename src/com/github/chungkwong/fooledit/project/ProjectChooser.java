@@ -15,31 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.project;
-import java.io.*;
-import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AntProjectType implements ProjectType<AntProject>{
-	@Override
-	public AntProject createProject(File directory){
-		return new AntProject(directory);
-	}
-	@Override
-	public Optional<AntProject> gaussDirectory(File file){
-		if(!file.isDirectory())
-			file=file.getParentFile();
-		while(file!=null){
-			if(new File(file,"build.xml").exists())
-				return Optional.of(new AntProject(file));
-			file=file.getParentFile();
-		}
-		return Optional.empty();
-	}
-	@Override
-	public String getName(){
-		return "Ant";
-	}
+public class ProjectChooser{
 
 }

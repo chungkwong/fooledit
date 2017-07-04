@@ -24,7 +24,9 @@ import java.util.*;
 public class ModuleDescriptor{
 	private final String name,description,author,license,url;
 	private final int versionMajor,versionMinor,versionRevise;
-	public ModuleDescriptor(String name,String description,String author,String license,String url,int versionMajor,int versionMinor,int versionRevise){
+	private final List<String> dependency;
+	public ModuleDescriptor(String name,String description,String author,String license,String url,
+			int versionMajor,int versionMinor,int versionRevise,List<String> dependency){
 		this.name=name;
 		this.description=description;
 		this.author=author;
@@ -33,6 +35,7 @@ public class ModuleDescriptor{
 		this.versionMajor=versionMajor;
 		this.versionMinor=versionMinor;
 		this.versionRevise=versionRevise;
+		this.dependency=dependency;
 	}
 	public String getName(){
 		return name;
@@ -58,6 +61,9 @@ public class ModuleDescriptor{
 	public int getVersionRevise(){
 		return versionRevise;
 	}
+	public List<String> getDependency(){
+		return dependency;
+	}
 	public String toJSON(){
 		Map<Object,Object> object=new HashMap<>();
 		object.put(NAME,getName());
@@ -79,7 +85,8 @@ public class ModuleDescriptor{
 		int versionMajor=((Number)object.get(MAJOR_VERSION)).intValue();
 		int versionMinor=((Number)object.get(MINOR_VERSION)).intValue();
 		int versionRevise=((Number)object.get(REVISE_VERSION)).intValue();
-		return new ModuleDescriptor(name,description,author,license,url,versionMajor,versionMinor,versionRevise);
+		List<String> dependency=(List<String>)object.get(REVISE_VERSION);
+		return new ModuleDescriptor(name,description,author,license,url,versionMajor,versionMinor,versionRevise,dependency);
 	}
 	private static final String NAME="name";
 	private static final String DESCRIPTION="description";
@@ -89,4 +96,5 @@ public class ModuleDescriptor{
 	private static final String MAJOR_VERSION="version_major";
 	private static final String MINOR_VERSION="version_minor";
 	private static final String REVISE_VERSION="version_revise";
+	private static final String DEPENDENCY="dependency";
 }
