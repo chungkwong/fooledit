@@ -15,13 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.api;
-
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface Module{
-	ModuleDescriptor getModuleDescriptor();
-	void onLoad();
-	void onUnLoad();
+public abstract class Module{
+	protected final String name;
+	protected Module(String name){
+		this.name=name;
+	}
+	public ModuleDescriptor getModuleDescriptor(){
+		return ModuleRegistry.getModuleDescriptor(name);
+	}
+	public abstract void onLoad();
+	public abstract void onUnLoad();
 }

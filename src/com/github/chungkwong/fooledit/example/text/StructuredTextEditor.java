@@ -38,9 +38,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
 	private final Map<String,String> highlightFiles=new HashMap<>();
-	private static final String MODULE_NAME="code-editor";
 	public StructuredTextEditor(){
-		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(MODULE_NAME).get("menubar-file",null)));
+		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("menubar-file",null)));
 
 		addCommand("undo",(area)->area.getArea().undo());
 		addCommand("redo",(area)->area.getArea().redo());
@@ -86,16 +85,16 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("encode-url",(area)->area.transform(StructuredTextEditor::encodeURL));
 		addCommand("decode-url",(area)->area.transform(StructuredTextEditor::decodeURL));
 
-		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(MODULE_NAME).get("keymap-file",null)));
+		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 
 		try{
 			//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
-			Main.getScene().getStylesheets().add(((File)SettingManager.getOrCreate(MODULE_NAME).get("stylesheet-file",null)).toURI().toURL().toString());
+			Main.getScene().getStylesheets().add(((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("stylesheet-file",null)).toURI().toURL().toString());
 		}catch(MalformedURLException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 
-		Map<String,List<String>> json=(Map<String,List<String>>)(Object)Main.loadJSON("code-editor/highlight.json");
+		Map<String,List<String>> json=(Map<String,List<String>>)(Object)Main.loadJSON(new File(Main.getModulePath(TextEditorModule.NAME),"highlight.json"));
 		json.forEach((file,mimes)->mimes.stream().forEach((mime)->highlightFiles.put(mime,file)));
 	}
 	private void addCommand(String name,Consumer<CodeEditor> action){
@@ -119,7 +118,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		String highlightFile=highlightFiles.get(DataObjectRegistry.getMIME(data));
 		if(highlightFile!=null){
 			lex=new NaiveLex();
-			File file=new File(Main.getDataPath(),"code-editor/modes/"+highlightFile);
+			File file=new File(Main.getModulePath(TextEditorModule.NAME),"modes/"+highlightFile);
 			try{
 				LexBuilder.fromJSON(Helper.readText(file),lex);
 			}catch(NullPointerException|IOException|SyntaxException ex){

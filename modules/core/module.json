@@ -16,5 +16,11 @@
 		"long_description":"",
 		"type":"string",
 		"default_value":"https://raw.githubusercontent.com/chungkwong/jtk/master/MODULES"
+	},
+	"preload":{
+		"short_description":"preload",
+		"long_description":"",
+		"type":"string",
+		"default_value":"editor.code"
 	}
 }

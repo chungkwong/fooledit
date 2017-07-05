@@ -78,6 +78,7 @@ public class Main extends Application{
 		}
 		Logger.getGlobal().addHandler(notifier);
 		script=new ScriptAPI(this);
+		ModuleRegistry.loadDefault();
 		runScript();
 		root.setCenter(getDefaultWorkSheet());
 		initMenuBar();

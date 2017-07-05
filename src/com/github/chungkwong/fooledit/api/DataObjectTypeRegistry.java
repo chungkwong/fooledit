@@ -60,9 +60,10 @@ public class DataObjectTypeRegistry{
 		return types;
 	}
 	static{
-		addDataObjectType(TextObjectType.INSTANCE);
+		//ModuleRegistry.ensureLoaded("editor.code");
+		//addDataObjectType(TextObjectType.INSTANCE);
 		//addDataEditor(()->new TextEditor(),TextObject.class);
-		addDataEditor(()->new StructuredTextEditor(),TextObject.class);
+		//addDataEditor(()->new StructuredTextEditor(),TextObject.class);
 		addDataObjectType(ImageObjectType.INSTANCE);
 		addDataEditor(()->new IconEditor(),ImageObject.class);
 		addDataEditor(()->new ImageEditor(),ImageObject.class);

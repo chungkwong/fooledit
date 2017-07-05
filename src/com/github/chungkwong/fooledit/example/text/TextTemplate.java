@@ -106,7 +106,7 @@ public class TextTemplate implements Template<TextObject>{
 		ENGINE=new Configuration(new Version(2,3,26));
 		ENGINE.setDefaultEncoding("UTF-8");
 		try{
-			ENGINE.setDirectoryForTemplateLoading(new File(Main.getModulePath("code-editor"),"modes"));
+			ENGINE.setDirectoryForTemplateLoading(new File(Main.getModulePath(TextEditorModule.NAME),"modes"));
 		}catch(IOException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
@@ -114,7 +114,7 @@ public class TextTemplate implements Template<TextObject>{
 	public static void main(String[] args) throws IOException, TemplateException{
 		Configuration configuration=new Configuration(new Version(2,3,26));
 		configuration.setDefaultEncoding("UTF-8");
-		configuration.setDirectoryForTemplateLoading(new File(Main.getModulePath("code-editor"),"modes"));
+		configuration.setDirectoryForTemplateLoading(new File(Main.getModulePath(TextEditorModule.NAME),"modes"));
 		freemarker.template.Template template=configuration.getTemplate("java/Main.java");
 		Map<String,Object> props=new HashMap<>();
 		props.put("name","Name");

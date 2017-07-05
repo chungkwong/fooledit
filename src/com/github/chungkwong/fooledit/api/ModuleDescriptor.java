@@ -74,6 +74,7 @@ public class ModuleDescriptor{
 		object.put(MAJOR_VERSION,getVersionMajor());
 		object.put(MINOR_VERSION,getVersionMinor());
 		object.put(REVISE_VERSION,getVersionRevise());
+		object.put(DEPENDENCY,getDependency());
 		return JSONEncoder.encode(object);
 	}
 	public static ModuleDescriptor fromJSON(Map<Object,Object> object){
@@ -85,7 +86,7 @@ public class ModuleDescriptor{
 		int versionMajor=((Number)object.get(MAJOR_VERSION)).intValue();
 		int versionMinor=((Number)object.get(MINOR_VERSION)).intValue();
 		int versionRevise=((Number)object.get(REVISE_VERSION)).intValue();
-		List<String> dependency=(List<String>)object.get(REVISE_VERSION);
+		List<String> dependency=(List<String>)object.get(DEPENDENCY);
 		return new ModuleDescriptor(name,description,author,license,url,versionMajor,versionMinor,versionRevise,dependency);
 	}
 	private static final String NAME="name";

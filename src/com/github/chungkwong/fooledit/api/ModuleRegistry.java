@@ -33,19 +33,18 @@ import java.util.zip.*;
  */
 public class ModuleRegistry{
 	private static final HashMap<String,Module> loadedModules=new HashMap<>();
-	private static final Map<String,Object> MODULES=(Map<String,Object>)PersistenceStatusManager.CORE.getOrDefault("modules",null);
-	private static final Map<String,Map<Object,Object>> INSTALLED=(Map<String,Map<Object,Object>>)MODULES.get("installed");
-	public static void ensureLoaded(String cls){
-		if(!loadedModules.containsKey(cls)){
-			try{
-				loadedModules.put(cls,null);
-				getModuleDescriptor(cls).getDependency().forEach((s)->ensureLoaded(s));
-				Module module=getInstance(cls);
-				module.onLoad();
-				loadedModules.put(cls,module);
-			}catch(ReflectiveOperationException|MalformedURLException ex){
-				Logger.getLogger(ModuleRegistry.class.getName()).log(Level.SEVERE,null,ex);
-			}
+	public static void loadDefault(){
+		String preload=(String)SettingManager.getOrCreate("core").get("preload",null);
+		Arrays.stream(preload.split(":")).forEach((name)->ensureLoaded(name));
+	}
+	public static void ensureLoaded(String module){
+		if(!loadedModules.containsKey(module)){
+			loadedModules.put(module,null);
+			ModuleDescriptor moduleDescriptor=getModuleDescriptor(module);
+			moduleDescriptor.getDependency().forEach((s)->ensureLoaded(s));
+			Module mod=new ScriptModule(module);
+			mod.onLoad();
+			loadedModules.put(module,mod);
 		}
 	}
 	public static void unLoad(String cls){
@@ -56,13 +55,14 @@ public class ModuleRegistry{
 		return Collections.unmodifiableMap(loadedModules);
 	}
 	public static ModuleDescriptor getModuleDescriptor(String name){
-		return ModuleDescriptor.fromJSON(INSTALLED.get(name));
+		return ModuleDescriptor.fromJSON(Main.loadJSON(new File(Main.getModulePath(name),"descriptor.json")));
 	}
-	public static Map<String,Map<Object,Object>> getInstalledModules(){
-		return INSTALLED;
+	public static Collection<String> getInstalledModules(){
+		return Arrays.stream(Main.getDataPath().listFiles((File file)->file.isDirectory())).
+				map((f)->f.getName()).collect(Collectors.toSet());
 	}
 	public static List<ModuleDescriptor> listDownloadable(){
-		String url=(String)Main.loadJSON("module.json").get("repository");
+		String url=(String)SettingManager.getOrCreate("core").get("repository",null);
 		try(BufferedReader in=new BufferedReader(new InputStreamReader(new URL(url).openStream(),StandardCharsets.UTF_8))){
 			return ((List<Map<Object,Object>>)JSONDecoder.decode(in)).stream().
 					map((e)->ModuleDescriptor.fromJSON(e)).collect(Collectors.toList());
@@ -71,12 +71,9 @@ public class ModuleRegistry{
 			return Collections.emptyList();
 		}
 	}
-	public static URL resolveURL(String url,String module) throws MalformedURLException{
-		return new URL(Main.getModulePath(module).toURI().toURL(),url);
-	}
 	public File download(ModuleDescriptor module) throws IOException{
 		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL(module.getURL()).openStream()),StandardCharsets.UTF_8)){
-			File base=File.createTempFile("module",module.getName(),Main.getDataPath());
+			File base=Main.getModulePath(module.getName());
 			base.mkdirs();
 			ZipEntry entry;
 			byte[] buf=new byte[4096];
@@ -100,10 +97,5 @@ public class ModuleRegistry{
 		Map<Object,Object> object=(Map<Object,Object>)JSONDecoder.decode(manifest);
 		String cls=(String)object.get("class");
 		String path=new URL(dir.toURI().toURL(),(String)object.get("classpath")).toString();
-	}
-	private static Module getInstance(String cls) throws ReflectiveOperationException, MalformedURLException{
-		//String path=paths.get(cls,null);
-		ClassLoader loader=cls!=null?new URLClassLoader(new URL[]{resolveURL(cls,cls)}):ModuleRegistry.class.getClassLoader();
-		return (Module)loader.loadClass(cls).newInstance();
 	}
 }
