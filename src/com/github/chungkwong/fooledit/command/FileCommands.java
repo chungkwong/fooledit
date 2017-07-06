@@ -22,6 +22,7 @@ import com.github.chungkwong.fooledit.model.*;
 import com.github.chungkwong.fooledit.util.*;
 import java.io.*;
 import java.net.*;
+import java.nio.file.*;
 import java.util.logging.*;
 import javafx.stage.*;
 /**
@@ -72,5 +73,10 @@ public class FileCommands{
 	}
 	public void create(){
 		main.addAndShow(TemplateChooser.INSTANCE,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("TEMPLATE")));
+	}
+	public static void main(String[] args){
+		FileSystems.getDefault().getFileStores().forEach((file)->System.out.println(file));
+		System.out.println();
+		FileSystems.getDefault().getRootDirectories().forEach((file)->System.out.println(file));
 	}
 }

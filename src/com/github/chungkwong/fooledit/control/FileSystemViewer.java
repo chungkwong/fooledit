@@ -20,23 +20,58 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
+import javafx.scene.layout.*;
+import javafx.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FileSystemViewer extends TreeView<File>{
+public class FileSystemViewer extends BorderPane{
+	private final TreeTableView<Path> tree=new TreeTableView<>();
 	public FileSystemViewer(){
-		setCellFactory((t)->new FileCell());
-		TreeItem<File> root=new LazyTreeItem<File>(()->Arrays.stream(File.listRoots()).sorted().map((r)->new LazyTreeItem<>(()->getChildren(r),r)).collect(Collectors.toList()),null);
-		setShowRoot(false);
-		setRoot(root);
+		FileSystems.getDefault().getRootDirectories();
+		Stream<Path> roots=StreamSupport.stream(Spliterators.spliteratorUnknownSize(FileSystems.getDefault().getRootDirectories().iterator(),0),false);
+		TreeItem<Path> root=new LazyTreeItem<Path>(()->roots.sorted().map((r)->new LazyTreeItem<>(()->getChildren(r),r)).collect(Collectors.toList()),null);
+		tree.setShowRoot(false);
+		tree.setRoot(root);
+		setCenter(tree);
+		HBox attrs=new HBox();
+		attrs.getChildren().add(createColumnChooser("name",new Callback<TreeTableColumn.CellDataFeatures<Path,String>,ObservableValue<String>>() {
+			@Override
+			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Path,String> param){
+				return new ReadOnlyStringWrapper(Objects.toString(param.getValue().getValue().getFileName()));
+			}
+		},true));
+		setBottom(attrs);
 	}
-	private static Collection<TreeItem<File>> getChildren(File item){
-		return Arrays.stream(item.listFiles()).sorted()
-				.map((f)->f.isDirectory()?new LazyTreeItem<File>(()->getChildren(f),f):new TreeItem<>(f))
-				.collect(Collectors.toList());
+	private static Collection<TreeItem<Path>> getChildren(Path item){
+		try{
+			return Files.list(item).sorted()
+					.map((f)->Files.isDirectory(f)?new LazyTreeItem<Path>(()->getChildren(f),f):new TreeItem<>(f))
+					.collect(Collectors.toList());
+		}catch(IOException ex){
+			return Collections.emptyList();
+		}
+	}
+
+	private CheckBox createColumnChooser(String name,Callback<TreeTableColumn.CellDataFeatures<Path,String>,ObservableValue<String>> callback,boolean visible){
+		TreeTableColumn<Path,String> column=new TreeTableColumn<>(name);
+		column.setCellValueFactory(callback);
+		CheckBox chooser=new CheckBox(name);
+		chooser.setSelected(visible);
+		if(visible)
+			tree.getColumns().add(column);
+		chooser.selectedProperty().addListener((v)->{
+			if(chooser.isSelected())
+				tree.getColumns().add(column);
+			else
+				tree.getColumns().remove(column);
+		});
+		return chooser;
 	}
 	static class FileCell extends TreeCell<File>{
 		private TreeItem<File> src;

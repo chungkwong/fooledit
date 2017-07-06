@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.api;
-import com.github.chungkwong.fooledit.util.BiSet;
-import com.github.chungkwong.fooledit.model.Command;
+import com.github.chungkwong.fooledit.model.*;
+import com.github.chungkwong.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
@@ -35,8 +35,8 @@ public class CommandRegistry{
 		put(name,(t)->action.run());
 		autoload.remove(name);
 	}
-	public void put(String name,Consumer<ScmPairOrNil> action){
-		loaded.put(name,Command.create(MessageRegistry.getString(name.toUpperCase().replace('-','_')),action));
+	public void put(String name,ThrowableConsumer<ScmPairOrNil> action){
+		loaded.put(name,new Command(MessageRegistry.getString(name.toUpperCase().replace('-','_')),action));
 		autoload.remove(name);
 	}
 	public void putOnDemand(String name,Supplier<Command> supplier){

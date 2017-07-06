@@ -64,13 +64,6 @@ public class DataObjectTypeRegistry{
 		//addDataObjectType(TextObjectType.INSTANCE);
 		//addDataEditor(()->new TextEditor(),TextObject.class);
 		//addDataEditor(()->new StructuredTextEditor(),TextObject.class);
-		addDataObjectType(ImageObjectType.INSTANCE);
-		addDataEditor(()->new IconEditor(),ImageObject.class);
-		addDataEditor(()->new ImageEditor(),ImageObject.class);
-		addDataObjectType(MediaObjectType.INSTANCE);
-		addDataEditor(()->new MediaEditor(),MediaObject.class);
-		addDataObjectType(BinaryObjectType.INSTANCE);
-		addDataEditor(()->new BinaryEditor(),BinaryObject.class);
 		addDataEditor(()->new Browser(),BrowserData.class);
 		addDataObjectType(TemplateChooser.INSTANCE);
 		addDataEditor(()->TemplateChooser.INSTANCE,TemplateChooser.class);

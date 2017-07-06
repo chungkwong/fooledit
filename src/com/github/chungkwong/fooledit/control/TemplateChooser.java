@@ -18,7 +18,6 @@ package com.github.chungkwong.fooledit.control;
 import com.github.chungkwong.fooledit.*;
 import static com.github.chungkwong.fooledit.Main.loadJSON;
 import com.github.chungkwong.fooledit.api.*;
-import com.github.chungkwong.fooledit.example.image.*;
 import com.github.chungkwong.fooledit.example.text.*;
 import com.github.chungkwong.fooledit.model.*;
 import com.github.chungkwong.fooledit.setting.*;
@@ -36,11 +35,6 @@ public class TemplateChooser extends Prompt{
 	public static final TemplateChooser INSTANCE=new TemplateChooser();
 	private static final Map<String,Function<Map<Object,Object>,Template>> templateTypes=new HashMap<>();
 	//private static final List<Map<Object,Object>> recent=(List<Map<Object,Object>>)PersistenceStatusManager.getOrDefault("template",()->Collections.emptyList());
-	static{
-		registerTemplateType("text",(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
-		registerTemplateType("image",(obj)->new ImageTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
-		//PersistenceStatusManager.registerConvertor("template",);
-	}
 	private TemplateChooser(){
 
 	}

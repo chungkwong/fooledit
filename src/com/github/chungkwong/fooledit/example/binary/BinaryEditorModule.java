@@ -14,29 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.fooledit.model;
-import com.github.chungkwong.fooledit.api.*;
-import com.github.chungkwong.jschememin.type.*;
-import java.util.logging.*;
+package com.github.chungkwong.fooledit.example.binary;
+import static com.github.chungkwong.fooledit.api.DataObjectTypeRegistry.addDataEditor;
+import static com.github.chungkwong.fooledit.api.DataObjectTypeRegistry.addDataObjectType;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Command{
-	private final String name;
-	private final ThrowableConsumer<ScmPairOrNil> action;
-	public Command(String name,ThrowableConsumer<ScmPairOrNil> action){
-		this.action=action;
-		this.name=name;
+public class BinaryEditorModule{
+	public static final String NAME="editor.image";
+	public static void onLoad(){
+		addDataObjectType(BinaryObjectType.INSTANCE);
+		addDataEditor(()->new BinaryEditor(),BinaryObject.class);
 	}
-	public String getDisplayName(){
-		return name;
-	}
-	public void accept(ScmPairOrNil t){
-		try{
-			action.accept(t);
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,name+MessageRegistry.getString("FAILED"),ex);
-		}
+	public static void onUnLoad(){
+
 	}
 }

@@ -1,0 +1,11 @@
+{
+	"name":"editor.image",
+	"description":"",
+	"license":"GPLv3",
+	"author":"kwong",
+	"url":"https://github.com/chungkwong/jtk",
+	"version_major":0,
+	"version_minor":0,
+	"version_revise":1,
+	"dependency":[]
+}

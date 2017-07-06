@@ -51,7 +51,7 @@ public class Main extends Application{
 	public static Main INSTANCE;
 	private static final File SYSTEM_PATH=computePath();
 	private static final File MODULE_PATH=new File(SYSTEM_PATH,"modules");
-	private static final File USER_PATH=new File(System.getProperty("user.home"),".jtk");
+	private static final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;

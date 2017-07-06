@@ -14,33 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.fooledit.model;
-import com.github.chungkwong.jschememin.type.*;
+package com.github.chungkwong.fooledit.example.media;
+import static com.github.chungkwong.fooledit.api.DataObjectTypeRegistry.addDataEditor;
+import static com.github.chungkwong.fooledit.api.DataObjectTypeRegistry.addDataObjectType;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class ToggleCommand extends Command{
-	private boolean on;
-	public ToggleCommand(boolean on){
-		this.on=on;
+public class MediaEditorModule{
+	public static final String NAME="editor.media";
+	public static void onLoad(){
+		addDataObjectType(MediaObjectType.INSTANCE);
+		addDataEditor(()->new MediaEditor(),MediaObject.class);
 	}
-	@Override
-	public void accept(ScmPairOrNil args){
-		setStatus(!on);
+	public static void onUnLoad(){
+
 	}
-	public boolean getStatus(){
-		return on;
-	}
-	public void setStatus(boolean on){
-		if(on!=this.on){
-			if(on)
-				turnOn();
-			else
-				turnOff();
-			this.on=on;
-		}
-	}
-	protected abstract void turnOn();
-	protected abstract void turnOff();
 }

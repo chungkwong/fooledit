@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.api;
-import com.github.chungkwong.fooledit.model.Command;
-import com.github.chungkwong.fooledit.control.AutoCompleteService;
-import com.github.chungkwong.fooledit.control.AutoCompleteHint;
-import com.github.chungkwong.fooledit.control.AutoCompleteProvider;
-import com.github.chungkwong.fooledit.Main;
+import com.github.chungkwong.fooledit.*;
+import com.github.chungkwong.fooledit.control.*;
+import com.github.chungkwong.fooledit.model.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
@@ -59,7 +57,6 @@ public class MiniBuffer extends BorderPane{
 			if(command!=null){
 				main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
 				main.getCommand(input.getText()).accept(ScmNil.NIL);
-				main.getNotifier().notify(MessageRegistry.getString("EXECUTED")+command.getDisplayName());
 			}else{
 				try{
 					main.getNotifier().notify(Objects.toString(main.getScriptAPI().eval(input.getText())));
