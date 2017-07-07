@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.control;
+import com.github.chungkwong.fooledit.*;
+import com.github.chungkwong.fooledit.api.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -23,7 +25,7 @@ import java.util.stream.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
+import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.util.*;
 /**
@@ -40,13 +42,29 @@ public class FileSystemViewer extends BorderPane{
 		tree.setRoot(root);
 		setCenter(tree);
 		HBox attrs=new HBox();
-		attrs.getChildren().add(createColumnChooser("name",new Callback<TreeTableColumn.CellDataFeatures<Path,String>,ObservableValue<String>>() {
-			@Override
-			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Path,String> param){
-				return new ReadOnlyStringWrapper(Objects.toString(param.getValue().getValue().getFileName()));
-			}
-		},true));
+		this.<String>createColumnChooser(MessageRegistry.getString("NAME"),(param)->
+				new ReadOnlyStringWrapper(getFileName(param.getValue().getValue())),true);
+		attrs.getChildren().add(this.<String>createColumnChooser(MessageRegistry.getString("OWNER"),(param)->
+				new ReadOnlyStringWrapper(getOwnerName(param.getValue().getValue())),true));
+		attrs.getChildren().add(this.<Boolean>createColumnChooser(MessageRegistry.getString("READABLE"),(param)->
+				new ReadOnlyBooleanWrapper(Files.isReadable(param.getValue().getValue())),true));
+		attrs.getChildren().add(this.<Boolean>createColumnChooser(MessageRegistry.getString("WRITABLE"),(param)->
+				new ReadOnlyBooleanWrapper(Files.isWritable(param.getValue().getValue())),true));
+		attrs.getChildren().add(this.<Boolean>createColumnChooser(MessageRegistry.getString("EXECUTABLE"),(param)->
+				new ReadOnlyBooleanWrapper(Files.isExecutable(param.getValue().getValue())),true));
+		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).setCellFactory((p)->new FileCell());
 		setBottom(attrs);
+	}
+	private static String getFileName(Path path){
+		Path name=path.getFileName();
+		return name==null?"":name.toString();
+	}
+	private static String getOwnerName(Path path){
+		try{
+			return Files.getOwner(path,LinkOption.NOFOLLOW_LINKS).getName();
+		}catch(IOException ex){
+			return MessageRegistry.getString("UNKNOWN");
+		}
 	}
 	private static Collection<TreeItem<Path>> getChildren(Path item){
 		try{
@@ -57,9 +75,8 @@ public class FileSystemViewer extends BorderPane{
 			return Collections.emptyList();
 		}
 	}
-
-	private CheckBox createColumnChooser(String name,Callback<TreeTableColumn.CellDataFeatures<Path,String>,ObservableValue<String>> callback,boolean visible){
-		TreeTableColumn<Path,String> column=new TreeTableColumn<>(name);
+	private <T> CheckBox createColumnChooser(String name,Callback<TreeTableColumn.CellDataFeatures<Path,T>,ObservableValue<T>> callback,boolean visible){
+		TreeTableColumn<Path,T> column=new TreeTableColumn<>(name);
 		column.setCellValueFactory(callback);
 		CheckBox chooser=new CheckBox(name);
 		chooser.setSelected(visible);
@@ -73,10 +90,10 @@ public class FileSystemViewer extends BorderPane{
 		});
 		return chooser;
 	}
-	static class FileCell extends TreeCell<File>{
+	static class FileCell extends TreeTableCell<Path,String>{
 		private TreeItem<File> src;
 		public FileCell(){
-			setOnDragDetected((e)->{
+			/*setOnDragDetected((e)->{
 				Dragboard board=startDragAndDrop(TransferMode.MOVE);
 				ClipboardContent content=new ClipboardContent();
 				content.putFiles(Collections.singletonList(getItem()));
@@ -110,17 +127,34 @@ public class FileSystemViewer extends BorderPane{
 			});
 			setOnDragDone((e)->{
 				src.getParent().getChildren().remove(src);
-			});
+			});*/
 		}
 		@Override
-		protected void updateItem(File item,boolean empty){
+		protected void updateItem(String item,boolean empty){
 			super.updateItem(item,empty);
-			if(empty||item==null){
+			Path path=getTreeTableRow().getItem();
+			if(empty||item==null||path==null){
 				setText(null);
 				setGraphic(null);
 			}else{
-				setText(item.getName());
+				setText(item);
+				if(Files.isDirectory(path))
+					setGraphic(new ImageView(FOLDER));
+				else if(Files.isRegularFile(path))
+					setGraphic(new ImageView(REGULAR));
+				else
+					setGraphic(null);
 			}
+		}
+
+	}
+	private static Image FOLDER,REGULAR;
+	static{
+		try{
+			FOLDER=new Image(new FileInputStream(Main.getFile("icons/folder.png","core")));
+			REGULAR=new Image(new FileInputStream(Main.getFile("icons/regular.png","core")));
+		}catch(FileNotFoundException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
 }
