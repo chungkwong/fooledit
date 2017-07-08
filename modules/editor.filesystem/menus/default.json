@@ -1,0 +1,10 @@
+{
+	"children":[
+		{
+			"name":"EDIT",
+			"children":[
+				{"name":"DELETE","command":"delete"}
+			]
+		}
+	]
+}

@@ -21,6 +21,6 @@
 		"short_description":"preload",
 		"long_description":"",
 		"type":"string",
-		"default_value":"editor.code:editor.media:editor.image:editor.binary"
+		"default_value":"editor.code:editor.media:editor.image:editor.binary:editor.filesystem"
 	}
 }

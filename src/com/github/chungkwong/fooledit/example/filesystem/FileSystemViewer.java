@@ -14,12 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.fooledit.control;
+package com.github.chungkwong.fooledit.example.filesystem;
 import com.github.chungkwong.fooledit.*;
 import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.control.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.logging.*;
 import java.util.stream.*;
 import javafx.beans.property.*;
@@ -34,6 +36,7 @@ import javafx.util.*;
  */
 public class FileSystemViewer extends BorderPane{
 	private final TreeTableView<Path> tree=new TreeTableView<>();
+	private Consumer<Collection<Path>> action;
 	public FileSystemViewer(){
 		FileSystems.getDefault().getRootDirectories();
 		Stream<Path> roots=StreamSupport.stream(Spliterators.spliteratorUnknownSize(FileSystems.getDefault().getRootDirectories().iterator(),0),false);
@@ -52,6 +55,10 @@ public class FileSystemViewer extends BorderPane{
 				new ReadOnlyBooleanWrapper(Files.isWritable(param.getValue().getValue())),true));
 		attrs.getChildren().add(this.<Boolean>createColumnChooser(MessageRegistry.getString("EXECUTABLE"),(param)->
 				new ReadOnlyBooleanWrapper(Files.isExecutable(param.getValue().getValue())),true));
+		attrs.getChildren().add(this.<Boolean>createColumnChooser(MessageRegistry.getString("HIDDEN"),(param)->
+				new ReadOnlyBooleanWrapper(isHidden(param.getValue().getValue())),true));
+		attrs.getChildren().add(this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED"),(param)->
+				new ReadOnlyStringWrapper(getLastModified(param.getValue().getValue())),true));
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).setCellFactory((p)->new FileCell());
 		setBottom(attrs);
 	}
@@ -64,6 +71,20 @@ public class FileSystemViewer extends BorderPane{
 			return Files.getOwner(path,LinkOption.NOFOLLOW_LINKS).getName();
 		}catch(IOException ex){
 			return MessageRegistry.getString("UNKNOWN");
+		}
+	}
+	private static String getLastModified(Path path){
+		try{
+			return Files.getLastModifiedTime(path).toString();
+		}catch(IOException ex){
+			return MessageRegistry.getString("UNKNOWN");
+		}
+	}
+	private static boolean isHidden(Path path){
+		try{
+			return Files.isHidden(path);
+		}catch(IOException ex){
+			return false;
 		}
 	}
 	private static Collection<TreeItem<Path>> getChildren(Path item){
@@ -89,6 +110,22 @@ public class FileSystemViewer extends BorderPane{
 				tree.getColumns().remove(column);
 		});
 		return chooser;
+	}
+	public void setAction(Consumer<Collection<Path>> action){
+		this.action=action;
+	}
+	public Consumer<Collection<Path>> getAction(){
+		return action;
+	}
+	public void fireAction(){
+		if(action!=null)
+			action.accept(getSelectedPaths());
+	}
+	public Collection<Path> getSelectedPaths(){
+		return tree.getSelectionModel().getSelectedItems().stream().map((item)->item.getValue()).collect(Collectors.toSet());
+	}
+	TreeTableView<Path> getTree(){
+		return tree;
 	}
 	static class FileCell extends TreeTableCell<Path,String>{
 		private TreeItem<File> src;

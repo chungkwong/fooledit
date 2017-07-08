@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.control;
+import com.github.chungkwong.fooledit.example.filesystem.FileSystemViewer;
 import com.github.chungkwong.fooledit.*;
 import static com.github.chungkwong.fooledit.Main.loadJSON;
 import com.github.chungkwong.fooledit.api.*;
