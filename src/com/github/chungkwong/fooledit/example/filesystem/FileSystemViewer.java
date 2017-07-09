@@ -43,6 +43,7 @@ public class FileSystemViewer extends BorderPane{
 		TreeItem<Path> root=new LazyTreeItem<Path>(()->roots.sorted().map((r)->new LazyTreeItem<>(()->getChildren(r),r)).collect(Collectors.toList()),null);
 		tree.setShowRoot(false);
 		tree.setRoot(root);
+		tree.getSelectionModel().focus(0);
 		setCenter(tree);
 		HBox attrs=new HBox();
 		this.<String>createColumnChooser(MessageRegistry.getString("NAME"),(param)->
@@ -120,6 +121,10 @@ public class FileSystemViewer extends BorderPane{
 	public void fireAction(){
 		if(action!=null)
 			action.accept(getSelectedPaths());
+	}
+	@Override
+	public void requestFocus(){
+		tree.requestFocus();
 	}
 	public Collection<Path> getSelectedPaths(){
 		return tree.getSelectionModel().getSelectedItems().stream().map((item)->item.getValue()).collect(Collectors.toSet());

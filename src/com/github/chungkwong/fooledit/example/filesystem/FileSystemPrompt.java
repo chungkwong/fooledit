@@ -60,4 +60,16 @@ public class FileSystemPrompt extends Prompt{
 	public String getName(){
 		return MessageRegistry.getString("FILE_SYSTEM");
 	}
+	@Override
+	public CommandRegistry getCommandRegistry(){
+		return commandRegistry;
+	}
+	@Override
+	public KeymapRegistry getKeymapRegistry(){
+		return keymapRegistry;
+	}
+	@Override
+	public MenuRegistry getMenuRegistry(){
+		return menuRegistry;
+	}
 }

@@ -44,4 +44,8 @@ public class KeymapRegistry{
 		buf.append(evt.getCode().getName());
 		return buf.toString();
 	}
+	@Override
+	public String toString(){
+		return map.toString();
+	}
 }

@@ -15,14 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.control;
-import com.github.chungkwong.fooledit.util.RealTimeTask;
-import com.github.chungkwong.fooledit.api.Helper;
-import java.util.*;
+import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
 import javafx.application.*;
 import javafx.geometry.*;
-import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
@@ -32,7 +30,7 @@ import javafx.stage.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AutoCompleteService extends Application{
+public class AutoCompleteService{
 	private final TextInputControl comp;
 	private final AutoCompleteProvider hints;
 	private static final PopupHint popupHint=new PopupHint();
@@ -59,24 +57,10 @@ public class AutoCompleteService extends Application{
 			else
 				popupHint.hideHints();
 		});*/
-		comp.caretPositionProperty().addListener((e,o,n)->{try{updateHint(n.intValue());}catch(Exception ex){}});
+		comp.caretPositionProperty().addListener((e,o,n)->{System.out.println(n);;try{updateHint(n.intValue());}catch(Exception ex){}});
 	}
 	public void updateHint(int pos){
 		task.summit(new HintContext(hints,comp.getText(),pos,comp));
-	}
-	@Override
-	public void start(Stage stage) throws Exception{
-		TextField field=new TextField();
-		new AutoCompleteService(field,AutoCompleteProvider.createSimple(Arrays.asList(
-				AutoCompleteHint.create("c","c","doc: c"),
-				AutoCompleteHint.create("cd","cd","doc: cd")
-		)));
-		Scene scene=new Scene(field);
-		stage.setScene(scene);
-		stage.show();
-	}
-	public static void main(String[] args){
-		launch(args);
 	}
 	static class HintContext{
 		final AutoCompleteProvider provider;
@@ -128,7 +112,7 @@ class PopupHint{
 		model.selectFirst();
 		Point2D location=comp.localToScreen(0,comp.getHeight());
 		popup.show(comp,location.getX(),location.getY());
-		comp.requestFocus();
+		//comp.requestFocus();
 	}
 	public void hideHints(){
 		loc.getItems().clear();

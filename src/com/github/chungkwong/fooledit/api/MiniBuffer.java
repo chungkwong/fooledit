@@ -35,11 +35,12 @@ public class MiniBuffer extends BorderPane{
 	private final TextField input=new TextField();
 	private final Main main;
 	private final AutoCompleteProvider commandHints=new CommandComplete();
+	private final AutoCompleteService completeService;
 	private AutoCompleteProvider hints;
 	public MiniBuffer(Main main){
 		this.main=main;
 		setFocusTraversable(false);
-		new AutoCompleteService(input,(text,pos)->hints==null?Stream.empty():hints.checkForHints(text,pos));
+		completeService=new AutoCompleteService(input,(text,pos)->hints==null?Stream.empty():hints.checkForHints(text,pos));
 		setCenter(input);
 		restore();
 	}
@@ -68,7 +69,6 @@ public class MiniBuffer extends BorderPane{
 	}
 	@Override
 	public void requestFocus(){
-		super.requestFocus();
 		input.requestFocus();
 	}
 	private class CommandComplete implements AutoCompleteProvider{

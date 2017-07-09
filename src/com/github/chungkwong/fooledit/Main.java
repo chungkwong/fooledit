@@ -20,6 +20,7 @@ import static com.github.chungkwong.fooledit.api.KeymapRegistry.encode;
 import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.command.*;
 import com.github.chungkwong.fooledit.control.*;
+import com.github.chungkwong.fooledit.example.filesystem.*;
 import com.github.chungkwong.fooledit.example.text.*;
 import com.github.chungkwong.fooledit.example.tool.*;
 import com.github.chungkwong.fooledit.model.*;
@@ -114,6 +115,7 @@ public class Main extends Application{
 		commandRegistry.put("split_horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
 		commandRegistry.put("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
 		commandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
+		commandRegistry.put("filesystem",()->addAndShow(new FileSystemPrompt(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"File System")));
 		commandRegistry.put("command",()->input.requestFocus());
 		commandRegistry.put("cancel",()->getCurrentNode().requestFocus());
 		commandRegistry.put("next_buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
@@ -337,7 +339,7 @@ public class Main extends Application{
 					Map.Entry<String,String> globalEntry=getGlobalKeymapRegistry().ceilingEntry(code);
 					String next;
 					String commandName;
-					if(localEntry!=null){
+					if(localEntry!=null&&isCurrentNodeFocused()){
 						if(globalEntry!=null&&globalEntry.getKey().compareTo(localEntry.getKey())<0){
 							next=globalEntry.getKey();commandName=globalEntry.getValue();
 						}else{
@@ -369,5 +371,11 @@ public class Main extends Application{
 				}
 			});
 		}
+	}
+	private boolean isCurrentNodeFocused(){
+		Node owner=scene.getFocusOwner();
+		while(owner!=null&&owner!=currentNode)
+			owner=owner.getParent();
+		return owner!=null;
 	}
 }

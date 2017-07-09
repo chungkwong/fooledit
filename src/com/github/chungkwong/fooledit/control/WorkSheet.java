@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.control;
-import com.github.chungkwong.fooledit.util.Pair;
-import com.github.chungkwong.fooledit.model.DataEditor;
-import com.github.chungkwong.fooledit.model.DataObject;
-import com.github.chungkwong.fooledit.api.DataObjectTypeRegistry;
-import com.github.chungkwong.fooledit.api.DataObjectRegistry;
+import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.model.*;
+import com.github.chungkwong.fooledit.util.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.util.*;
