@@ -21,6 +21,7 @@ import com.github.chungkwong.fooledit.control.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.logging.*;
 import java.util.stream.*;
@@ -36,11 +37,20 @@ import javafx.util.*;
  */
 public class FileSystemViewer extends BorderPane{
 	private final TreeTableView<Path> tree=new TreeTableView<>();
+	private WatchService watchService;
 	private Consumer<Collection<Path>> action;
+	private final Thread updateThread=new Thread(()->refresh());;
+	private boolean active=true;
 	public FileSystemViewer(){
-		FileSystems.getDefault().getRootDirectories();
+		try{
+			watchService=FileSystems.getDefault().newWatchService();
+			updateThread.start();
+		}catch(IOException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			watchService=null;
+		}
 		Stream<Path> roots=StreamSupport.stream(Spliterators.spliteratorUnknownSize(FileSystems.getDefault().getRootDirectories().iterator(),0),false);
-		TreeItem<Path> root=new LazyTreeItem<Path>(()->roots.sorted().map((r)->new LazyTreeItem<>(()->getChildren(r),r)).collect(Collectors.toList()),null);
+		TreeItem<Path> root=new LazyTreeItem<Path>(()->roots.sorted().map((r)->createTreeItem(r)).collect(Collectors.toList()),null);
 		tree.setShowRoot(false);
 		tree.setRoot(root);
 		tree.getSelectionModel().focus(0);
@@ -88,11 +98,53 @@ public class FileSystemViewer extends BorderPane{
 			return false;
 		}
 	}
-	private static Collection<TreeItem<Path>> getChildren(Path item){
+	private void refresh(){
+		while(active){
+			try{
+				WatchKey key=watchService.take();
+				Path path=(Path)key.watchable();
+				for(WatchEvent event:key.pollEvents()){
+					if(event.kind()==StandardWatchEventKinds.ENTRY_CREATE){
+
+					}else if(event.kind()==StandardWatchEventKinds.ENTRY_DELETE){
+
+					}else if(event.kind()==StandardWatchEventKinds.ENTRY_MODIFY){
+
+					}else if(event.kind()==StandardWatchEventKinds.OVERFLOW){
+
+					}
+				}
+			}catch(InterruptedException ex){
+
+			}
+		}
 		try{
-			return Files.list(item).sorted()
-					.map((f)->Files.isDirectory(f)?new LazyTreeItem<Path>(()->getChildren(f),f):new TreeItem<>(f))
-					.collect(Collectors.toList());
+			watchService.close();
+		}catch(IOException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+	}
+	public void close(){
+		active=false;
+		updateThread.interrupt();
+	}
+	private TreeItem<Path> createTreeItem(Path path){
+		if(Files.isDirectory(path)){
+			if(watchService!=null)
+				try{
+					path.register(watchService,StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_DELETE,
+							StandardWatchEventKinds.ENTRY_MODIFY,StandardWatchEventKinds.OVERFLOW);
+				}catch(IOException ex){
+					Logger.getGlobal().log(Level.SEVERE,null,ex);
+				}
+			return new LazyTreeItem<Path>(()->getChildren(path),path);
+		}else{
+			return new TreeItem<>(path);
+		}
+	}
+	private Collection<TreeItem<Path>> getChildren(Path item){
+		try{
+			return Files.list(item).sorted().map((path)->createTreeItem(path)).collect(Collectors.toList());
 		}catch(IOException ex){
 			return Collections.emptyList();
 		}
@@ -198,5 +250,19 @@ public class FileSystemViewer extends BorderPane{
 		}catch(FileNotFoundException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
+	}
+	public static void main(String[] args) throws IOException, InterruptedException{
+		WatchService service=FileSystems.getDefault().newWatchService();
+		new File("/home/kwong/NetBeansProjects/forgotten/dist").toPath().register(service,
+				StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_DELETE,StandardWatchEventKinds.ENTRY_MODIFY);
+		for(int i=0;i<100;i++){
+
+			WatchKey key=service.poll(10,TimeUnit.SECONDS);
+			if(key==null)
+				return;
+			System.out.println("");
+			key.pollEvents().forEach((WatchEvent e)->System.out.println(e.count()));
+		}
+
 	}
 }
