@@ -21,7 +21,6 @@ import com.github.chungkwong.fooledit.control.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.logging.*;
 import java.util.stream.*;
@@ -39,11 +38,12 @@ public class FileSystemViewer extends BorderPane{
 	private final TreeTableView<Path> tree=new TreeTableView<>();
 	private WatchService watchService;
 	private Consumer<Collection<Path>> action;
-	private final Thread updateThread=new Thread(()->refresh());;
+	private final Thread updateThread=new Thread(()->refresh());
 	private boolean active=true;
 	public FileSystemViewer(){
 		try{
 			watchService=FileSystems.getDefault().newWatchService();
+			updateThread.setDaemon(true);
 			updateThread.start();
 		}catch(IOException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
@@ -70,8 +70,10 @@ public class FileSystemViewer extends BorderPane{
 				new ReadOnlyBooleanWrapper(isHidden(param.getValue().getValue())),true));
 		attrs.getChildren().add(this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED"),(param)->
 				new ReadOnlyStringWrapper(getLastModified(param.getValue().getValue())),true));
+		attrs.getChildren().add(this.<String>createColumnChooser(MessageRegistry.getString("SIZE"),(param)->
+				new ReadOnlyStringWrapper(getSize(param.getValue().getValue())),true));
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).setCellFactory((p)->new FileCell());
-		setBottom(attrs);
+		setBottom(attrs);tree.setEditable(true);
 	}
 	private static String getFileName(Path path){
 		Path name=path.getFileName();
@@ -91,6 +93,13 @@ public class FileSystemViewer extends BorderPane{
 			return MessageRegistry.getString("UNKNOWN");
 		}
 	}
+	private static String getSize(Path path){
+		try{
+			return Long.toString(Files.size(path));
+		}catch(IOException ex){
+			return MessageRegistry.getString("UNKNOWN");
+		}
+	}
 	private static boolean isHidden(Path path){
 		try{
 			return Files.isHidden(path);
@@ -103,18 +112,29 @@ public class FileSystemViewer extends BorderPane{
 			try{
 				WatchKey key=watchService.take();
 				Path path=(Path)key.watchable();
+				TreeItem<Path> item=getTreeItem(path);
+				if(item==null||!item.isExpanded())
+					continue;
 				for(WatchEvent event:key.pollEvents()){
-					if(event.kind()==StandardWatchEventKinds.ENTRY_CREATE){
-
-					}else if(event.kind()==StandardWatchEventKinds.ENTRY_DELETE){
-
-					}else if(event.kind()==StandardWatchEventKinds.ENTRY_MODIFY){
-
-					}else if(event.kind()==StandardWatchEventKinds.OVERFLOW){
-
+					if(event.kind()==StandardWatchEventKinds.OVERFLOW){
+						((LazyTreeItem<Path>)item).refresh();
+					}else{
+						Path file=(Path)event.context();
+						TreeItem<Path> sub=getTreeItem(path.resolve(file),item);
+						if(event.kind()==StandardWatchEventKinds.ENTRY_CREATE){
+							if(sub==null)
+								item.getChildren().add(createTreeItem(path.resolve(file)));
+							else
+								item.getChildren().set(item.getChildren().indexOf(sub),sub);
+						}else if(event.kind()==StandardWatchEventKinds.ENTRY_DELETE){
+							item.getChildren().remove(sub);
+						}else if(event.kind()==StandardWatchEventKinds.ENTRY_MODIFY){
+							item.getChildren().set(item.getChildren().indexOf(sub),sub);
+						}
 					}
 				}
-			}catch(InterruptedException ex){
+				key.reset();
+			}catch(Exception ex){
 
 			}
 		}
@@ -122,6 +142,24 @@ public class FileSystemViewer extends BorderPane{
 			watchService.close();
 		}catch(IOException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+	}
+	private TreeItem<Path> getTreeItem(Path path){
+		Optional<TreeItem<Path>> cand=tree.getRoot().getChildren().stream().filter((p)->path.startsWith(p.getValue())).findAny();
+		return cand.isPresent()?getTreeItem(path,cand.get()):null;
+	}
+	private TreeItem<Path> getTreeItem(Path path,TreeItem<Path> start){
+		while(true){
+			Path curr=start.getValue();
+			if(path.equals(curr))
+				return start;
+			Path next=path.getName(curr.getNameCount());
+			Optional<TreeItem<Path>> cand=start.getChildren().stream().filter((p)->p.getValue().endsWith(next)).findAny();
+			if(cand.isPresent()){
+				start=cand.get();
+			}else{
+				return null;
+			}
 		}
 	}
 	public void close(){
@@ -152,6 +190,7 @@ public class FileSystemViewer extends BorderPane{
 	private <T> CheckBox createColumnChooser(String name,Callback<TreeTableColumn.CellDataFeatures<Path,T>,ObservableValue<T>> callback,boolean visible){
 		TreeTableColumn<Path,T> column=new TreeTableColumn<>(name);
 		column.setCellValueFactory(callback);
+		column.setEditable(true);
 		CheckBox chooser=new CheckBox(name);
 		chooser.setSelected(visible);
 		if(visible)
@@ -252,17 +291,17 @@ public class FileSystemViewer extends BorderPane{
 		}
 	}
 	public static void main(String[] args) throws IOException, InterruptedException{
-		WatchService service=FileSystems.getDefault().newWatchService();
-		new File("/home/kwong/NetBeansProjects/forgotten/dist").toPath().register(service,
+		/*WatchService service=FileSystems.getDefault().newWatchService();
+		new File("/home/kwong/NetBeansProjects/jtk/").toPath().register(service,
 				StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_DELETE,StandardWatchEventKinds.ENTRY_MODIFY);
 		for(int i=0;i<100;i++){
-
-			WatchKey key=service.poll(10,TimeUnit.SECONDS);
+			WatchKey key=service.poll(20,TimeUnit.SECONDS);
 			if(key==null)
 				return;
 			System.out.println("");
-			key.pollEvents().forEach((WatchEvent e)->System.out.println(e.count()));
-		}
-
+			key.pollEvents().forEach((WatchEvent e)->System.out.println(key.watchable()+""+e.context()));
+			key.reset();
+		}*/
+		System.out.println(new File("/").toPath().getNameCount());
 	}
 }
