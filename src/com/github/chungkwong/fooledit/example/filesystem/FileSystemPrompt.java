@@ -17,6 +17,7 @@
 package com.github.chungkwong.fooledit.example.filesystem;
 import com.github.chungkwong.fooledit.*;
 import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.control.*;
 import com.github.chungkwong.fooledit.model.*;
 import com.github.chungkwong.fooledit.setting.*;
 import java.io.*;
@@ -25,6 +26,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
 import javafx.scene.*;
+import javafx.scene.control.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -36,6 +38,13 @@ public class FileSystemPrompt extends Prompt{
 	public FileSystemPrompt(){
 		addCommand("delete",(viewer)->viewer.getSelectedPaths().forEach((path)->delete(path)));
 		addCommand("expand",(viewer)->viewer.getTree().getSelectionModel().getSelectedItem().setExpanded(true));
+		addCommand("mark",(viewer)->viewer.markPaths());
+		addCommand("submit",(viewer)->viewer.fireAction());
+		addCommand("rename",(viewer)->viewer.getSelectedPaths().forEach((path)->rename(path)));
+		addCommand("move",(viewer)->viewer.fireAction());
+		addCommand("copy",(viewer)->viewer.fireAction());
+		addCommand("symbolic-link",(viewer)->viewer.fireAction());
+		addCommand("create-directory",(viewer)->viewer.getCurrentDirectories().forEach((path)->createDirectory(path)));
 		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(FileSystemModule.NAME).get("menubar-file",null)));
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(FileSystemModule.NAME).get("keymap-file",null)));
 	}
@@ -51,6 +60,47 @@ public class FileSystemPrompt extends Prompt{
 		}catch(IOException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
+	}
+	private static void createDirectory(Path from){
+		Main.INSTANCE.getMiniBuffer().setMode((name)->{
+			try{
+				Path to=from.resolve(name);
+				Files.createDirectory(to);
+			}catch(IOException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+			Main.INSTANCE.getMiniBuffer().restore();
+		},null,"",new Label(MessageRegistry.getString("NAME")),null);
+	}
+	private static void rename(Path from){
+		Main.INSTANCE.getMiniBuffer().setMode((name)->{
+			try{
+				Path to=from.getParent().resolve(name);
+				if(Files.exists(to))
+					onOverride(()->{
+						try{
+							Files.move(from,to,StandardCopyOption.REPLACE_EXISTING);
+						}catch(IOException ex){
+							Logger.getGlobal().log(Level.SEVERE,null,ex);
+						}
+					});
+				else
+					Files.move(from,to);
+			}catch(IOException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+			Main.INSTANCE.getMiniBuffer().restore();
+		},null,from.getFileName().toString(),new Label(MessageRegistry.getString("RENAME_TO")),null);
+	}
+	private static void onOverride(Runnable action){
+		String yes=MessageRegistry.getString("YES");
+		String no=MessageRegistry.getString("NO");
+		Main.INSTANCE.getMiniBuffer().setMode((ans)->{
+			if(ans.equals(yes))
+				action.run();
+			Main.INSTANCE.getMiniBuffer().restore();
+		},AutoCompleteProvider.createSimple(Arrays.asList(AutoCompleteHint.create(yes,yes,""),AutoCompleteHint.create(no,no,"")))
+		,"",new Label(MessageRegistry.getString("OVERRIDE_EXIST")),null);
 	}
 	@Override
 	public Node edit(Prompt data){

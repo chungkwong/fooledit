@@ -3,7 +3,12 @@
 		{
 			"name":"EDIT",
 			"children":[
-				{"name":"DELETE","command":"delete"}
+				{"name":"EXPAND","command":"expand"},
+				{"name":"MARK","command":"mark"},
+				{},
+				{"name":"DELETE","command":"delete"},
+				{},
+				{"name":"SUBMIT","command":"submit"}
 			]
 		}
 	]

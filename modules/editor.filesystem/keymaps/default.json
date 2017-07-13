@@ -1,4 +1,11 @@
 {
 	"Delete":"delete",
-	"Space":"expand"
+	"Space":"expand",
+	"C-C":"mark",
+	"Enter":"submit",
+	"Enter":"mark",
+	"Enter":"copy",
+	"Enter":"rename",
+	"Enter":"move",
+	"Enter":"symbolic-link"
 }

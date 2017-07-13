@@ -40,6 +40,7 @@ public class FileSystemViewer extends BorderPane{
 	private Consumer<Collection<Path>> action;
 	private final Thread updateThread=new Thread(()->refresh());
 	private boolean active=true;
+	private Collection<Path> marked=Collections.emptySet();
 	public FileSystemViewer(){
 		try{
 			watchService=FileSystems.getDefault().newWatchService();
@@ -70,8 +71,10 @@ public class FileSystemViewer extends BorderPane{
 				new ReadOnlyBooleanWrapper(isHidden(param.getValue().getValue())),true));
 		attrs.getChildren().add(this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED"),(param)->
 				new ReadOnlyStringWrapper(getLastModified(param.getValue().getValue())),true));
-		attrs.getChildren().add(this.<String>createColumnChooser(MessageRegistry.getString("SIZE"),(param)->
-				new ReadOnlyStringWrapper(getSize(param.getValue().getValue())),true));
+		attrs.getChildren().add(this.<Number>createColumnChooser(MessageRegistry.getString("SIZE"),(param)->
+				new ReadOnlyLongWrapper(getSize(param.getValue().getValue())),true));
+		attrs.getChildren().add(this.<String>createColumnChooser(MessageRegistry.getString("SYMBOLIC_LINK"),(param)->
+				new ReadOnlyStringWrapper(getLinkTarget(param.getValue().getValue())),false));
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).setCellFactory((p)->new FileCell());
 		setBottom(attrs);tree.setEditable(true);
 	}
@@ -93,11 +96,18 @@ public class FileSystemViewer extends BorderPane{
 			return MessageRegistry.getString("UNKNOWN");
 		}
 	}
-	private static String getSize(Path path){
+	private static long getSize(Path path){
 		try{
-			return Long.toString(Files.size(path));
+			return Files.size(path);
 		}catch(IOException ex){
-			return MessageRegistry.getString("UNKNOWN");
+			return -1;
+		}
+	}
+	private static String getLinkTarget(Path path){
+		try{
+			return Files.isSymbolicLink(path)?Files.readSymbolicLink(path).toString():"";
+		}catch(IOException ex){
+			return "";
 		}
 	}
 	private static boolean isHidden(Path path){
@@ -212,6 +222,16 @@ public class FileSystemViewer extends BorderPane{
 	public void fireAction(){
 		if(action!=null)
 			action.accept(getSelectedPaths());
+	}
+	public void markPaths(){
+		marked=getSelectedPaths();
+	}
+	public Collection<Path> getMarkedPaths(){
+		return marked;
+	}
+	public Collection<Path> getCurrentDirectories(){
+		return tree.getSelectionModel().getSelectedItems().stream().map((item)->item.getValue()).
+				map((path)->Files.isDirectory(path)?path:path.getParent()).collect(Collectors.toSet());
 	}
 	@Override
 	public void requestFocus(){

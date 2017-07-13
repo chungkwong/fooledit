@@ -44,14 +44,16 @@ public class MiniBuffer extends BorderPane{
 		setCenter(input);
 		restore();
 	}
-	public void setMode(Consumer<String> action,AutoCompleteProvider hints,String init,Node supp){
+	public void setMode(Consumer<String> action,AutoCompleteProvider hints,String init,Node left,Node right){
 		this.hints=hints;
 		input.setText(init);
 		input.setOnAction((e)->action.accept(input.getText()));
-		setRight(supp);
+		setLeft(left);
+		setRight(right);
 	}
-	private void restore(){
+	public void restore(){
 		hints=commandHints;
+		setLeft(null);
 		setRight(null);
 		input.setOnAction((e)->{
 			Command command=main.getCommand(input.getText());
