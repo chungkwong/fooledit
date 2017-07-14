@@ -3,9 +3,11 @@
 	"Space":"expand",
 	"C-C":"mark",
 	"Enter":"submit",
-	"Enter":"mark",
-	"Enter":"copy",
-	"Enter":"rename",
-	"Enter":"move",
-	"Enter":"symbolic-link"
+	"C-M-N":"create-file",
+	"C-N":"create-directory",
+	"C-V":"copy",
+	"C-R":"rename",
+	"C-M":"move",
+	"C-S":"symbolic-link",
+	"C-H":"hard-link"
 }

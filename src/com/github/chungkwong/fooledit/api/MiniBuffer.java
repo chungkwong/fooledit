@@ -50,6 +50,7 @@ public class MiniBuffer extends BorderPane{
 		input.setOnAction((e)->action.accept(input.getText()));
 		setLeft(left);
 		setRight(right);
+		input.requestFocus();
 	}
 	public void restore(){
 		hints=commandHints;

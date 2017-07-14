@@ -6,7 +6,15 @@
 				{"name":"EXPAND","command":"expand"},
 				{"name":"MARK","command":"mark"},
 				{},
+				{"name":"CREATE_FILE","command":"create-file"},
+				{"name":"CREATE_DIRECTORY","command":"create-directory"},
 				{"name":"DELETE","command":"delete"},
+				{},
+				{"name":"RENAME","command":"rename"},
+				{"name":"MOVE","command":"move"},
+				{"name":"COPY","command":"copy"},
+				{"name":"HARD_LINK","command":"hard-link"},
+				{"name":"SYMBOLIC_LINK","command":"symbolic-link"},
 				{},
 				{"name":"SUBMIT","command":"submit"}
 			]

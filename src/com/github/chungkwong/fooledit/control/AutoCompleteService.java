@@ -51,12 +51,12 @@ public class AutoCompleteService{
 					case ESCAPE:popupHint.hideHints();comp.requestFocus();e.consume();break;
 				}
 		});
-		/*comp.focusedProperty().addListener((e,o,n)->{
-			if(n)
-				updateHint(comp.getCaretPosition());
-			else
+		comp.focusedProperty().addListener((e,o,n)->{
+			if(!n)
+				//updateHint(comp.getCaretPosition());
+			//else
 				popupHint.hideHints();
-		});*/
+		});
 		comp.caretPositionProperty().addListener((e,o,n)->{System.out.println(n);;try{updateHint(n.intValue());}catch(Exception ex){}});
 	}
 	public void updateHint(int pos){

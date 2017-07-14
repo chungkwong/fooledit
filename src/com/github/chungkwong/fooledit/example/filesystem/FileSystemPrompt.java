@@ -41,10 +41,12 @@ public class FileSystemPrompt extends Prompt{
 		addCommand("mark",(viewer)->viewer.markPaths());
 		addCommand("submit",(viewer)->viewer.fireAction());
 		addCommand("rename",(viewer)->viewer.getSelectedPaths().forEach((path)->rename(path)));
-		addCommand("move",(viewer)->viewer.fireAction());
-		addCommand("copy",(viewer)->viewer.fireAction());
-		addCommand("symbolic-link",(viewer)->viewer.fireAction());
+		addCommand("move",(viewer)->viewer.getMarkedPaths().forEach((from)->viewer.getCurrentDirectories().forEach((dir)->move(from,dir))));
+		addCommand("copy",(viewer)->viewer.getMarkedPaths().forEach((from)->viewer.getCurrentDirectories().forEach((dir)->copy(from,dir))));
+		addCommand("symbolic-link",(viewer)->viewer.getMarkedPaths().forEach((from)->viewer.getCurrentDirectories().forEach((dir)->symbolicLink(from,dir))));
+		addCommand("hard-link",(viewer)->viewer.getMarkedPaths().forEach((from)->viewer.getCurrentDirectories().forEach((dir)->hardLink(from,dir))));
 		addCommand("create-directory",(viewer)->viewer.getCurrentDirectories().forEach((path)->createDirectory(path)));
+		addCommand("create-file",(viewer)->viewer.getCurrentDirectories().forEach((path)->createFile(path)));
 		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(FileSystemModule.NAME).get("menubar-file",null)));
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(FileSystemModule.NAME).get("keymap-file",null)));
 	}
@@ -70,6 +72,19 @@ public class FileSystemPrompt extends Prompt{
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
 			Main.INSTANCE.getMiniBuffer().restore();
+			Main.INSTANCE.getCurrentNode().requestFocus();
+		},null,"",new Label(MessageRegistry.getString("NAME")),null);
+	}
+	private static void createFile(Path from){
+		Main.INSTANCE.getMiniBuffer().setMode((name)->{
+			try{
+				Path to=from.resolve(name);
+				Files.createFile(to);
+			}catch(IOException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+			Main.INSTANCE.getMiniBuffer().restore();
+			Main.INSTANCE.getCurrentNode().requestFocus();
 		},null,"",new Label(MessageRegistry.getString("NAME")),null);
 	}
 	private static void rename(Path from){
@@ -84,13 +99,61 @@ public class FileSystemPrompt extends Prompt{
 							Logger.getGlobal().log(Level.SEVERE,null,ex);
 						}
 					});
-				else
+				else{
 					Files.move(from,to);
+					Main.INSTANCE.getMiniBuffer().restore();
+					Main.INSTANCE.getCurrentNode().requestFocus();
+				}
 			}catch(IOException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
-			Main.INSTANCE.getMiniBuffer().restore();
 		},null,from.getFileName().toString(),new Label(MessageRegistry.getString("RENAME_TO")),null);
+	}
+	private static void move(Path from,Path dir){
+		fileToDirectory(from,dir,(f,t,o)->{
+			if(o)
+				Files.move(f,t,StandardCopyOption.REPLACE_EXISTING);
+			else
+				Files.move(f,t);
+		});
+	}
+	private static void symbolicLink(Path from,Path dir){
+		fileToDirectory(from,dir,(f,t,o)->{
+			Files.createSymbolicLink(t,f);
+		});
+	}
+	private static void hardLink(Path from,Path dir){
+		fileToDirectory(from,dir,(f,t,o)->{
+			Files.createLink(t,f);
+		});
+	}
+	private static void copy(Path from,Path dir){
+		fileToDirectory(from,dir,(f,t,o)->{
+			if(o)
+				Files.copy(f,t,StandardCopyOption.REPLACE_EXISTING);
+			else
+				Files.copy(f,t);
+		});
+	}
+	private static void fileToDirectory(Path from,Path dir,FileToDirectoryAction action){
+		try{
+			Path to=dir.resolve(from.getFileName());
+			if(Files.exists(to))
+				onOverride(()->{
+					try{
+						action.apply(from,to,true);
+					}catch(IOException ex){
+						Logger.getGlobal().log(Level.SEVERE,null,ex);
+					}
+				});
+			else{
+				action.apply(from,to,false);
+				Main.INSTANCE.getMiniBuffer().restore();
+				Main.INSTANCE.getCurrentNode().requestFocus();
+			}
+		}catch(IOException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
 	}
 	private static void onOverride(Runnable action){
 		String yes=MessageRegistry.getString("YES");
@@ -101,6 +164,8 @@ public class FileSystemPrompt extends Prompt{
 			Main.INSTANCE.getMiniBuffer().restore();
 		},AutoCompleteProvider.createSimple(Arrays.asList(AutoCompleteHint.create(yes,yes,""),AutoCompleteHint.create(no,no,"")))
 		,"",new Label(MessageRegistry.getString("OVERRIDE_EXIST")),null);
+		Main.INSTANCE.getMiniBuffer().restore();
+		Main.INSTANCE.getCurrentNode().requestFocus();
 	}
 	@Override
 	public Node edit(Prompt data){
@@ -122,4 +187,7 @@ public class FileSystemPrompt extends Prompt{
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
 	}
+}
+interface FileToDirectoryAction{
+	void apply(Path from,Path to,boolean override)throws IOException;
 }

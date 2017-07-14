@@ -54,29 +54,29 @@ public class FileSystemViewer extends BorderPane{
 		TreeItem<Path> root=new LazyTreeItem<Path>(()->roots.sorted().map((r)->createTreeItem(r)).collect(Collectors.toList()),null);
 		tree.setShowRoot(false);
 		tree.setRoot(root);
-		tree.getSelectionModel().focus(0);
+		tree.setTableMenuButtonVisible(true);
+		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		setCenter(tree);
-		HBox attrs=new HBox();
 		this.<String>createColumnChooser(MessageRegistry.getString("NAME"),(param)->
 				new ReadOnlyStringWrapper(getFileName(param.getValue().getValue())),true);
-		attrs.getChildren().add(this.<String>createColumnChooser(MessageRegistry.getString("OWNER"),(param)->
-				new ReadOnlyStringWrapper(getOwnerName(param.getValue().getValue())),true));
-		attrs.getChildren().add(this.<Boolean>createColumnChooser(MessageRegistry.getString("READABLE"),(param)->
-				new ReadOnlyBooleanWrapper(Files.isReadable(param.getValue().getValue())),true));
-		attrs.getChildren().add(this.<Boolean>createColumnChooser(MessageRegistry.getString("WRITABLE"),(param)->
-				new ReadOnlyBooleanWrapper(Files.isWritable(param.getValue().getValue())),true));
-		attrs.getChildren().add(this.<Boolean>createColumnChooser(MessageRegistry.getString("EXECUTABLE"),(param)->
-				new ReadOnlyBooleanWrapper(Files.isExecutable(param.getValue().getValue())),true));
-		attrs.getChildren().add(this.<Boolean>createColumnChooser(MessageRegistry.getString("HIDDEN"),(param)->
-				new ReadOnlyBooleanWrapper(isHidden(param.getValue().getValue())),true));
-		attrs.getChildren().add(this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED"),(param)->
-				new ReadOnlyStringWrapper(getLastModified(param.getValue().getValue())),true));
-		attrs.getChildren().add(this.<Number>createColumnChooser(MessageRegistry.getString("SIZE"),(param)->
-				new ReadOnlyLongWrapper(getSize(param.getValue().getValue())),true));
-		attrs.getChildren().add(this.<String>createColumnChooser(MessageRegistry.getString("SYMBOLIC_LINK"),(param)->
-				new ReadOnlyStringWrapper(getLinkTarget(param.getValue().getValue())),false));
+		this.<String>createColumnChooser(MessageRegistry.getString("OWNER"),(param)->
+				new ReadOnlyStringWrapper(getOwnerName(param.getValue().getValue())),true);
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("READABLE"),(param)->
+				new ReadOnlyBooleanWrapper(Files.isReadable(param.getValue().getValue())),true);
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("WRITABLE"),(param)->
+				new ReadOnlyBooleanWrapper(Files.isWritable(param.getValue().getValue())),true);
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("EXECUTABLE"),(param)->
+				new ReadOnlyBooleanWrapper(Files.isExecutable(param.getValue().getValue())),true);
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("HIDDEN"),(param)->
+				new ReadOnlyBooleanWrapper(isHidden(param.getValue().getValue())),true);
+		this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED"),(param)->
+				new ReadOnlyStringWrapper(getLastModified(param.getValue().getValue())),true);
+		this.<Number>createColumnChooser(MessageRegistry.getString("SIZE"),(param)->
+				new ReadOnlyLongWrapper(getSize(param.getValue().getValue())),true);
+		this.<String>createColumnChooser(MessageRegistry.getString("SYMBOLIC_LINK"),(param)->
+				new ReadOnlyStringWrapper(getLinkTarget(param.getValue().getValue())),false);
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).setCellFactory((p)->new FileCell());
-		setBottom(attrs);tree.setEditable(true);
+		tree.setEditable(true);
 	}
 	private static String getFileName(Path path){
 		Path name=path.getFileName();
@@ -197,21 +197,12 @@ public class FileSystemViewer extends BorderPane{
 			return Collections.emptyList();
 		}
 	}
-	private <T> CheckBox createColumnChooser(String name,Callback<TreeTableColumn.CellDataFeatures<Path,T>,ObservableValue<T>> callback,boolean visible){
+	private <T> void createColumnChooser(String name,Callback<TreeTableColumn.CellDataFeatures<Path,T>,ObservableValue<T>> callback,boolean visible){
 		TreeTableColumn<Path,T> column=new TreeTableColumn<>(name);
 		column.setCellValueFactory(callback);
 		column.setEditable(true);
-		CheckBox chooser=new CheckBox(name);
-		chooser.setSelected(visible);
 		if(visible)
 			tree.getColumns().add(column);
-		chooser.selectedProperty().addListener((v)->{
-			if(chooser.isSelected())
-				tree.getColumns().add(column);
-			else
-				tree.getColumns().remove(column);
-		});
-		return chooser;
 	}
 	public void setAction(Consumer<Collection<Path>> action){
 		this.action=action;
