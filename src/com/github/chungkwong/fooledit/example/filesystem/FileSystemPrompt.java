@@ -25,6 +25,7 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
+import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 /**
@@ -36,8 +37,20 @@ public class FileSystemPrompt extends Prompt{
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
 	public FileSystemPrompt(){
+		addCommand("focus-previous",(viewer)->viewer.getTree().getFocusModel().focusPrevious());
+		addCommand("focus-next",(viewer)->viewer.getTree().getFocusModel().focusNext());
+		addCommand("focus-begin",(viewer)->viewer.getTree().getFocusModel().focus(0));
+		addCommand("focus-end",(viewer)->viewer.getTree().getFocusModel().focus(viewer.getTree().getExpandedItemCount()-1));
+		addCommand("focus-begin-of-directory",(viewer)->focusBeginOfDirectory(viewer.getTree()));
+		addCommand("focus-end-of-directory",(viewer)->focusEndOfDirectory(viewer.getTree()));
+		addCommand("select",(viewer)->viewer.getTree().getSelectionModel().select(viewer.getTree().getFocusModel().getFocusedIndex()));
+		addCommand("select-to",(viewer)->selectTo(viewer.getTree()));
+		addCommand("deselect",(viewer)->viewer.getTree().getSelectionModel().clearSelection(viewer.getTree().getFocusModel().getFocusedIndex()));
+		addCommand("clear-selection",(viewer)->viewer.getTree().getSelectionModel().clearSelection());
+		addCommand("toggle-selection",(viewer)->toggleSelection(viewer.getTree()));
 		addCommand("delete",(viewer)->viewer.getSelectedPaths().forEach((path)->delete(path)));
-		addCommand("expand",(viewer)->viewer.getTree().getSelectionModel().getSelectedItem().setExpanded(true));
+		addCommand("expand",(viewer)->viewer.getTree().getTreeItem(viewer.getTree().getSelectionModel().getFocusedIndex()).setExpanded(true));
+		addCommand("fold",(viewer)->viewer.getTree().getTreeItem(viewer.getTree().getSelectionModel().getFocusedIndex()).setExpanded(false));
 		addCommand("mark",(viewer)->viewer.markPaths());
 		addCommand("submit",(viewer)->viewer.fireAction());
 		addCommand("rename",(viewer)->viewer.getSelectedPaths().forEach((path)->rename(path)));
@@ -52,6 +65,45 @@ public class FileSystemPrompt extends Prompt{
 	}
 	private void addCommand(String name,Consumer<FileSystemViewer> action){
 		commandRegistry.put(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()));
+	}
+	private void focusUp(TreeTableView<Path> tree){
+		TreeItem<Path> curr=tree.getFocusModel().getFocusedItem();
+		if(curr.isExpanded()){
+			curr.setExpanded(false);
+		}else{
+			tree.getFocusModel().focus(tree.getRow(curr.getParent()));
+		}
+	}
+	private void focusDown(TreeTableView<Path> tree){
+		TreeItem<Path> curr=tree.getFocusModel().getFocusedItem();
+		if(curr.isExpanded()){
+			if(!curr.getChildren().isEmpty()){
+				tree.getFocusModel().focus(tree.getRow(curr.getChildren().get(0)));
+			}
+		}else if(!curr.isLeaf()){
+			curr.setExpanded(true);
+		}
+	}
+	private static void focusBeginOfDirectory(TreeTableView<Path> tree){
+		TreeItem<Path> curr=tree.getFocusModel().getFocusedItem();
+		tree.getFocusModel().focus(tree.getRow(curr.getParent().getChildren().get(0)));
+	}
+	private static void focusEndOfDirectory(TreeTableView<Path> tree){
+		TreeItem<Path> curr=tree.getFocusModel().getFocusedItem();
+		ObservableList<TreeItem<Path>> sibling=curr.getParent().getChildren();
+		tree.getFocusModel().focus(tree.getRow(sibling.get(sibling.size()-1)));
+	}
+	private static void toggleSelection(TreeTableView<Path> tree){
+		int curr=tree.getFocusModel().getFocusedIndex();
+		if(tree.getSelectionModel().isSelected(curr))
+			tree.getSelectionModel().clearSelection(curr);
+		else
+			tree.getSelectionModel().select(curr);
+	}
+	private static void selectTo(TreeTableView<Path> tree){
+		int last=tree.getSelectionModel().getSelectedIndex();
+		int curr=tree.getFocusModel().getFocusedIndex();
+		tree.getSelectionModel().selectRange(Math.min(last,curr),Math.max(last,curr)+1);
 	}
 	private static final void delete(Path path){
 		try{

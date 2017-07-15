@@ -77,6 +77,7 @@ public class FileSystemViewer extends BorderPane{
 				new ReadOnlyStringWrapper(getLinkTarget(param.getValue().getValue())),false);
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).setCellFactory((p)->new FileCell());
 		tree.setEditable(true);
+		tree.getFocusModel().focusedIndexProperty().addListener(((e,o,n)->tree.scrollTo(n.intValue())));
 	}
 	private static String getFileName(Path path){
 		Path name=path.getFileName();
@@ -201,8 +202,8 @@ public class FileSystemViewer extends BorderPane{
 		TreeTableColumn<Path,T> column=new TreeTableColumn<>(name);
 		column.setCellValueFactory(callback);
 		column.setEditable(true);
-		if(visible)
-			tree.getColumns().add(column);
+		tree.getColumns().add(column);
+		column.setVisible(visible);
 	}
 	public void setAction(Consumer<Collection<Path>> action){
 		this.action=action;

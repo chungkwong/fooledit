@@ -1,4 +1,6 @@
 {
+	"C-K":"move-to-previous",
+	"C-L":"move-to-next",
 	"Delete":"delete",
 	"Space":"expand",
 	"C-C":"mark",
