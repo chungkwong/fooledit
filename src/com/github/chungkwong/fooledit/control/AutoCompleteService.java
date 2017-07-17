@@ -57,7 +57,7 @@ public class AutoCompleteService{
 			//else
 				popupHint.hideHints();
 		});
-		comp.caretPositionProperty().addListener((e,o,n)->{System.out.println(n);;try{updateHint(n.intValue());}catch(Exception ex){}});
+		comp.caretPositionProperty().addListener((e,o,n)->{try{updateHint(n.intValue());}catch(Exception ex){}});
 	}
 	public void updateHint(int pos){
 		task.summit(new HintContext(hints,comp.getText(),pos,comp));
@@ -103,6 +103,8 @@ class PopupHint{
 		popup.getContent().add(pane);
 	}
 	public void showHints(TextInputControl comp,int pos,Stream<AutoCompleteHint> choices){
+		if(!comp.isFocused())
+			return;
 		hideHints();
 		loc.getItems().setAll(choices.collect(Collectors.toList()));
 		if(loc.getItems().isEmpty())

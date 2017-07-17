@@ -105,21 +105,21 @@ public class Main extends Application{
 	}
 	private void registerStandardCommand(){
 		commandRegistry.put("new",()->fileCommands.create());
-		commandRegistry.put("open_file",()->fileCommands.open());
+		commandRegistry.put("open-file",()->fileCommands.open());
 		commandRegistry.put("save",()->fileCommands.save());
-		commandRegistry.put("full_screen",()->stage.setFullScreen(true));
-		commandRegistry.put("maximize_frame",()->stage.setMaximized(true));
-		commandRegistry.put("iconify_frame",()->stage.setIconified(true));
-		commandRegistry.put("always_on_top_frame",()->stage.setAlwaysOnTop(true));
-		commandRegistry.put("split_vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
-		commandRegistry.put("split_horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
-		commandRegistry.put("keep_only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
+		commandRegistry.put("full-screen",()->stage.setFullScreen(true));
+		commandRegistry.put("maximize-frame",()->stage.setMaximized(true));
+		commandRegistry.put("iconify-frame",()->stage.setIconified(true));
+		commandRegistry.put("always-on-top-frame",()->stage.setAlwaysOnTop(true));
+		commandRegistry.put("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
+		commandRegistry.put("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
+		commandRegistry.put("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
 		commandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
 		commandRegistry.put("filesystem",()->addAndShow(new FileSystemPrompt(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"File System")));
 		commandRegistry.put("command",()->input.requestFocus());
 		commandRegistry.put("cancel",()->getCurrentNode().requestFocus());
-		commandRegistry.put("next_buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
-		commandRegistry.put("previous_buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
+		commandRegistry.put("next-buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
+		commandRegistry.put("previous-buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
 		commandRegistry.put("start-record",()->{macro.clear();recording=true;});
 		commandRegistry.put("stop-record",()->{recording=false;macro.remove(0);macro.remove(macro.size()-1);});
 		commandRegistry.put("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
@@ -326,7 +326,10 @@ public class Main extends Application{
 					macro.add(e.copyFor(e.getSource(),e.getTarget()));
 				if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
 					if(ignore){
-						ignore=false;
+						e.consume();
+					}
+				}else if(e.getEventType().equals(KeyEvent.KEY_RELEASED)){
+					if(ignore){
 						e.consume();
 					}
 				}else if(e.getEventType().equals(KeyEvent.KEY_PRESSED)){

@@ -1,13 +1,15 @@
 {
-	"C-1":"keep_only",
-	"C-2":"split_vertically",
-	"C-3":"split_horizontally",
-	"F11":"full_screen",
-	"M-F10":"maximize_frame",
-	"C-Z":"iconify_frame",
+	"C-1":"keep-only",
+	"C-2":"split-vertically",
+	"C-3":"split-horizontally",
+	"F11":"full-screen",
+	"M-F10":"maximize-frame",
+	"C-Z":"iconify-frame",
 	"M-X":"command",
 	"C-N":"new",
-	"C-X+4":"full_screen",
-	"C-X+5":"split_horizontally",
-	"C-X+C-D":"split_vertically"
+	"C-X+4":"full-screen",
+	"C-X+5":"split-horizontally",
+	"C-X+C-D":"split-vertically",
+	"C-Page Down":"next-buffer",
+	"C-Page Up":"previous-buffer"
 }

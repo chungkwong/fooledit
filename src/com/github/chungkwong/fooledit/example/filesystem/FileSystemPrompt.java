@@ -39,10 +39,12 @@ public class FileSystemPrompt extends Prompt{
 	public FileSystemPrompt(){
 		addCommand("focus-previous",(viewer)->viewer.getTree().getFocusModel().focusPrevious());
 		addCommand("focus-next",(viewer)->viewer.getTree().getFocusModel().focusNext());
-		addCommand("focus-begin",(viewer)->viewer.getTree().getFocusModel().focus(0));
-		addCommand("focus-end",(viewer)->viewer.getTree().getFocusModel().focus(viewer.getTree().getExpandedItemCount()-1));
-		addCommand("focus-begin-of-directory",(viewer)->focusBeginOfDirectory(viewer.getTree()));
-		addCommand("focus-end-of-directory",(viewer)->focusEndOfDirectory(viewer.getTree()));
+		addCommand("focus-first",(viewer)->viewer.getTree().getFocusModel().focus(0));
+		addCommand("focus-last",(viewer)->viewer.getTree().getFocusModel().focus(viewer.getTree().getExpandedItemCount()-1));
+		addCommand("focus-first-in-directory",(viewer)->focusBeginOfDirectory(viewer.getTree()));
+		addCommand("focus-last-in-directory",(viewer)->focusEndOfDirectory(viewer.getTree()));
+		addCommand("focus-up",(viewer)->focusUp(viewer.getTree()));
+		addCommand("focus-down",(viewer)->focusDown(viewer.getTree()));
 		addCommand("select",(viewer)->viewer.getTree().getSelectionModel().select(viewer.getTree().getFocusModel().getFocusedIndex()));
 		addCommand("select-to",(viewer)->selectTo(viewer.getTree()));
 		addCommand("deselect",(viewer)->viewer.getTree().getSelectionModel().clearSelection(viewer.getTree().getFocusModel().getFocusedIndex()));
@@ -82,6 +84,7 @@ public class FileSystemPrompt extends Prompt{
 			}
 		}else if(!curr.isLeaf()){
 			curr.setExpanded(true);
+			tree.scrollTo(tree.getFocusModel().getFocusedIndex());
 		}
 	}
 	private static void focusBeginOfDirectory(TreeTableView<Path> tree){

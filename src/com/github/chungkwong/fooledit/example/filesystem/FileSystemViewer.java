@@ -28,6 +28,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.util.*;
 /**
@@ -76,6 +77,7 @@ public class FileSystemViewer extends BorderPane{
 		this.<String>createColumnChooser(MessageRegistry.getString("SYMBOLIC_LINK"),(param)->
 				new ReadOnlyStringWrapper(getLinkTarget(param.getValue().getValue())),false);
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).setCellFactory((p)->new FileCell());
+		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).prefWidthProperty().bind(tree.widthProperty().multiply(0.4));
 		tree.setEditable(true);
 		tree.getFocusModel().focusedIndexProperty().addListener(((e,o,n)->tree.scrollTo(n.intValue())));
 	}
@@ -123,7 +125,7 @@ public class FileSystemViewer extends BorderPane{
 			try{
 				WatchKey key=watchService.take();
 				Path path=(Path)key.watchable();
-				TreeItem<Path> item=getTreeItem(path);
+				TreeItem<Path> item=getTreeItem(path,false);
 				if(item==null||!item.isExpanded())
 					continue;
 				for(WatchEvent event:key.pollEvents()){
@@ -131,7 +133,7 @@ public class FileSystemViewer extends BorderPane{
 						((LazyTreeItem<Path>)item).refresh();
 					}else{
 						Path file=(Path)event.context();
-						TreeItem<Path> sub=getTreeItem(path.resolve(file),item);
+						TreeItem<Path> sub=getTreeItem(path.resolve(file),item,false);
 						if(event.kind()==StandardWatchEventKinds.ENTRY_CREATE){
 							if(sub==null)
 								item.getChildren().add(createTreeItem(path.resolve(file)));
@@ -155,16 +157,21 @@ public class FileSystemViewer extends BorderPane{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
-	private TreeItem<Path> getTreeItem(Path path){
-		Optional<TreeItem<Path>> cand=tree.getRoot().getChildren().stream().filter((p)->path.startsWith(p.getValue())).findAny();
-		return cand.isPresent()?getTreeItem(path,cand.get()):null;
+	public void focusPath(Path path){
+		tree.getFocusModel().focus(tree.getRow(getTreeItem(path,true)));
 	}
-	private TreeItem<Path> getTreeItem(Path path,TreeItem<Path> start){
+	private TreeItem<Path> getTreeItem(Path path,boolean expand){
+		Optional<TreeItem<Path>> cand=tree.getRoot().getChildren().stream().filter((p)->path.startsWith(p.getValue())).findAny();
+		return cand.isPresent()?getTreeItem(path,cand.get(),expand):null;
+	}
+	private TreeItem<Path> getTreeItem(Path path,TreeItem<Path> start,boolean expand){
 		while(true){
 			Path curr=start.getValue();
 			if(path.equals(curr))
 				return start;
 			Path next=path.getName(curr.getNameCount());
+			if(expand)
+				start.setExpanded(true);
 			Optional<TreeItem<Path>> cand=start.getChildren().stream().filter((p)->p.getValue().endsWith(next)).findAny();
 			if(cand.isPresent()){
 				start=cand.get();
@@ -229,26 +236,26 @@ public class FileSystemViewer extends BorderPane{
 	public void requestFocus(){
 		tree.requestFocus();
 	}
-	public Collection<Path> getSelectedPaths(){
+	public final Collection<Path> getSelectedPaths(){
 		return tree.getSelectionModel().getSelectedItems().stream().map((item)->item.getValue()).collect(Collectors.toSet());
 	}
 	TreeTableView<Path> getTree(){
 		return tree;
 	}
-	static class FileCell extends TreeTableCell<Path,String>{
-		private TreeItem<File> src;
+	class FileCell extends TreeTableCell<Path,String>{
 		public FileCell(){
-			/*setOnDragDetected((e)->{
-				Dragboard board=startDragAndDrop(TransferMode.MOVE);
+			setOnDragDetected((e)->{
+				Dragboard board=tree.startDragAndDrop(TransferMode.COPY,TransferMode.LINK,TransferMode.MOVE);
 				ClipboardContent content=new ClipboardContent();
-				content.putFiles(Collections.singletonList(getItem()));
-				src=getTreeItem();
+				content.putFiles(getSelectedPaths().stream().map((p)->p.toFile()).collect(Collectors.toList()));
 				board.setContent(content);
 				e.consume();
 			});
 			setOnDragOver((e)->{
-				if(e.getDragboard().hasFiles()&&getItem().isDirectory())
-					e.acceptTransferModes(TransferMode.MOVE,TransferMode.COPY);
+				if(e.getDragboard().hasFiles()&&Files.isDirectory(getTreeTableRow().getTreeItem().getValue()))
+					e.acceptTransferModes(TransferMode.MOVE,TransferMode.COPY,TransferMode.LINK);
+				else
+					e.acceptTransferModes();
 				e.consume();
 			});
 			setOnDragDropped((e)->{
@@ -256,9 +263,13 @@ public class FileSystemViewer extends BorderPane{
 				if(board.hasFiles()){
 					try{
 						for(File f:board.getFiles()){
-							Path to=getItem().toPath().resolve(f.getName());
-							Files.move(f.toPath(),to);
-							getTreeItem().getChildren().add(new TreeItem<>(to.toFile()));
+							Path to=getTreeTableRow().getItem().resolve(f.getName());
+							if(e.getTransferMode().equals(TransferMode.MOVE))
+								Files.move(f.toPath(),to);
+							else if(e.getTransferMode().equals(TransferMode.COPY))
+								Files.copy(f.toPath(),to);
+							else if(e.getTransferMode().equals(TransferMode.LINK))
+								Files.createLink(to,f.toPath());
 						}
 						e.setDropCompleted(true);
 					}catch(IOException ex){
@@ -268,11 +279,7 @@ public class FileSystemViewer extends BorderPane{
 				}else{
 					e.setDropCompleted(false);
 				}
-				e.consume();
 			});
-			setOnDragDone((e)->{
-				src.getParent().getChildren().remove(src);
-			});*/
 		}
 		@Override
 		protected void updateItem(String item,boolean empty){

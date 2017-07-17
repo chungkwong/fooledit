@@ -4,7 +4,7 @@
 			"name":"FILE",
 			"children":[
 				{"name":"NEW","command":"new"},
-				{"name":"OPEN_FILE","command":"open_file"},
+				{"name":"OPEN_FILE","command":"open-file"},
 				{"name":"SAVE","command":"save"},
 				{"name":"FILE_HISTORY","provider":"file_history"}
 			]
@@ -12,14 +12,14 @@
 		{
 			"name":"VIEW",
 			"children":[
-				{"name":"FULL_SCREEN","command":"full_screen"},
-				{"name":"MAXIMIZE_FRAME","command":"maximize_frame"},
-				{"name":"ICONIFY_FRAME","command":"iconify_frame"},
-				{"name":"ALWAYS_ON_TOP_FRAME","command":"always_on_top_frame"},
+				{"name":"FULL_SCREEN","command":"full-screen"},
+				{"name":"MAXIMIZE_FRAME","command":"maximize-frame"},
+				{"name":"ICONIFY_FRAME","command":"iconify-frame"},
+				{"name":"ALWAYS_ON_TOP_FRAME","command":"always-on-top-frame"},
 				{},
-				{"name":"SPLIT_VERTICALLY","command":"split_vertically"},
-				{"name":"SPLIT_HORIZONTALLY","command":"split_horizontally"},
-				{"name":"KEEP_ONLY","command":"keep_only"}
+				{"name":"SPLIT_VERTICALLY","command":"split-vertically"},
+				{"name":"SPLIT_HORIZONTALLY","command":"split-horizontally"},
+				{"name":"KEEP_ONLY","command":"keep-only"}
 			]
 		},
 		{
