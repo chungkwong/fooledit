@@ -28,11 +28,11 @@ public class FileSystemDataType implements DataObjectType<FileSystemData>{
 	}
 	@Override
 	public boolean canRead(){
-		return true;
+		return false;
 	}
 	@Override
 	public boolean canWrite(){
-		return true;
+		return false;
 	}
 	@Override
 	public boolean canCreate(){
@@ -40,7 +40,7 @@ public class FileSystemDataType implements DataObjectType<FileSystemData>{
 	}
 	@Override
 	public FileSystemData create(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return new FileSystemData(null);
 	}
 	@Override
 	public void writeTo(FileSystemData data,OutputStream out) throws Exception{
@@ -50,5 +50,4 @@ public class FileSystemDataType implements DataObjectType<FileSystemData>{
 	public FileSystemData readFrom(InputStream in) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
-
 }

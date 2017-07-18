@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.example.filesystem;
+import static com.github.chungkwong.fooledit.api.DataObjectTypeRegistry.addDataEditor;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -22,6 +23,7 @@ package com.github.chungkwong.fooledit.example.filesystem;
 public class FileSystemModule{
 	public static final String NAME="editor.filesystem";
 	public static void onLoad(){
+		addDataEditor(()->FileSystemEditor.INSTANCE,FileSystemData.class);
 	}
 	public static void onUnLoad(){
 

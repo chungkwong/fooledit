@@ -18,39 +18,40 @@ package com.github.chungkwong.fooledit.command;
 import com.github.chungkwong.fooledit.*;
 import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.control.*;
+import com.github.chungkwong.fooledit.example.filesystem.*;
 import com.github.chungkwong.fooledit.model.*;
 import com.github.chungkwong.fooledit.util.*;
 import java.io.*;
 import java.net.*;
+import java.nio.file.*;
 import java.util.logging.*;
-import javafx.stage.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class FileCommands{
-	private final Main main;
-	public FileCommands(Main main){
-		this.main=main;
+	private FileCommands(){
+
 	}
-	public void open(){
-		FileChooser fileChooser=new FileChooser();
-		File file=fileChooser.showOpenDialog(null);
-		if(file==null)
-			return;
-		open(file);
+	public static void open(){
+		FileSystemData files=new FileSystemData();
+		files.setAction((paths)->{
+			paths.forEach((p)->open(p));
+			DataObjectRegistry.removeDataObject(files);
+		});
+		Main.INSTANCE.addAndShow(files,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("OPEN")));
 	}
-	public void open(File file){
-		open(file,MimeDetector.probeMimeType(file));
+	public static void open(Path file){
+		open(file,geussContentType(file));
 	}
-	public void open(File file,MimeType mime){
+	public static void open(Path file,MimeType mime){
 		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
 			if(tryOpen(file,type,mime))
 				return;
 		}
 	}
-	public void save(){
-		DataObject data=main.getCurrentDataObject();
+	public static void save(){
+		DataObject data=Main.INSTANCE.getCurrentDataObject();
 		try{
 			File file=new File(new URI(DataObjectRegistry.getURL(data)));
 			data.getDataObjectType().writeTo(data,new FileOutputStream(file));
@@ -58,22 +59,24 @@ public class FileCommands{
 			Logger.getLogger(FileCommands.class.getName()).log(Level.SEVERE,null,ex);
 		}
 	}
-	private boolean tryOpen(File f,DataObjectType type,MimeType mime){
-		try(FileInputStream in=new FileInputStream(f)){
-			main.addAndShow(type.readFrom(in),DataObjectRegistry.createProperties(f.getName(),f.toURI().toString(),mime.toString(),type.getClass().getName()));
+	private static boolean tryOpen(Path f,DataObjectType type,MimeType mime){
+		try(InputStream in=Files.newInputStream(f)){
+			Main.INSTANCE.addAndShow(type.readFrom(in),DataObjectRegistry.createProperties(f.getFileName().toString(),f.toUri().toString(),mime.toString(),type.getClass().getName()));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return false;
 		}
 		return true;
 	}
-	private String geussContentType(File file){
-		return "";
+	private static MimeType geussContentType(Path file){
+		try{
+			return MimeType.fromString(Files.probeContentType(file));
+		}catch(IOException ex){
+			Logger.getGlobal().log(Level.INFO,null,ex);
+			return MimeType.fromString("application/octet-stream");
+		}
 	}
-	public void create(){
-		main.addAndShow(TemplateChooser.INSTANCE,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("TEMPLATE")));
-	}
-	public static void main(String[] args){
-
+	public static void create(){
+		Main.INSTANCE.addAndShow(TemplateChooser.INSTANCE,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("TEMPLATE")));
 	}
 }

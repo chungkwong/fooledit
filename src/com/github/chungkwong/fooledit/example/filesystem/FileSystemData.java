@@ -16,11 +16,26 @@
  */
 package com.github.chungkwong.fooledit.example.filesystem;
 import com.github.chungkwong.fooledit.model.*;
+import java.nio.file.*;
+import java.util.*;
+import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class FileSystemData implements DataObject<FileSystemData>{
+	private Consumer<Collection<Path>> action;
+	public FileSystemData(){
+	}
+	public FileSystemData(Consumer<Collection<Path>> action){
+		this.action=action;
+	}
+	public void setAction(Consumer<Collection<Path>> action){
+		this.action=action;
+	}
+	public Consumer<Collection<Path>> getAction(){
+		return action;
+	}
 	@Override
 	public DataObjectType<FileSystemData> getDataObjectType(){
 		return FileSystemDataType.INSTANCE;

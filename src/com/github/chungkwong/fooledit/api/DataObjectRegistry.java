@@ -56,6 +56,9 @@ public class DataObjectRegistry{
 	public static String getMIME(DataObject data){
 		return (String)properties.get(data).get(MIME);
 	}
+	public static String getName(DataObject data){
+		return (String)properties.get(data).get(BUFFER_NAME);
+	}
 	public static DataObject get(Object json){
 		Map<String,String> prop=(Map<String,String>)json;
 		String type=prop.get(TYPE);
@@ -95,6 +98,10 @@ public class DataObjectRegistry{
 		objects.put(name,data);
 		properties.put(data,prop);
 		addHistoryEntry(prop);
+	}
+	public static void removeDataObject(DataObject data){
+		objects.remove(getName(data));
+		properties.remove(data);
 	}
 	private static void addHistoryEntry(Map<String,String> prop){
 		if(prop.containsKey(URI)){

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.control;
-import com.github.chungkwong.fooledit.example.filesystem.FileSystemViewer;
 import com.github.chungkwong.fooledit.*;
 import static com.github.chungkwong.fooledit.Main.loadJSON;
 import com.github.chungkwong.fooledit.api.*;
@@ -42,7 +41,6 @@ public class TemplateChooser extends Prompt{
 	@Override
 	public javafx.scene.Node edit(Prompt data){
 		BorderPane pane=new BorderPane();
-		pane.setLeft(new FileSystemViewer());
 		TreeView templates=new TreeView(buildTree(loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("template-index",null))));
 		templates.setOnMouseClicked((e)->{
 			if(e.getClickCount()==2){

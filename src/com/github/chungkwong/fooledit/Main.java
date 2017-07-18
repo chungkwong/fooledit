@@ -31,6 +31,7 @@ import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
@@ -56,7 +57,6 @@ public class Main extends Application{
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
-	private final FileCommands fileCommands;
 	private final Notifier notifier;
 	private static final BorderPane root=new BorderPane();
 	private MiniBuffer input;
@@ -84,7 +84,6 @@ public class Main extends Application{
 		root.setCenter(getDefaultWorkSheet());
 		initMenuBar();
 		root.setBottom(notifier.getStatusBar());
-		this.fileCommands=new FileCommands(this);
 		registerStandardCommand();
 		keymapRegistry=new KeymapRegistry();
 		keymapRegistry.registerKeys((Map<String,String>)(Object)loadJSON((File)SettingManager.getOrCreate("core").get("keymap-file",null)));
@@ -104,9 +103,9 @@ public class Main extends Application{
 		root.setTop(commander);
 	}
 	private void registerStandardCommand(){
-		commandRegistry.put("new",()->fileCommands.create());
-		commandRegistry.put("open-file",()->fileCommands.open());
-		commandRegistry.put("save",()->fileCommands.save());
+		commandRegistry.put("new",()->FileCommands.create());
+		commandRegistry.put("open-file",()->FileCommands.open());
+		commandRegistry.put("save",()->FileCommands.save());
 		commandRegistry.put("full-screen",()->stage.setFullScreen(true));
 		commandRegistry.put("maximize-frame",()->stage.setMaximized(true));
 		commandRegistry.put("iconify-frame",()->stage.setIconified(true));
@@ -115,7 +114,7 @@ public class Main extends Application{
 		commandRegistry.put("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
 		commandRegistry.put("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
 		commandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
-		commandRegistry.put("filesystem",()->addAndShow(new FileSystemPrompt(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"File System")));
+		commandRegistry.put("file-system",()->addAndShow(new FileSystemData(null),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"File System")));
 		commandRegistry.put("command",()->input.requestFocus());
 		commandRegistry.put("cancel",()->getCurrentNode().requestFocus());
 		commandRegistry.put("next-buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
@@ -149,11 +148,11 @@ public class Main extends Application{
 				MenuItem item=new MenuItem(prop.get(DataObjectRegistry.BUFFER_NAME));
 				item.setOnAction((e)->{
 					try{
-						File file=new File(new URI(prop.get(DataObjectRegistry.URI)));
+						Path file=new File(new URI(prop.get(DataObjectRegistry.URI))).toPath();
 						if(prop.containsKey(DataObjectRegistry.MIME)){
-							fileCommands.open(file,MimeType.fromString(prop.get(DataObjectRegistry.MIME)));
+							FileCommands.open(file,MimeType.fromString(prop.get(DataObjectRegistry.MIME)));
 						}else{
-							fileCommands.open(file);
+							FileCommands.open(file);
 						}
 					}catch(URISyntaxException ex){
 						Logger.getGlobal().log(Level.SEVERE,null,ex);
