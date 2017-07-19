@@ -6,6 +6,7 @@
 				{"name":"NEW","command":"new"},
 				{"name":"OPEN_FILE","command":"open-file"},
 				{"name":"SAVE","command":"save"},
+				{"name":"SAVE_AS","command":"save"},
 				{"name":"FILE_HISTORY","provider":"file_history"}
 			]
 		},

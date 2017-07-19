@@ -20,6 +20,7 @@ import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.control.*;
 import com.github.chungkwong.fooledit.model.*;
 import com.github.chungkwong.fooledit.setting.*;
+import com.sun.javafx.scene.control.skin.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -46,6 +47,8 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 		addCommand("focus-last-in-directory",(viewer)->focusEndOfDirectory(viewer.getTree()));
 		addCommand("focus-up",(viewer)->focusUp(viewer.getTree()));
 		addCommand("focus-down",(viewer)->focusDown(viewer.getTree()));
+		addCommand("move-to-previous-page",(viewer)->moveToPreviousPage(viewer.getTree()));
+		addCommand("move-to-next-page",(viewer)->moveToNextPage(viewer.getTree()));
 		addCommand("select",(viewer)->viewer.getTree().getSelectionModel().select(viewer.getTree().getFocusModel().getFocusedIndex()));
 		addCommand("select-to",(viewer)->selectTo(viewer.getTree()));
 		addCommand("deselect",(viewer)->viewer.getTree().getSelectionModel().clearSelection(viewer.getTree().getFocusModel().getFocusedIndex()));
@@ -68,6 +71,13 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 	}
 	private void addCommand(String name,Consumer<FileSystemViewer> action){
 		commandRegistry.put(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()));
+	}
+	private void moveToPreviousPage(TreeTableView<Path> tree){
+
+	}
+	private void moveToNextPage(TreeTableView<Path> tree){
+		VirtualFlow flow=(VirtualFlow)tree.getChildrenUnmodifiable().get(1);
+		System.err.println(flow.getChildrenUnmodifiable());
 	}
 	private void focusUp(TreeTableView<Path> tree){
 		TreeItem<Path> curr=tree.getFocusModel().getFocusedItem();
@@ -228,6 +238,8 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 	public Node edit(FileSystemData data){
 		FileSystemViewer viewer=new FileSystemViewer();
 		viewer.setAction(data.getAction());
+		if(data.getInitialPath()!=null)
+			viewer.focusPath(data.getInitialPath());
 		return viewer;
 	}
 	@Override

@@ -106,6 +106,7 @@ public class Main extends Application{
 		commandRegistry.put("new",()->FileCommands.create());
 		commandRegistry.put("open-file",()->FileCommands.open());
 		commandRegistry.put("save",()->FileCommands.save());
+		commandRegistry.put("save-as",()->FileCommands.saveAs());
 		commandRegistry.put("full-screen",()->stage.setFullScreen(true));
 		commandRegistry.put("maximize-frame",()->stage.setMaximized(true));
 		commandRegistry.put("iconify-frame",()->stage.setIconified(true));

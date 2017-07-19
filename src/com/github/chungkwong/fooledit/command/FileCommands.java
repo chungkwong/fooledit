@@ -35,6 +35,7 @@ public class FileCommands{
 	}
 	public static void open(){
 		FileSystemData files=new FileSystemData();
+		files.setInitialPath(geussDefaultPath());
 		files.setAction((paths)->{
 			paths.forEach((p)->open(p));
 			DataObjectRegistry.removeDataObject(files);
@@ -52,11 +53,33 @@ public class FileCommands{
 	}
 	public static void save(){
 		DataObject data=Main.INSTANCE.getCurrentDataObject();
-		try{
-			File file=new File(new URI(DataObjectRegistry.getURL(data)));
-			data.getDataObjectType().writeTo(data,new FileOutputStream(file));
+		String url=DataObjectRegistry.getURL(data);
+		if(url==null)
+			saveAs();
+		else
+			try{
+				File file=new File(new URI(url));
+				data.getDataObjectType().writeTo(data,new FileOutputStream(file));
+			}catch(Exception ex){
+				Logger.getLogger(FileCommands.class.getName()).log(Level.SEVERE,null,ex);
+			}
+	}
+	public static void saveAs(){
+		FileSystemData files=new FileSystemData();
+		files.setInitialPath(geussDefaultPath());
+		files.setAction((paths)->{
+			paths.forEach((p)->saveAs(p));
+			DataObjectRegistry.removeDataObject(files);
+		});
+		Main.INSTANCE.addAndShow(files,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("SAVE_AS")));
+	}
+	public static void saveAs(Path p){
+		DataObject data=Main.INSTANCE.getCurrentDataObject();
+		try(OutputStream out=Files.newOutputStream(p)){
+			data.getDataObjectType().writeTo(data,out);
+			DataObjectRegistry.getProperties(data).put(DataObjectRegistry.URI,p.toUri().toString());
 		}catch(Exception ex){
-			Logger.getLogger(FileCommands.class.getName()).log(Level.SEVERE,null,ex);
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
 	private static boolean tryOpen(Path f,DataObjectType type,MimeType mime){
@@ -67,6 +90,13 @@ public class FileCommands{
 			return false;
 		}
 		return true;
+	}
+	private static Path geussDefaultPath(){
+		try{
+			return new File(new URI(DataObjectRegistry.getURL(Main.getCurrentDataObject()))).toPath();
+		}catch(Exception ex){
+			return null;
+		}
 	}
 	private static MimeType geussContentType(Path file){
 		try{

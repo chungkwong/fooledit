@@ -1,5 +1,7 @@
 {
 
+	"Page Up":"move-to-previous-page",
+	"Page Down":"move-to-next-page",
 	"Up":"focus-previous",
 	"Down":"focus-next",
 	"Left":"focus-up",

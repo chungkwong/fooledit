@@ -25,6 +25,7 @@ import java.util.function.*;
  */
 public class FileSystemData implements DataObject<FileSystemData>{
 	private Consumer<Collection<Path>> action;
+	private Path initialPath;
 	public FileSystemData(){
 	}
 	public FileSystemData(Consumer<Collection<Path>> action){
@@ -32,6 +33,12 @@ public class FileSystemData implements DataObject<FileSystemData>{
 	}
 	public void setAction(Consumer<Collection<Path>> action){
 		this.action=action;
+	}
+	public void setInitialPath(Path initialPath){
+		this.initialPath=initialPath;
+	}
+	public Path getInitialPath(){
+		return initialPath;
 	}
 	public Consumer<Collection<Path>> getAction(){
 		return action;
