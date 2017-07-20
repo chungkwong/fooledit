@@ -1,0 +1,15 @@
+{
+	"children":[
+		{
+			"name":"NAVIGATE",
+			"children":[
+				{"name":"MOVE_TO_PREVIOUS_PAGE","command":"move-to-previous-page"},
+				{"name":"GO_BACKWARD","provider":"editor.browser.BackwardPages"},
+				{"name":"MOVE_TO_NEXT_PAGE","command":"move-to-next-page"},
+				{"name":"GO_FORWARD","provider":"editor.browser.ForwardPages"},
+				{},
+				{"name":"REFRESH","command":"refresh"}
+			]
+		}
+	]
+}

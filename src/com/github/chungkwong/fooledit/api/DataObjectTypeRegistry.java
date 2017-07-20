@@ -20,7 +20,6 @@ import com.github.chungkwong.fooledit.example.binary.*;
 import com.github.chungkwong.fooledit.example.image.*;
 import com.github.chungkwong.fooledit.example.media.*;
 import com.github.chungkwong.fooledit.example.text.*;
-import com.github.chungkwong.fooledit.example.tool.*;
 import com.github.chungkwong.fooledit.model.*;
 import com.github.chungkwong.fooledit.util.*;
 import java.util.*;
@@ -64,7 +63,6 @@ public class DataObjectTypeRegistry{
 		//addDataObjectType(TextObjectType.INSTANCE);
 		//addDataEditor(()->new TextEditor(),TextObject.class);
 		//addDataEditor(()->new StructuredTextEditor(),TextObject.class);
-		addDataEditor(()->new Browser(),BrowserData.class);
 		addDataObjectType(TemplateChooser.INSTANCE);
 		addDataEditor(()->TemplateChooser.INSTANCE,TemplateChooser.class);
 	}

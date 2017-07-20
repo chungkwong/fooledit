@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.example.media;
-import com.github.chungkwong.fooledit.model.DataEditor;
-import com.github.chungkwong.fooledit.example.text.TextEditor;
-import com.github.chungkwong.fooledit.api.MessageRegistry;
+import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.example.text.*;
+import com.github.chungkwong.fooledit.model.*;
 import java.io.*;
 import java.util.logging.*;
 import static javafx.application.Application.launch;

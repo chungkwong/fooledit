@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.api;
-import com.github.chungkwong.fooledit.control.OnDemandMenu;
-import com.github.chungkwong.fooledit.Main;
+import com.github.chungkwong.fooledit.*;
+import com.github.chungkwong.fooledit.control.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;

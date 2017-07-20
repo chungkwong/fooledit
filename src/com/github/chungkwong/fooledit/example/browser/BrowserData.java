@@ -14,21 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.fooledit.example.tool;
-import com.github.chungkwong.fooledit.model.DataEditor;
-import com.github.chungkwong.fooledit.api.MessageRegistry;
+package com.github.chungkwong.fooledit.example.browser;
+import com.github.chungkwong.fooledit.model.*;
 import javafx.scene.*;
+import javafx.scene.web.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Browser implements DataEditor<BrowserData>{
-	@Override
-	public Node edit(BrowserData data){
-		return data.getEditor();
+public class BrowserData implements DataObject<BrowserData>{
+	private final WebView webView;
+	private final Node editor;
+	public BrowserData(){
+		this.webView=new WebView();
+		this.editor=new BrowserViewer(webView);
+	}
+	public BrowserData(String url){
+		this.webView=new WebView();
+		webView.getEngine().load(url);
+		this.editor=new BrowserViewer(webView);
+	}
+	public WebView getWebView(){
+		return webView;
+	}
+	public Node getEditor(){
+		return editor;
 	}
 	@Override
-	public String getName(){
-		return MessageRegistry.getString("BROWSER");
+	public DataObjectType<BrowserData> getDataObjectType(){
+		return BrowserDataType.INSTANCE;
 	}
 }

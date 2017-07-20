@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.fooledit.example.tool;
-import com.github.chungkwong.fooledit.model.DataObjectType;
+package com.github.chungkwong.fooledit.example.browser;
+import com.github.chungkwong.fooledit.model.*;
 import java.io.*;
 import java.nio.charset.*;
 import java.util.stream.*;
@@ -44,7 +44,7 @@ public class BrowserDataType implements DataObjectType<BrowserData>{
 	public BrowserData readFrom(InputStream in) throws Exception{
 		String content=new BufferedReader(new InputStreamReader(in,StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
 		BrowserData data=new BrowserData();
-		data.getEngine().loadContent(content);
+		data.getWebView().getEngine().loadContent(content);
 		return data;
 	}
 	@Override

@@ -16,13 +16,13 @@
  */
 package com.github.chungkwong.fooledit;
 
+import com.github.chungkwong.fooledit.example.browser.BrowserData;
 import static com.github.chungkwong.fooledit.api.KeymapRegistry.encode;
 import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.command.*;
 import com.github.chungkwong.fooledit.control.*;
 import com.github.chungkwong.fooledit.example.filesystem.*;
 import com.github.chungkwong.fooledit.example.text.*;
-import com.github.chungkwong.fooledit.example.tool.*;
 import com.github.chungkwong.fooledit.model.*;
 import com.github.chungkwong.fooledit.setting.*;
 import com.github.chungkwong.fooledit.util.*;

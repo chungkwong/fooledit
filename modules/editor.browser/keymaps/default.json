@@ -1,0 +1,7 @@
+{
+
+	"C-B":"move-to-previous-page",
+	"C-F":"move-to-next-page",
+	"C-L":"set-location",
+	"C-R":"refresh"
+}
