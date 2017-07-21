@@ -21,8 +21,17 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface Project{
-	public File getDirectory();
-	public Properties getProperties();
-	public Map<String,Runnable> getTargets();
+public abstract class Project{
+	public abstract File getDirectory();
+	public abstract Properties getProperties();
+	public abstract Map<String,Runnable> getTargets();
+	@Override
+	public boolean equals(Object obj){
+		return obj instanceof Project&&((Project)obj).getDirectory().equals(getDirectory());
+	}
+	@Override
+	public int hashCode(){
+		return getDirectory().hashCode();
+	}
+
 }

@@ -15,23 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.project;
+import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.model.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
+import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ProjectTypeManager{
-	private static final Collection<ProjectType> TYPES=new ArrayList<>();
-	public static void registerProjectType(ProjectType type){
-		TYPES.add(type);
+public class ProjectRegistry{
+	private static final Set<Project> projects=new HashSet<>();
+	public static void register(Project project){
+		projects.add(project);
 	}
-	public static Optional<Project> gaussProject(File file){
-		for(ProjectType type:TYPES){
-			Optional<Project> directory=type.geussDirectory(file);
-			if(directory.isPresent())
-				return directory;
+	public static Project getProject(DataObject obj){
+		try{
+			Optional<Project> project=ProjectTypeManager.gaussProject(new File(new URI(DataObjectRegistry.getURL(obj))));
+			if(project.isPresent()){
+				projects.add(project.get());
+				return project.get();
+			}
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.INFO,null,ex);
 		}
-		return Optional.empty();
+		return null;
 	}
 }

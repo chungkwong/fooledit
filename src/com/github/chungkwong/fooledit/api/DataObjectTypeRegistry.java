@@ -63,7 +63,7 @@ public class DataObjectTypeRegistry{
 		//addDataObjectType(TextObjectType.INSTANCE);
 		//addDataEditor(()->new TextEditor(),TextObject.class);
 		//addDataEditor(()->new StructuredTextEditor(),TextObject.class);
-		addDataObjectType(TemplateChooser.INSTANCE);
-		addDataEditor(()->TemplateChooser.INSTANCE,TemplateChooser.class);
+		addDataObjectType(TemplateEditor.INSTANCE);
+		addDataEditor(()->TemplateEditor.INSTANCE,TemplateEditor.class);
 	}
 }

@@ -21,7 +21,7 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AntProject implements Project{
+public class AntProject extends Project{
 	private final File directory;
 	public AntProject(File directory){
 		this.directory=directory;

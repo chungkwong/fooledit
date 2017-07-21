@@ -31,28 +31,16 @@ import javafx.scene.layout.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TemplateChooser extends Prompt{
-	public static final TemplateChooser INSTANCE=new TemplateChooser();
+public class TemplateEditor extends Prompt{
+	public static final TemplateEditor INSTANCE=new TemplateEditor();
 	private static final Map<String,Function<Map<Object,Object>,Template>> templateTypes=new HashMap<>();
 	//private static final List<Map<Object,Object>> recent=(List<Map<Object,Object>>)PersistenceStatusManager.getOrDefault("template",()->Collections.emptyList());
-	private TemplateChooser(){
+	private TemplateEditor(){
 
 	}
 	@Override
 	public javafx.scene.Node edit(Prompt data){
-		BorderPane pane=new BorderPane();
-		TreeView templates=new TreeView(buildTree(loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("template-index",null))));
-		templates.setOnMouseClicked((e)->{
-			if(e.getClickCount()==2){
-				choose(templates);
-			}
-		});
-		templates.setShowRoot(false);
-		templates.setCellFactory((p)->new TemplateCell());
-
-		pane.setCenter(templates);
-		TextField filename=new TextField();
-		return pane;
+		return new TemplateChooser();
 	}
 	@Override
 	public KeymapRegistry getKeymapRegistry(){
@@ -63,38 +51,8 @@ public class TemplateChooser extends Prompt{
 	@Override
 	public CommandRegistry getCommandRegistry(){
 		CommandRegistry commands=new CommandRegistry();
-		commands.put("create",(area)->choose((TreeView)((BorderPane)Main.INSTANCE.getCurrentNode()).getCenter()));
+		commands.put("create",(area)->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose());
 		return commands;
-	}
-	private void choose(TreeView templates){
-		Object item=((TreeItem)templates.getSelectionModel().getSelectedItem()).getValue();
-		if(item instanceof Template){
-			Template template=(Template)item;
-			System.out.println(template.getParameters());
-			Properties props=new Properties();
-			props.put("package","xyz.beold");
-			props.put("name","Name");
-			props.put("project",Helper.hashMap("licensePath","../headers/GPL-3"));
-			props.put("date","2017-6-29");
-			props.put("user","kwong");
-			DataObject obj=template.apply(props);
-			System.out.println(template.getMimeType());
-			Main.addAndShow(obj,Helper.hashMap(DataObjectRegistry.TYPE,obj.getDataObjectType(),
-					DataObjectRegistry.MIME,template.getMimeType()));
-		}
-	}
-	private TreeItem buildTree(Map<Object,Object> obj){
-		TreeItem item;
-		if(obj.containsKey("children")){
-			item=new TreeItem(MessageRegistry.getString((String)obj.get("name")));
-			List<Map<Object,Object>> children=(List<Map<Object,Object>>)obj.get("children");
-			item.getChildren().setAll(children.stream().map(this::buildTree).collect(Collectors.toList()));
-		}else if(templateTypes.containsKey((String)obj.get("type"))){
-			item=new TreeItem(templateTypes.get((String)obj.get("type")).apply(obj));
-		}else{
-			item=new TreeItem();
-		}
-		return item;
 	}
 	@Override
 	public String getName(){
@@ -103,11 +61,64 @@ public class TemplateChooser extends Prompt{
 	public static void registerTemplateType(String key,Function<Map<Object,Object>,Template> type){
 		templateTypes.put(key,type);
 	}
+	public static void main(String[] args){
+		System.out.println(System.getProperties());
+	}
+	private class TemplateChooser extends BorderPane{
+		private final TreeView templates;
+		private final TextField filename=new TextField();
+		public TemplateChooser(){
+			templates=new TreeView(buildTree(loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("template-index",null))));
+			templates.setOnMouseClicked((e)->{
+				if(e.getClickCount()==2){
+					choose();
+				}
+			});
+			templates.setShowRoot(false);
+			templates.setCellFactory((p)->new TemplateCell());
+			setCenter(templates);
+		}
+		private TreeItem buildTree(Map<Object,Object> obj){
+			TreeItem item;
+			if(obj.containsKey("children")){
+				item=new TreeItem(MessageRegistry.getString((String)obj.get("name")));
+				List<Map<Object,Object>> children=(List<Map<Object,Object>>)obj.get("children");
+				item.getChildren().setAll(children.stream().map(this::buildTree).collect(Collectors.toList()));
+			}else if(templateTypes.containsKey((String)obj.get("type"))){
+				item=new TreeItem(templateTypes.get((String)obj.get("type")).apply(obj));
+			}else{
+				item=new TreeItem();
+			}
+			return item;
+		}
+		@Override
+		public void requestFocus(){
+			super.requestFocus();
+			templates.requestFocus();
+		}
+		private void choose(){
+			Object item=((TreeItem)templates.getSelectionModel().getSelectedItem()).getValue();
+			if(item instanceof Template){
+				Template template=(Template)item;
+				System.out.println(template.getParameters());
+				Properties props=new Properties();
+				props.put("package","xyz.beold");
+				props.put("name","Name");
+				props.put("project",Helper.hashMap("licensePath","../headers/GPL-3"));
+				props.put("date","2017-6-29");
+				props.put("user","kwong");
+				DataObject obj=template.apply(props);
+				System.out.println(template.getMimeType());
+				Main.addAndShow(obj,Helper.hashMap(DataObjectRegistry.TYPE,obj.getDataObjectType(),
+						DataObjectRegistry.MIME,template.getMimeType()));
+			}
+		}
+	}
 	private static class TemplateCell extends TreeCell<Object>{
 		public TemplateCell(){
 		}
 		@Override
-		protected void updateItem(Object item,boolean empty){
+			protected void updateItem(Object item,boolean empty){
 			super.updateItem(item,empty);
 			if(empty||item==null){
 				setText(null);
@@ -118,8 +129,5 @@ public class TemplateChooser extends Prompt{
 				setText((String)item);
 			}
 		}
-	}
-	public static void main(String[] args){
-		System.out.println(System.getProperties());
 	}
 }

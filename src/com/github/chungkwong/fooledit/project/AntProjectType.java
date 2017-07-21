@@ -27,7 +27,7 @@ public class AntProjectType implements ProjectType<AntProject>{
 		return new AntProject(directory);
 	}
 	@Override
-	public Optional<AntProject> gaussDirectory(File file){
+	public Optional<AntProject> geussDirectory(File file){
 		if(!file.isDirectory())
 			file=file.getParentFile();
 		while(file!=null){

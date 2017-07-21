@@ -17,7 +17,7 @@
 package com.github.chungkwong.fooledit.example.image;
 import static com.github.chungkwong.fooledit.api.DataObjectTypeRegistry.addDataEditor;
 import static com.github.chungkwong.fooledit.api.DataObjectTypeRegistry.addDataObjectType;
-import static com.github.chungkwong.fooledit.control.TemplateChooser.registerTemplateType;
+import static com.github.chungkwong.fooledit.control.TemplateEditor.registerTemplateType;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>

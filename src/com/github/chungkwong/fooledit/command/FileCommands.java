@@ -107,6 +107,6 @@ public class FileCommands{
 		}
 	}
 	public static void create(){
-		Main.INSTANCE.addAndShow(TemplateChooser.INSTANCE,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("TEMPLATE")));
+		Main.INSTANCE.addAndShow(TemplateEditor.INSTANCE,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("TEMPLATE")));
 	}
 }
