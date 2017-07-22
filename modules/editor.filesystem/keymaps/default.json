@@ -17,10 +17,11 @@
 	"Delete":"delete",
 	"C-C":"mark",
 	"Enter":"submit",
-	"C-M-N":"create-file",
-	"C-N":"create-directory",
+	"C-N":"create-file",
+	"Insert":"create-directory",
 	"C-V":"copy",
 	"C-R":"rename",
+	"F2":"rename",
 	"C-M":"move",
 	"C-S":"symbolic-link",
 	"C-H":"hard-link"

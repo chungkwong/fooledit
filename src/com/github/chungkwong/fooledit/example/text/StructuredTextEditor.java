@@ -52,11 +52,18 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("select-paragraph",(area)->area.getArea().selectParagraph());
 		addCommand("delete-next-character",(area)->area.getArea().deleteNextChar());
 		addCommand("delete-previous-character",(area)->area.getArea().deletePreviousChar());
+		addCommand("delete-next-word",(area)->area.deleteNextWord());
+		addCommand("delete-previous-word",(area)->area.deletePreviousWord());
+		addCommand("delete-line",(area)->area.deleteLine());
 		addCommand("new-line",(area)->area.newline());
+		addCommand("new-line-no-indent",(area)->area.getArea().replaceSelection("\n"));
+		addCommand("indent",(area)->area.getArea().replaceSelection("\t"));
 		addCommand("move-to-next-word",(area)->area.nextWord(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-previous-word",(area)->area.previousWord(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-next-character",(area)->area.getArea().nextChar(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-previous-character",(area)->area.getArea().previousChar(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-next-line",(area)->area.nextLine(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-previous-line",(area)->area.previousLine(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-next-page",(area)->area.getArea().nextPage(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-previous-page",(area)->area.getArea().prevPage(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-line-end",(area)->area.getArea().lineEnd(NavigationActions.SelectionPolicy.CLEAR));
@@ -70,6 +77,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("select-to-previous-word",(area)->area.previousWord(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-next-character",(area)->area.getArea().nextChar(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-previous-character",(area)->area.getArea().previousChar(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-next-line",(area)->area.nextLine(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-previous-line",(area)->area.previousLine(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-next-page",(area)->area.getArea().nextPage(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-previous-page",(area)->area.getArea().prevPage(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-line-end",(area)->area.getArea().lineEnd(NavigationActions.SelectionPolicy.ADJUST));

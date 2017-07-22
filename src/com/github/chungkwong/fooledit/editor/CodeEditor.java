@@ -109,6 +109,35 @@ public class CodeEditor extends BorderPane{
 		StyleSpans<Collection<String>> styleSpans=area.getStyleSpans(0,pos);
 		area.moveTo(styleSpans.getSpanCount()==0?0:pos-styleSpans.getStyleSpan(styleSpans.getSpanCount()-1).getLength(),policy);
 	}
+	public void deleteNextWord(){
+		nextWord(NavigationActions.SelectionPolicy.EXTEND);
+		area.replaceSelection("");
+	}
+	public void deletePreviousWord(){
+		previousWord(NavigationActions.SelectionPolicy.EXTEND);
+		area.replaceSelection("");
+	}
+	public void nextLine(NavigationActions.SelectionPolicy policy){
+		int targetParagraph=area.getCurrentParagraph()+1;
+		if(targetParagraph<area.getParagraphs().size())
+			area.moveTo(targetParagraph,Math.min(area.getCaretColumn(),area.getParagraphLenth(targetParagraph)),policy);
+		else
+			area.end(policy);
+	}
+	public void previousLine(NavigationActions.SelectionPolicy policy){
+		int targetParagraph=area.getCurrentParagraph()-1;
+		if(targetParagraph>=0)
+			area.moveTo(targetParagraph,Math.min(area.getCaretColumn(),area.getParagraphLenth(targetParagraph)),policy);
+		else
+			area.start(policy);
+	}
+	public void deleteLine(){
+		int currentParagraph=area.getCurrentParagraph();
+		if(currentParagraph+1<area.getParagraphs().size())
+			area.deleteText(currentParagraph,0,currentParagraph+1,0);
+		else
+			area.deleteText(currentParagraph,0,currentParagraph,area.getParagraphLenth(currentParagraph));
+	}
 	public void transform(Function<String,String> transformer){
 		area.replaceSelection(transformer.apply(area.getSelectedText()));
 	}

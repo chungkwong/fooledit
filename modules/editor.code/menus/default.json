@@ -17,6 +17,8 @@
 					{"name":"PREVIOUS_WORD","command":"move-to-previous-word"},
 					{"name":"LINE_END","command":"move-to-line-end"},
 					{"name":"LINE_BEGIN","command":"move-to-line-begin"},
+					{"name":"NEXT_LINE","command":"move-to-next-line"},
+					{"name":"PREVIOUS_LINE","command":"move-to-previous-line"},
 					{"name":"PARAGRAPH_END","command":"move-to-paragraph-end"},
 					{"name":"PARAGRAPH_BEGIN","command":"move-to-paragraph-begin"},
 					{"name":"NEXT_PAGE","command":"move-to-next-page"},
@@ -31,6 +33,8 @@
 					{"name":"PREVIOUS_WORD","command":"select-to-previous-word"},
 					{"name":"LINE_END","command":"select-to-line-end"},
 					{"name":"LINE_BEGIN","command":"select-to-line-begin"},
+					{"name":"NEXT_LINE","command":"select-to-next-line"},
+					{"name":"PREVIOUS_LINE","command":"select-to-previous-line"},
 					{"name":"PARAGRAPH_END","command":"select-to-paragraph-end"},
 					{"name":"PARAGRAPH_BEGIN","command":"select-to-paragraph-begin"},
 					{"name":"NEXT_PAGE","command":"select-to-next-page"},
@@ -47,11 +51,16 @@
 				{"name":"DESELECT","command":"deselect"},
 				{},
 				{"name":"INSERT","children":[
-					{"name":"NEW_LINE","command":"new-line"}
+					{"name":"NEW_LINE","command":"new-line"},
+					{"name":"NEW_LINE_NO_INDENT","command":"new-line-no-indent"},
+					{"name":"INDENT","command":"indent"}
 				]},
 				{"name":"DELETE","children":[
-					{"name":"DELETE_NEXT_CHARACTER","command":"delete-next-character"},
-					{"name":"DELETE_PREVIOUS_CHARACTER","command":"delete-previous-character"}
+					{"name":"NEXT_CHARACTER","command":"delete-next-character"},
+					{"name":"PREVIOUS_CHARACTER","command":"delete-previous-character"},
+					{"name":"NEXT_WORD","command":"delete-next-word"},
+					{"name":"PREVIOUS_WORD","command":"delete-previous-word"},
+					{"name":"LINE","command":"delete-line"}
 				]},
 				{"name":"TRANSFORM","children":[
 					{"name":"TO_UPPERCASE","command":"to-uppercase"},

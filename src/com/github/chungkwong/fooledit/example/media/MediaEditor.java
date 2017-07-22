@@ -54,7 +54,7 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 			data=new MediaObject(new MediaPlayer(new Media(new File("/home/kwong/视频/860b4ce2a01af63795899c89bc9a8c7b.mp4").toURI().toString())));
 			//in.close();
 		}catch(Exception ex){
-			Logger.getLogger(TextEditor.class.getName()).log(Level.SEVERE,null,ex);
+			Logger.getLogger(PlainTextEditor.class.getName()).log(Level.SEVERE,null,ex);
 			throw new RuntimeException();
 		}
 		Node edit=new MediaEditor().edit(data);

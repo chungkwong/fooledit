@@ -32,9 +32,9 @@ import javafx.stage.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TextEditor extends Application implements DataEditor<TextObject>{
+public class PlainTextEditor extends Application implements DataEditor<TextObject>{
 	private final MenuRegistry menuRegistry=new MenuRegistry();
-	public TextEditor(){
+	public PlainTextEditor(){
 		menuRegistry.getMenuBar().getMenus().add(new Menu("Text"));
 	}
 	@Override
@@ -62,10 +62,10 @@ public class TextEditor extends Application implements DataEditor<TextObject>{
 			data=TextObjectType.INSTANCE.readFrom(in);
 			in.close();
 		}catch(Exception ex){
-			Logger.getLogger(TextEditor.class.getName()).log(Level.SEVERE,null,ex);
+			Logger.getLogger(PlainTextEditor.class.getName()).log(Level.SEVERE,null,ex);
 			throw new RuntimeException();
 		}
-		Node edit=new TextEditor().edit(data);
+		Node edit=new PlainTextEditor().edit(data);
 		Button save=new Button("Save");
 		save.setOnAction((e)->{
 			try{
@@ -73,7 +73,7 @@ public class TextEditor extends Application implements DataEditor<TextObject>{
 				data.getDataObjectType().writeTo(data,out);
 				out.close();
 			}catch(Exception ex){
-				Logger.getLogger(TextEditor.class.getName()).log(Level.SEVERE,null,ex);
+				Logger.getLogger(PlainTextEditor.class.getName()).log(Level.SEVERE,null,ex);
 			}
 		});
 		Scene scene=new Scene(new BorderPane(edit,save,null,null,null));
