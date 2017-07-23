@@ -56,7 +56,7 @@ public class TemplateEditor extends Prompt{
 	}
 	@Override
 	public String getName(){
-		return "TEMPLATES";
+		return MessageRegistry.getString("TEMPLATES");
 	}
 	public static void registerTemplateType(String key,Function<Map<Object,Object>,Template> type){
 		templateTypes.put(key,type);

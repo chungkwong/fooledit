@@ -1,0 +1,14 @@
+{
+	"keymap-file":{
+		"short_description":"Keymap",
+		"long_description":"",
+		"type":"file",
+		"default_value":"keymaps/default.json"
+	},
+	"menubar-file":{
+		"short_description":"Menu_Bar",
+		"long_description":"",
+		"type":"file",
+		"default_value":"menus/default.json"
+	}
+}

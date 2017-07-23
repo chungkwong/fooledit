@@ -25,7 +25,7 @@ public class MediaEditorModule{
 	public static final String NAME="editor.media";
 	public static void onLoad(){
 		addDataObjectType(MediaObjectType.INSTANCE);
-		addDataEditor(()->new MediaEditor(),MediaObject.class);
+		addDataEditor(()->MediaEditor.INSTANCE,MediaObject.class);
 	}
 	public static void onUnLoad(){
 

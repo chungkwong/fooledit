@@ -25,9 +25,9 @@ import javax.script.*;
 public class ScriptAPI{
 	private final Evaluator SCHEME_ENGINE=new Evaluator(true);
 	private final SimpleScriptContext CONTEXT;
-	public ScriptAPI(com.github.chungkwong.fooledit.Main main){
+	public ScriptAPI(){
 		this.CONTEXT=new SimpleScriptContext();
-		CONTEXT.setBindings(new ScriptEnvironment(main),SimpleScriptContext.GLOBAL_SCOPE);
+		CONTEXT.setBindings(new ScriptEnvironment(),SimpleScriptContext.GLOBAL_SCOPE);
 	}
 	public Object eval(Reader reader) throws ScriptException{
 		return SCHEME_ENGINE.eval(reader,CONTEXT);

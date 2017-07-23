@@ -73,11 +73,12 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 		commandRegistry.put(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()));
 	}
 	private void moveToPreviousPage(TreeTableView<Path> tree){
-
+		int newIndex=((TreeTableViewSkin)tree.getSkin()).onScrollPageUp(true);
+		tree.getFocusModel().focus(newIndex);
 	}
 	private void moveToNextPage(TreeTableView<Path> tree){
-		VirtualFlow flow=(VirtualFlow)tree.getChildrenUnmodifiable().get(1);
-		System.err.println(flow.getChildrenUnmodifiable());
+		int newIndex=((TreeTableViewSkin)tree.getSkin()).onScrollPageDown(true);
+		tree.getFocusModel().focus(newIndex);
 	}
 	private void focusUp(TreeTableView<Path> tree){
 		TreeItem<Path> curr=tree.getFocusModel().getFocusedItem();

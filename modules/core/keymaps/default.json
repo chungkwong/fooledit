@@ -2,7 +2,7 @@
 	"C-1":"keep-only",
 	"C-2":"split-vertically",
 	"C-3":"split-horizontally",
-	"F11":"full-screen",
+	"F11":"toggle-full-screen",
 	"M-F10":"maximize-frame",
 	"C-Z":"iconify-frame",
 	"M-X":"command",
@@ -13,6 +13,6 @@
 	"C-X+4":"full-screen",
 	"C-X+5":"split-horizontally",
 	"C-X+C-D":"split-vertically",
-	"C-Page Down":"next-buffer",
-	"C-Page Up":"previous-buffer"
+	"M-Page Down":"next-buffer",
+	"M-Page Up":"previous-buffer"
 }

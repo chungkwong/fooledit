@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.control;
+import com.github.chungkwong.fooledit.*;
 import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.model.*;
 import com.github.chungkwong.fooledit.util.*;
@@ -39,6 +40,11 @@ public class WorkSheet extends BorderPane{
 	}
 	public WorkSheet(DataObject data,DataEditor editor){
 		super(pack(data,editor));
+	}
+	@Override
+	public void requestFocus(){
+		super.requestFocus();
+		getCenter().requestFocus();
 	}
 	public void splitVertically(DataObject data,DataEditor editor){
 		split(pack(data,editor),Orientation.VERTICAL);
@@ -79,6 +85,7 @@ public class WorkSheet extends BorderPane{
 	private static final String CHILDREN="children";
 	private static final String EDITOR="editor";
 	private static final String BUFFER="buffer";
+	private static final String CURRENT="current";
 	public Map<Object,Object> toJSON(){
 		Node center=getCenter();
 		HashMap<Object,Object> map=new HashMap<>();
@@ -87,6 +94,7 @@ public class WorkSheet extends BorderPane{
 			map.put(DIVIDERS,Arrays.stream(((SplitPane)center).getDividerPositions()).boxed().collect(Collectors.toList()));
 			map.put(CHILDREN,((SplitPane)center).getItems().stream().map((c)->((WorkSheet)c).toJSON()).collect(Collectors.toList()));
 		}else{
+			map.put(CURRENT,Main.getCurrentWorkSheet()==this);
 			map.put(EDITOR,getDataEditor().getClass().getName());
 			map.put(BUFFER,DataObjectRegistry.getProperties(getDataObject()));
 		}
@@ -104,7 +112,10 @@ public class WorkSheet extends BorderPane{
 			String editorName=(String)json.get(EDITOR);
 			DataEditor editor=DataObjectTypeRegistry.getDataEditors(buffer.getClass()).stream().
 					filter((e)->e.getClass().getName().equals(editorName)).findFirst().get();
-			return new WorkSheet(buffer,editor);
+			WorkSheet workSheet=new WorkSheet(buffer,editor);
+			if((Boolean)json.get(CURRENT))
+				Main.INSTANCE.setCurrentWorkSheet(workSheet);
+			return workSheet;
 		}
 	}
 	public boolean isSplit(){

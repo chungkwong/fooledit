@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.example.image;
-import com.github.chungkwong.fooledit.model.DataEditor;
-import com.github.chungkwong.fooledit.control.PaintChooser;
-import com.github.chungkwong.fooledit.control.FontChooser;
-import com.github.chungkwong.fooledit.control.OptionDialog;
-import com.github.chungkwong.fooledit.api.MessageRegistry;
+import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.control.*;
+import com.github.chungkwong.fooledit.model.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -145,7 +143,9 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		effectChooser.getSelectionModel().selectFirst();
 		effectChooser.getSelectionModel().selectedItemProperty().addListener((e,o,n)->canvas.setEffect(n.getEffect()));
 		Spinner<Double> scaleChooser=new Spinner<>(0.0,4.0,1.0);
-		scaleChooser.valueProperty().addListener((e,o,n)->{canvas.setScaleX(n);canvas.setScaleY(n);});
+		scaleChooser.valueProperty().addListener((e,o,n)->{
+			canvas.setTranslateX(canvas.getWidth()*(n-1)/2);canvas.setScaleX(n);
+			canvas.setTranslateY(canvas.getHeight()*(n-1)/2);canvas.setScaleY(n);});
 		Spinner<Double> rotateChooser=new Spinner<>(-180.0,180.0,0.0);
 		rotateChooser.valueProperty().addListener((e,o,n)->{canvas.setRotate(n);});
 		return new HBox(effectChooser,scaleChooser,rotateChooser);

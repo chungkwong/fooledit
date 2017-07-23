@@ -13,7 +13,7 @@
 		{
 			"name":"VIEW",
 			"children":[
-				{"name":"FULL_SCREEN","command":"full-screen"},
+				{"name":"TOGGLE_FULL_SCREEN","command":"toggle-full-screen"},
 				{"name":"MAXIMIZE_FRAME","command":"maximize-frame"},
 				{"name":"ICONIFY_FRAME","command":"iconify-frame"},
 				{"name":"ALWAYS_ON_TOP_FRAME","command":"always-on-top-frame"},

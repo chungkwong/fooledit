@@ -1,0 +1,13 @@
+{
+	"children":[
+		{
+			"name":"MEDIA",
+			"children":[
+				{"name":"PLAY","command":"play"},
+				{"name":"PAUSE","command":"pause"},
+				{},
+				{"name":"GOTO","provider":"editor.media.Markers"}
+			]
+		}
+	]
+}

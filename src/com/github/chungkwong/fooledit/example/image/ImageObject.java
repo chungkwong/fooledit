@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.example.image;
-import com.github.chungkwong.fooledit.model.DataObjectType;
-import com.github.chungkwong.fooledit.model.DataObject;
+import com.github.chungkwong.fooledit.model.*;
 import javafx.scene.canvas.*;
 import javafx.scene.image.*;
 /**
@@ -25,7 +24,6 @@ import javafx.scene.image.*;
  */
 public class ImageObject implements DataObject<ImageObject>{
 	private final Canvas canvas;
-
 	public ImageObject(Image image){
 		canvas=new Canvas(image.getWidth(),image.getHeight());
 		canvas.getGraphicsContext2D().drawImage(image,0,0);
@@ -37,5 +35,4 @@ public class ImageObject implements DataObject<ImageObject>{
 	public DataObjectType<ImageObject> getDataObjectType(){
 		return ImageObjectType.INSTANCE;
 	}
-
 }

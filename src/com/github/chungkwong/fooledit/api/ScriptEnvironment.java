@@ -15,78 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.api;
-import com.github.chungkwong.fooledit.util.BiSet;
-import com.github.chungkwong.fooledit.model.Command;
-import com.github.chungkwong.fooledit.Main;
+import com.github.chungkwong.fooledit.*;
+import com.github.chungkwong.fooledit.model.*;
+import com.github.chungkwong.fooledit.util.*;
 import com.github.chungkwong.jschememin.lib.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
-import java.util.stream.*;
 import javax.script.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ScriptEnvironment implements Bindings{
-	private final Main main;
-	private final CommandRegistry commands;
-	private final HashMap<String,Object> bindings=new HashMap<>();
-	public ScriptEnvironment(Main main){
-		this.main=main;
-		this.commands=main.getCommandRegistry();
+public class ScriptEnvironment extends BiMap<String,Object> implements Bindings{
+	public ScriptEnvironment(){
+		super(new HashMap<>(),new MappedMap<>(Main.INSTANCE.getCommandRegistry(),ScriptEnvironment::pack,ScriptEnvironment::unpack));
 	}
-	@Override
-	public Object put(String name,Object value){
-		return bindings.put(name,value);
-	}
-	@Override
-	public void putAll(Map<? extends String,? extends Object> toMerge){
-		bindings.putAll(toMerge);
-	}
-	@Override
-	public boolean containsKey(Object key){
-		return bindings.containsKey(key)||commands.containsKey((String)key);
-	}
-	@Override
-	public Object get(Object key){
-		return bindings.containsKey(key)?bindings.get(key):pack(commands.get((String)key));
-	}
-	@Override
-	public Object remove(Object key){
-		return bindings.remove(key);
-	}
-	@Override
-	public int size(){
-		return bindings.size()+commands.size();
-	}
-	@Override
-	public boolean isEmpty(){
-		return bindings.isEmpty()&&commands.isEmpty();
-	}
-	@Override
-	public boolean containsValue(Object value){
-		return bindings.containsValue(value)||commands.values().stream().map(this::pack).anyMatch((o)->o.equals(value));
-	}
-	@Override
-	public void clear(){
-		bindings.clear();
-	}
-	@Override
-	public Set<String> keySet(){
-		return new BiSet<>(bindings.keySet(),commands.keySet());
-	}
-	@Override
-	public Collection<Object> values(){
-		return new BiSet<>(bindings.values(),commands.values().stream().map(this::pack).collect(Collectors.toSet()));
-	}
-	@Override
-	public Set<Entry<String,Object>> entrySet(){
-		return new BiSet<>(bindings.entrySet(),commands.entrySet().stream().collect(Collectors.toMap((e)->e.getKey(),(e)->pack(e.getValue()))).entrySet());
-	}
-	private Object pack(Command command){
+	private static Object pack(Command command){
 		return new NativeEvaluable((o)->{
 			command.accept(ScmNil.NIL);
 			return ScmNil.NIL;
 		});
+	}
+	private static Command unpack(Object o){
+		return null;
 	}
 }

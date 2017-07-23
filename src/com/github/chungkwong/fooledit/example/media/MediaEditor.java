@@ -15,15 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.example.media;
+import com.github.chungkwong.fooledit.*;
 import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.example.text.*;
 import com.github.chungkwong.fooledit.model.*;
+import com.github.chungkwong.fooledit.setting.*;
 import java.io.*;
+import java.util.*;
+import java.util.function.*;
 import java.util.logging.*;
 import static javafx.application.Application.launch;
 import javafx.application.*;
-import javafx.beans.*;
-import javafx.event.*;
+import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -35,10 +38,34 @@ import javafx.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MediaEditor extends Application implements DataEditor<MediaObject>{
+	public static final MediaEditor INSTANCE=new MediaEditor();
+	private final MenuRegistry menuRegistry=new MenuRegistry();
+	private final CommandRegistry commandRegistry=new CommandRegistry();
+	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
+	private MediaEditor(){
+		addCommand("play",(player)->player.play());
+		addCommand("pause",(player)->player.pause());
+		menuRegistry.registerDynamicMenu("editor.media.Markers",(items)->{
+			MediaPlayer player=((MediaObject)Main.INSTANCE.getCurrentDataObject()).getProperty().getValue();
+			ObservableMap<String,Duration> entries=player.getMedia().getMarkers();
+			items.clear();
+			entries.forEach((mark,time)->{
+				MenuItem item=new MenuItem(mark);
+				item.setOnAction((e)->{
+					player.seek(time);
+				});
+				items.add(item);
+			});
+		});
+		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(MediaEditorModule.NAME).get("menubar-file",null)));
+		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(MediaEditorModule.NAME).get("keymap-file",null)));
+	}
 	@Override
 	public Node edit(MediaObject data){
 		MediaView editor=new MediaView();
 		MediaPlayer player=data.getProperty().getValue();
+		player.statusProperty().addListener((e,o,n)->Main.INSTANCE.getNotifier().notify(MessageRegistry.getString(n.toString())));
+		player.setOnMarker((e)->Main.INSTANCE.getNotifier().notify(e.getMarker().getKey()));
 		editor.setMediaPlayer(player);
 		player.play();
 		return new BorderPane(new ScrollPane(editor),new Label(player.getMedia().getMetadata().toString()),null,new MediaControl(player),null);
@@ -74,81 +101,59 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 	public String getName(){
 		return MessageRegistry.getString("MEDIA_PLAYER");
 	}
+	private void addCommand(String name,Consumer<MediaPlayer> action){
+		commandRegistry.put(name,()->action.accept(((MediaObject)Main.INSTANCE.getCurrentDataObject()).getProperty().getValue()));
+	}
+	@Override
+	public MenuRegistry getMenuRegistry(){
+		return menuRegistry;
+	}
+	@Override
+	public CommandRegistry getCommandRegistry(){
+		return commandRegistry;
+	}
+	@Override
+	public KeymapRegistry getKeymapRegistry(){
+		return keymapRegistry;
+	}
 }
 class MediaControl extends HBox{
 	private MediaPlayer mp;
 	private MediaView mediaView;
-	private boolean repeat=false;
-	private boolean stopRequested=false;
-	private boolean atEndOfMedia=false;
 	private Duration duration;
 	private Slider timeSlider;
 	private Label playTime;
 	private Slider volumeSlider;
+	private Spinner<Double> rateSpinner;
 	public MediaControl(MediaPlayer mp){
 		this.mp=mp;
 		Button playButton=new Button(">");
-		playButton.setOnAction(new EventHandler<ActionEvent>(){
-			public void handle(ActionEvent e){
-				MediaPlayer.Status status=mp.getStatus();
-				if(status==MediaPlayer.Status.UNKNOWN||status==MediaPlayer.Status.HALTED){
-					return;
-				}
-				if(status==MediaPlayer.Status.PAUSED||status==MediaPlayer.Status.READY||status==MediaPlayer.Status.STOPPED){
-					if(atEndOfMedia){
-						mp.seek(mp.getStartTime());
-						atEndOfMedia=false;
-					}
-					mp.play();
-				}else{
-					mp.pause();
-				}
+		playButton.setOnAction((e)->{
+			MediaPlayer.Status status=mp.getStatus();
+			if(status==MediaPlayer.Status.UNKNOWN||status==MediaPlayer.Status.HALTED){
+				return;
+			}
+			if(status==MediaPlayer.Status.PAUSED||status==MediaPlayer.Status.READY||status==MediaPlayer.Status.STOPPED){
+				mp.play();
+			}else{
+				mp.pause();
 			}
 		});
-		mp.currentTimeProperty().addListener(new InvalidationListener(){
-			public void invalidated(Observable ov){
-				updateValues();
-			}
+		mp.currentTimeProperty().addListener((ov)->updateValues());
+		mp.setOnPlaying(()->playButton.setText("||"));
+		mp.setOnPaused(()->playButton.setText(">"));
+		mp.setOnReady(()->{
+			duration=mp.getMedia().getDuration();
+			updateValues();
 		});
-		mp.setOnPlaying(new Runnable(){
-			public void run(){
-				if(stopRequested){
-					mp.pause();
-					stopRequested=false;
-				}else{
-					playButton.setText("||");
-				}
-			}
-		});
-		mp.setOnPaused(new Runnable(){
-			public void run(){
-				playButton.setText(">");
-			}
-		});
-		mp.setOnReady(new Runnable(){
-			public void run(){
-				duration=mp.getMedia().getDuration();
-				updateValues();
-			}
-		});
-		mp.setOnEndOfMedia(new Runnable(){
-			public void run(){
-				if(!repeat){
-					playButton.setText(">");
-					stopRequested=true;
-					atEndOfMedia=true;
-				}
-			}
-		});
+		mp.setOnEndOfMedia(()->mp.seek(mp.getStartTime()));
 		getChildren().add(playButton);
 		timeSlider=new Slider();
 		HBox.setHgrow(timeSlider,Priority.ALWAYS);
 		timeSlider.setMaxWidth(Double.MAX_VALUE);
-		timeSlider.valueProperty().addListener(new InvalidationListener(){
-			public void invalidated(Observable ov){
-				if(timeSlider.isValueChanging()){
-					mp.seek(duration.multiply(timeSlider.getValue()/100.0));
-				}
+		timeSlider.valueProperty().addListener((ov)->{
+			if(timeSlider.isValueChanging()){
+				mp.seek(duration.multiply(timeSlider.getValue()/100.0));
 			}
 		});
 		getChildren().add(timeSlider);
@@ -157,30 +162,26 @@ class MediaControl extends HBox{
 		ToggleButton loop=new ToggleButton("↺");
 		loop.setSelected(mp.getCycleCount()!=1);
 		loop.setOnAction((e)->{
-			repeat=loop.isSelected();
-			mp.setCycleCount(repeat?MediaPlayer.INDEFINITE:1);
+			mp.setCycleCount(loop.isSelected()?MediaPlayer.INDEFINITE:1);
 		});
 		getChildren().add(loop);
-		Label volumeLabel=new Label("Vol: ");
+		rateSpinner=new Spinner<>(0.0,8.0,1.0,0.5);
+		mp.rateProperty().bind(rateSpinner.valueProperty());
+		getChildren().add(rateSpinner);
+		Label volumeLabel=new Label("X Vol: ");
 		getChildren().add(volumeLabel);
 		volumeSlider=new Slider(0,2.0,1.0);
-		volumeSlider.valueProperty().addListener(new InvalidationListener(){
-			public void invalidated(Observable ov){
-				mp.setVolume(volumeSlider.getValue());
-			}
-		});
+		volumeSlider.valueProperty().addListener((ov)->mp.setVolume(volumeSlider.getValue()));
 		getChildren().add(volumeSlider);
 	}
 	protected void updateValues(){
 		if(playTime!=null&&timeSlider!=null&&volumeSlider!=null){
-			Platform.runLater(new Runnable(){
-				public void run(){
-					Duration currentTime=mp.getCurrentTime();
-					playTime.setText(formatTime(currentTime,duration));
-					timeSlider.setDisable(duration.isUnknown());
-					if(!timeSlider.isDisabled()&&duration.greaterThan(Duration.ZERO)&&!timeSlider.isValueChanging()){
-						timeSlider.setValue(currentTime.divide(duration).toMillis()*100.0);
-					}
+			Platform.runLater(()->{
+				Duration currentTime=mp.getCurrentTime();
+				playTime.setText(formatTime(currentTime,duration));
+				timeSlider.setDisable(duration.isUnknown());
+				if(!timeSlider.isDisabled()&&duration.greaterThan(Duration.ZERO)&&!timeSlider.isValueChanging()){
+					timeSlider.setValue(currentTime.divide(duration).toMillis()*100.0);
 				}
 			});
 		}

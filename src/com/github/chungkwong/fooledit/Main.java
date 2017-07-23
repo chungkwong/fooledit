@@ -16,11 +16,11 @@
  */
 package com.github.chungkwong.fooledit;
 
-import com.github.chungkwong.fooledit.example.browser.BrowserData;
 import static com.github.chungkwong.fooledit.api.KeymapRegistry.encode;
 import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.command.*;
 import com.github.chungkwong.fooledit.control.*;
+import com.github.chungkwong.fooledit.example.browser.*;
 import com.github.chungkwong.fooledit.example.filesystem.*;
 import com.github.chungkwong.fooledit.example.text.*;
 import com.github.chungkwong.fooledit.model.*;
@@ -35,10 +35,8 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
-import java.util.stream.*;
 import javafx.application.*;
 import javafx.collections.*;
-import javafx.scene.Node;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
@@ -54,7 +52,8 @@ public class Main extends Application{
 	private static final File SYSTEM_PATH=computePath();
 	private static final File MODULE_PATH=new File(SYSTEM_PATH,"modules");
 	private static final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
-	private final CommandRegistry commandRegistry=new CommandRegistry();
+	private final CommandRegistry globalCommandRegistry=new CommandRegistry();
+	private final BiMap<String,Command> commandRegistry=new BiMap<>(globalCommandRegistry,null);
 	private MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
 	private final Notifier notifier;
@@ -78,17 +77,17 @@ public class Main extends Application{
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
 		}
 		Logger.getGlobal().addHandler(notifier);
-		script=new ScriptAPI(this);
-		ModuleRegistry.loadDefault();
-		runScript();
-		root.setCenter(getDefaultWorkSheet());
-		initMenuBar();
-		root.setBottom(notifier.getStatusBar());
+		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		registerStandardCommand();
 		keymapRegistry=new KeymapRegistry();
 		keymapRegistry.registerKeys((Map<String,String>)(Object)loadJSON((File)SettingManager.getOrCreate("core").get("keymap-file",null)));
 		new KeymapSupport();
-		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
+		initMenuBar();
+		script=new ScriptAPI();
+		ModuleRegistry.loadDefault();
+		loadDefaultWorkSheet();
+		root.setBottom(notifier.getStatusBar());
+		runScript();
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
 	private void initMenuBar(){
@@ -103,26 +102,28 @@ public class Main extends Application{
 		root.setTop(commander);
 	}
 	private void registerStandardCommand(){
-		commandRegistry.put("new",()->FileCommands.create());
-		commandRegistry.put("open-file",()->FileCommands.open());
-		commandRegistry.put("save",()->FileCommands.save());
-		commandRegistry.put("save-as",()->FileCommands.saveAs());
-		commandRegistry.put("full-screen",()->stage.setFullScreen(true));
-		commandRegistry.put("maximize-frame",()->stage.setMaximized(true));
-		commandRegistry.put("iconify-frame",()->stage.setIconified(true));
-		commandRegistry.put("always-on-top-frame",()->stage.setAlwaysOnTop(true));
-		commandRegistry.put("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
-		commandRegistry.put("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
-		commandRegistry.put("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
-		commandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
-		commandRegistry.put("file-system",()->addAndShow(new FileSystemData(null),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"File System")));
-		commandRegistry.put("command",()->input.requestFocus());
-		commandRegistry.put("cancel",()->getCurrentNode().requestFocus());
-		commandRegistry.put("next-buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
-		commandRegistry.put("previous-buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
-		commandRegistry.put("start-record",()->{macro.clear();recording=true;});
-		commandRegistry.put("stop-record",()->{recording=false;macro.remove(0);macro.remove(macro.size()-1);});
-		commandRegistry.put("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
+		globalCommandRegistry.put("new",()->FileCommands.create());
+		globalCommandRegistry.put("open-file",()->FileCommands.open());
+		globalCommandRegistry.put("save",()->FileCommands.save());
+		globalCommandRegistry.put("save-as",()->FileCommands.saveAs());
+		globalCommandRegistry.put("full-screen",()->stage.setFullScreen(true));
+		globalCommandRegistry.put("toggle-full-screen",()->stage.setFullScreen(!stage.isFullScreen()));
+		globalCommandRegistry.put("exit-full-screen",()->stage.setFullScreen(false));
+		globalCommandRegistry.put("maximize-frame",()->stage.setMaximized(true));
+		globalCommandRegistry.put("iconify-frame",()->stage.setIconified(true));
+		globalCommandRegistry.put("always-on-top-frame",()->stage.setAlwaysOnTop(true));
+		globalCommandRegistry.put("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
+		globalCommandRegistry.put("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
+		globalCommandRegistry.put("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
+		globalCommandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
+		globalCommandRegistry.put("file-system",()->addAndShow(new FileSystemData(null),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"File System")));
+		globalCommandRegistry.put("command",()->input.requestFocus());
+		globalCommandRegistry.put("cancel",()->getCurrentNode().requestFocus());
+		globalCommandRegistry.put("next-buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
+		globalCommandRegistry.put("previous-buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
+		globalCommandRegistry.put("start-record",()->{macro.clear();recording=true;});
+		globalCommandRegistry.put("stop-record",()->{recording=false;macro.remove(0);macro.remove(macro.size()-1);});
+		globalCommandRegistry.put("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
@@ -165,7 +166,7 @@ public class Main extends Application{
 	}
 	private MenuItem createCommandMenuItem(String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase()));
-		item.setOnAction((e)->commandRegistry.get(name).accept(ScmNil.NIL));
+		item.setOnAction((e)->globalCommandRegistry.get(name).accept(ScmNil.NIL));
 		return item;
 	}
 	private void updateCurrentNode(Node node){
@@ -175,6 +176,7 @@ public class Main extends Application{
 		if(node!=null){
 			currentNode=((WorkSheet)node).getCenter();
 			commander.getChildren().set(1,((WorkSheet)node).getDataEditor().getMenuRegistry().getMenuBar());
+			commandRegistry.setLocal(getLocalCommandRegistry());
 		}
 	}
 	public static void addAndShow(DataObject data,Map<String,String> prop){
@@ -196,23 +198,22 @@ public class Main extends Application{
 	public static WorkSheet getCurrentWorkSheet(){
 		return (WorkSheet)currentNode.getParent();
 	}
-	private static WorkSheet getDefaultWorkSheet(){
+	public void setCurrentWorkSheet(WorkSheet workSheet){
+		updateCurrentNode(workSheet.getCenter());
+	}
+	private void loadDefaultWorkSheet(){
 		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
-		return (WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
+		root.setCenter((WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
 			String msg=MessageRegistry.getString("WELCOME");
 			TextObject welcome=new TextObject(msg);
 			DataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,msg,DataObjectRegistry.TYPE,TextObjectType.class.getName()));
-			return new WorkSheet(welcome,getDefaultEditor(welcome));
-		});
-	}
-	public Command getCommand(String key){
-		return getLocalCommandRegistry().getOrDefault(key,getGlobalCommandRegistry().get(key));
-	}
-	public Stream<String> getCommandKeys(){
-		return new BiSet<>(getLocalCommandRegistry().keySet(),getGlobalCommandRegistry().keySet()).stream();
+			WorkSheet workSheet=new WorkSheet(welcome,getDefaultEditor(welcome));
+			setCurrentWorkSheet(workSheet);
+			return workSheet;
+		}));
 	}
 	private CommandRegistry getGlobalCommandRegistry(){
-		return commandRegistry;
+		return globalCommandRegistry;
 	}
 	private CommandRegistry getLocalCommandRegistry(){
 		return getCurrentWorkSheet().getDataEditor().getCommandRegistry();
@@ -249,6 +250,7 @@ public class Main extends Application{
 		primaryStage.setTitle("IDEM");
 		primaryStage.setScene(scene);
 		primaryStage.setMaximized(true);
+		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		primaryStage.show();
 	}
 	public static File getSystemPath(){
@@ -314,7 +316,7 @@ public class Main extends Application{
 	public ScriptAPI getScriptAPI(){
 		return script;
 	}
-	public CommandRegistry getCommandRegistry(){
+	public Map<String,Command> getCommandRegistry(){
 		return commandRegistry;
 	}
 	class KeymapSupport{
@@ -356,7 +358,7 @@ public class Main extends Application{
 					if(code.equals(next)){
 						e.consume();
 						curr=null;
-						Command command=getCommand(commandName);
+						Command command=getCommandRegistry().get(commandName);
 						getNotifier().notifyStarted(command.getDisplayName());
 						command.accept(ScmNil.NIL);
 						getNotifier().notifyFinished(command.getDisplayName());
