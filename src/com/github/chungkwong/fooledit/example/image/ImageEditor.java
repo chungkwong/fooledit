@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.example.image;
+import com.github.chungkwong.fooledit.*;
 import com.github.chungkwong.fooledit.api.*;
 import com.github.chungkwong.fooledit.control.*;
 import com.github.chungkwong.fooledit.model.*;
@@ -41,7 +42,9 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 	@Override
 	public Node edit(ImageObject data){
 		Canvas canvas=data.getCanvas();
+		canvas.setCursor(Cursor.CROSSHAIR);
 		ImageContext context=new ImageContext(canvas);
+
 		return new BorderPane(new ScrollPane(new StackPane(canvas,context.preview)),getEffectBar(context),getPathBar(context),getPropertiesBar(context),null);
 	}
 	private Node getPathBar(ImageContext context){
@@ -103,18 +106,22 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			c.preview.getGraphicsContext2D().stroke();
 		})),
 		ARC(keepOrMake((e,c)->{
-			c.getGraphics().arcTo(c.lastx,c.lasty,e.getX(),e.getY(),Math.PI);
-			c.preview.getGraphicsContext2D().arcTo(c.lastx,c.lasty,e.getX(),e.getY(),Math.PI);
+			double angle=getAngle(c.lastlastx,c.lastlasty,c.lastx,c.lasty,e.getX(),e.getY());
+			c.getGraphics().arcTo(c.lastx,c.lasty,e.getX(),e.getY(),angle);
+			c.preview.getGraphicsContext2D().arcTo(c.lastx,c.lasty,e.getX(),e.getY(),angle);
 			c.preview.getGraphicsContext2D().stroke();
 		})),
 		BEZIER(keepOrMake((e,c)->{
-			c.getGraphics().bezierCurveTo(c.lastx,c.lasty,c.lastx,c.lasty,e.getX(),e.getY());
+			c.getGraphics().bezierCurveTo(c.lastlastx,c.lastlasty,c.lastx,c.lasty,e.getX(),e.getY());
 			c.preview.getGraphicsContext2D().bezierCurveTo(c.lastx,c.lasty,c.lastx,c.lasty,e.getX(),e.getY());
 			c.preview.getGraphicsContext2D().stroke();
 		})),
 		TEXT((e,c)->{
-			c.getGraphics().strokeText(OptionDialog.showInputDialog("","Text:"),e.getX(),e.getY());
-			clearPreview(c);
+			Main.INSTANCE.getMiniBuffer().setMode((text)->{
+				c.getGraphics().strokeText(text,e.getX(),e.getY());
+				clearPreview(c);
+				Main.INSTANCE.getMiniBuffer().restore();
+			},null,"",null,null);
 		});
 		private final BiConsumer<MouseEvent,ImageContext> drawer;
 		private Element(BiConsumer<MouseEvent,ImageContext> drawer){
@@ -125,6 +132,8 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		}
 		static BiConsumer<MouseEvent,ImageContext> keepOrMake(BiConsumer<MouseEvent,ImageContext> maker){
 			return (e,c)->{
+				c.lastlastx=c.lastx;
+				c.lastlasty=c.lasty;
 				if(Double.isNaN(c.lastx)){
 					c.lastx=e.getX();
 					c.lasty=e.getY();
@@ -134,6 +143,12 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 					c.lasty=Double.NaN;
 				}
 			};
+		}
+		static double getAngle(double x0,double y0,double x1,double y1,double x2,double y2){
+			double a=Math.hypot(x0-x1,y0-y1);
+			double b=Math.hypot(x0-x1,y0-y1);
+			double c=Math.hypot(x0-x2,y0-y2);
+			return Math.acos((a*a+b*b-c*c)/(2*a*b));
 		}
 	}
 	private Node getEffectBar(ImageContext context){
@@ -248,6 +263,10 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		public ImageContext(Canvas canvas){
 			this.canvas=canvas;
 			preview=new Canvas(canvas.getWidth(),canvas.getHeight());
+			preview.translateXProperty().bind(canvas.translateXProperty());
+			preview.translateYProperty().bind(canvas.translateYProperty());
+			preview.scaleXProperty().bind(canvas.scaleXProperty());
+			preview.scaleYProperty().bind(canvas.scaleYProperty());
 		}
 		GraphicsContext getGraphics(){
 			return canvas.getGraphicsContext2D();
