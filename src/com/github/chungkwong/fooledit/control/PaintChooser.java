@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.control;
+import com.github.chungkwong.fooledit.api.*;
 import java.io.*;
 import java.util.*;
 import java.util.stream.*;
@@ -61,12 +62,12 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return "Color";
+			return MessageRegistry.getString("COLOR");
 		}
 	}
 	private class ImageChooser implements MinorChooser{
 		private final FileChooser picker;
-		private final Button browse=new Button("Browse");
+		private final Button browse=new Button("BROWSE");
 		private File file;
 		public ImageChooser(){
 			this.picker=new FileChooser();
@@ -86,7 +87,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return "Image";
+			return MessageRegistry.getString("IMAGE");
 		}
 	}
 	private class LinearChooser implements MinorChooser{
@@ -117,7 +118,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return "Linear gradient";
+			return MessageRegistry.getString("LINEAR_GRADIENT");
 		}
 		private class StopEditor extends HBox{
 			private final Button remove=new Button("X");
@@ -163,7 +164,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return "Radial gradient";
+			return MessageRegistry.getString("RADIAL_GRADIENT");
 		}
 		private class StopEditor extends HBox{
 			private final Button remove=new Button("X");

@@ -36,6 +36,10 @@ public class FontChooser extends HBox{
 		getChildren().setAll(family,italic,weight,size,smoothing,alignment,baseline,preview);
 		family.getItems().setAll(Font.getFamilies());
 		family.getSelectionModel().select(Font.getDefault().getFamily());
+		weight.setCellFactory((v)->new LocalizedCell());
+		smoothing.setCellFactory((v)->new LocalizedCell());
+		alignment.setCellFactory((v)->new LocalizedCell());
+		baseline.setCellFactory((v)->new LocalizedCell());
 		weight.getItems().setAll(FontWeight.values());
 		smoothing.getItems().setAll(FontSmoothingType.values());
 		alignment.getItems().setAll(TextAlignment.values());

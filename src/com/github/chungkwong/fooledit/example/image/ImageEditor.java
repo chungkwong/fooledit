@@ -51,21 +51,21 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		Canvas canvas=context.canvas;
 		GraphicsContext g2d=canvas.getGraphicsContext2D();
 		GraphicsContext pg2d=context.preview.getGraphicsContext2D();
-		Button start=new Button("Start");
+		Button start=new Button(MessageRegistry.getString("START"));
 		start.setOnAction((e)->{
 			g2d.beginPath();
 			pg2d.beginPath();
 		});
-		Button close=new Button("Close");
+		Button close=new Button(MessageRegistry.getString("CLOSE"));
 		close.setOnAction((e)->{
 			g2d.closePath();
 		});
-		Button draw=new Button("Draw");
+		Button draw=new Button(MessageRegistry.getString("DRAW"));
 		draw.setOnAction((e)->{
 			g2d.stroke();
 			clearPreview(context);
 		});
-		Button fill=new Button("Fill");
+		Button fill=new Button(MessageRegistry.getString("FILL"));
 		fill.setOnAction((e)->{
 			g2d.fill();
 			clearPreview(context);
@@ -73,7 +73,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		VBox bar=new VBox(start,close,draw,fill);
 		ToggleGroup elements=new ToggleGroup();
 		for(Element shape:Element.values()){
-			ToggleButton button=new ToggleButton(shape.name());
+			ToggleButton button=new ToggleButton(MessageRegistry.getString(shape.name()));
 			button.setUserData(shape);
 			elements.getToggles().add(button);
 			bar.getChildren().add(button);
@@ -179,24 +179,29 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		Effect getEffect(){
 			return supplier.get();
 		}
+		public String toString(){
+			return MessageRegistry.getString(name());
+		}
 	}
 	private Node getPropertiesBar(ImageContext context){
-		TabPane tabs=new TabPane(new Tab("Stroke",getStrokePropertiesBar(context)),
-				new Tab("Fill",getFillPropertiesBar(context)),
-				new Tab("Text",getTextPropertiesBar(context)));
+		TabPane tabs=new TabPane(new Tab(MessageRegistry.getString("STROKE"),getStrokePropertiesBar(context)),
+				new Tab(MessageRegistry.getString("FILL"),getFillPropertiesBar(context)),
+				new Tab(MessageRegistry.getString("TEXT"),getTextPropertiesBar(context)));
 		tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 		return tabs;
 	}
 	private Node getStrokePropertiesBar(ImageContext context){
 		Canvas canvas=context.canvas;
 		GraphicsContext g2d=canvas.getGraphicsContext2D();
+		context.joinChooser.setCellFactory((v)->new LocalizedCell());
 		context.joinChooser.getItems().setAll(StrokeLineJoin.values());
 		context.joinChooser.getSelectionModel().select(g2d.getLineJoin());
+		context.capChooser.setCellFactory((v)->new LocalizedCell());
 		context.capChooser.getItems().setAll(StrokeLineCap.values());
 		context.capChooser.getSelectionModel().select(g2d.getLineCap());
-		Label dashLabel=new Label("Dash:");
+		Label dashLabel=new Label(MessageRegistry.getString("DASH"));
 		context.dashChooser.setText(fromDashArray(g2d.getLineDashes()));
-		Label thickLabel=new Label("Thick:");
+		Label thickLabel=new Label(MessageRegistry.getString("THICK"));
 		context.thickChooser.setText(Double.toString(g2d.getLineWidth()));
 		return new HBox(context.joinChooser,context.capChooser,
 				dashLabel,context.dashChooser,thickLabel,context.thickChooser,
