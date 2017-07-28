@@ -22,13 +22,16 @@ import javafx.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class EnumStringConvertor<E extends Enum<E>> extends StringConverter<E>{
+	private final Class<E> cls;
+	public EnumStringConvertor(Class<E> cls){
+		this.cls=cls;
+	}
 	@Override
 	public String toString(E object){
 		return MessageRegistry.getString(object.toString());
 	}
 	@Override
 	public E fromString(String string){
-		return Enum.valueOf(null,string);
+		return Enum.valueOf(cls,string);
 	}
-
 }

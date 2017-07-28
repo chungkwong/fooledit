@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 import javafx.application.*;
+import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.*;
 import javafx.scene.canvas.*;
@@ -71,6 +72,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			clearPreview(context);
 		});
 		VBox bar=new VBox(start,close,draw,fill);
+		bar.getChildren().add(new Separator(Orientation.VERTICAL));
 		ToggleGroup elements=new ToggleGroup();
 		for(Element shape:Element.values()){
 			ToggleButton button=new ToggleButton(MessageRegistry.getString(shape.name()));
@@ -78,6 +80,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			elements.getToggles().add(button);
 			bar.getChildren().add(button);
 		}
+		elements.selectedToggleProperty().addListener((e,o,n)->context.recorded=0);
 		context.preview.setOnMouseClicked((e)->{
 			configure(context);
 			context.preview.getGraphicsContext2D().fillOval(e.getX()-2,e.getY()-2,4,4);
@@ -99,23 +102,23 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			c.getGraphics().rect(c.lastx,c.lasty,e.getX()-c.lastx,e.getY()-c.lasty);
 			c.preview.getGraphicsContext2D().rect(c.lastx,c.lasty,e.getX()-c.lastx,e.getY()-c.lasty);
 			c.preview.getGraphicsContext2D().stroke();
-		})),
+		},1)),
 		QUADRATIC(keepOrMake((e,c)->{
 			c.getGraphics().quadraticCurveTo(c.lastx,c.lasty,e.getX(),e.getY());
 			c.preview.getGraphicsContext2D().quadraticCurveTo(c.lastx,c.lasty,e.getX(),e.getY());
 			c.preview.getGraphicsContext2D().stroke();
-		})),
+		},1)),
 		ARC(keepOrMake((e,c)->{
 			double angle=getAngle(c.lastlastx,c.lastlasty,c.lastx,c.lasty,e.getX(),e.getY());
 			c.getGraphics().arcTo(c.lastx,c.lasty,e.getX(),e.getY(),angle);
 			c.preview.getGraphicsContext2D().arcTo(c.lastx,c.lasty,e.getX(),e.getY(),angle);
 			c.preview.getGraphicsContext2D().stroke();
-		})),
+		},1)),
 		BEZIER(keepOrMake((e,c)->{
 			c.getGraphics().bezierCurveTo(c.lastlastx,c.lastlasty,c.lastx,c.lasty,e.getX(),e.getY());
 			c.preview.getGraphicsContext2D().bezierCurveTo(c.lastx,c.lasty,c.lastx,c.lasty,e.getX(),e.getY());
 			c.preview.getGraphicsContext2D().stroke();
-		})),
+		},2)),
 		TEXT((e,c)->{
 			Main.INSTANCE.getMiniBuffer().setMode((text)->{
 				c.getGraphics().strokeText(text,e.getX(),e.getY());
@@ -130,18 +133,18 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		void make(MouseEvent e,ImageContext c){
 			drawer.accept(e,c);
 		}
-		static BiConsumer<MouseEvent,ImageContext> keepOrMake(BiConsumer<MouseEvent,ImageContext> maker){
+		static BiConsumer<MouseEvent,ImageContext> keepOrMake(BiConsumer<MouseEvent,ImageContext> maker,int needPoints){
 			return (e,c)->{
+				if(c.recorded>=needPoints){
+					maker.accept(e,c);
+					c.recorded=0;
+				}else{
+					++c.recorded;
+				}
 				c.lastlastx=c.lastx;
 				c.lastlasty=c.lasty;
-				if(Double.isNaN(c.lastx)){
-					c.lastx=e.getX();
-					c.lasty=e.getY();
-				}else{
-					maker.accept(e,c);
-					c.lastx=Double.NaN;
-					c.lasty=Double.NaN;
-				}
+				c.lastx=e.getX();
+				c.lasty=e.getY();
 			};
 		}
 		static double getAngle(double x0,double y0,double x1,double y1,double x2,double y2){
@@ -193,10 +196,10 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 	private Node getStrokePropertiesBar(ImageContext context){
 		Canvas canvas=context.canvas;
 		GraphicsContext g2d=canvas.getGraphicsContext2D();
-		context.joinChooser.setCellFactory((v)->new LocalizedCell());
+		context.joinChooser.setConverter(new EnumStringConvertor<>(StrokeLineJoin.class));
 		context.joinChooser.getItems().setAll(StrokeLineJoin.values());
 		context.joinChooser.getSelectionModel().select(g2d.getLineJoin());
-		context.capChooser.setCellFactory((v)->new LocalizedCell());
+		context.capChooser.setConverter(new EnumStringConvertor<>(StrokeLineCap.class));
 		context.capChooser.getItems().setAll(StrokeLineCap.values());
 		context.capChooser.getSelectionModel().select(g2d.getLineCap());
 		Label dashLabel=new Label(MessageRegistry.getString("DASH"));
@@ -208,6 +211,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 				context.strokeChooser);
 	}
 	private Node getFillPropertiesBar(ImageContext context){
+		context.fillRuleChooser.setConverter(new EnumStringConvertor<>(FillRule.class));
 		context.fillRuleChooser.getItems().setAll(FillRule.values());
 		context.fillRuleChooser.getSelectionModel().select(FillRule.NON_ZERO);
 		context.alphaChooser.setEditable(true);
@@ -248,6 +252,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 	}
 	private static void clearPreview(ImageContext c){
 		c.preview.getGraphicsContext2D().clearRect(0,0,c.canvas.getWidth(),c.canvas.getHeight());
+		c.recorded=0;
 	}
 	public static void main(String[] args){
 		launch(args);
@@ -264,6 +269,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		private final PaintChooser fillChooser=new PaintChooser(Color.WHITE);
 		private double lastx=Double.NaN,lasty=Double.NaN;
 		private double lastlastx=Double.NaN,lastlasty=Double.NaN;
+		private int recorded=0;
 		private final Canvas canvas,preview;
 		public ImageContext(Canvas canvas){
 			this.canvas=canvas;
