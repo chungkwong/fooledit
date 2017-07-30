@@ -92,6 +92,8 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		MOVE((e,c)->{
 			c.getGraphics().moveTo(e.getX(),e.getY());
 			c.preview.getGraphicsContext2D().moveTo(e.getX(),e.getY());
+			c.lastx=e.getX();
+			c.lasty=e.getY();
 		}),
 		LINE((e,c)->{
 			c.getGraphics().lineTo(e.getX(),e.getY());
@@ -116,7 +118,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		},1)),
 		BEZIER(keepOrMake((e,c)->{
 			c.getGraphics().bezierCurveTo(c.lastlastx,c.lastlasty,c.lastx,c.lasty,e.getX(),e.getY());
-			c.preview.getGraphicsContext2D().bezierCurveTo(c.lastx,c.lasty,c.lastx,c.lasty,e.getX(),e.getY());
+			c.preview.getGraphicsContext2D().bezierCurveTo(c.lastlastx,c.lastlasty,c.lastx,c.lasty,e.getX(),e.getY());
 			c.preview.getGraphicsContext2D().stroke();
 		},2)),
 		TEXT((e,c)->{
@@ -151,7 +153,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			double a=Math.hypot(x0-x1,y0-y1);
 			double b=Math.hypot(x0-x1,y0-y1);
 			double c=Math.hypot(x0-x2,y0-y2);
-			return Math.acos((a*a+b*b-c*c)/(2*a*b));
+			return (2*Math.PI-Math.acos((a*a+b*b-c*c)/(2*a*b)))*2;
 		}
 	}
 	private Node getEffectBar(ImageContext context){

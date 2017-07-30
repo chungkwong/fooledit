@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.control;
+import com.github.chungkwong.fooledit.api.*;
 import javafx.geometry.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -29,7 +30,7 @@ public class FontChooser extends HBox{
 	private final ComboBox<FontSmoothingType> smoothing=new ComboBox<>();
 	private final ComboBox<TextAlignment> alignment=new ComboBox<>();
 	private final ComboBox<VPos> baseline=new ComboBox<>();
-	private final TextField preview=new TextField();
+	private final TextField preview=new TextField(MessageRegistry.getString("FONT_PREVIEW_TEXT"));
 	private final Spinner size=new Spinner(0.0,100.0,Font.getDefault().getSize(),0.5);
 	private final ToggleButton italic=new ToggleButton("I");
 	public FontChooser(){
