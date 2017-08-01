@@ -38,7 +38,7 @@ public class WorkSheet extends BorderPane{
 	private WorkSheet(Node node){
 		super(node);
 	}
-	public WorkSheet(DataObject data,DataEditor editor){
+	public WorkSheet(DataObject data,DataEditor editor,Object remark){
 		super(pack(data,editor));
 	}
 	@Override
@@ -86,6 +86,7 @@ public class WorkSheet extends BorderPane{
 	private static final String EDITOR="editor";
 	private static final String BUFFER="buffer";
 	private static final String CURRENT="current";
+	private static final String REMARK="remark";
 	public Map<Object,Object> toJSON(){
 		Node center=getCenter();
 		HashMap<Object,Object> map=new HashMap<>();
@@ -96,6 +97,7 @@ public class WorkSheet extends BorderPane{
 		}else{
 			map.put(CURRENT,Main.getCurrentWorkSheet()==this);
 			map.put(EDITOR,getDataEditor().getClass().getName());
+			map.put(REMARK,getDataEditor().getRemark(center));
 			map.put(BUFFER,DataObjectRegistry.getProperties(getDataObject()));
 		}
 		return map;
@@ -112,7 +114,7 @@ public class WorkSheet extends BorderPane{
 			String editorName=(String)json.get(EDITOR);
 			DataEditor editor=DataObjectTypeRegistry.getDataEditors(buffer.getClass()).stream().
 					filter((e)->e.getClass().getName().equals(editorName)).findFirst().get();
-			WorkSheet workSheet=new WorkSheet(buffer,editor);
+			WorkSheet workSheet=new WorkSheet(buffer,editor,json.get(REMARK));
 			if((Boolean)json.get(CURRENT))
 				Main.INSTANCE.setCurrentWorkSheet(workSheet);
 			return workSheet;

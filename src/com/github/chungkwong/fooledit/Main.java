@@ -207,7 +207,7 @@ public class Main extends Application{
 			String msg=MessageRegistry.getString("WELCOME");
 			TextObject welcome=new TextObject(msg);
 			DataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,msg,DataObjectRegistry.TYPE,TextObjectType.class.getName()));
-			WorkSheet workSheet=new WorkSheet(welcome,getDefaultEditor(welcome));
+			WorkSheet workSheet=new WorkSheet(welcome,getDefaultEditor(welcome),null);
 			setCurrentWorkSheet(workSheet);
 			return workSheet;
 		}));

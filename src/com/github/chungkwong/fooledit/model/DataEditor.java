@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.model;
-import com.github.chungkwong.fooledit.api.KeymapRegistry;
-import com.github.chungkwong.fooledit.api.MenuRegistry;
-import com.github.chungkwong.fooledit.api.CommandRegistry;
+import com.github.chungkwong.fooledit.api.*;
 import javafx.scene.*;
 /**
  *
@@ -25,6 +23,9 @@ import javafx.scene.*;
  */
 public interface DataEditor<T extends DataObject>{
 	Node edit(T data);
+	default Node edit(T data,Object remark){
+		return edit(data);
+	}
 	default CommandRegistry getCommandRegistry(){
 		return new CommandRegistry();
 	}
@@ -33,6 +34,9 @@ public interface DataEditor<T extends DataObject>{
 	}
 	default MenuRegistry getMenuRegistry(){
 		return new MenuRegistry();
+	}
+	default Object getRemark(Node node){
+		return null;
 	}
 	String getName();
 }
