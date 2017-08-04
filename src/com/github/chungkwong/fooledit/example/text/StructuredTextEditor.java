@@ -118,8 +118,22 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		return commandRegistry;
 	}
 	@Override
+	public Object getRemark(Node node){
+		CodeEditor editor=(CodeEditor)node;
+		return Arrays.asList(editor.getArea().getAnchor(),editor.getArea().getCaretPosition());
+	}
+	@Override
 	public KeymapRegistry getKeymapRegistry(){
 		return keymapRegistry;
+	}
+	@Override
+	public Node edit(TextObject data,Object remark){
+		CodeEditor editor=(CodeEditor)edit(data);
+		if(remark instanceof List){
+			List<Number> pair=(List<Number>)remark;
+			editor.getArea().selectRange(pair.get(0).intValue(),pair.get(1).intValue());
+		}
+		return editor;
 	}
 	@Override
 	public Node edit(TextObject data){

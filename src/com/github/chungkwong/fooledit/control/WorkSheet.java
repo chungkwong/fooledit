@@ -39,7 +39,7 @@ public class WorkSheet extends BorderPane{
 		super(node);
 	}
 	public WorkSheet(DataObject data,DataEditor editor,Object remark){
-		super(pack(data,editor));
+		super(pack(data,editor,remark));
 	}
 	@Override
 	public void requestFocus(){
@@ -69,6 +69,11 @@ public class WorkSheet extends BorderPane{
 		};
 		first.sceneProperty().addListener(listener);
 		first.requestFocus();
+	}
+	private static Node pack(DataObject data,DataEditor editor,Object remark){
+		Node node=editor.edit(data,remark);
+		node.setUserData(new Pair<>(data,editor));
+		return node;
 	}
 	private static Node pack(DataObject data,DataEditor editor){
 		Node node=editor.edit(data);

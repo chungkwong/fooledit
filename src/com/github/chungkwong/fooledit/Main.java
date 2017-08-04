@@ -243,11 +243,11 @@ public class Main extends Application{
 	public void start(Stage primaryStage){
 		stage=primaryStage;
 		try{
-			primaryStage.getIcons().add(new Image(new File(getDataPath(),"core/icons/cross.png").toURI().toURL().toString()));
+			primaryStage.getIcons().add(new Image(new File(getDataPath(),"core/icons/logo.png").toURI().toURL().toString()));
 		}catch(MalformedURLException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
-		primaryStage.setTitle("IDEM");
+		primaryStage.setTitle("fooledit");
 		primaryStage.setScene(scene);
 		primaryStage.setMaximized(true);
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
