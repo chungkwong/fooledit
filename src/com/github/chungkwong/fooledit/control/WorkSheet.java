@@ -24,6 +24,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
+import javafx.application.*;
 import javafx.beans.value.*;
 import javafx.geometry.*;
 import javafx.scene.Node;
@@ -120,8 +121,10 @@ public class WorkSheet extends BorderPane{
 			DataEditor editor=DataObjectTypeRegistry.getDataEditors(buffer.getClass()).stream().
 					filter((e)->e.getClass().getName().equals(editorName)).findFirst().get();
 			WorkSheet workSheet=new WorkSheet(buffer,editor,json.get(REMARK));
-			if((Boolean)json.get(CURRENT))
+			if((Boolean)json.get(CURRENT)){
 				Main.INSTANCE.setCurrentWorkSheet(workSheet);
+				Platform.runLater(()->workSheet.requestFocus());
+			}
 			return workSheet;
 		}
 	}

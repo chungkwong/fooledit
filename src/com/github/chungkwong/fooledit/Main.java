@@ -248,6 +248,7 @@ public class Main extends Application{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 		primaryStage.setTitle("fooledit");
+		scene.focusOwnerProperty().addListener((e,o,n)->System.out.println(n));
 		primaryStage.setScene(scene);
 		primaryStage.setMaximized(true);
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
