@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.editor;
-import com.github.chungkwong.fooledit.util.RealTimeTask;
+import com.github.chungkwong.fooledit.editor.lex.*;
 import com.github.chungkwong.fooledit.editor.parser.Parser;
-import com.github.chungkwong.fooledit.editor.lex.Lex;
+import com.github.chungkwong.fooledit.util.*;
 import javafx.beans.property.*;
 import org.fxmisc.richtext.*;
 /**
