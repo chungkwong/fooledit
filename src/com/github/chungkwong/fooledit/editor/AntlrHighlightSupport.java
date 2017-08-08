@@ -20,7 +20,6 @@ import java.util.*;
 import java.util.logging.*;
 import javafx.application.*;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.tool.*;
 import org.fxmisc.richtext.*;
 import org.fxmisc.richtext.model.*;
 /**
@@ -29,9 +28,10 @@ import org.fxmisc.richtext.model.*;
  */
 public class AntlrHighlightSupport{
 	private final CodeArea area;
-	private final Grammar grammar;
+	private final Class<? extends Lexer> grammar;
+	private Collection[] styles;
 	private final RealTimeTask<String> task;
-	public AntlrHighlightSupport(Grammar grammar,CodeArea area){
+	public AntlrHighlightSupport(Class<? extends Lexer> grammar,CodeArea area){
 		this.area=area;
 		this.grammar=grammar;
 		this.task=new RealTimeTask<>((text)->{
@@ -47,14 +47,39 @@ public class AntlrHighlightSupport{
 		area.textProperty().addListener((e,o,n)->task.summit(n));
 	}
 	private StyleSpans<Collection<String>> computeHighlighting(String text){
-		LexerInterpreter lexEngine=grammar.createLexerInterpreter(CharStreams.fromString(text));
+		long time=System.currentTimeMillis();
+		//LexerInterpreter lexEngine=grammar.createLexerInterpreter(CharStreams.fromString(text));
+		Lexer lexEngine;
+		try{
+			lexEngine=grammar.getConstructor(CharStream.class).newInstance(CharStreams.fromString(text));
+		}catch(ReflectiveOperationException ex){
+			ex.printStackTrace();
+			throw new RuntimeException(ex);
+		}
+		if(styles==null){
+			styles=new Collection[lexEngine.getTokenTypeMap().values().stream().mapToInt((i)->i).max().orElse(-1)+1];
+			lexEngine.getTokenTypeMap().forEach((s,i)->{
+				if(i>=0){
+					if(styles[i]==null)
+						styles[i]=new LinkedList();
+					styles[i].add(s);
+				}
+			});
+		}
 		CommonTokenStream tokenstream=new CommonTokenStream(lexEngine);
 		tokenstream.fill();
 		List<org.antlr.v4.runtime.Token> tokens=tokenstream.getTokens();
 		StyleSpansBuilder<Collection<String>> spansBuilder=new StyleSpansBuilder<>();
+		index=0;
 		tokens.forEach((t)->{
-			spansBuilder.add(Collections.singleton(grammar.getTokenName(t.getType())),t.getText().length());
+			if(t.getStartIndex()>index)
+				spansBuilder.add(Collections.singleton("whitespace"),t.getStartIndex()-index);
+			index=t.getStopIndex()+1;
+			if(t.getType()!=-1)
+				spansBuilder.add(styles[t.getType()],index-t.getStartIndex());
 		});
+		System.err.println(System.currentTimeMillis()-time);
 		return spansBuilder.create();
 	}
+	private int index=0;
 }

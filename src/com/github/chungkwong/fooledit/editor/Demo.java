@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.editor;
-import com.github.chungkwong.fooledit.util.Pair;
-import com.github.chungkwong.fooledit.editor.parser.ContextFreeGrammar;
-import com.github.chungkwong.fooledit.editor.parser.ProductionRule;
-import com.github.chungkwong.fooledit.editor.lex.LexBuilder;
-import com.github.chungkwong.fooledit.editor.lex.NaiveLex;
-import com.github.chungkwong.fooledit.editor.lex.Lex;
-import com.github.chungkwong.fooledit.api.Helper;
+import com.github.chungkwong.fooledit.api.*;
+import com.github.chungkwong.fooledit.editor.lex.*;
+import com.github.chungkwong.fooledit.editor.parser.*;
+import com.github.chungkwong.fooledit.util.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.nio.charset.*;
@@ -33,6 +30,7 @@ import static javafx.application.Application.launch;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
+import org.antlr.v4.tool.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -40,7 +38,8 @@ import javafx.stage.*;
 public class Demo extends Application{
 	@Override
 	public void start(Stage stage) throws Exception{
-		CodeEditor editor=new CodeEditor(null,getExampleLex());
+		//CodeEditor editor=new CodeEditor(null,getExampleLex());
+		CodeEditor2 editor=new CodeEditor2(Grammar.load("/home/kwong/projects/grammars-v4/java8/Java8.g4"));
 		//CodeEditor editor=new CodeEditor(new LR1Parser(getExampleGrammar()),getExampleLex());
 		//editor.syntaxTree().addListener((e,o,n)->System.out.println(n));
 		/*editor.setAutoCompleteProvider(AutoCompleteProvider.createSimple(Arrays.asList(
@@ -57,7 +56,7 @@ public class Demo extends Application{
 	/**
 	 * @param args the command line arguments
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args){
 		launch(args);
 	}
 	private static Lex getExampleLex(){

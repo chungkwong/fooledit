@@ -80,3 +80,9 @@
 .binary{
 	-fx-fill: black;
 }
+.Identifier{
+	-fx-fill: purple;
+}
+.Class{
+	-fx-fill: yellow;
+}

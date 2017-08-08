@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.editor;
-import com.github.chungkwong.fooledit.util.RealTimeTask;
-import com.github.chungkwong.fooledit.editor.lex.Token;
-import com.github.chungkwong.fooledit.editor.lex.Lex;
+import com.github.chungkwong.fooledit.editor.lex.*;
+import com.github.chungkwong.fooledit.util.*;
 import java.util.*;
 import java.util.logging.*;
 import javafx.application.*;
@@ -47,12 +46,14 @@ public class HighlightSupport{
 		area.textProperty().addListener((e,o,n)->task.summit(n));
 	}
 	private StyleSpans<Collection<String>> computeHighlighting(String text){
+		long time=System.currentTimeMillis();
 		StyleSpansBuilder<Collection<String>> spansBuilder=new StyleSpansBuilder<>();
 		Iterator<Token> iter=new InteruptableIterator<>(lex.split(text));
 		while(iter.hasNext()){
 			Token token=iter.next();
 			spansBuilder.add(Collections.singleton(token.getType()),token.getText().length());
 		}
+		System.out.println(System.currentTimeMillis()-time);
 		return spansBuilder.create();
 	}
 }
