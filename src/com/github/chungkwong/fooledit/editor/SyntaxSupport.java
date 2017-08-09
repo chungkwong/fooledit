@@ -26,11 +26,11 @@ import org.fxmisc.richtext.*;
  */
 public class SyntaxSupport{
 	private final Parser parser;
-	private final Lex lex;
+	private final MetaLexer lex;
 	private final CodeArea area;
 	private final RealTimeTask<String> syntaxTask;
 	private final Property<Object> syntaxTree=new SimpleObjectProperty<>();
-	public SyntaxSupport(Parser parser,Lex lex,CodeArea area){
+	public SyntaxSupport(Parser parser,MetaLexer lex,CodeArea area){
 		this.parser=parser;
 		this.lex=lex;
 		this.area=area;

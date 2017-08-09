@@ -22,8 +22,8 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class LexBuilder{
-	public static void fromJSON(String json,Lex lex) throws IOException, SyntaxException{
+public class LexBuilders{
+	public static void fromJSON(String json,MetaLexer lex) throws IOException, SyntaxException{
 		Map<String,Object> obj=(Map<String,Object>)JSONDecoder.decode(json);
 		Map<String,Number> states=(Map<String,Number>)obj.get("states");
 		Map<String,String> shorthands=buildSubstTable((List<String>)obj.get("shorthands"));
@@ -71,7 +71,7 @@ public class LexBuilder{
 	}
 	private static int toState(Object state,Map<String,Number> states){
 		if(state==null)
-			return Lex.INIT;
+			return MetaLexer.INIT;
 		else if(state instanceof Number)
 			return ((Number)state).intValue();
 		else

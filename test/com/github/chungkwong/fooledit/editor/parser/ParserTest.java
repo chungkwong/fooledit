@@ -54,9 +54,9 @@ public class ParserTest{
 				word,Function.identity(),number,Function.identity(),other,Function.identity()));
 		Parser parser=factory.createParser(cfg);
 		RegularExpressionLex lex=new RegularExpressionLex();
-		lex.addType(Lex.INIT,"[0-9]+","NUMBER",Lex.INIT);
-		lex.addType(Lex.INIT,"[a-zA-Z]+","WORD",Lex.INIT);
-		lex.addType(Lex.INIT,"[^0-9a-zA-Z]","OTHER",Lex.INIT);
+		lex.addType(MetaLexer.INIT,"[0-9]+","NUMBER",MetaLexer.INIT);
+		lex.addType(MetaLexer.INIT,"[a-zA-Z]+","WORD",MetaLexer.INIT);
+		lex.addType(MetaLexer.INIT,"[^0-9a-zA-Z]","OTHER",MetaLexer.INIT);
 		Assert.assertEquals(parser.parse(lex.split("abcd-2")),"cd");
 	}
 	public void test2(ParserFactory factory){
@@ -77,7 +77,7 @@ public class ParserTest{
 		Parser parser=factory.createParser(new ContextFreeGrammar(start,rules,terminals));
 		NaiveLex lex=new NaiveLex();
 		try{
-			LexBuilder.fromJSON(Helper.readText("/com/github/chungkwong/fooledit/editor/parser/mf.json"),lex);
+			LexBuilders.fromJSON(Helper.readText("/com/github/chungkwong/fooledit/editor/parser/mf.json"),lex);
 		}catch(IOException|SyntaxException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}

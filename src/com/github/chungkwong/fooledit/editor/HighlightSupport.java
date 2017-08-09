@@ -28,9 +28,9 @@ import org.fxmisc.richtext.model.*;
  */
 public class HighlightSupport{
 	private final CodeArea area;
-	private final Lex lex;
+	private final MetaLexer lex;
 	private final RealTimeTask<String> task;
-	public HighlightSupport(Lex lex,CodeArea area){
+	public HighlightSupport(MetaLexer lex,CodeArea area){
 		this.area=area;
 		this.lex=lex;
 		this.task=new RealTimeTask<>((text)->{

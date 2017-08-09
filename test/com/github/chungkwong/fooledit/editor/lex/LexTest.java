@@ -37,22 +37,22 @@ public class LexTest{
 		testLex1(new NaiveLex());
 		testLex2(new NaiveLex());
 	}
-	private void testLex1(Lex lex){
-		lex.addType(Lex.INIT,"[0-9]+","NUMBER",Lex.INIT);
-		lex.addType(Lex.INIT,"[a-zA-Z]+","WORD",Lex.INIT);
-		lex.addType(Lex.INIT,"[^0-9a-zA-Z]","OTHER",Lex.INIT);
+	private void testLex1(MetaLexer lex){
+		lex.addType(MetaLexer.INIT,"[0-9]+","NUMBER",MetaLexer.INIT);
+		lex.addType(MetaLexer.INIT,"[a-zA-Z]+","WORD",MetaLexer.INIT);
+		lex.addType(MetaLexer.INIT,"[^0-9a-zA-Z]","OTHER",MetaLexer.INIT);
 		assertSplit(lex,"log67m=!","log","67","m","=","!");
 	}
-	private void testLex2(Lex lex){
+	private void testLex2(MetaLexer lex){
 		try{
-			LexBuilder.fromJSON(Helper.readText("/com/github/chungkwong/fooledit/editor/parser/mf.json"),lex);
+			LexBuilders.fromJSON(Helper.readText("/com/github/chungkwong/fooledit/editor/parser/mf.json"),lex);
 		}catch(IOException|SyntaxException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 		assertSplit(lex,"hello","hello");
 		assertSplit(lex,"hello=ui","hello","=","ui");
 	}
-	private void assertSplit(Lex lex,String text,String... tokens){
+	private void assertSplit(MetaLexer lex,String text,String... tokens){
 		Object[] result=StreamSupport.stream(Spliterators.spliteratorUnknownSize(lex.split(text),0),false).
 				map((t)->t.getText()).toArray();
 		Assert.assertArrayEquals(result,tokens);

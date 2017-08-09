@@ -59,10 +59,10 @@ public class Demo extends Application{
 	public static void main(String[] args){
 		launch(args);
 	}
-	private static Lex getExampleLex(){
-		Lex lex=new NaiveLex();
+	private static MetaLexer getExampleLex(){
+		MetaLexer lex=new NaiveLex();
 		try{
-			LexBuilder.fromJSON(Helper.readText(new InputStreamReader(Demo.class.getResourceAsStream("lex.json"),StandardCharsets.UTF_8)),lex);
+			LexBuilders.fromJSON(Helper.readText(new InputStreamReader(Demo.class.getResourceAsStream("lex.json"),StandardCharsets.UTF_8)),lex);
 		}catch(IOException|SyntaxException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
@@ -85,5 +85,5 @@ public class Demo extends Application{
 		terminals.put("value",(s)->s);
 		return new ContextFreeGrammar(start,rules,terminals);
 	}
-	private static final int INIT=Lex.INIT;
+	private static final int INIT=MetaLexer.INIT;
 }

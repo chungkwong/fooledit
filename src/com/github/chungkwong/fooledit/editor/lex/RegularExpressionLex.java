@@ -23,7 +23,7 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class RegularExpressionLex implements Lex{
+public class RegularExpressionLex implements MetaLexer{
 	private final NFA machine=new NFA();
 	private boolean changed=true;
 	private final Map<Integer,State> states=new HashMap<Integer,State>();
@@ -70,7 +70,7 @@ public class RegularExpressionLex implements Lex{
 				status=type.getId();
 				return token;
 			}else if(src.hasNext()){
-				return new Token(new String(new int[]{src.nextInt()},0,1),Lex.UNKNOWN,index++);
+				return new Token(new String(new int[]{src.nextInt()},0,1),MetaLexer.UNKNOWN,index++);
 			}else
 				return null;
 		}

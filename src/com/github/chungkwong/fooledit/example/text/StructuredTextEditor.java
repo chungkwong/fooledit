@@ -137,13 +137,13 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	}
 	@Override
 	public Node edit(TextObject data){
-		Lex lex=null;
+		MetaLexer lex=null;
 		String highlightFile=highlightFiles.get(DataObjectRegistry.getMIME(data));
 		if(highlightFile!=null){
 			lex=new NaiveLex();
 			File file=new File(Main.getModulePath(TextEditorModule.NAME),"modes/"+highlightFile);
 			try{
-				LexBuilder.fromJSON(Helper.readText(file),lex);
+				LexBuilders.fromJSON(Helper.readText(file),lex);
 			}catch(NullPointerException|IOException|SyntaxException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 				lex=null;

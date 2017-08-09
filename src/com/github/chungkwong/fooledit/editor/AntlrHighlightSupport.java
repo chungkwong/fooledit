@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.fooledit.editor;
+import com.github.chungkwong.fooledit.editor.lex.*;
 import com.github.chungkwong.fooledit.util.*;
 import java.util.*;
 import java.util.logging.*;
@@ -28,12 +29,12 @@ import org.fxmisc.richtext.model.*;
  */
 public class AntlrHighlightSupport{
 	private final CodeArea area;
-	private final Class<? extends Lexer> grammar;
+	private final LexerBuilder lexerBuilder;
 	private Collection[] styles;
 	private final RealTimeTask<String> task;
-	public AntlrHighlightSupport(Class<? extends Lexer> grammar,CodeArea area){
+	public AntlrHighlightSupport(LexerBuilder lexerBuilder,CodeArea area){
 		this.area=area;
-		this.grammar=grammar;
+		this.lexerBuilder=lexerBuilder;
 		this.task=new RealTimeTask<>((text)->{
 			StyleSpans<Collection<String>> highlighting=computeHighlighting(text);
 			Platform.runLater(()->{
@@ -49,13 +50,7 @@ public class AntlrHighlightSupport{
 	private StyleSpans<Collection<String>> computeHighlighting(String text){
 		long time=System.currentTimeMillis();
 		//LexerInterpreter lexEngine=grammar.createLexerInterpreter(CharStreams.fromString(text));
-		Lexer lexEngine;
-		try{
-			lexEngine=grammar.getConstructor(CharStream.class).newInstance(CharStreams.fromString(text));
-		}catch(ReflectiveOperationException ex){
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
-		}
+		Lexer lexEngine=lexerBuilder.create(text);
 		if(styles==null){
 			styles=new Collection[lexEngine.getTokenTypeMap().values().stream().mapToInt((i)->i).max().orElse(-1)+1];
 			lexEngine.getTokenTypeMap().forEach((s,i)->{

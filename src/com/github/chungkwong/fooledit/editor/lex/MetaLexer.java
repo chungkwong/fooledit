@@ -20,7 +20,7 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface Lex{
+public interface MetaLexer{
 	static final int INIT=0;
 	static final String UNKNOWN="unknown";
 	void addType(int status,String regex,String type,int newStatus);

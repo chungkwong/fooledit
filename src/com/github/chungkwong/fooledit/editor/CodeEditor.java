@@ -49,7 +49,7 @@ public class CodeEditor extends BorderPane{
 	private final IndentPolicy indentPolicy;
 	private final StringProperty textProperty=new PlainTextProperty();
 	private final TreeSet<Marker> markers=new TreeSet<>();
-	public CodeEditor(Parser parser,Lex lex){
+	public CodeEditor(Parser parser,MetaLexer lex){
 		highlighter=lex!=null?new HighlightSupport(lex,area):null;
 		tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
 		area.setInputMethodRequests(new InputMethodRequestsObject());

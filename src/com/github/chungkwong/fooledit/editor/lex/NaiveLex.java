@@ -22,7 +22,7 @@ import java.util.regex.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class NaiveLex implements Lex{
+public class NaiveLex implements MetaLexer{
 	private final Map<Integer,Map<Pattern,Pair<String,Integer>>> types=new HashMap<>();
 	public NaiveLex(){
 
@@ -70,7 +70,7 @@ public class NaiveLex implements Lex{
 				return true;
 			}
 			if(index<text.length()){
-				token=new Token(text.substring(index,index+1),Lex.UNKNOWN,index++);
+				token=new Token(text.substring(index,index+1),MetaLexer.UNKNOWN,index++);
 				return true;
 			}
 			return false;

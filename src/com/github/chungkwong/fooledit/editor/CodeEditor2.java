@@ -17,6 +17,7 @@
 package com.github.chungkwong.fooledit.editor;
 import com.github.chungkwong.fooledit.control.*;
 import com.github.chungkwong.fooledit.editor.LineNumberFactory;
+import com.github.chungkwong.fooledit.editor.lex.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -46,7 +47,7 @@ public class CodeEditor2 extends BorderPane{
 	private final StringProperty textProperty=new PlainTextProperty();
 	private final TreeSet<Marker> markers=new TreeSet<>();
 	public CodeEditor2(Grammar g) throws MalformedURLException, ClassNotFoundException{
-		highlighter=g!=null?new AntlrHighlightSupport((Class<? extends Lexer>)new URLClassLoader(new URL[]{new File("/home/kwong/projects/grammars-v4/java8").toURL()}).loadClass("Java8Lexer"),area):null;
+		highlighter=g!=null?new AntlrHighlightSupport(LexerBuilder.wrap((Class<? extends Lexer>)new URLClassLoader(new URL[]{new File("/home/kwong/projects/grammars-v4/java8").toURL()}).loadClass("Java8Lexer")),area):null;
 		//tree=g!=null?new SyntaxSupport(parser,lex,area):null;
 		area.setInputMethodRequests(new InputMethodRequestsObject());
 		area.setOnInputMethodTextChanged((e)->{
