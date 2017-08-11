@@ -60,7 +60,7 @@ public class Demo extends Application{
 		launch(args);
 	}
 	private static MetaLexer getExampleLex(){
-		MetaLexer lex=new NaiveLex();
+		MetaLexer lex=new NaiveLexer();
 		try{
 			LexBuilders.fromJSON(Helper.readText(new InputStreamReader(Demo.class.getResourceAsStream("lex.json"),StandardCharsets.UTF_8)),lex);
 		}catch(IOException|SyntaxException ex){

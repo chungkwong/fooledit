@@ -23,11 +23,11 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class RegularExpressionLex implements MetaLexer{
+public class RegularExpressionLexer implements MetaLexer{
 	private final NFA machine=new NFA();
 	private boolean changed=true;
 	private final Map<Integer,State> states=new HashMap<Integer,State>();
-	public RegularExpressionLex(){
+	public RegularExpressionLexer(){
 	}
 	@Override
 	public void addType(int status,String regex,String type,int newStatus){

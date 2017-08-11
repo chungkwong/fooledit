@@ -140,7 +140,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		MetaLexer lex=null;
 		String highlightFile=highlightFiles.get(DataObjectRegistry.getMIME(data));
 		if(highlightFile!=null){
-			lex=new NaiveLex();
+			lex=new NaiveLexer();
 			File file=new File(Main.getModulePath(TextEditorModule.NAME),"modes/"+highlightFile);
 			try{
 				LexBuilders.fromJSON(Helper.readText(file),lex);

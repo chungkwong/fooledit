@@ -22,9 +22,9 @@ import java.util.regex.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class NaiveLex implements MetaLexer{
+public class NaiveLexer implements MetaLexer{
 	private final Map<Integer,Map<Pattern,Pair<String,Integer>>> types=new HashMap<>();
-	public NaiveLex(){
+	public NaiveLexer(){
 
 	}
 	@Override

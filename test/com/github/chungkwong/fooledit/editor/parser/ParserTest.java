@@ -53,7 +53,7 @@ public class ParserTest{
 		ContextFreeGrammar cfg=new ContextFreeGrammar(start,rules,Helper.hashMap(
 				word,Function.identity(),number,Function.identity(),other,Function.identity()));
 		Parser parser=factory.createParser(cfg);
-		RegularExpressionLex lex=new RegularExpressionLex();
+		RegularExpressionLexer lex=new RegularExpressionLexer();
 		lex.addType(MetaLexer.INIT,"[0-9]+","NUMBER",MetaLexer.INIT);
 		lex.addType(MetaLexer.INIT,"[a-zA-Z]+","WORD",MetaLexer.INIT);
 		lex.addType(MetaLexer.INIT,"[^0-9a-zA-Z]","OTHER",MetaLexer.INIT);
@@ -75,7 +75,7 @@ public class ParserTest{
 		terminals.put("key",(s)->s.trim());
 		terminals.put("value",(s)->s);
 		Parser parser=factory.createParser(new ContextFreeGrammar(start,rules,terminals));
-		NaiveLex lex=new NaiveLex();
+		NaiveLexer lex=new NaiveLexer();
 		try{
 			LexBuilders.fromJSON(Helper.readText("/com/github/chungkwong/fooledit/editor/parser/mf.json"),lex);
 		}catch(IOException|SyntaxException ex){

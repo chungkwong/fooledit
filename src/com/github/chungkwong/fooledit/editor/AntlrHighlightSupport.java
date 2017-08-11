@@ -32,9 +32,14 @@ public class AntlrHighlightSupport{
 	private final LexerBuilder lexerBuilder;
 	private Collection[] styles;
 	private final RealTimeTask<String> task;
+	private Map<String,String> superType;
 	public AntlrHighlightSupport(LexerBuilder lexerBuilder,CodeArea area){
+		this(lexerBuilder,Collections.emptyMap(),area);
+	}
+	public AntlrHighlightSupport(LexerBuilder lexerBuilder,Map<String,String> superType,CodeArea area){
 		this.area=area;
 		this.lexerBuilder=lexerBuilder;
+		this.superType=superType;
 		this.task=new RealTimeTask<>((text)->{
 			StyleSpans<Collection<String>> highlighting=computeHighlighting(text);
 			Platform.runLater(()->{
@@ -58,8 +63,14 @@ public class AntlrHighlightSupport{
 					if(styles[i]==null)
 						styles[i]=new LinkedList();
 					styles[i].add(s);
+					String subType=s;
+					while(superType.containsKey(subType)){
+						subType=superType.get(subType);
+						styles[i].add(subType);
+					}
 				}
 			});
+			superType=null;
 		}
 		CommonTokenStream tokenstream=new CommonTokenStream(lexEngine);
 		tokenstream.fill();

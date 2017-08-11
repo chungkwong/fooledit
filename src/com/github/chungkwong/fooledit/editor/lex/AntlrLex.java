@@ -26,7 +26,6 @@ import org.antlr.v4.tool.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class AntlrLex{
-
 	public static void main(String[] args) throws IOException{
 		split("/home/kwong/projects/grammars-v4/java8/examples/helloworld.java","/home/kwong/projects/grammars-v4/java8/Java8.g4");
 	}

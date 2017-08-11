@@ -29,13 +29,13 @@ import org.junit.*;
 public class LexTest{
 	@Test
 	public void testNFALex(){
-		testLex1(new RegularExpressionLex());
-		testLex2(new RegularExpressionLex());
+		testLex1(new RegularExpressionLexer());
+		testLex2(new RegularExpressionLexer());
 	}
 	@Test
 	public void testNaiveLex(){
-		testLex1(new NaiveLex());
-		testLex2(new NaiveLex());
+		testLex1(new NaiveLexer());
+		testLex2(new NaiveLexer());
 	}
 	private void testLex1(MetaLexer lex){
 		lex.addType(MetaLexer.INIT,"[0-9]+","NUMBER",MetaLexer.INIT);
