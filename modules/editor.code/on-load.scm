@@ -1,2 +1,2 @@
 (import (java))
-(invoke-static 'com.github.chungkwong.fooledit.example.text.TextEditorModule 'onLoad)
+(invoke-static 'cc.fooledit.example.text.TextEditorModule 'onLoad)
