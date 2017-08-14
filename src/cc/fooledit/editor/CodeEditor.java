@@ -17,7 +17,6 @@
 package cc.fooledit.editor;
 import cc.fooledit.control.*;
 import cc.fooledit.editor.LineNumberFactory;
-import cc.fooledit.editor.lex.*;
 import cc.fooledit.editor.parser.*;
 import java.text.*;
 import java.util.*;
@@ -43,15 +42,15 @@ import org.reactfx.value.*;
  */
 public class CodeEditor extends BorderPane{
 	private final CodeArea area=new CodeArea();
-	private final HighlightSupport highlighter;
-	private final SyntaxSupport tree;
+	//private final SyntaxSupport tree;
 	private final LineNumberFactory header=new LineNumberFactory(area);
 	private final IndentPolicy indentPolicy;
 	private final StringProperty textProperty=new PlainTextProperty();
 	private final TreeSet<Marker> markers=new TreeSet<>();
-	public CodeEditor(Parser parser,MetaLexer lex){
-		highlighter=lex!=null?new HighlightSupport(lex,area):null;
-		tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
+	public CodeEditor(Parser parser,TokenHighlighter lex){
+		if(lex!=null)
+			lex.apply(area);
+		//tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
 		area.setInputMethodRequests(new InputMethodRequestsObject());
 		area.setOnInputMethodTextChanged((e)->{
 			if(e.getCommitted()!=""){
@@ -74,7 +73,8 @@ public class CodeEditor extends BorderPane{
 		new CompleteSupport(provider).apply(area);
 	}
 	public Property<Object> syntaxTree(){
-		return tree.syntaxTree();
+		throw new UnsupportedOperationException();
+//return tree.syntaxTree();
 	}
 	public CodeArea getArea(){
 		return area;

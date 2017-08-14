@@ -21,6 +21,7 @@ import cc.fooledit.editor.parser.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
+import java.net.*;
 import java.nio.charset.*;
 import java.util.*;
 import java.util.function.*;
@@ -30,7 +31,7 @@ import static javafx.application.Application.launch;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
-import org.antlr.v4.tool.*;
+import org.antlr.v4.runtime.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -39,7 +40,7 @@ public class Demo extends Application{
 	@Override
 	public void start(Stage stage) throws Exception{
 		//CodeEditor editor=new CodeEditor(null,getExampleLex());
-		CodeEditor2 editor=new CodeEditor2(Grammar.load("/home/kwong/projects/grammars-v4/java8/Java8.g4"));
+		CodeEditor editor=new CodeEditor(null,new AntlrHighlighter(LexerBuilder.wrap((Class<? extends Lexer>)new URLClassLoader(new URL[]{new File("/home/kwong/projects/grammars-v4/java8").toURL()}).loadClass("Java8Lexer"))));
 		//CodeEditor editor=new CodeEditor(new LR1Parser(getExampleGrammar()),getExampleLex());
 		//editor.syntaxTree().addListener((e,o,n)->System.out.println(n));
 		/*editor.setAutoCompleteProvider(AutoCompleteProvider.createSimple(Arrays.asList(

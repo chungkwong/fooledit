@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.text;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.editor.*;
 import cc.fooledit.editor.lex.*;
@@ -149,7 +149,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				lex=null;
 			}
 		}
-		CodeEditor codeEditor=new CodeEditor(null,lex);
+		CodeEditor codeEditor=new CodeEditor(null,new AdhokHighlighter(lex));
 		codeEditor.textProperty().bindBidirectional(data.getText());
 		return codeEditor;
 	}

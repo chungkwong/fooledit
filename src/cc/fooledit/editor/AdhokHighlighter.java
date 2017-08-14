@@ -26,14 +26,14 @@ import org.fxmisc.richtext.model.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class HighlightSupport{
-	private final CodeArea area;
+public class AdhokHighlighter implements TokenHighlighter{
 	private final MetaLexer lex;
-	private final RealTimeTask<String> task;
-	public HighlightSupport(MetaLexer lex,CodeArea area){
-		this.area=area;
+	public AdhokHighlighter(MetaLexer lex){
 		this.lex=lex;
-		this.task=new RealTimeTask<>((text)->{
+	}
+	@Override
+	public void apply(CodeArea area){
+		RealTimeTask<String> task=new RealTimeTask<>((text)->{
 			StyleSpans<Collection<String>> highlighting=computeHighlighting(text);
 			Platform.runLater(()->{
 				try{

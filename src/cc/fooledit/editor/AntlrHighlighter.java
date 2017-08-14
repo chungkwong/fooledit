@@ -27,20 +27,20 @@ import org.fxmisc.richtext.model.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AntlrHighlightSupport{
-	private final CodeArea area;
+public class AntlrHighlighter implements TokenHighlighter{
 	private final LexerBuilder lexerBuilder;
 	private Collection[] styles;
-	private final RealTimeTask<String> task;
 	private Map<String,String> superType;
-	public AntlrHighlightSupport(LexerBuilder lexerBuilder,CodeArea area){
-		this(lexerBuilder,Collections.emptyMap(),area);
+	public AntlrHighlighter(LexerBuilder lexerBuilder){
+		this(lexerBuilder,Collections.emptyMap());
 	}
-	public AntlrHighlightSupport(LexerBuilder lexerBuilder,Map<String,String> superType,CodeArea area){
-		this.area=area;
+	public AntlrHighlighter(LexerBuilder lexerBuilder,Map<String,String> superType){
 		this.lexerBuilder=lexerBuilder;
 		this.superType=superType;
-		this.task=new RealTimeTask<>((text)->{
+	}
+	@Override
+	public void apply(CodeArea area){
+		RealTimeTask<String> task=new RealTimeTask<>((text)->{
 			StyleSpans<Collection<String>> highlighting=computeHighlighting(text);
 			Platform.runLater(()->{
 				try{
