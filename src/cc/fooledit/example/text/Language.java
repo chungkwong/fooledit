@@ -15,12 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.text;
+import cc.fooledit.api.*;
 import cc.fooledit.editor.*;
+import cc.fooledit.editor.lex.*;
+import com.github.chungkwong.json.*;
+import java.io.*;
+import java.util.*;
+import org.antlr.v4.tool.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Language{
+	private static final String NAME="name";
+	private static final String MIME="mime";
+	private static final String HIGHLIGHTER="highlighter";
+	private static final String SUPERTYPE="supertype";
 	private final String name;
 	private final String[] mimeTypes;
 	private final TokenHighlighter highlighter;
@@ -37,5 +47,34 @@ public class Language{
 	}
 	public String[] getMimeTypes(){
 		return mimeTypes;
+	}
+	public String toJSON(){
+		Map<String,Object> obj=new HashMap<>();
+		obj.put(NAME,name);
+		obj.put(MIME,Arrays.asList(mimeTypes));
+		if(highlighter instanceof AntlrHighlighter){
+
+		}else if(highlighter instanceof AdhokHighlighter){
+
+		}
+		obj.put(HIGHLIGHTER,name);
+		return JSONEncoder.encode(obj);
+	}
+	public static Language fromJSON(String json) throws IOException,SyntaxException{
+		Map<String,Object> obj=(Map<String,Object>)(Object)JSONDecoder.decode(json);
+		String name=(String)obj.get(NAME);
+		String[] mime=((List<String>)obj.get(MIME)).toArray(new String[0]);
+		TokenHighlighter highlighter;
+		String lex=(String)obj.get(HIGHLIGHTER);
+		if(lex.endsWith(".g4")){
+			highlighter=new AntlrHighlighter(LexerBuilder.wrap(Grammar.load(lex)),(Map<String,String>)obj.get(SUPERTYPE));
+		}else if(lex.endsWith(".json")){
+			NaiveLexer naiveLexer=new NaiveLexer();
+			LexBuilders.fromJSON(Helper.readText(lex),naiveLexer);
+			highlighter=new AdhokHighlighter(naiveLexer);
+		}else{
+			highlighter=null;
+		}
+		return new Language(name,mime,highlighter);
 	}
 }
