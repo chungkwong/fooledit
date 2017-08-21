@@ -15,12 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.text;
+import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.editor.*;
 import cc.fooledit.editor.lex.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
+import java.util.logging.*;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.tool.*;
 /**
  *
@@ -48,18 +52,6 @@ public class Language{
 	public String[] getMimeTypes(){
 		return mimeTypes;
 	}
-	public String toJSON(){
-		Map<String,Object> obj=new HashMap<>();
-		obj.put(NAME,name);
-		obj.put(MIME,Arrays.asList(mimeTypes));
-		if(highlighter instanceof AntlrHighlighter){
-
-		}else if(highlighter instanceof AdhokHighlighter){
-
-		}
-		obj.put(HIGHLIGHTER,name);
-		return JSONEncoder.encode(obj);
-	}
 	public static Language fromJSON(String json) throws IOException,SyntaxException{
 		Map<String,Object> obj=(Map<String,Object>)(Object)JSONDecoder.decode(json);
 		String name=(String)obj.get(NAME);
@@ -73,7 +65,15 @@ public class Language{
 			LexBuilders.fromJSON(Helper.readText(lex),naiveLexer);
 			highlighter=new AdhokHighlighter(naiveLexer);
 		}else{
-			highlighter=null;
+			int i=lex.indexOf('!');
+			String jar=lex.substring(0,i);
+			String cls=lex.substring(i+1);
+			try{
+				highlighter=new AntlrHighlighter(LexerBuilder.wrap((Class<Lexer>)new URLClassLoader(new URL[]{new File(Main.getDataPath(),jar).toURI().toURL()}).loadClass(cls)));
+			}catch(ClassNotFoundException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+				highlighter=null;
+			}
 		}
 		return new Language(name,mime,highlighter);
 	}
