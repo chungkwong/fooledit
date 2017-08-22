@@ -40,6 +40,12 @@
 .other{
 	-fx-fill: darkgreen;
 }
+.operator{
+	-fx-fill: darkgreen;
+}
+.separator{
+	-fx-fill: black;
+}
 .command{
 	-fx-fill: darkblue;
 }
@@ -74,9 +80,21 @@
 .char {
 	-fx-fill: sienna;
 }
+.character {
+	-fx-fill: sienna;
+}
 .type {
 	-fx-fill: darkolivegreen;
 }
 .binary{
 	-fx-fill: black;
+}
+.Identifier{
+	-fx-fill: purple;
+}
+.identifier{
+	-fx-fill: purple;
+}
+.Class{
+	-fx-fill: yellow;
 }

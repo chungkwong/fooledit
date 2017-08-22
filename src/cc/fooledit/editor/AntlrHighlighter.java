@@ -79,7 +79,7 @@ public class AntlrHighlighter implements TokenHighlighter{
 		index=0;
 		tokens.forEach((t)->{
 			if(t.getStartIndex()>index)
-				spansBuilder.add(Collections.singleton("whitespace"),t.getStartIndex()-index);
+				spansBuilder.add(Collections.singleton("comment"),t.getStartIndex()-index);
 			index=t.getStopIndex()+1;
 			if(t.getType()!=-1)
 				spansBuilder.add(styles[t.getType()],index-t.getStartIndex());

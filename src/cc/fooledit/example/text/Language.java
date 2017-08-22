@@ -19,10 +19,12 @@ import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.editor.*;
 import cc.fooledit.editor.lex.*;
+import cc.fooledit.util.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.logging.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.tool.*;
@@ -32,19 +34,19 @@ import org.antlr.v4.tool.*;
  */
 public class Language{
 	private static final String NAME="name";
-	private static final String MIME="mime";
+	private static final String MIME="mimes";
 	private static final String HIGHLIGHTER="highlighter";
 	private static final String SUPERTYPE="supertype";
 	private final String name;
 	private final String[] mimeTypes;
-	private final TokenHighlighter highlighter;
-	public Language(String name,String[] mimeTypes,TokenHighlighter highlighter){
+	private final Cache<TokenHighlighter> highlighter;
+	public Language(String name,String[] mimeTypes,Supplier<TokenHighlighter> highlighter){
 		this.name=name;
 		this.mimeTypes=mimeTypes;
-		this.highlighter=highlighter;
+		this.highlighter=new Cache<>(highlighter);
 	}
 	public TokenHighlighter getTokenHighlighter(){
-		return highlighter;
+		return highlighter.get();
 	}
 	public String getName(){
 		return name;
@@ -52,28 +54,45 @@ public class Language{
 	public String[] getMimeTypes(){
 		return mimeTypes;
 	}
-	public static Language fromJSON(String json) throws IOException,SyntaxException{
-		Map<String,Object> obj=(Map<String,Object>)(Object)JSONDecoder.decode(json);
+	public static Language fromJSON(Map<String,Object> obj){
 		String name=(String)obj.get(NAME);
 		String[] mime=((List<String>)obj.get(MIME)).toArray(new String[0]);
-		TokenHighlighter highlighter;
-		String lex=(String)obj.get(HIGHLIGHTER);
-		if(lex.endsWith(".g4")){
-			highlighter=new AntlrHighlighter(LexerBuilder.wrap(Grammar.load(lex)),(Map<String,String>)obj.get(SUPERTYPE));
-		}else if(lex.endsWith(".json")){
-			NaiveLexer naiveLexer=new NaiveLexer();
-			LexBuilders.fromJSON(Helper.readText(lex),naiveLexer);
-			highlighter=new AdhokHighlighter(naiveLexer);
+		Supplier<TokenHighlighter> highlighter;
+		String lexFileName=(String)obj.get(HIGHLIGHTER);
+		if(lexFileName.endsWith(".g4")){
+			File lex=new File(Main.getDataPath(),lexFileName);
+			File superType=new File(Main.getDataPath(),(String)obj.get(SUPERTYPE));
+			highlighter=()->{
+				try{
+					return new AntlrHighlighter(LexerBuilder.wrap(Grammar.load(lex.getAbsolutePath())),(Map<String,String>)JSONDecoder.decode(Helper.readText(superType)));
+				}catch(IOException|SyntaxException ex){
+					return new AntlrHighlighter(LexerBuilder.wrap(Grammar.load(lex.getAbsolutePath())),Collections.emptyMap());
+				}
+			};
+		}else if(lexFileName.endsWith(".json")){
+			File lex=new File(Main.getDataPath(),lexFileName);
+			highlighter=()->{
+				NaiveLexer naiveLexer=new NaiveLexer();
+				try{
+					LexBuilders.fromJSON(Helper.readText(lex),naiveLexer);
+					return new AdhokHighlighter(naiveLexer);
+				}catch(IOException|SyntaxException ex){
+					Logger.getGlobal().log(Level.SEVERE,null,ex);
+					return null;
+				}
+			};
 		}else{
-			int i=lex.indexOf('!');
-			String jar=lex.substring(0,i);
-			String cls=lex.substring(i+1);
-			try{
-				highlighter=new AntlrHighlighter(LexerBuilder.wrap((Class<Lexer>)new URLClassLoader(new URL[]{new File(Main.getDataPath(),jar).toURI().toURL()}).loadClass(cls)));
-			}catch(ClassNotFoundException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				highlighter=null;
-			}
+			int i=lexFileName.indexOf('!');
+			String jar=lexFileName.substring(0,i);
+			String cls=lexFileName.substring(i+1);
+			highlighter=()->{
+				try{
+					return new AntlrHighlighter(LexerBuilder.wrap((Class<Lexer>)new URLClassLoader(new URL[]{new File(Main.getDataPath(),jar).toURI().toURL()}).loadClass(cls)));
+				}catch(MalformedURLException|ClassNotFoundException ex){
+					Logger.getGlobal().log(Level.SEVERE,null,ex);
+					return null;
+				}
+			};
 		}
 		return new Language(name,mime,highlighter);
 	}

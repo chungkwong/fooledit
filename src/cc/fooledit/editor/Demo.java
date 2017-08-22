@@ -19,6 +19,8 @@ import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.editor.lex.*;
 import cc.fooledit.editor.parser.*;
+import cc.fooledit.example.text.*;
+import cc.fooledit.setting.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
@@ -51,7 +53,7 @@ public class Demo extends Application{
 		Popup popup=new Popup();
 		popup.getContent().add(new Label("hello"));
 		Scene scene=new Scene(editor);
-		scene.getStylesheets().add(Demo.class.getResource("highlight.css").toExternalForm());
+		scene.getStylesheets().add(((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("stylesheet-file",null)).toURI().toURL().toString());
 		stage.setScene(scene);
 		stage.show();
 	}

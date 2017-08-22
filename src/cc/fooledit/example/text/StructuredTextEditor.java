@@ -21,7 +21,6 @@ import cc.fooledit.editor.*;
 import cc.fooledit.editor.lex.*;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
-import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -37,7 +36,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final MenuRegistry menuRegistry=new MenuRegistry();
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
-	private final Map<String,String> highlightFiles=new HashMap<>();
+	private final Map<String,Language> languages=new HashMap<>();
 	public StructuredTextEditor(){
 		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("menubar-file",null)));
 
@@ -103,8 +102,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 
-		Map<String,List<String>> json=(Map<String,List<String>>)(Object)Main.loadJSON(new File(Main.getModulePath(TextEditorModule.NAME),"highlight.json"));
-		json.forEach((file,mimes)->mimes.stream().forEach((mime)->highlightFiles.put(mime,file)));
+		List<Map<String,Object>> json=((Map<String,List<Map<String,Object>>>)(Object)Main.loadJSON(new File(Main.getModulePath(TextEditorModule.NAME),"modes.json"))).get("languages");
+		json.stream().map((m)->Language.fromJSON(m)).forEach((l)->Arrays.stream(l.getMimeTypes()).forEach((mime)->languages.put(mime,l)));
 	}
 	private void addCommand(String name,Consumer<CodeEditor> action){
 		commandRegistry.put(name,()->action.accept((CodeEditor)Main.INSTANCE.getCurrentNode()));
@@ -138,18 +137,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	@Override
 	public Node edit(TextObject data){
 		MetaLexer lex=null;
-		String highlightFile=highlightFiles.get(DataObjectRegistry.getMIME(data));
-		if(highlightFile!=null){
-			lex=new NaiveLexer();
-			File file=new File(Main.getModulePath(TextEditorModule.NAME),"modes/"+highlightFile);
-			try{
-				LexBuilders.fromJSON(Helper.readText(file),lex);
-			}catch(NullPointerException|IOException|SyntaxException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				lex=null;
-			}
-		}
-		CodeEditor codeEditor=new CodeEditor(null,new AdhokHighlighter(lex));
+		Language language=languages.get(DataObjectRegistry.getMIME(data));
+		TokenHighlighter highlighter=language!=null?language.getTokenHighlighter():null;
+		CodeEditor codeEditor=new CodeEditor(null,highlighter);
 		codeEditor.textProperty().bindBidirectional(data.getText());
 		return codeEditor;
 	}
