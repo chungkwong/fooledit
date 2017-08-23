@@ -59,17 +59,7 @@ public class Language{
 		String[] mime=((List<String>)obj.get(MIME)).toArray(new String[0]);
 		Supplier<TokenHighlighter> highlighter;
 		String lexFileName=(String)obj.get(HIGHLIGHTER);
-		if(lexFileName.endsWith(".g4")){
-			File lex=new File(Main.getDataPath(),lexFileName);
-			File superType=new File(Main.getDataPath(),(String)obj.get(SUPERTYPE));
-			highlighter=()->{
-				try{
-					return new AntlrHighlighter(LexerBuilder.wrap(Grammar.load(lex.getAbsolutePath())),(Map<String,String>)JSONDecoder.decode(Helper.readText(superType)));
-				}catch(IOException|SyntaxException ex){
-					return new AntlrHighlighter(LexerBuilder.wrap(Grammar.load(lex.getAbsolutePath())),Collections.emptyMap());
-				}
-			};
-		}else if(lexFileName.endsWith(".json")){
+		if(lexFileName.endsWith(".json")){
 			File lex=new File(Main.getDataPath(),lexFileName);
 			highlighter=()->{
 				NaiveLexer naiveLexer=new NaiveLexer();
@@ -82,17 +72,33 @@ public class Language{
 				}
 			};
 		}else{
-			int i=lexFileName.indexOf('!');
-			String jar=lexFileName.substring(0,i);
-			String cls=lexFileName.substring(i+1);
-			highlighter=()->{
-				try{
-					return new AntlrHighlighter(LexerBuilder.wrap((Class<Lexer>)new URLClassLoader(new URL[]{new File(Main.getDataPath(),jar).toURI().toURL()}).loadClass(cls)));
-				}catch(MalformedURLException|ClassNotFoundException ex){
-					Logger.getGlobal().log(Level.SEVERE,null,ex);
-					return null;
-				}
-			};
+			File superTypeFile=new File(Main.getDataPath(),(String)obj.get(SUPERTYPE));
+			Map<String,String> superType=new HashMap<>();
+			try{
+				superType.putAll((Map<String,String>)JSONDecoder.decode(Helper.readText(superTypeFile)));
+			}catch(IOException|SyntaxException ex){
+				Logger.getLogger(Language.class.getName()).log(Level.INFO,null,ex);
+			}
+			if(lexFileName.endsWith(".g4")){
+				File lex=new File(Main.getDataPath(),lexFileName);
+				highlighter=()->{
+					LexerBuilder lexer=LexerBuilder.wrap(Grammar.load(lex.getAbsolutePath()));
+					return new AntlrHighlighter(lexer,superType);
+				};
+			}else{
+				int i=lexFileName.indexOf('!');
+				String jar=lexFileName.substring(0,i);
+				String cls=lexFileName.substring(i+1);
+				highlighter=()->{
+					try{
+						LexerBuilder lexer=LexerBuilder.wrap((Class<Lexer>)new URLClassLoader(new URL[]{new File(Main.getDataPath(),jar).toURI().toURL()}).loadClass(cls));
+						return new AntlrHighlighter(lexer,superType);
+					}catch(MalformedURLException|ClassNotFoundException ex){
+						Logger.getGlobal().log(Level.SEVERE,null,ex);
+						return null;
+					}
+				};
+			}
 		}
 		return new Language(name,mime,highlighter);
 	}

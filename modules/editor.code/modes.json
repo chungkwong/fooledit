@@ -1,6 +1,6 @@
 {"languages":[
 	{"name":"css","highlighter":"mode.css/lex.json","mimes":["text/css"]},
-	{"name":"json","highlighter":"mode.json/lex.json","mimes":["application/json"]},
+	{"name":"json","highlighter":"mode.json/parser.jar!JSONLexer","supertype":"mode.json/tokens.json","mimes":["application/json"]},
 	{"name":"troff","highlighter":"mode.troff/lex.json","mimes":["text/troff"]},
 	{"name":"dot","highlighter":"mode.dot/lex.json","mimes":["text/vnd.graphviz.json"]},
 	{"name":"ada","highlighter":"mode.ada/lex.json","mimes":["text/x-adasrc","text/x-ada"]},
@@ -21,7 +21,7 @@
 	{"name":"go","highlighter":"mode.go/lex.json","mimes":["text/x-go"]},
 	{"name":"haskell","highlighter":"mode.haskell/lex.json","mimes":["text/x-haskell"]},
 	{"name":"properties","highlighter":"mode.properties/lex.json","mimes":["text/x-java-properties"]},
-	{"name":"java","highlighter":"mode.java/Java8.g4","supertype":"mode.java/tokens.json","mimes":["text/x-java"]},
+	{"name":"java","highlighter":"mode.java/parser.jar!Java8Lexer","supertype":"mode.java/tokens.json","mimes":["text/x-java"]},
 	{"name":"javascript","highlighter":"mode.javascript/lex.json","mimes":["application/javascript"]},
 	{"name":"lex","highlighter":"mode.lex/lex.json","mimes":["text/x-lex"]},
 	{"name":"lua","highlighter":"mode.lua/lex.json","mimes":["text/x-lua"]},

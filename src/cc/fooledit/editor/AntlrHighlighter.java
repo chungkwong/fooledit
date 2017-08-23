@@ -57,35 +57,39 @@ public class AntlrHighlighter implements TokenHighlighter{
 		//LexerInterpreter lexEngine=grammar.createLexerInterpreter(CharStreams.fromString(text));
 		Lexer lexEngine=lexerBuilder.create(text);
 		if(styles==null){
-			styles=new Collection[lexEngine.getTokenTypeMap().values().stream().mapToInt((i)->i).max().orElse(-1)+1];
-			lexEngine.getTokenTypeMap().forEach((s,i)->{
-				if(i>=0){
-					if(styles[i]==null)
-						styles[i]=new LinkedList();
-					styles[i].add(s);
-					String subType=s;
-					while(superType.containsKey(subType)){
-						subType=superType.get(subType);
-						styles[i].add(subType);
-					}
-				}
-			});
-			superType=null;
+			initStyles(lexEngine);
 		}
-		CommonTokenStream tokenstream=new CommonTokenStream(lexEngine);
-		tokenstream.fill();
-		List<org.antlr.v4.runtime.Token> tokens=tokenstream.getTokens();
+		//CommonTokenStream tokenstream=new CommonTokenStream(lexEngine);
+		//tokenstream.fill();
+		//List<org.antlr.v4.runtime.Token> tokens=tokenstream.getTokens();
+		List<? extends org.antlr.v4.runtime.Token> tokens=lexEngine.getAllTokens();
 		StyleSpansBuilder<Collection<String>> spansBuilder=new StyleSpansBuilder<>();
 		index=0;
 		tokens.forEach((t)->{
 			if(t.getStartIndex()>index)
 				spansBuilder.add(Collections.singleton("comment"),t.getStartIndex()-index);
 			index=t.getStopIndex()+1;
-			if(t.getType()!=-1)
-				spansBuilder.add(styles[t.getType()],index-t.getStartIndex());
+			spansBuilder.add(styles[t.getType()+1],index-t.getStartIndex());
 		});
 		System.err.println(System.currentTimeMillis()-time);
 		return spansBuilder.create();
+	}
+	private void initStyles(Lexer lexEngine){
+		styles=new Collection[lexEngine.getTokenTypeMap().values().stream().mapToInt((i)->i).max().orElse(-1)+2];
+		styles[0]=Collections.singleton("EOF");
+		lexEngine.getTokenTypeMap().forEach((s,i)->{
+			if(i>=0){
+				if(styles[i+1]==null)
+					styles[i+1]=new LinkedList();
+				styles[i+1].add(s);
+				String subType=s;
+				while(superType.containsKey(subType)){
+					subType=superType.get(subType);
+					styles[i+1].add(subType);
+				}
+			}
+		});
+		superType=null;
 	}
 	private int index=0;
 }
