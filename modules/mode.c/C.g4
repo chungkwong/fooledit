@@ -914,7 +914,7 @@ LineAfterPreprocessing
         -> skip
     ;  
 
-LineDirective
+/*LineDirective
     :   '#' Whitespace? DecimalConstant Whitespace? StringLiteral ~[\r\n]*
         -> skip
     ;
@@ -922,6 +922,11 @@ LineDirective
 PragmaDirective
     :   '#' Whitespace? 'pragma' Whitespace ~[\r\n]*
         -> skip
+    ;
+*/
+
+Directive
+    :   '#' [^\r\n]*  ~[\r\n]*
     ;
 
 Whitespace

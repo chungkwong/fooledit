@@ -49,8 +49,10 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("select-word",(area)->area.getArea().selectWord());
 		addCommand("select-line",(area)->area.getArea().selectLine());
 		addCommand("select-paragraph",(area)->area.getArea().selectParagraph());
-		addCommand("delete-next-character",(area)->area.getArea().deleteNextChar());
-		addCommand("delete-previous-character",(area)->area.getArea().deletePreviousChar());
+		addCommand("delete-selection-or-next-character",(area)->area.delete());
+		addCommand("delete-selection-or-previous-character",(area)->area.backspace());
+		addCommand("delete-next-character",(area)->area.deleteNextChar());
+		addCommand("delete-previous-character",(area)->area.deletePreviousChar());
 		addCommand("delete-next-word",(area)->area.deleteNextWord());
 		addCommand("delete-previous-word",(area)->area.deletePreviousWord());
 		addCommand("delete-line",(area)->area.deleteLine());
@@ -138,6 +140,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	public Node edit(TextObject data){
 		MetaLexer lex=null;
 		Language language=languages.get(DataObjectRegistry.getMIME(data));
+		System.out.println(language.getName());
 		TokenHighlighter highlighter=language!=null?language.getTokenHighlighter():null;
 		CodeEditor codeEditor=new CodeEditor(null,highlighter);
 		codeEditor.textProperty().bindBidirectional(data.getText());

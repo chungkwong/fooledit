@@ -99,6 +99,26 @@ public class CodeEditor extends BorderPane{
 	public void indentLine(int line){
 		area.insertText(line,0,indentPolicy.apply(area,line));
 	}
+	public void delete(){
+		if(area.getSelection().getLength()==0)
+			area.deleteNextChar();
+		else
+			area.replaceSelection("");
+	}
+	public void backspace(){
+		if(area.getSelection().getLength()==0)
+			area.deletePreviousChar();
+		else
+			area.replaceSelection("");
+	}
+	public void deleteNextChar(){
+		area.nextChar(NavigationActions.SelectionPolicy.EXTEND);
+		area.replaceSelection("");
+	}
+	public void deletePreviousChar(){
+		area.previousChar(NavigationActions.SelectionPolicy.EXTEND);
+		area.replaceSelection("");
+	}
 	public void nextWord(NavigationActions.SelectionPolicy policy){
 		int pos=area.getCaretPosition();
 		StyleSpans<Collection<String>> styleSpans=area.getStyleSpans(pos,area.getLength());

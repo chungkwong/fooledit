@@ -1,6 +1,6 @@
 {
-	"Delete":"delete-next-character",
-	"Backspace":"delete-previous-character",
+	"Delete":"delete-selection-or-next-character",
+	"Backspace":"delete-selection-or-previous-character",
 	"C-Delete":"delete-next-word",
 	"C-Backspace":"delete-previous-word",
 	"C-Z":"undo",
