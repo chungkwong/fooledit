@@ -20,7 +20,7 @@
 	{"name":"gettext","highlighter":"mode.gettext/lex.json","mimes":["text/x-gettext-translation-template"]},
 	{"name":"go","highlighter":"mode.go/lex.json","mimes":["text/x-go"]},
 	{"name":"haskell","highlighter":"mode.haskell/lex.json","mimes":["text/x-haskell"]},
-	{"name":"properties","highlighter":"mode.properties/lex.json","mimes":["text/x-java-properties"]},
+	{"name":"properties","highlighter":"mode.properties/parser.jar!PropertiesLexer","supertype":"mode.properties/tokens.json","mimes":["text/x-java-properties"]},
 	{"name":"java","highlighter":"mode.java/parser.jar!Java8Lexer","supertype":"mode.java/tokens.json","mimes":["text/x-java"]},
 	{"name":"javascript","highlighter":"mode.javascript/parser.jar!ECMAScriptLexer","supertype":"mode.javascript/tokens.json","mimes":["application/javascript"]},
 	{"name":"lex","highlighter":"mode.lex/lex.json","mimes":["text/x-lex"]},
