@@ -1,11 +1,15 @@
 grammar Bash;
 
+program
+    :
+    ;
+
 KEYWORD:'!'|'case'|'do'|'done'|'elif'|'else'|'esac'|'fi'|'for'|'function'|'if'|'in'|'select'|'then'|'until'|'while'|'{'|'}'|'time'|'[['|']]';
 COMMENT:'#'(~[\r\n])*;
 REGEX:[ \t\r\n]+;
 STRING
     :'$'? '\'' (~'\'')* '\''
-    |'$'? '"' ((~[^"\\])|'\\'.)* '"'
+    |'$'? '"' ((~["\\])|'\\'.)* '"'
     ;
 VARIABLE
     :'$'[_a-zA-Z][_0-9a-zA-Z]*
@@ -15,5 +19,5 @@ VARIABLE
     |'${' (~'}')* '}'
     |'`' ((~[`\\])|'\\'.)* '`'
     ;
-SEPARATOR: [<>;|&)(\[\]];
-PLAIN: (~[#`'"$<>;|&)(\[\] \t\r\n])(~[`'"$<>;|&)( \t\r\n])*;
+SEPARATOR: [<>;|&)([\]];
+PLAIN: (~[#`'"$<>;|&)([\] \t\r\n])(~[`'"$<>;|&)( \t\r\n])*;

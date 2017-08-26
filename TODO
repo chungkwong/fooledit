@@ -1,3 +1,37 @@
+/home/kwong/NetBeansProjects/jtk/modules/mode.dtd
+/home/kwong/NetBeansProjects/jtk/modules/mode.emacs-lisp
+/home/kwong/NetBeansProjects/jtk/modules/mode.fortran
+/home/kwong/NetBeansProjects/jtk/modules/mode.gettext
+/home/kwong/NetBeansProjects/jtk/modules/mode.go
+/home/kwong/NetBeansProjects/jtk/modules/mode.haskell
+/home/kwong/NetBeansProjects/jtk/modules/mode.lex
+/home/kwong/NetBeansProjects/jtk/modules/mode.lua
+/home/kwong/NetBeansProjects/jtk/modules/mode.m4
+/home/kwong/NetBeansProjects/jtk/modules/mode.makefile
+/home/kwong/NetBeansProjects/jtk/modules/mode.markdown
+/home/kwong/NetBeansProjects/jtk/modules/mode.objc
+/home/kwong/NetBeansProjects/jtk/modules/mode.ocaml
+/home/kwong/NetBeansProjects/jtk/modules/mode.octave
+/home/kwong/NetBeansProjects/jtk/modules/mode.pascal
+/home/kwong/NetBeansProjects/jtk/modules/mode.perl
+/home/kwong/NetBeansProjects/jtk/modules/mode.php
+/home/kwong/NetBeansProjects/jtk/modules/mode.plain
+/home/kwong/NetBeansProjects/jtk/modules/mode.prolog
+/home/kwong/NetBeansProjects/jtk/modules/mode.python
+/home/kwong/NetBeansProjects/jtk/modules/mode.r
+/home/kwong/NetBeansProjects/jtk/modules/mode.ruby
+/home/kwong/NetBeansProjects/jtk/modules/mode.scheme
+/home/kwong/NetBeansProjects/jtk/modules/mode.sed
+/home/kwong/NetBeansProjects/jtk/modules/mode.sql
+/home/kwong/NetBeansProjects/jtk/modules/mode.sqlite
+/home/kwong/NetBeansProjects/jtk/modules/mode.swift
+/home/kwong/NetBeansProjects/jtk/modules/mode.tcl
+/home/kwong/NetBeansProjects/jtk/modules/mode.tex
+/home/kwong/NetBeansProjects/jtk/modules/mode.texinfo
+/home/kwong/NetBeansProjects/jtk/modules/mode.troff
+/home/kwong/NetBeansProjects/jtk/modules/mode.xml
+/home/kwong/NetBeansProjects/jtk/modules/mode.yacc
+
 Features from jedit
 
 #{{{ Function keys

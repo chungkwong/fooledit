@@ -44,7 +44,10 @@ public class Demo extends Application{
 	public void start(Stage stage) throws Exception{
 		//CodeEditor editor=new CodeEditor(null,getExampleLex());
 		//CodeEditor editor=new CodeEditor(null,new AntlrHighlighter(LexerBuilder.wrap((Class<? extends Lexer>)new URLClassLoader(new URL[]{new File("/home/kwong/projects/grammars-v4/java8").toURL()}).loadClass("Java8Lexer")),(Map<String,String>)JSONDecoder.decode(Helper.readText(Main.getFile("tokens.json","mode.java")))));
-		CodeEditor editor=new CodeEditor(null,new AntlrHighlighter(LexerBuilder.wrap((Class<? extends Lexer>)new URLClassLoader(new URL[]{new File("/home/kwong/NetBeansProjects/jtk/modules/mode.properties/parser.jar").toURL()}).loadClass("PropertiesLexer")),(Map<String,String>)JSONDecoder.decode(Helper.readText(Main.getFile("tokens.json","mode.properties")))));
+		String cls="ECMAScriptLexer";
+		String module="mode.javascript";
+		String jar="/home/kwong/NetBeansProjects/jtk/modules/"+module+"/parser.jar";
+		CodeEditor editor=new CodeEditor(null,new AntlrHighlighter(LexerBuilder.wrap((Class<? extends Lexer>)new URLClassLoader(new URL[]{new File(jar).toURL()}).loadClass(cls)),(Map<String,String>)JSONDecoder.decode(Helper.readText(Main.getFile("tokens.json",module)))));
 		//CodeEditor editor=new CodeEditor(new LR1Parser(getExampleGrammar()),getExampleLex());
 		//editor.syntaxTree().addListener((e,o,n)->System.out.println(n));
 		/*editor.setAutoCompleteProvider(AutoCompleteProvider.createSimple(Arrays.asList(
