@@ -41,15 +41,7 @@ clauselist
     ;
 
 clause 
-    : (predicate '.') | (predicate ':-') (predicatelist '.')
-    ;
-
-predicatelist 
-    :  predicate (',' predicate)*
-    ;
-
-predicate 
-    : atom | atom '(' termlist ')'
+    : term '.'
     ;
 
 termlist 
@@ -57,54 +49,76 @@ termlist
     ;
 
 term 
-    : numeral | atom | variable | structure
+    : number | atom | VARIABLE | compound | list | expression
     ;
 
-structure 
+list
+    : '[' termlist ('|' term)? ']'
+    ;
+
+expression
+    : '(' term ')'
+    | term (NAME|',') term
+    ;
+
+number
+    : '-'? (INTEGER | FLOAT)
+    ;
+
+compound 
     : atom '(' termlist ')'
+    | '{' term '}'
     ;
 
 query 
-    : '?-' predicatelist '.'
+    : '?-' termlist '.'
     ;
 
 atom 
-    : smallatom | '\'' string '\''
+    : NAME | emptylist | emptybracket
     ;
 
-smallatom 
-    : LCLETTER | smallatom character
+emptylist
+    : '[' ']'
     ;
 
-variable 
-    : UCLETTER | variable character
+emptybracket
+    : '{' '}'
     ;
 
-numeral 
-    : DIGIT | numeral DIGIT
+
+NAME: [a-z][_A-Za-z0-9]*|[-#$&*+.\\:<=>?@^~][-#$&*+./\\\\:<=>?@^~]?|'/' [-#$&+./\\\\:<=>?@^~]?|'\'' (NONQUOTE|'"'|'`'|'\'\''|'\\n'|'\\r')+ '\''|'!'|';'
     ;
 
-character 
-    : LCLETTER | UCLETTER | DIGIT | special
+VARIABLE
+    : [_A-Z][_a-zA-Z0-9]*
     ;
 
-special 
-    : '+' | '-' | '*' | '/' | '\\' | '^' | '~' | ':' | '.' | '?' | '#'| '$' | '&'
+FLOAT:
+    : [0-9]+\\.[0-9]+([eE][-+]?[0-9]+)?
     ;
 
-string 
-    : character | string character
+INTEGER:
+    : '0b'[01]+|'0o'[0-7]+|'0x'[a-zA-Z]+|'0\''(NONQUOTE|['"`])|[0-9]+
     ;
 
-LCLETTER
-    : [a-z_];
-
-UCLETTER
-    : [A-Z];
-
-DIGIT
-    : [0-9];
+STRING
+    : '"' (NONQUOTE|'\''|'`'|'""'|'\\n'|'\\r')* '"'
+    | '`' (NONQUOTE|'"'|'\''|'``'|'\\n'|'\\r')* '`'
+    ;
 
 WS
-   : [ \t\r\n] -> skip
-   ;
+    : [ \t\r\n] -> skip
+    ;
+
+COMMENT
+    : '%' (~[\r\n])*|'/*' .*? '*/' -> skip
+    ;
+
+SEPARATOR
+    : [)(\][}{|,.]
+    ;
+
+fragment NONQUOTE
+    : '\\' [abfnrtv\\`'"]|'\\'[0-7]+'\\'|'\\x'[0-9a-fA-F]+'\\'| ~[`'"\\]
+    ;
