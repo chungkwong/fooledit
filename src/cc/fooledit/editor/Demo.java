@@ -44,8 +44,8 @@ public class Demo extends Application{
 	public void start(Stage stage) throws Exception{
 		//CodeEditor editor=new CodeEditor(null,getExampleLex());
 		//CodeEditor editor=new CodeEditor(null,new AntlrHighlighter(LexerBuilder.wrap((Class<? extends Lexer>)new URLClassLoader(new URL[]{new File("/home/kwong/projects/grammars-v4/java8").toURL()}).loadClass("Java8Lexer")),(Map<String,String>)JSONDecoder.decode(Helper.readText(Main.getFile("tokens.json","mode.java")))));
-		String cls="ECMAScriptLexer";
-		String module="mode.javascript";
+		String cls="GolangLexer";
+		String module="mode.go";
 		String jar="/home/kwong/NetBeansProjects/jtk/modules/"+module+"/parser.jar";
 		CodeEditor editor=new CodeEditor(null,new AntlrHighlighter(LexerBuilder.wrap((Class<? extends Lexer>)new URLClassLoader(new URL[]{new File(jar).toURL()}).loadClass(cls)),(Map<String,String>)JSONDecoder.decode(Helper.readText(Main.getFile("tokens.json",module)))));
 		//CodeEditor editor=new CodeEditor(new LR1Parser(getExampleGrammar()),getExampleLex());
