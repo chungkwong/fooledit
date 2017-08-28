@@ -1,4 +1,4 @@
-grammar Gettext;
+lexer grammar GettextLexer;
 
 COMMENT
     : Comment -> skip
@@ -26,11 +26,11 @@ MSGSTR
 
 mode key;
 
-COMMENT
+COMMENT2
     : Comment -> skip
     ;
 
-WHITESPACE
+WHITESPACE2
     : Whitespace -> skip
     ;
 
@@ -38,25 +38,25 @@ KEY
     : String
     ;
 
-MSGCTEXT
+MSGCTEXT2
     : 'msgctxt' -> mode(context)
     ;
 
-MSGID
+MSGID2
     : Msgid -> mode(key)
     ;
 
-MSGSTR
+MSGSTR2
     : Msgstr -> popMode
     ;
 
 mode context;
 
-COMMENT
+COMMENT3
     : Comment -> skip
     ;
 
-WHITESPACE
+WHITESPACE3
     : Whitespace -> skip
     ;
 
@@ -64,15 +64,15 @@ DIRECTIVE
     : String
     ;
 
-MSGCTEXT
+MSGCTEXT3
     : 'msgctxt' -> mode(context)
     ;
 
-MSGID
+MSGID3
     : Msgid -> mode(key)
     ;
 
-MSGSTR
+MSGSTR3
     : Msgstr -> popMode
     ;
 

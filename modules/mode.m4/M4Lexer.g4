@@ -1,4 +1,4 @@
-grammar M4;
+lexer grammar M4Lexer;
 
 COMMENT
     : '#' (~[\r\n])*
@@ -13,17 +13,16 @@ QUOTE_START
     ;
 
 SEPARATOR
-   : [ \t\r\n\f\v)(,$]
+   : [ \t-\r)(,$]
    ;
 
-
 PLAIN
-    : (~[#_a-zA-Z`' \t\r\n\f\v)(,$])+
+    : (~[#_a-zA-Z`' \t-\r)(,$])+
     ;
 
 mode quoted;
 
-QUOTE_START
+MORE_QUOTE
     : '`' ->pushMode(quoted)
     ;
 

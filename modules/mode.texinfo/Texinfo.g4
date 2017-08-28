@@ -1,11 +1,15 @@
 grammar Texinfo;
 
+doc
+    : (COMMENT|NAME|SEPARATOR|PLAIN)*
+    ;
+
 COMMENT
-    : '@c' ([\r\n]|(~[a-ZA-Z\r\n]) (~[\r\n])*)
+    : '@c' ([\r\n]|(~[a-zA-Z\r\n]) (~[\r\n])*)
     ;
 
 NAME
-    : '@' ([a-ZA-Z]+|[-!"'*,./:=?@^`}{~\u0080-\uFFFF])
+    : '@' ([a-zA-Z]+|[-!"'*,./:=?@^`}{~\u0080-\uFFFF])
     ;
 
 SEPARATOR
