@@ -30,8 +30,9 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-grammar prolog;
+lexer grammar PrologLexer;
 
+/*
 program 
     : clauselist query?
     ;
@@ -85,9 +86,9 @@ emptylist
 emptybracket
     : '{' '}'
     ;
+*/
 
-
-NAME: [a-z][_A-Za-z0-9]*|[-#$&*+.\\:<=>?@^~][-#$&*+./\\\\:<=>?@^~]?|'/' [-#$&+./\\\\:<=>?@^~]?|'\'' (NONQUOTE|'"'|'`'|'\'\''|'\\n'|'\\r')+ '\''|'!'|';'
+NAME: [a-z][_A-Za-z0-9]*|[-#$&*+.\\:<=>?@^~][-#$&*+./\\:<=>?@^~]?|'/' [-#$&+./\\:<=>?@^~]?|'\'' (NONQUOTE|'"'|'`'|'\'\''|'\n'|'\r')+ '\''|'!'|';'
     ;
 
 VARIABLE
@@ -112,8 +113,8 @@ WS
     ;
 
 COMMENT
-    : '%' (~[\r\n])*
-    |'/*' .*? '*/' -> skip
+    : ('%' (~[\r\n])*
+    |'/*' .*? '*/') -> skip
     ;
 
 SEPARATOR

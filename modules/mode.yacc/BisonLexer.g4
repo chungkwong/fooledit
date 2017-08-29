@@ -131,7 +131,7 @@ fragment Id
     ;
 
 fragment String
-    : '"' (~'"'|'\\'.)* '"'
+    : '"' (~["\\]|'\\'.)* '"'
     ;
 
 fragment Comment
