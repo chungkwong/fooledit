@@ -1,11 +1,11 @@
-grammar Haskell;
+lexer grammar HaskellLexer;
 
 KEYWORD
     : Keyword
     ;
 
 FLOAT
-    : [0-9]+\\.[0-9]+([eE][-+]?[0-9]+)?
+    : [0-9]+'.'[0-9]+([eE][-+]?[0-9]+)?
     | [0-9]+[eE][-+]?[0-9]+
     ;
 
@@ -14,23 +14,23 @@ INTEGER
     ;
 
 CHARACTER
-    : '\'' ([^'\\]|Escape) '\''
+    : '\'' (~['\\]|Escape) '\''
     ;
 
 STRING
-    : '"' ([^\"\\\\&&[^\\p{javaWhitespace}]]| |Escape|'\\&'|'\\'Z+'\\')* '"'
+    : '"' ((~["\\\t\r\n])|' '|Escape|'\\&'|'\\'Z+'\\')* '"'//Bad hack since Z is not supported
     ;
 
 NAME
-    : Lu (Ll|Lu|[0-9'])*|:[{symbol}]* Op?
+    : Lu (Ll|Lu|[0-9'])*|':'(Symbol|':')* Op?
     ;
 
 VARIABLE
-    : Ll (Ll|Lu|[0-9'])* Keyword? | ([{symbol}&&[^:]][\\p{Sc}\\p{Sm}\\p{Sk}\\p{So}])({op}|('-' '-'+)?
+    : Ll (Ll|Lu|[0-9'])* Keyword? | (Symbol(Sc|Sm|Sk|So))(Op|('-' '-'+))?
     ;
 
 WHITESPACE
-    : \\p{javaWhitespace}+
+    : Z+
     ;
 
 SEPARATOR
@@ -38,21 +38,21 @@ SEPARATOR
     ;
 
 LINE_COMMENT
-    : '--' (~[\r\n]) -> skip;
+    : '--' (~[\r\n]) -> skip
     ;
 
 COMMENT_START
-    : '{-' -> pushMode(comment),skip;
+    : '{-' -> pushMode(comment),skip
     ;
 
 mode comment;
 
-COMMENT_START
-    : '{'+ '-' -> pushMode(comment),skip;
+MORE_COMMENT
+    : '{'+ '-' -> pushMode(comment),skip
     ;
 
 COMMENT_END
-    : '-'+ '}' -> popMode,skip;
+    : '-'+ '}' -> popMode,skip
     ;
 
 COMMENT
@@ -60,15 +60,16 @@ COMMENT
     ;
 
 
-fragment Escape: ","\\\\([abfnrtv\\\\\"']|\\^[A-Z@\\[\\]\\\\_\\^]|NUL'|'SOH'|'STX'|'ETX'|'EOT'|'ENQ'|'ACK'|'BEL'|'BS'|'HT'|'LF'|'VT'|'FF'|'CR'|'SO'|'SI'|'DLE'|'DC1'|'DC2'|'DC3'|'DC4'|'NAK'|'SYN'|'ETB'|'CAN'|'EM'|'SUB'|'ESC'|'FS'|'GS'|'RS'|'US'|'SP'|'DEL|o[0-7]+|x[0-9a-fA-F]+|[0-9]+);
-fragment Keyword:'case'|'class'|'data'|'default'|'deriving'|'do'|'else'|'foreign'|'if'|'import'|'in('fix'[lr]?'|'stance')?'|'let'|'module'|'newtype'|'of'|'then'|'type'|'where'|'_;
-fragment Op:'..'|'::'|'<-'|'->'|'=>'|[:=\\@~|]",
-fragment Symbol:[!#$%&⋆+./<=>?@\\^|-~:]|Sc|Sm|Sk|So ;
+fragment Escape: '\\' ([abfnrtv\\"']|'^'[A-Z@[\]\\_^]|'NUL'|'SOH'|'STX'|'ETX'|'EOT'|'ENQ'|'ACK'|'BEL'|'BS'|'HT'|'LF'|'VT'|'FF'|'CR'|'SO'|'SI'|'DLE'|'DC1'|'DC2'|'DC3'|'DC4'|'NAK'|'SYN'|'ETB'|'CAN'|'EM'|'SUB'|'ESC'|'FS'|'GS'|'RS'|'US'|'SP'|'DEL'|'o'[0-7]+|'x'[0-9a-fA-F]+|[0-9]+);
+fragment Keyword:'case'|'class'|'data'|'default'|'deriving'|'do'|'else'|'foreign'|'if'|'import'|'in'('fix'[lr]?|'stance')?|'let'|'module'|'newtype'|'of'|'then'|'type'|'where'|'_';
+fragment Op:'..'|'::'|'<-'|'->'|'=>'|[:=\\@~|];
+fragment Symbol:[!#$%&⋆+./<=>?@\\^|-~]|Sc|Sm|Sk|So ;
 
 fragment Z :
        Zl
      | Zp
      | Zs  // from local/PropertyValueAliases.txt
+     | [\u0009-\u000D\u001C\u001D\u001E\u001F]
 ;
 
 fragment Cc:

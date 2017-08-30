@@ -1,5 +1,9 @@
 grammar Perl;
 
+program
+    :
+    ;
+
 KEYWORD:
 	'__FILE__'|'__LINE__'|'__PACKAGE__'|'__SUB__'|'__DATA__'|'__END__'|'and'|'cmp'|'continue'|'dump'|'else'|'elsif'|'eq'|'for'|'foreach'|'ge'|'given'|'gt'|'goto'|'if'|'last'|'le'|'lt'|'ne'|'next'|'not'|'or'|'redo'|'unless'|'until'|'when'|'while'|'xor';
 
@@ -10,8 +14,8 @@ VARIABLE:
 	[@%$*](ID|'{' ID '}');
 
 STRING:
-	'\'' ((~[\'\\])|'\\' ['\\])* '\''|
-	'"' ((~[\"\\])|'\\' .)* '"';
+	'\'' ((~['\\])|'\\' ['\\])* '\''|
+	'"' ((~["\\])|'\\' .)* '"';
 
 WHITESPACE:
 	[ \t\r\n]+ ->skip;
@@ -20,7 +24,7 @@ COMMENT:
 	'#' (~[\r\n])*-> skip;
 
 FLOAT:
-	(DEC('_'?DEC)*'.'(DEC('_'?DEC)*)?|'.'DEC('_'?DEC)*)(EXP10)?|'0'[xX](HEX('_'?HEX)*'.'?|(HEX('_'?HEX)*)?'.'(HEX('_'?HEX)*))EXP16|DEC(_?DEC)*EXP10;
+	(DEC('_'?DEC)*'.'(DEC('_'?DEC)*)?|'.'DEC('_'?DEC)*)(EXP10)?|'0'[xX](HEX('_'?HEX)*'.'?|(HEX('_'?HEX)*)?'.'(HEX('_'?HEX)*))EXP16|DEC('_'?DEC)*EXP10;
 
 INTEGER:
 	[1-9]('_'?DEC)*|'0'[xX]HEX('_'?HEX)*|'0'[bB]BIN('_'?BIN)*|'0'('_'?OCT)*;
@@ -32,7 +36,7 @@ SEPARATOR:
 	'...'|','|';'|'('|')'|'['|']'|'{'|'}';
 
 fragment ID:
-	[_a-zA-Z]([_0-9a-zA-Z']|'::')* | '^' [A-Z^_?\\\\[\\]]|[0-9]+|[\p{Punct}&&[^}{]]);
+	[_a-zA-Z]([_0-9a-zA-Z']|'::')* | '^' [A-Z^_?[\]]|[0-9]+|[-+!"#$%&`()*,./:;<=>?@\\[\]_'|~];
 
 fragment HEX:
 	 [0-9a-fA-F];
