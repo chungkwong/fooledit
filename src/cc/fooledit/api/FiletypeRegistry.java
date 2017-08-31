@@ -15,27 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
-import java.io.*;
-import java.nio.file.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class FiletypeRegistry{
-	/*private static final List<Pair<Predicate<String>,String>> pattern2mime=new ArrayList<>();
-	public static void registerPathPattern(String regex,String mime){
-		registerPathPattern(Pattern.compile(regex).asPredicate(),mime);
+	private static final List<MimeGeusser> GEUSSERS=new ArrayList<>();
+	private static final MimeGeusser URL_GEUSSER=new MimeGeusser.URLPatternGeusser();
+	private static final MimeGeusser SYSTEM_GEUSSERS=new MimeGeusser.URLPatternGeusser();
+	public static List<MimeGeusser> getGEUSSERS(){
+		return GEUSSERS;
 	}
-	public static void registerPathPattern(Predicate<String> pred,String mime){
-		pattern2mime.add(new Pair<>(pred,mime));
+	public static MimeGeusser getURL_GEUSSER(){
+		return URL_GEUSSER;
 	}
-	public static List<String> probeMimeType(Path path){
-		String name=path.toString();
-		List<String> candidates=pattern2mime.stream().filter((pair)->pair.getKey().test(name)).
-				map(Pair::getValue).collect(Collectors.toList());
-		return candidates;
-	}*/
-	public static void main(String[] args) throws IOException{
-		System.out.println(Files.probeContentType(new File("/home/kwong/print").toPath()));
+	public static List<String> geuss(byte[] beginning){
+		for(MimeGeusser geusser:GEUSSERS){
+			List<String> geuss=geusser.geuss(beginning);
+			if(!geuss.isEmpty()){
+				return geuss;
+			}
+		}
+		return Collections.singletonList("application/octet-stream");
 	}
 }

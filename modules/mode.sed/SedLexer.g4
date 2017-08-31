@@ -1,12 +1,12 @@
 lexer grammar SedLexer;
 
 
-FROM_LINE: Number('~'Number)? -> pushMode(comma);
-FROM_REGEX: '/'(~[/\\]|'\\'.)*'/'[IM]* -> pushMode(comma);
-FROM_END: '$' ->pushMode(comma);
+FROM_LINE: Number('~'Number)?'!'? -> pushMode(comma);
+FROM_REGEX: '/'(~[/\\]|'\\'.)*'/'[IM]*'!'? -> pushMode(comma);
+FROM_END: '$' '!'?->pushMode(comma);
 COMMENT: '#' (~[\r\n])*;
 END_BLOCK: '}';
-LABEL_MARK: ':';
+LABEL_MARK: ':'->pushMode(label);
 WHITESPACE: [ \t\r\n]+;
 SEMI: ';';
 NO_ADDRESS:  -> pushMode(command);
@@ -18,13 +18,13 @@ EMPTY: ->mode(command);
 
 mode address;
 
-TO_LINE:(Number('~'Number)?|[+~]Number)->mode(rangeCommand);
-TO_REGEX:'/'(~[/\\]|'\\'.)*'/'[IM]*->mode(rangeCommand);
-TO_END:'$'->mode(rangeCommand);
+TO_LINE:(Number('~'Number)?|[+~]Number)'!'?->mode(rangeCommand);
+TO_REGEX:'/'(~[/\\]|'\\'.)*'/'[IM]* '!'?->mode(rangeCommand);
+TO_END:'$' '!'?->mode(rangeCommand);
 
 mode command;
 
-COMMAND: [{dDhHnNpPtTx]->popMode;
+COMMAND: [{dDgGhHnNpPtTx]->popMode;
 FILE_COMMAND:[rRwW]->mode(file);
 LABEL_COMMAND:[btT]->mode(label);
 TEXT_COMMAND:[aic]->mode(text);
@@ -35,7 +35,7 @@ EXIT_COMMAND:[qQ]->mode(exit);
 
 mode rangeCommand;
 
-COMMAND_RANGE:[{dDhHnNpPtTx=]->popMode;
+COMMAND_RANGE:[{dDgGhHnNpPtTx=]->popMode;
 FILE_COMMAND_RANGE:[wW]->mode(file);
 LABEL_COMMAND_RANGE:[btT]->mode(label);
 TEXT_COMMAND_RANGE:'c'->mode(text);
@@ -46,7 +46,7 @@ WIDTH_COMMAND_RANGE:'l'->mode(width);
 mode label;
 LABEL: (~[;\r\n])+ -> popMode;
 mode text;
-TEXT: (~[;\r\n])+ -> popMode;
+TEXT: (~[\r\n])+ -> popMode;
 mode file;
 FILE: (~[;\r\n])+ -> popMode;
 mode exit;
