@@ -17,7 +17,6 @@
 package cc.fooledit.api;
 import cc.fooledit.Main;
 import java.io.*;
-import java.util.logging.*;
 import javax.script.*;
 /**
  *
@@ -28,18 +27,24 @@ public class ScriptModule extends Module{
 		super(name);
 	}
 	@Override
-	public void onLoad(){
+	public void onLoad()throws Exception{
 		evalScript("on-load.scm");
 	}
 	@Override
-	public void onUnLoad(){
+	public void onUnLoad()throws Exception{
 		evalScript("on-unload.scm");
 	}
-	private void evalScript(String file){
-		try{
-			Main.INSTANCE.getScriptAPI().eval(Helper.readText(new File(Main.getModulePath(name),file)));
-		}catch(IOException|ScriptException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
+	@Override
+	public void onInstall()throws Exception{
+		evalScript("on-install.scm");
+	}
+	@Override
+	public void onUninstall()throws Exception{
+		evalScript("on-uninstall.scm");
+	}
+	private void evalScript(String filename)throws IOException,ScriptException{
+		File file=new File(Main.getModulePath(name),filename);
+		if(file.exists())
+			Main.INSTANCE.getScriptAPI().eval(Helper.readText(file));
 	}
 }

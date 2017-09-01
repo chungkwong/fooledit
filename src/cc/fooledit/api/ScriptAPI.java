@@ -35,4 +35,8 @@ public class ScriptAPI{
 	public Object eval(String code) throws ScriptException{
 		return SCHEME_ENGINE.eval(code,CONTEXT);
 	}
+	public static void main(String[] args){
+		
+		//cc.fooledit.Main.INSTANCE.getCommandRegistry().put("kill",);
+	}
 }

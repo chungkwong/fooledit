@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.setting.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
@@ -43,11 +43,15 @@ public class ModuleRegistry{
 			ModuleDescriptor moduleDescriptor=getModuleDescriptor(module);
 			moduleDescriptor.getDependency().forEach((s)->ensureLoaded(s));
 			Module mod=new ScriptModule(module);
-			mod.onLoad();
-			loadedModules.put(module,mod);
+			try{
+				mod.onLoad();
+				loadedModules.put(module,mod);
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
 		}
 	}
-	public static void unLoad(String cls){
+	public static void unLoad(String cls) throws Exception{
 		Module module=loadedModules.remove(cls);
 		module.onUnLoad();
 	}

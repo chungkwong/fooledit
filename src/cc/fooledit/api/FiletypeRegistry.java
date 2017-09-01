@@ -39,4 +39,28 @@ public class FiletypeRegistry{
 		}
 		return Collections.singletonList("application/octet-stream");
 	}
+	private static final Map<String,String> subclasses=new HashMap<>();
+	private static final Map<String,String> aliases=new HashMap<>();
+	public static void registerAlias(String alias,String standard){
+		aliases.put(alias,standard);
+	}
+	public static String normalize(String type){
+		return aliases.getOrDefault(type,type);
+	}
+	public static void registerSubclass(String subclass,String parent){
+		subclasses.put(subclass,parent);
+	}
+	public static boolean isSubclassOf(String type,String ancestor){
+		type=normalize(type);
+		ancestor=normalize(ancestor);
+		while(type!=null){
+			if(type.equals(ancestor))
+				return true;
+			type=normalize(subclasses.get(type));
+		}
+		return false;
+	}
+	public static void main(String[] args){
+		System.out.println(new String(new byte[]{0,5,0}).length());
+	}
 }
