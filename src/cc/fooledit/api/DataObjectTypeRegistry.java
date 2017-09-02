@@ -25,6 +25,7 @@ import cc.fooledit.util.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
+import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -45,12 +46,12 @@ public class DataObjectTypeRegistry{
 	}
 	public static List<DataObjectType> getPreferedDataObjectType(MimeType mime){
 		LinkedList<DataObjectType> cand=new LinkedList<DataObjectType>();
-		String type=mime.getType();
+		String type=mime.getBaseType();
 		if(type.equals("video")||type.equals("audio"))
 			cand.add(MediaObjectType.INSTANCE);
 		else if(type.equals("image"))
 			cand.add(ImageObjectType.INSTANCE);
-		if(type.equals("text")||mime.getParameters().containsKey("charset"))
+		if(type.equals("text")||mime.getParameter("charset")!=null)
 			cand.add(TextObjectType.INSTANCE);
 		cand.add(BinaryObjectType.INSTANCE);
 		return cand;

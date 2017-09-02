@@ -43,6 +43,7 @@ import javafx.scene.image.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
+import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -152,11 +153,13 @@ public class Main extends Application{
 					try{
 						Path file=new File(new URI(prop.get(DataObjectRegistry.URI))).toPath();
 						if(prop.containsKey(DataObjectRegistry.MIME)){
-							FileCommands.open(file,MimeType.fromString(prop.get(DataObjectRegistry.MIME)));
+							FileCommands.open(file,new MimeType(prop.get(DataObjectRegistry.MIME)));
 						}else{
 							FileCommands.open(file);
 						}
 					}catch(URISyntaxException ex){
+						Logger.getGlobal().log(Level.SEVERE,null,ex);
+					}catch(MimeTypeParseException ex){
 						Logger.getGlobal().log(Level.SEVERE,null,ex);
 					}
 				});
@@ -212,13 +215,13 @@ public class Main extends Application{
 			return workSheet;
 		}));
 	}
-	private CommandRegistry getGlobalCommandRegistry(){
+	public CommandRegistry getGlobalCommandRegistry(){
 		return globalCommandRegistry;
 	}
 	private CommandRegistry getLocalCommandRegistry(){
 		return getCurrentWorkSheet().getDataEditor().getCommandRegistry();
 	}
-	private KeymapRegistry getGlobalKeymapRegistry(){
+	public KeymapRegistry getGlobalKeymapRegistry(){
 		return keymapRegistry;
 	}
 	private KeymapRegistry getLocalKeymapRegistry(){
@@ -316,7 +319,7 @@ public class Main extends Application{
 	public ScriptAPI getScriptAPI(){
 		return script;
 	}
-	public Map<String,Command> getCommandRegistry(){
+	public BiMap<String,Command> getCommandRegistry(){
 		return commandRegistry;
 	}
 	class KeymapSupport{

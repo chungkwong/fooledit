@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.model.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.lib.*;
@@ -32,7 +32,7 @@ public class ScriptEnvironment extends BiMap<String,Object> implements Bindings{
 	}
 	private static Object pack(Command command){
 		return new NativeEvaluable((o)->{
-			command.accept(ScmNil.NIL);
+			command.accept((ScmPairOrNil)o);
 			return ScmNil.NIL;
 		});
 	}

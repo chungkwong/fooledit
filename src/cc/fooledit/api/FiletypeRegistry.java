@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
+import java.io.*;
+import java.net.*;
 import java.util.*;
 /**
  *
@@ -24,6 +26,8 @@ public class FiletypeRegistry{
 	private static final List<MimeGeusser> GEUSSERS=new ArrayList<>();
 	private static final MimeGeusser URL_GEUSSER=new MimeGeusser.URLPatternGeusser();
 	private static final MimeGeusser SYSTEM_GEUSSERS=new MimeGeusser.URLPatternGeusser();
+	private static final Map<String,String> SUBCLASSES=new HashMap<>();
+	private static final Map<String,String> ALIASES=new HashMap<>();
 	public static List<MimeGeusser> getGEUSSERS(){
 		return GEUSSERS;
 	}
@@ -39,16 +43,18 @@ public class FiletypeRegistry{
 		}
 		return Collections.singletonList("application/octet-stream");
 	}
-	private static final Map<String,String> subclasses=new HashMap<>();
-	private static final Map<String,String> aliases=new HashMap<>();
-	public static void registerAlias(String alias,String standard){
-		aliases.put(alias,standard);
-	}
-	public static String normalize(String type){
-		return aliases.getOrDefault(type,type);
+	public static List<String> geuss(URL url){
+		for(MimeGeusser geusser:GEUSSERS){
+			List<String> geuss=geusser.geuss(url);
+			if(!geuss.isEmpty()){
+				return geuss;
+			}
+
+		}
+		return Collections.singletonList("application/octet-stream");
 	}
 	public static void registerSubclass(String subclass,String parent){
-		subclasses.put(subclass,parent);
+		SUBCLASSES.put(subclass,parent);
 	}
 	public static boolean isSubclassOf(String type,String ancestor){
 		type=normalize(type);
@@ -56,11 +62,18 @@ public class FiletypeRegistry{
 		while(type!=null){
 			if(type.equals(ancestor))
 				return true;
-			type=normalize(subclasses.get(type));
+			type=normalize(SUBCLASSES.get(type));
 		}
 		return false;
 	}
-	public static void main(String[] args){
-		System.out.println(new String(new byte[]{0,5,0}).length());
+	public static void registerAlias(String alias,String standard){
+		ALIASES.put(alias,standard);
+	}
+	public static String normalize(String type){
+		return ALIASES.getOrDefault(type,type);
+	}
+	public static void main(String[] args) throws IOException{
+		//System.out.println(new String(new byte[]{0,5,0}).length());
+		System.out.println(new URL("file:///home/kwong/icon.png").openConnection().getContentType());
 	}
 }

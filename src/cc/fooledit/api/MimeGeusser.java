@@ -18,7 +18,6 @@ package cc.fooledit.api;
 import cc.fooledit.util.*;
 import java.io.*;
 import java.net.*;
-import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.regex.*;
@@ -58,7 +57,7 @@ public interface MimeGeusser{
 		@Override
 		public List<String> geuss(URL url){
 			try{
-				String type=Files.probeContentType(new File(url.getFile()).toPath());
+				String type=url.openConnection().getContentType();
 				if(type==null)
 					return Collections.emptyList();
 				else

@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.command;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.control.*;
 import cc.fooledit.example.filesystem.*;
 import cc.fooledit.model.*;
-import cc.fooledit.util.*;
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
 import java.util.logging.*;
+import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -100,10 +100,15 @@ public class FileCommands{
 	}
 	private static MimeType geussContentType(Path file){
 		try{
-			return MimeType.fromString(Files.probeContentType(file));
-		}catch(IOException ex){
+			return new MimeType(Files.probeContentType(file));
+		}catch(IOException|MimeTypeParseException ex){
 			Logger.getGlobal().log(Level.INFO,null,ex);
-			return MimeType.fromString("application/octet-stream");
+			try{
+				return new MimeType("application/octet-stream");
+			}catch(MimeTypeParseException ex1){
+				Logger.getGlobal().log(Level.SEVERE,null,ex1);
+				return null;
+			}
 		}
 	}
 	public static void create(){
