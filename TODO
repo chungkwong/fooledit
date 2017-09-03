@@ -1,36 +1,111 @@
+# 傻瓜编辑器
+
+傻瓜编辑器本着全心全意为傻瓜服务的宗旨，致力于成为以人为本的。
+
+## 应有尽有的功能
+
+### 懂文本
+
+- 多字符集/换行符/制表符（自动检测）
+- 多重选择
+- 矩形选择
+- 多剪贴板
+- 查找
+- 正则表达式替换（前、后、区域、文件、项目）
+- 打印
+- 撤销/重做
+- 转到行
+- 自动缩进
+- 增删缩进
+- 自动/重新换行
+- 行号
+- 上下移行
+- 转换（大小写、繁简、空格制表符、URL、实体）
+- 转置
+- 删除多余空白
+- 括号配对
+- 自动备份
+- 多剪贴板
+- 书签
+- 拼写检查
+- 自动更新日期、作者
+- 排序、去重复、反转
+- 自动保存
+- 统计
+- 键盘宏
+- 重复命令
+- 外部命令
+
+### 懂代码
+
+支持大量语言和框架
+
+- 词法加亮
+- 语法语义检查
+- 代码折叠
+- 重构
+- 自动补全
+- 转到用例/声明 
+- 自动格式化
+- 模板
+- 提示文档
+- 注释
+- 大纲视图
+- 语言检测
+- 语言嵌套
+
+### 完善的配套工具
+
+- 构建系统
+- 编译
+- 反编译
+- 覆盖
+- 测试
+- 调试
+- 静态分析
+- 性能分析
+- 版本控制
+- 文件系统
+- 数据库
+- 浏览器
+- 计算器
+- 压缩
+- 加密
+- 日历
+- 终端
+- REPL
+
+### 包管理器
+
+- 自动安装所需包
+- 自动更新
+- 错误报告系统
+
+# 以人为本的界面
+
+## 开箱即用
+
+- 支持包括GNU/Linux、Mac OS X和Windows在内的操作系统
+- 提供多种语言
+- 避免打断用户
+- 工具按需出现
+- 消除杂音
+- 可全屏
+- 记住最近选择
+
+## 随心定制
+
+- 窗格
+- 菜单
+- 快捷键
+- 图标
+- 外观
+- 代码片段
+
+[idea_2016_]
+
+
 /home/kwong/NetBeansProjects/jtk/modules/mode.dtd
-/home/kwong/NetBeansProjects/jtk/modules/mode.emacs-lisp
-/home/kwong/NetBeansProjects/jtk/modules/mode.fortran
-/home/kwong/NetBeansProjects/jtk/modules/mode.gettext
-/home/kwong/NetBeansProjects/jtk/modules/mode.go
-/home/kwong/NetBeansProjects/jtk/modules/mode.haskell
-/home/kwong/NetBeansProjects/jtk/modules/mode.lex
-/home/kwong/NetBeansProjects/jtk/modules/mode.lua
-/home/kwong/NetBeansProjects/jtk/modules/mode.m4
-/home/kwong/NetBeansProjects/jtk/modules/mode.makefile
-/home/kwong/NetBeansProjects/jtk/modules/mode.markdown
-/home/kwong/NetBeansProjects/jtk/modules/mode.objc
-/home/kwong/NetBeansProjects/jtk/modules/mode.ocaml
-/home/kwong/NetBeansProjects/jtk/modules/mode.octave
-/home/kwong/NetBeansProjects/jtk/modules/mode.pascal
-/home/kwong/NetBeansProjects/jtk/modules/mode.perl
-/home/kwong/NetBeansProjects/jtk/modules/mode.php
-/home/kwong/NetBeansProjects/jtk/modules/mode.plain
-/home/kwong/NetBeansProjects/jtk/modules/mode.prolog
-/home/kwong/NetBeansProjects/jtk/modules/mode.python
-/home/kwong/NetBeansProjects/jtk/modules/mode.r
-/home/kwong/NetBeansProjects/jtk/modules/mode.ruby
-/home/kwong/NetBeansProjects/jtk/modules/mode.scheme
-/home/kwong/NetBeansProjects/jtk/modules/mode.sed
-/home/kwong/NetBeansProjects/jtk/modules/mode.sql
-/home/kwong/NetBeansProjects/jtk/modules/mode.sqlite
-/home/kwong/NetBeansProjects/jtk/modules/mode.swift
-/home/kwong/NetBeansProjects/jtk/modules/mode.tcl
-/home/kwong/NetBeansProjects/jtk/modules/mode.tex
-/home/kwong/NetBeansProjects/jtk/modules/mode.texinfo
-/home/kwong/NetBeansProjects/jtk/modules/mode.troff
-/home/kwong/NetBeansProjects/jtk/modules/mode.xml
-/home/kwong/NetBeansProjects/jtk/modules/mode.yacc
 
 Features from jedit
 
