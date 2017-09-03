@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.text;
-import cc.fooledit.model.DataObjectType;
+import cc.fooledit.model.*;
 import java.io.*;
 import java.util.stream.*;
 /**
@@ -54,5 +54,9 @@ public class TextObjectType implements DataObjectType<TextObject>{
 	@Override
 	public TextObject create(){
 		return new TextObject("");
+	}
+	@Override
+	public String getName(){
+		return "text";
 	}
 }

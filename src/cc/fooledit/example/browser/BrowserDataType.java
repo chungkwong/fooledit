@@ -55,4 +55,8 @@ public class BrowserDataType implements DataObjectType<BrowserData>{
 	public boolean canCreate(){
 		return false;
 	}
+	@Override
+	public String getName(){
+		return "browser";
+	}
 }

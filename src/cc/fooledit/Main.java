@@ -125,6 +125,9 @@ public class Main extends Application{
 		globalCommandRegistry.put("start-record",()->{macro.clear();recording=true;});
 		globalCommandRegistry.put("stop-record",()->{recording=false;macro.remove(0);macro.remove(macro.size()-1);});
 		globalCommandRegistry.put("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
+		globalCommandRegistry.put("map-mime-to-type",(o)->{
+			DataObjectTypeRegistry.registerMime(((ScmString)ScmList.first(o)).toString(),((ScmString)ScmList.second(o)).toString());
+		});
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
@@ -157,9 +160,7 @@ public class Main extends Application{
 						}else{
 							FileCommands.open(file);
 						}
-					}catch(URISyntaxException ex){
-						Logger.getGlobal().log(Level.SEVERE,null,ex);
-					}catch(MimeTypeParseException ex){
+					}catch(URISyntaxException|MimeTypeParseException ex){
 						Logger.getGlobal().log(Level.SEVERE,null,ex);
 					}
 				});

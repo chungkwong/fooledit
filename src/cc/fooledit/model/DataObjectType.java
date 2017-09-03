@@ -27,4 +27,5 @@ public interface DataObjectType<T extends DataObject>{
 	T create();
 	void writeTo(T data,OutputStream out)throws Exception;
 	T readFrom(InputStream in)throws Exception;
+	String getName();
 }

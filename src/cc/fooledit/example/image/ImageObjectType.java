@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.image;
-import cc.fooledit.model.DataObjectType;
+import cc.fooledit.model.*;
 import java.io.*;
 import javafx.embed.swing.*;
 import javafx.scene.image.*;
@@ -53,5 +53,9 @@ public class ImageObjectType implements DataObjectType<ImageObject>{
 	@Override
 	public ImageObject create(){
 		return new ImageObject(new WritableImage(200,200));
+	}
+	@Override
+	public String getName(){
+		return "image";
 	}
 }

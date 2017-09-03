@@ -43,9 +43,27 @@ public class FileCommands{
 		Main.INSTANCE.addAndShow(files,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("OPEN")));
 	}
 	public static void open(Path file){
-		open(file,geussContentType(file));
+		try{
+			open(file.toUri().toURL());
+		}catch(MalformedURLException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
 	}
 	public static void open(Path file,MimeType mime){
+		try{
+			open(file.toUri().toURL(),mime);
+		}catch(MalformedURLException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+	}
+	public static void open(URL file){
+		try{
+			open(file,new MimeType(FiletypeRegistry.geuss(file).get(0)));
+		}catch(MimeTypeParseException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+	}
+	public static void open(URL file,MimeType mime){
 		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
 			if(tryOpen(file,type,mime))
 				return;
@@ -64,6 +82,16 @@ public class FileCommands{
 				Logger.getLogger(FileCommands.class.getName()).log(Level.SEVERE,null,ex);
 			}
 	}
+	private static boolean tryOpen(URL f,DataObjectType type,MimeType mime){
+		System.out.println(mime);
+		try(InputStream in=f.openStream()){
+			Main.addAndShow(type.readFrom(in),DataObjectRegistry.createProperties(extractFilename(f),f.toString(),mime.toString(),type.getClass().getName()));
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			return false;
+		}
+		return true;
+	}
 	public static void saveAs(){
 		FileSystemData files=new FileSystemData();
 		files.setInitialPath(geussDefaultPath());
@@ -81,15 +109,6 @@ public class FileCommands{
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
-	}
-	private static boolean tryOpen(Path f,DataObjectType type,MimeType mime){
-		try(InputStream in=Files.newInputStream(f)){
-			Main.INSTANCE.addAndShow(type.readFrom(in),DataObjectRegistry.createProperties(f.getFileName().toString(),f.toUri().toString(),mime.toString(),type.getClass().getName()));
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-			return false;
-		}
-		return true;
 	}
 	private static Path geussDefaultPath(){
 		try{
@@ -110,6 +129,13 @@ public class FileCommands{
 				return null;
 			}
 		}
+	}
+	private static String extractFilename(URL url){
+		String path=url.getPath();
+		int index=path.lastIndexOf('/');
+		if(index!=-1)
+			path=path.substring(index+1);
+		return path;
 	}
 	public static void create(){
 		Main.INSTANCE.addAndShow(TemplateEditor.INSTANCE,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("TEMPLATE")));

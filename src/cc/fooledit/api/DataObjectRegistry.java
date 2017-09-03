@@ -62,7 +62,7 @@ public class DataObjectRegistry{
 	public static DataObject get(Object json){
 		Map<String,String> prop=(Map<String,String>)json;
 		String type=prop.get(TYPE);
-		DataObjectType builder=DataObjectTypeRegistry.getDataObjectTypes().stream().filter((t)->t.getClass().getName().equals(type)).findFirst().get();
+		DataObjectType builder=DataObjectTypeRegistry.getDataObjectTypes().values().stream().filter((t)->t.getClass().getName().equals(type)).findFirst().get();
 		DataObject object;
 		if(prop.containsKey(URI)){
 			String uri=prop.get(URI);

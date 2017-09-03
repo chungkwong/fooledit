@@ -32,9 +32,10 @@ import javax.activation.*;
  */
 public class DataObjectTypeRegistry{
 	private static final HashMap<Class<? extends DataObject>,List<Cache<DataEditor>>> editors=new HashMap<>();
-	private static final List<DataObjectType> types=new ArrayList<>();
+	private static final Map<String,DataObjectType> types=new HashMap<>();
+	private static final Map<String,String> mimes=new HashMap<>();
 	public static void addDataObjectType(DataObjectType type){
-		types.add(type);
+		types.put(type.getName(),type);
 	}
 	public static void addDataEditor(Supplier<DataEditor> editor,Class<? extends DataObject> objectClass){
 		if(!editors.containsKey(objectClass))
@@ -44,9 +45,15 @@ public class DataObjectTypeRegistry{
 	public static List<DataEditor> getDataEditors(Class<? extends DataObject> cls){
 		return ((List<Cache<DataEditor>>)editors.getOrDefault(cls,Collections.EMPTY_LIST)).stream().map((c)->c.get()).collect(Collectors.toList());
 	}
+	public static void registerMime(String mime,String type){
+		mimes.put(mime,type);
+	}
 	public static List<DataObjectType> getPreferedDataObjectType(MimeType mime){
 		LinkedList<DataObjectType> cand=new LinkedList<DataObjectType>();
-		String type=mime.getBaseType();
+		String t=mimes.get(mime.getBaseType());
+		if(t!=null)
+			cand.add(types.get(t));
+		String type=mime.getPrimaryType();
 		if(type.equals("video")||type.equals("audio"))
 			cand.add(MediaObjectType.INSTANCE);
 		else if(type.equals("image"))
@@ -56,7 +63,7 @@ public class DataObjectTypeRegistry{
 		cand.add(BinaryObjectType.INSTANCE);
 		return cand;
 	}
-	public static List<DataObjectType> getDataObjectTypes(){
+	public static Map<String,DataObjectType> getDataObjectTypes(){
 		return types;
 	}
 	static{

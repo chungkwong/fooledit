@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.binary;
-import cc.fooledit.model.DataObjectType;
+import cc.fooledit.model.*;
 import java.io.*;
 import java.util.*;
 /**
@@ -67,5 +67,8 @@ public class BinaryObjectType implements DataObjectType<BinaryObject>{
 		}
 		return new BinaryObject(data);
 	}
-
+	@Override
+	public String getName(){
+		return "binary";
+	}
 }

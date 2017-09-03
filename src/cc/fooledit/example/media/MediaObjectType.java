@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.media;
-import cc.fooledit.model.DataObjectType;
+import cc.fooledit.model.*;
 import java.io.*;
 import javafx.scene.media.*;
 /**
@@ -59,5 +59,9 @@ public class MediaObjectType implements DataObjectType<MediaObject>{
 	@Override
 	public MediaObject create(){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public String getName(){
+		return "media";
 	}
 }
