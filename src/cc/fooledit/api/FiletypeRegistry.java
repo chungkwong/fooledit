@@ -16,26 +16,64 @@
  */
 package cc.fooledit.api;
 import java.io.*;
-import java.nio.file.*;
+import java.net.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class FiletypeRegistry{
-	/*private static final List<Pair<Predicate<String>,String>> pattern2mime=new ArrayList<>();
-	public static void registerPathPattern(String regex,String mime){
-		registerPathPattern(Pattern.compile(regex).asPredicate(),mime);
+	private static final List<MimeGeusser> GEUSSERS=new ArrayList<>();
+	private static final MimeGeusser URL_GEUSSER=new MimeGeusser.URLPatternGeusser();
+	private static final MimeGeusser SYSTEM_GEUSSERS=new MimeGeusser.URLPatternGeusser();
+	private static final Map<String,String> SUBCLASSES=new HashMap<>();
+	private static final Map<String,String> ALIASES=new HashMap<>();
+	public static List<MimeGeusser> getGEUSSERS(){
+		return GEUSSERS;
 	}
-	public static void registerPathPattern(Predicate<String> pred,String mime){
-		pattern2mime.add(new Pair<>(pred,mime));
+	public static MimeGeusser getURL_GEUSSER(){
+		return URL_GEUSSER;
 	}
-	public static List<String> probeMimeType(Path path){
-		String name=path.toString();
-		List<String> candidates=pattern2mime.stream().filter((pair)->pair.getKey().test(name)).
-				map(Pair::getValue).collect(Collectors.toList());
-		return candidates;
-	}*/
+	public static List<String> geuss(byte[] beginning){
+		for(MimeGeusser geusser:GEUSSERS){
+			List<String> geuss=geusser.geuss(beginning);
+			if(!geuss.isEmpty()){
+				return geuss;
+			}
+		}
+		return Collections.singletonList("application/octet-stream");
+	}
+	public static List<String> geuss(URL url){
+		for(MimeGeusser geusser:GEUSSERS){
+			List<String> geuss=geusser.geuss(url);
+			if(!geuss.isEmpty()){
+				return geuss;
+			}
+
+		}
+		return Collections.singletonList("application/octet-stream");
+	}
+	public static void registerSubclass(String subclass,String parent){
+		SUBCLASSES.put(subclass,parent);
+	}
+	public static boolean isSubclassOf(String type,String ancestor){
+		type=normalize(type);
+		ancestor=normalize(ancestor);
+		while(type!=null){
+			if(type.equals(ancestor))
+				return true;
+			type=normalize(SUBCLASSES.get(type));
+		}
+		return false;
+	}
+	public static void registerAlias(String alias,String standard){
+		ALIASES.put(alias,standard);
+	}
+	public static String normalize(String type){
+		return ALIASES.getOrDefault(type,type);
+	}
 	public static void main(String[] args) throws IOException{
-		System.out.println(Files.probeContentType(new File("/home/kwong/print").toPath()));
+		//System.out.println(new String(new byte[]{0,5,0}).length());
+		System.out.println(new URL("file:///home/kwong/icon.png").openConnection().getContentType());
 	}
 }

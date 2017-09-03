@@ -16,6 +16,7 @@
  */
 package cc.fooledit.api;
 import com.github.chungkwong.jschememin.*;
+import com.github.chungkwong.jschememin.type.*;
 import java.io.*;
 import javax.script.*;
 /**
@@ -34,5 +35,12 @@ public class ScriptAPI{
 	}
 	public Object eval(String code) throws ScriptException{
 		return SCHEME_ENGINE.eval(code,CONTEXT);
+	}
+	public static void main(String[] args) throws ScriptException{
+		cc.fooledit.Main.main(new String[0]);
+		cc.fooledit.Main.INSTANCE.getGlobalCommandRegistry().put("die",(ScmPairOrNil arg)->{
+			System.out.println(((ScmString)ScmList.first(arg)).length());
+		});
+		cc.fooledit.Main.INSTANCE.getScriptAPI().eval("(die \"hello\")");
 	}
 }

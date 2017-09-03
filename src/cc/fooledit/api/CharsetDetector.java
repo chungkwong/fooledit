@@ -15,29 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
-import cc.fooledit.util.MimeType;
 import java.io.*;
 import java.nio.*;
 import java.nio.charset.*;
-import java.nio.file.*;
 import java.util.*;
 import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class MimeDetector{
+public class CharsetDetector{
 	private static final List<CharsetDecoder> prefered=new ArrayList<>();
 	public static List<CharsetDecoder> getPreferedCharsets(){
 		return prefered;
-	}
-	public static MimeType probeMimeType(File file){
-		try{
-
-			return MimeType.fromString(Files.probeContentType(file.toPath()));
-		}catch(IOException ex){
-			return new MimeType("application","octet-stream",Collections.emptyMap());
-		}
 	}
 	public static String probeEncoding(byte[] data,int offset,int length){
 		return probeEncoding(data,offset,length,prefered);
@@ -89,26 +79,5 @@ public class MimeDetector{
 		prefered.add(StandardCharsets.UTF_16BE.newDecoder());
 		prefered.add(StandardCharsets.ISO_8859_1.newDecoder());
 		prefered.add(Charset.defaultCharset().newDecoder());
-	}
-	private static final Map<String,String> aliases=new HashMap<>();
-	public static void registerAlias(String alias,String standard){
-		aliases.put(alias,standard);
-	}
-	public static String normalize(String type){
-		return aliases.getOrDefault(type,type);
-	}
-	private static final Map<String,String> subclasses=new HashMap<>();
-	public static void registerSubclass(String subclass,String parent){
-		subclasses.put(subclass,parent);
-	}
-	public static boolean isSubclassOf(String type,String ancestor){
-		type=normalize(type);
-		ancestor=normalize(ancestor);
-		while(type!=null){
-			if(type.equals(ancestor))
-				return true;
-			type=normalize(subclasses.get(type));
-		}
-		return false;
 	}
 }

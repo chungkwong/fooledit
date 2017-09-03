@@ -1,38 +1,7 @@
-grammar Tcl;
+lexer grammar TclLexer;
 
-program
-    :
-    | SEPARATOR (command SEPARATOR)* command?
-    | command (SEPARATOR command)* SEPARATOR?;
-    ;
-
-command
-    : word+
-    ;
-
-word
-    : PLAIN
-    | variable
-    | quoted
-    | string
-    | command
-    ;
-
-quoted
-    : '{' (QUOTED|quoted)* '}'
-    ;
-
-string
-    : '"' (STRING|variable|command)* '"'
-    ;
-
-variable
-    : VARIABLE
-    | (VARIABLE_START|VARIABLE_START_IN_INDEX|VARIABLE_START_IN_STRING) (INDEX|variable|command)* ')'
-    ;
-
-command
-    : '[' program ']'
+START
+    : -> pushMode(expression)
     ;
 
 mode expression;
@@ -53,7 +22,7 @@ VARIABLE
     : Variable
     ;
 
-VARIABLE_START:
+VARIABLE_START
     : IndexedVariable -> pushMode(index)
     ;
 
@@ -69,8 +38,12 @@ START_EXPRESSION
     : '[' -> pushMode(expression)
     ;
 
+END_EXPRESSION
+    : ']' -> popMode
+    ;
+
 SEPARATOR
-    : ';\r\n'+
+    : [;\r\n]+
     ;
 
 mode quoted;
@@ -85,6 +58,7 @@ LESS_QUOTE
 
 QUOTED
     : ((~[\\}{])|'\\'.)+
+    ;
 
 mode string;
 
@@ -104,7 +78,7 @@ VARIABLE_IN_STRING
     : Variable
     ;
 
-VARIABLE_START_IN_STRING:
+VARIABLE_START_IN_STRING
     : IndexedVariable -> pushMode(index)
     ;
 
@@ -126,10 +100,9 @@ VARIABLE_IN_INDEX
     : Variable
     ;
 
-VARIABLE_START_IN_INDEX:
+VARIABLE_START_IN_INDEX
     : IndexedVariable -> pushMode(index)
     ;
-
 
 fragment Variable
     : '$' ([_a-zA-Z0-9]*|'{'(~'}')*'}')

@@ -24,6 +24,8 @@ import java.util.function.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CommandRegistry extends HashMap<String,Command>{
+	public CommandRegistry(){
+	}
 	public void put(String name,Runnable action){
 		put(name,(t)->action.run());
 	}

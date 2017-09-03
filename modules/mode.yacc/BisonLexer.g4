@@ -1,4 +1,4 @@
-grammar Bison;
+lexer grammar BisonLexer;
 
 COMMENT
     : Comment -> skip
@@ -16,98 +16,98 @@ WHITESPACE
     : [ \t\r\n]+
     ;
 
-SEPARATOR
+START_RULES
     : '%%' -> mode(rules);
 
 mode rules;
 
-COMMENT
+RULES_COMMENT
     : Comment -> skip
     ;
 
-SEPARATOR
+START_USER
     : '%%' -> mode(user)
     ;
 
 KEY
-   : Id|Char|String ->pushMode(clause)
+   : (Id | Char | String) ->pushMode(clauses)
    ;
 
-WHITESPACE
+RULES_WHITESPACE
     : [ \t\r\n]+
     ;
 
 mode user;
 
-PLAIN
+USER
     : .+
     ;
 
 mode value;
 
-COMMENT
+VALUE_COMMENT
     : Comment -> skip
     ;
 
-NAME
+VALUE_NAME
     : Id
     ;
 
-CHARACTER
+VALUE_CHARACTER
     : Char
     ;
 
-SEPARATOR
+VALUE_SEPARATOR
     : [<>]
     ;
 
-STRING
+VALUE_STRING
     : String
     ;
 
-BLOCK_START
+VALUE_BLOCK_START
     : '{' -> pushMode(block)
     ;
 
-WHITESPACE
+VALUE_WHITESPACE
     : [ \t]+
     ;
 
-NEWLINE
+VALUE_NEWLINE
     : [\r\n]+ ->popMode
     ;
 
 
 mode clauses;
 
-COMMENT
+CLAUSE_COMMENT
     : Comment -> skip
     ;
 
-SEPARATOR
+CLAUSE_END
     : ';' -> popMode;
 
-NAME
+CLAUSE_NAME
     : Id
     ;
 
-CHARACTER
+CLAUSE_CHARACTER
     : Char
     ;
 
-STRING
+CLAUSE_STRING
     : String
     ;
 
-BLOCK_START
+CLAUSE_BLOCK_START
     : '{' -> pushMode(block)
     ;
 
-WHITESPACE
+CLAUSE_WHITESPACE
     : [ \t\r\n]+
     ;
 
-SEPARATOR
+CLAUSE_SEPARATOR
     : [:|]
     ;
 
@@ -122,7 +122,7 @@ BLOCK_END
     : '}' -> popMode
     ;
 
-PLAIN
+BLOCK
     : (Comment|Char|String|~['"}{/]|'/'(~[*/]))+
     ;
 
@@ -131,7 +131,7 @@ fragment Id
     ;
 
 fragment String
-    : '"' (~'"'|'\\'.)* '"'
+    : '"' (~["\\]|'\\'.)* '"'
     ;
 
 fragment Comment
@@ -140,5 +140,5 @@ fragment Comment
     ;
 
 fragment Char
-    : '\'' (~[\\"\r\n]|'\\'([ntvbrfa?'"\\]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?)) '\''
+    : '\'' (~[\\"\r\n]|'\\'([ntvbrfa?'"\\]|'x'[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?)) '\''
     ;

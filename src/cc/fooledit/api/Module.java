@@ -27,6 +27,8 @@ public abstract class Module{
 	public ModuleDescriptor getModuleDescriptor(){
 		return ModuleRegistry.getModuleDescriptor(name);
 	}
-	public abstract void onLoad();
-	public abstract void onUnLoad();
+	public abstract void onLoad()throws Exception;
+	public abstract void onUnLoad()throws Exception;
+	public abstract void onInstall()throws Exception;
+	public abstract void onUninstall()throws Exception;
 }

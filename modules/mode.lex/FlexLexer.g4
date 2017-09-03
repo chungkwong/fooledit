@@ -1,46 +1,41 @@
-grammar Flex;
+lexer grammar FlexLexer;
 
 COMMENT
     : Comment -> skip
     ;
 
+DIRECTIVE
+    : '%' [sx] -> pushMode(value)
+    ;
+
 KEY
-    : '%' [sx]
-    | Id -> pushMode(value)
+    : Id -> pushMode(value)
     ;
 
 PLAIN
-    : '%' 'top'? '{' .*? [\r\n] '%}'
-    | '\t' (~[\r\n])*
+    : {getCharPositionInLine() == 0}? '%' 'top'? '{' .*? [\r\n] '%}'
+    | {getCharPositionInLine() == 0}? '\t' (~[\r\n])*
     ;
 
 WHITESPACE
     : [ \t\r\n]+
     ;
 
-SEPARATOR
+START_RULES
     : '%%' -> mode(rules);
 
 mode rules;
 
-COMMENT
-    : Comment -> skip
-    ;
-
-SEPARATOR
+START_USER
     : '%%' -> mode(user)
     ;
 
-KEY
-   : Id|Char|String ->pushMode(clause)
-   ;
-
-PLAIN
-    : '%{' .*? [\r\n] '%}'
-    | '\t' (~[\r\n])*
+RULE_CODE
+    : {getCharPositionInLine() == 0}? '%{' .*? [\r\n] '%}'
+    | {getCharPositionInLine() == 0}? '\t' (~[\r\n])*
     ;
 
-WHITESPACE
+RULE_WHITESPACE
     : [ \t\r\n]+
     ;
 
@@ -50,27 +45,23 @@ REGEX
 
 mode user;
 
-PLAIN
+USER
     : .+
     ;
 
 mode value;
 
-COMMENT
-    : Comment -> skip
-    ;
-
-REGEX
+VALUE
     : (~[\r\n])* -> popMode
     ;
 
-WHITESPACE
-    : [ \t]+
+VALUE_WHITESPACE
+    : [ \t]+ ->skip
     ;
 
 mode action;
 
-PLAIN
+ACTION
     : (Comment|Char|String|~['"}{/\r\n]|'/'(~[*/]))+
     ;
 
@@ -84,7 +75,7 @@ NEWLINE
 
 mode block;
 
-BLOCK_START
+MORE_BLOCK
     : '{' -> pushMode(block)
     ;
 
@@ -92,16 +83,17 @@ BLOCK_END
     : '}' -> popMode
     ;
 
-PLAIN
+BLOCK
     : (Comment|Char|String|~['"}{/]|'/'(~[*/]))+
     ;
+
 
 fragment Id
     : [_a-zA-Z][-_0-9a-zA-Z]*
     ;
 
 fragment String
-    : '"' (~'"'|'\\'.)* '"'
+    : '"' (~["\\]|'\\'.)* '"'
     ;
 
 fragment Comment
@@ -110,5 +102,5 @@ fragment Comment
     ;
 
 fragment Char
-    : '\'' (~[\\"\r\n]|'\\'([ntvbrfa?'"\\]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?)) '\''
+    : '\'' (~[\\"\r\n]|'\\'([ntvbrfa?'"\\]|'x'[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?)) '\''
     ;

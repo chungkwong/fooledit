@@ -1,4 +1,4 @@
-grammar Makefile;
+lexer grammar MakefileLexer;
 
 COMMENT
     : '#' (~[\r\n])*
@@ -31,7 +31,7 @@ COMMAND
     ;
 
 DEPEND
-    : ':'|'::' -> pushMode(prerequisites)
+    : (':'|'::') -> pushMode(prerequisites)
     ;
 
 WHITESPACE
@@ -44,7 +44,7 @@ LOCAL_OPERATOR
     : Assign
     ;
 FILE
-    : ([^\\r\\n\\\\;\\$]|\\\\.)+
+    : (~[\r\n\\;$]|'\\'.)+
     ;
 
 LOCAL_VARIABLE
@@ -54,19 +54,22 @@ LOCAL_VARIABLE
     ;
 
 START_RECIPE
-    : ';'|('\r'('\n')?|'\n')'\t' ->mode(recipe)
+    : (';'|('\r'('\n')?|'\n')'\t') ->mode(recipe)
+    ;
 
 EXIT_PREREQUISITES
     : [\r\n] ->popMode
+    ;
 
 mode recipe;
 
 PLAIN
-    : ([^\\r\\n\\\\]|\\\\.)+|$(\\r(\\n)?|\\n)\\t
+    : (~[\r\n\\]|'\\'.)+|('\r'('\n')?|'\n')'\t'
     ;
 
 NEXT_RECIPE
     : ('\r'('\n')?|'\n')'\t' ->mode(recipe)
+    ;
 
 EXIT_RECIPE
     : [\r\n] -> popMode,skip
