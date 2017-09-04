@@ -54,7 +54,7 @@ public class Main extends Application{
 	private static final File MODULE_PATH=new File(SYSTEM_PATH,"modules");
 	private static final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
 	private final CommandRegistry globalCommandRegistry=new CommandRegistry();
-	private final BiMap<String,Command> commandRegistry=new BiMap<>(globalCommandRegistry,null);
+	private final BiMap<String,Command> commandRegistry=new BiMap<>(globalCommandRegistry,new HashMap<>());
 	private MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
 	private final Notifier notifier;
@@ -105,6 +105,7 @@ public class Main extends Application{
 	private void registerStandardCommand(){
 		globalCommandRegistry.put("new",()->FileCommands.create());
 		globalCommandRegistry.put("open-file",()->FileCommands.open());
+		globalCommandRegistry.put("open-url",()->FileCommands.openUrl());
 		globalCommandRegistry.put("save",()->FileCommands.save());
 		globalCommandRegistry.put("save-as",()->FileCommands.saveAs());
 		globalCommandRegistry.put("full-screen",()->stage.setFullScreen(true));
@@ -126,7 +127,7 @@ public class Main extends Application{
 		globalCommandRegistry.put("stop-record",()->{recording=false;macro.remove(0);macro.remove(macro.size()-1);});
 		globalCommandRegistry.put("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
 		globalCommandRegistry.put("map-mime-to-type",(o)->{
-			DataObjectTypeRegistry.registerMime(((ScmString)ScmList.first(o)).toString(),((ScmString)ScmList.second(o)).toString());
+			DataObjectTypeRegistry.registerMime(((ScmString)ScmList.first(o)).getValue(),((ScmString)ScmList.second(o)).getValue());
 		});
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){

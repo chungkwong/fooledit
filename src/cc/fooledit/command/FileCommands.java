@@ -24,6 +24,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.file.*;
 import java.util.logging.*;
+import javafx.scene.control.*;
 import javax.activation.*;
 /**
  *
@@ -41,6 +42,15 @@ public class FileCommands{
 			DataObjectRegistry.removeDataObject(files);
 		});
 		Main.INSTANCE.addAndShow(files,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("OPEN")));
+	}
+	public static void openUrl(){
+		Main.INSTANCE.getMiniBuffer().setMode((url)->{
+			try{
+				open(new URL(url));
+			}catch(MalformedURLException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+		},null,"",new Label("URL:"),null);
 	}
 	public static void open(Path file){
 		try{
@@ -64,6 +74,7 @@ public class FileCommands{
 		}
 	}
 	public static void open(URL file,MimeType mime){
+
 		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
 			if(tryOpen(file,type,mime))
 				return;
@@ -83,7 +94,6 @@ public class FileCommands{
 			}
 	}
 	private static boolean tryOpen(URL f,DataObjectType type,MimeType mime){
-		System.out.println(mime);
 		try(InputStream in=f.openStream()){
 			Main.addAndShow(type.readFrom(in),DataObjectRegistry.createProperties(extractFilename(f),f.toString(),mime.toString(),type.getClass().getName()));
 		}catch(Exception ex){

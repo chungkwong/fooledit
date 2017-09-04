@@ -25,7 +25,7 @@ import java.util.*;
 public class FiletypeRegistry{
 	private static final List<MimeGeusser> GEUSSERS=new ArrayList<>();
 	private static final MimeGeusser URL_GEUSSER=new MimeGeusser.URLPatternGeusser();
-	private static final MimeGeusser SYSTEM_GEUSSERS=new MimeGeusser.URLPatternGeusser();
+	private static final MimeGeusser SYSTEM_GEUSSERS=new MimeGeusser.SystemGeusser();
 	private static final Map<String,String> SUBCLASSES=new HashMap<>();
 	private static final Map<String,String> ALIASES=new HashMap<>();
 	public static List<MimeGeusser> getGEUSSERS(){
@@ -49,7 +49,6 @@ public class FiletypeRegistry{
 			if(!geuss.isEmpty()){
 				return geuss;
 			}
-
 		}
 		return Collections.singletonList("application/octet-stream");
 	}
@@ -74,6 +73,11 @@ public class FiletypeRegistry{
 	}
 	public static void main(String[] args) throws IOException{
 		//System.out.println(new String(new byte[]{0,5,0}).length());
-		System.out.println(new URL("file:///home/kwong/icon.png").openConnection().getContentType());
+		//System.out.println(new URL("file:///home/kwong/icon.png").openConnection().getContentType());
+		//System.out.println(new URL("file:///home/kwong/NetBeansProjects/JSchemeMin/doc/overview.pdf").openConnection().getContentType());
+	}
+	static{
+		GEUSSERS.add(URL_GEUSSER);
+		GEUSSERS.add(SYSTEM_GEUSSERS);
 	}
 }

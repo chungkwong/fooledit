@@ -8,6 +8,7 @@
 	"M-X":"command",
 	"C-N":"new",
 	"C-O":"open-file",
+	"C-L":"open-url",
 	"C-S":"save",
 	"C-S-S":"save-as",
 	"C-X+4":"full-screen",
