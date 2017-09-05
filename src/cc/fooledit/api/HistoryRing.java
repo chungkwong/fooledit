@@ -15,11 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
-
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class HistoryManager{
-
+public class HistoryRing<T>{
+	private final List<T> list=new ArrayList<>();
+	private final Map<String,T> tags=new HashMap<>();
+	private final int currentIndex=-1;
+	public void add(T obj){
+		list.add(obj);
+	}
+	public void add(T obj,String tag){
+		list.add(obj);
+		tags.put(tag,obj);
+	}
+	public int size(){
+		return list.size();
+	}
+	public int getCurrentIndex(){
+		return currentIndex;
+	}
+	public T get(int index){
+		return list.get(index);
+	}
+	public T get(String tag){
+		return tags.get(tag);
+	}
 }

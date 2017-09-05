@@ -129,6 +129,9 @@ public class Main extends Application{
 		globalCommandRegistry.put("map-mime-to-type",(o)->{
 			DataObjectTypeRegistry.registerMime(((ScmString)ScmList.first(o)).getValue(),((ScmString)ScmList.second(o)).getValue());
 		});
+		globalCommandRegistry.put("ensure-loaded",(o)->{
+			ModuleRegistry.ensureLoaded(((ScmString)ScmList.first(o)).getValue());
+		});
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
