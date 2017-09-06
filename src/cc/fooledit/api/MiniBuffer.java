@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.model.*;
 import com.github.chungkwong.jschememin.type.*;
@@ -59,8 +59,12 @@ public class MiniBuffer extends BorderPane{
 		input.setOnAction((e)->{
 			Command command=main.getCommandRegistry().get(input.getText());
 			if(command!=null){
-				main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
-				main.getCommandRegistry().get(input.getText()).accept(ScmNil.NIL);
+				if(command.getParameters().isEmpty()){
+					main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
+					main.getCommandRegistry().get(input.getText()).accept(ScmNil.NIL);
+				}else{
+					//TODO
+				}
 			}else{
 				try{
 					main.getNotifier().notify(Objects.toString(main.getScriptAPI().eval(input.getText())));

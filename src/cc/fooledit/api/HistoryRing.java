@@ -23,11 +23,20 @@ import java.util.*;
 public class HistoryRing<T>{
 	private final List<T> list=new ArrayList<>();
 	private final Map<String,T> tags=new HashMap<>();
-	private final int currentIndex=-1;
+	private int currentIndex=-1;
+	private int limit;
+	public HistoryRing(){
+		this(Integer.MAX_VALUE);
+	}
+	public HistoryRing(int limit){
+		this.limit=limit;
+	}
 	public void add(T obj){
+		currentIndex=list.size();
 		list.add(obj);
 	}
 	public void add(T obj,String tag){
+		currentIndex=list.size();
 		list.add(obj);
 		tags.put(tag,obj);
 	}
@@ -42,5 +51,20 @@ public class HistoryRing<T>{
 	}
 	public T get(String tag){
 		return tags.get(tag);
+	}
+	public int previous(){
+		if(currentIndex==0){
+			currentIndex=list.size()-1;
+		}else{
+			--currentIndex;
+		}
+		return currentIndex;
+	}
+	public int next(){
+		++currentIndex;
+		if(currentIndex==list.size()){
+			currentIndex=0;
+		}
+		return currentIndex;
 	}
 }

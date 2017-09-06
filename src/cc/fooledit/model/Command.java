@@ -17,6 +17,7 @@
 package cc.fooledit.model;
 import cc.fooledit.api.*;
 import com.github.chungkwong.jschememin.type.*;
+import java.util.*;
 import java.util.logging.*;
 /**
  *
@@ -25,12 +26,20 @@ import java.util.logging.*;
 public class Command{
 	private final String name;
 	private final ThrowableConsumer<ScmPairOrNil> action;
+	private final List<String> parameters;
 	public Command(String name,ThrowableConsumer<ScmPairOrNil> action){
+		this(name,Collections.emptyList(),action);
+	}
+	public Command(String name,List<String> parameters,ThrowableConsumer<ScmPairOrNil> action){
 		this.action=action;
 		this.name=name;
+		this.parameters=parameters;
 	}
 	public String getDisplayName(){
 		return name;
+	}
+	public List<String> getParameters(){
+		return parameters;
 	}
 	public void accept(ScmPairOrNil t){
 		try{
