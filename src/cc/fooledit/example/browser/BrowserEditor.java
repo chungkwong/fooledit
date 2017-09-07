@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.browser;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
@@ -49,8 +49,9 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 			int curr=history.getCurrentIndex();
 			for(int i=curr+1;i<entries.size();i++){
 				MenuItem item=new MenuItem(entries.get(i).getTitle());
+				int index=i-curr;
 				item.setOnAction((event)->{
-					history.go(items.indexOf(item)+1);
+					history.go(index);
 				});
 				items.add(item);
 			}
@@ -62,8 +63,9 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 			int curr=history.getCurrentIndex();
 			for(int i=curr-1;i>=0;i--){
 				MenuItem item=new MenuItem(entries.get(i).getTitle());
+				int index=i-curr;
 				item.setOnAction((event)->{
-					history.go(-items.indexOf(item)-1);
+					history.go(index);
 				});
 				items.add(item);
 			}

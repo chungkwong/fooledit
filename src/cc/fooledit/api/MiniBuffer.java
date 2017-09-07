@@ -63,7 +63,7 @@ public class MiniBuffer extends BorderPane{
 					main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
 					main.getCommandRegistry().get(input.getText()).accept(ScmNil.NIL);
 				}else{
-					//TODO
+					executeCommand(command,new ArrayList<>(),command.getParameters());
 				}
 			}else{
 				try{
@@ -73,6 +73,16 @@ public class MiniBuffer extends BorderPane{
 				}
 			}
 		});
+	}
+	private void executeCommand(Command command,List<ScmString> collected,List<String> missing){
+		if(missing.isEmpty()){
+			command.accept(ScmList.toList(collected));
+			restore();
+		}else
+			setMode((p)->{
+				collected.add(new ScmString(p));
+				executeCommand(command,collected,missing.subList(1,missing.size()));
+			},null,"",new Label(MessageRegistry.getString(missing.get(0))),null);
 	}
 	@Override
 	public void requestFocus(){

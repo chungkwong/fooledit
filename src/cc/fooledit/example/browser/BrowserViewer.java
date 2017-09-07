@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.browser;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;

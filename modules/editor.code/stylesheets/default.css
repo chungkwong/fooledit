@@ -3,8 +3,8 @@
 .id {-fx-fill: blueviolet;}
 .key {-fx-fill: navy;}
 .value {-fx-fill: green;}
-.unknown {-fx-fill: red;}
-.whitespace {-fx-fill: white;}
+.unknown {-rtfx-background-color:red;-fx-fill: black;}
+.whitespace {-rtfx-background-color:yellow;-fx-fill:white;}
 .name {-fx-fill: black;}
 .variable {-fx-fill: purple;}
 .integer {-fx-fill: sandybrown;}

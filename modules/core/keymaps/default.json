@@ -14,6 +14,7 @@
 	"C-X+4":"full-screen",
 	"C-X+5":"split-horizontally",
 	"C-X+C-D":"split-vertically",
+	"C-G":"restore",
 	"M-Page Down":"next-buffer",
 	"M-Page Up":"previous-buffer"
 }

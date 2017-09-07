@@ -94,7 +94,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("to-uppercase",(area)->area.transform(String::toUpperCase));
 		addCommand("encode-url",(area)->area.transform(StructuredTextEditor::encodeURL));
 		addCommand("decode-url",(area)->area.transform(StructuredTextEditor::decodeURL));
-
+		addCommand("scroll-to-top",(area)->area.getArea().showParagraphAtTop(area.getArea().getCurrentParagraph()));
+		addCommand("scroll-to-bottom",(area)->area.getArea().showParagraphAtBottom(area.getArea().getCurrentParagraph()));
+		
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 
 		try{

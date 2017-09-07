@@ -126,12 +126,16 @@ public class Main extends Application{
 		globalCommandRegistry.put("start-record",()->{macro.clear();recording=true;});
 		globalCommandRegistry.put("stop-record",()->{recording=false;macro.remove(0);macro.remove(macro.size()-1);});
 		globalCommandRegistry.put("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
+		globalCommandRegistry.put("restore",()->getMiniBuffer().restore());
 		globalCommandRegistry.put("map-mime-to-type",(o)->{
 			DataObjectTypeRegistry.registerMime(((ScmString)ScmList.first(o)).getValue(),((ScmString)ScmList.second(o)).getValue());
 		});
 		globalCommandRegistry.put("ensure-loaded",(o)->{
 			ModuleRegistry.ensureLoaded(((ScmString)ScmList.first(o)).getValue());
 		});
+		globalCommandRegistry.put("say",new Command("say",Arrays.asList("first","second"),(o)->{
+			System.err.println(((ScmString)ScmList.second(o)).getValue()+";"+((ScmString)ScmList.first(o)).getValue());
+		}));
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
