@@ -25,12 +25,12 @@ import java.util.logging.*;
  */
 public class Command{
 	private final String name;
-	private final ThrowableConsumer<ScmPairOrNil> action;
+	private final ThrowableFunction<ScmPairOrNil,ScmObject> action;
 	private final List<String> parameters;
-	public Command(String name,ThrowableConsumer<ScmPairOrNil> action){
+	public Command(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
 		this(name,Collections.emptyList(),action);
 	}
-	public Command(String name,List<String> parameters,ThrowableConsumer<ScmPairOrNil> action){
+	public Command(String name,List<String> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action){
 		this.action=action;
 		this.name=name;
 		this.parameters=parameters;
@@ -41,11 +41,12 @@ public class Command{
 	public List<String> getParameters(){
 		return parameters;
 	}
-	public void accept(ScmPairOrNil t){
+	public ScmObject accept(ScmPairOrNil t){
 		try{
-			action.accept(t);
+			return action.accept(t);
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,name+MessageRegistry.getString("FAILED"),ex);
+			return null;
 		}
 	}
 }

@@ -21,6 +21,6 @@ package cc.fooledit.model;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 @FunctionalInterface
-public interface ThrowableConsumer<T>{
-	void accept(T arg)throws Exception;
+public interface ThrowableFunction<T,R>{
+	R accept(T arg)throws Exception;
 }

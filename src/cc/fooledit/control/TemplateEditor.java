@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import static cc.fooledit.Main.loadJSON;
 import cc.fooledit.api.*;
 import cc.fooledit.example.text.*;
@@ -51,7 +51,7 @@ public class TemplateEditor extends Prompt{
 	@Override
 	public CommandRegistry getCommandRegistry(){
 		CommandRegistry commands=new CommandRegistry();
-		commands.put("create",(area)->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose());
+		commands.put("create",()->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose());
 		return commands;
 	}
 	@Override

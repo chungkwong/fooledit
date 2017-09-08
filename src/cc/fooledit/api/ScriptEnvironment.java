@@ -32,8 +32,7 @@ public class ScriptEnvironment extends BiMap<String,Object> implements Bindings{
 	}
 	private static Object pack(Command command){
 		return new NativeEvaluable((o)->{
-			command.accept((ScmPairOrNil)o);
-			return ScmNil.NIL;
+			return command.accept((ScmPairOrNil)o);
 		});
 	}
 	private static Command unpack(Object o){

@@ -31,3 +31,4 @@
 .Identifier{-fx-fill: purple;}
 .identifier{-fx-fill: purple;-fx-background-color: red;font-style: italic;}
 .Class{-fx-fill: yellow;}
+.highlight{-fx-background-color: yellow;}

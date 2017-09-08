@@ -95,6 +95,7 @@ public class DataObjectRegistry{
 			}
 		}
 		prop.put(BUFFER_NAME,name);
+		prop.put(TYPE,data.getDataObjectType().getClass().getName());
 		objects.put(name,data);
 		properties.put(data,prop);
 		addHistoryEntry(prop);
@@ -136,12 +137,11 @@ public class DataObjectRegistry{
 		else
 			return prev.getValue();
 	}
-	public static Map<String,String> createProperties(String name,String uri,String mime,String type){
+	public static Map<String,String> createProperties(String name,String uri,String mime){
 		HashMap<String,String> prop=new HashMap<>();
 		prop.put(DEFAULT_NAME,name);
 		prop.put(MIME,mime);
 		prop.put(URI,uri);
-		prop.put(TYPE,type);
 		return prop;
 	}
 }

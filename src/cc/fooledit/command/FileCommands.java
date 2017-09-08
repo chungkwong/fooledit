@@ -95,7 +95,7 @@ public class FileCommands{
 	}
 	private static boolean tryOpen(URL f,DataObjectType type,MimeType mime){
 		try(InputStream in=f.openStream()){
-			Main.addAndShow(type.readFrom(in),DataObjectRegistry.createProperties(extractFilename(f),f.toString(),mime.toString(),type.getClass().getName()));
+			Main.addAndShow(type.readFrom(in),DataObjectRegistry.createProperties(extractFilename(f),f.toString(),mime.toString()));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return false;

@@ -27,16 +27,19 @@ public class CommandRegistry extends HashMap<String,Command>{
 	public CommandRegistry(){
 	}
 	public void put(String name,Runnable action){
-		put(name,(t)->action.run());
+		put(name,(t)->{
+			action.run();
+			return null;
+		});
 	}
-	public void put(String name,ThrowableConsumer<ScmPairOrNil> action){
+	public void put(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
 		put(name,new Command(MessageRegistry.getString(name.toUpperCase().replace('-','_')),action));
 	}
 	public void putOnDemand(String name,Supplier<Command> supplier){
 		put(name,(t)->{
 			Command command=supplier.get();
 			put(name,command);
-			command.accept(t);
+			return command.accept(t);
 		});
 	}
 }

@@ -21,6 +21,7 @@ import cc.fooledit.editor.*;
 import cc.fooledit.editor.lex.*;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
+import com.github.chungkwong.jschememin.type.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -96,7 +97,31 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("decode-url",(area)->area.transform(StructuredTextEditor::decodeURL));
 		addCommand("scroll-to-top",(area)->area.getArea().showParagraphAtTop(area.getArea().getCurrentParagraph()));
 		addCommand("scroll-to-bottom",(area)->area.getArea().showParagraphAtBottom(area.getArea().getCurrentParagraph()));
-		
+		addCommand("move-to-paragraph",Collections.singletonList("line"),(args,area)->{
+				int index=Integer.parseInt(((ScmString)ScmList.first(args)).getValue());
+				area.getArea().moveTo(index,Math.min(area.getArea().getCaretColumn(),area.getArea().getParagraphLenth(index)));
+				area.getArea().showParagraphInViewport(index);
+				return null;
+		});
+		addCommand("move-to-column",Collections.singletonList("line"),(args,area)->{
+				area.getArea().moveTo(area.getArea().getCurrentParagraph(),Integer.parseInt(((ScmString)ScmList.first(args)).getValue()));
+				return null;
+		});
+		addCommand("move-to-position",Collections.singletonList("line"),(args,area)->{
+				area.getArea().moveTo(Integer.parseInt(((ScmString)ScmList.first(args)).getValue()));
+				area.getArea().showParagraphInViewport(area.getArea().getCurrentParagraph());
+				return null;
+		});
+
+		addCommand("current-paragraph",Collections.emptyList(),(args,area)->{
+				return ScmInteger.valueOf(area.getArea().getCurrentParagraph());
+		});
+		addCommand("current-column",Collections.emptyList(),(args,area)->{
+				return ScmInteger.valueOf(area.getArea().getCaretColumn());
+		});
+		addCommand("current-position",Collections.emptyList(),(args,area)->{
+				return ScmInteger.valueOf(area.getArea().getCaretPosition());
+		});
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 
 		try{
@@ -111,6 +136,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	}
 	private void addCommand(String name,Consumer<CodeEditor> action){
 		commandRegistry.put(name,()->action.accept((CodeEditor)Main.INSTANCE.getCurrentNode()));
+	}
+	private void addCommand(String name,List<String> parameters,BiFunction<ScmPairOrNil,CodeEditor,ScmObject> action){
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(CodeEditor)Main.INSTANCE.getCurrentNode())));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

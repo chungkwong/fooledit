@@ -56,12 +56,15 @@ public class MiniBuffer extends BorderPane{
 		hints=commandHints;
 		setLeft(null);
 		setRight(null);
+		input.setText("");
 		input.setOnAction((e)->{
 			Command command=main.getCommandRegistry().get(input.getText());
 			if(command!=null){
 				if(command.getParameters().isEmpty()){
 					main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
-					main.getCommandRegistry().get(input.getText()).accept(ScmNil.NIL);
+					ScmObject obj=main.getCommandRegistry().get(input.getText()).accept(ScmNil.NIL);
+					if(obj!=null)
+						main.getNotifier().notify(obj.toExternalRepresentation());
 				}else{
 					executeCommand(command,new ArrayList<>(),command.getParameters());
 				}
@@ -73,6 +76,9 @@ public class MiniBuffer extends BorderPane{
 				}
 			}
 		});
+		Node curr=Main.INSTANCE.getCurrentNode();
+		if(curr!=null)
+			curr.requestFocus();
 	}
 	private void executeCommand(Command command,List<ScmString> collected,List<String> missing){
 		if(missing.isEmpty()){

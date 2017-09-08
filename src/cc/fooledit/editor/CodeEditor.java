@@ -58,6 +58,13 @@ public class CodeEditor extends BorderPane{
 			}
 		});
 		area.setParagraphGraphicFactory(header);
+		area.focusedProperty().addListener((e,o,n)->{
+			if(n)
+				area.setStyle("-fx-caret-blink-rate:500ms;");
+			else
+				area.setStyle("-fx-caret-blink-rate:0ms;");
+			area.showCaretProperty().setValue(ViewActions.CaretVisibility.ON);
+		});
 		indentPolicy=IndentPolicy.AS_PREVIOUS;
 
 		area.plainTextChanges().subscribe((e)->update(e));
