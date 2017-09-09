@@ -67,6 +67,7 @@ public class Main extends Application{
 	private static Node currentNode;
 	private List<KeyEvent> macro=new ArrayList<>();
 	private boolean recording=false;
+	private HistoryRing<Map<Object,Object>> worksheets=new HistoryRing<>();
 	public Main(){
 		INSTANCE=this;
 		System.setProperty("user.dir",SYSTEM_PATH.toString());
@@ -213,6 +214,9 @@ public class Main extends Application{
 		updateCurrentNode(workSheet.getCenter());
 	}
 	private void loadDefaultWorkSheet(){
+		worksheets.registryComamnds("worksheet",()->((WorkSheet)root.getCenter()).toJSON(),(json)->{
+			root.setCenter(WorkSheet.fromJSON(json));
+		},globalCommandRegistry);
 		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
 		root.setCenter((WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
 			String msg=MessageRegistry.getString("WELCOME");

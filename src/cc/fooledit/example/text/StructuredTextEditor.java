@@ -21,6 +21,7 @@ import cc.fooledit.editor.*;
 import cc.fooledit.editor.lex.*;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
+import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.io.*;
 import java.net.*;
@@ -98,17 +99,17 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("scroll-to-top",(area)->area.getArea().showParagraphAtTop(area.getArea().getCurrentParagraph()));
 		addCommand("scroll-to-bottom",(area)->area.getArea().showParagraphAtBottom(area.getArea().getCurrentParagraph()));
 		addCommand("move-to-paragraph",Collections.singletonList("line"),(args,area)->{
-				int index=Integer.parseInt(((ScmString)ScmList.first(args)).getValue());
+				int index=SchemeConverter.toInteger(ScmList.first(args));
 				area.getArea().moveTo(index,Math.min(area.getArea().getCaretColumn(),area.getArea().getParagraphLenth(index)));
 				area.getArea().showParagraphInViewport(index);
 				return null;
 		});
 		addCommand("move-to-column",Collections.singletonList("line"),(args,area)->{
-				area.getArea().moveTo(area.getArea().getCurrentParagraph(),Integer.parseInt(((ScmString)ScmList.first(args)).getValue()));
+				area.getArea().moveTo(area.getArea().getCurrentParagraph(),SchemeConverter.toInteger(ScmList.first(args)));
 				return null;
 		});
 		addCommand("move-to-position",Collections.singletonList("line"),(args,area)->{
-				area.getArea().moveTo(Integer.parseInt(((ScmString)ScmList.first(args)).getValue()));
+				area.getArea().moveTo(SchemeConverter.toInteger(ScmList.first(args)));
 				area.getArea().showParagraphInViewport(area.getArea().getCurrentParagraph());
 				return null;
 		});

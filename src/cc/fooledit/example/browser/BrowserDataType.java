@@ -49,11 +49,11 @@ public class BrowserDataType implements DataObjectType<BrowserData>{
 	}
 	@Override
 	public BrowserData create(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return new BrowserData();
 	}
 	@Override
 	public boolean canCreate(){
-		return false;
+		return true;
 	}
 	@Override
 	public String getName(){

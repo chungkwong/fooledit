@@ -15,14 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
+import cc.fooledit.util.*;
+import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
+import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class HistoryRing<T>{
 	private final List<T> list=new ArrayList<>();
-	private final Map<String,T> tags=new HashMap<>();
+	private final Map<String,Integer> tags=new HashMap<>();
 	private int currentIndex=-1;
 	private int limit;
 	public HistoryRing(){
@@ -31,14 +34,18 @@ public class HistoryRing<T>{
 	public HistoryRing(int limit){
 		this.limit=limit;
 	}
+	public int getLimit(){
+		return limit;
+	}
+	public void setLimit(int limit){
+		this.limit=limit;
+	}
 	public void add(T obj){
 		currentIndex=list.size();
 		list.add(obj);
 	}
-	public void add(T obj,String tag){
-		currentIndex=list.size();
-		list.add(obj);
-		tags.put(tag,obj);
+	public void tag(String tag){
+		tags.put(tag,getCurrentIndex());
 	}
 	public int size(){
 		return list.size();
@@ -46,11 +53,15 @@ public class HistoryRing<T>{
 	public int getCurrentIndex(){
 		return currentIndex;
 	}
-	public T get(int index){
-		return list.get(index);
+	public void setCurrentIndex(int currentIndex){
+		if(currentIndex>=0&&currentIndex<list.size())
+			this.currentIndex=currentIndex;
 	}
 	public T get(String tag){
-		return tags.get(tag);
+		return get(tags.get(tag));
+	}
+	public T get(int index){
+		return list.get(index);
 	}
 	public int previous(){
 		if(currentIndex==0){
@@ -66,5 +77,21 @@ public class HistoryRing<T>{
 			currentIndex=0;
 		}
 		return currentIndex;
+	}
+	public void registryComamnds(String noun,Supplier<T> snapshotAction,Consumer<T> chooseAction,CommandRegistry registry){
+		registry.put("first-"+noun,()->chooseAction.accept(get(0)));
+		registry.put("last-"+noun,()->chooseAction.accept(get(size()-1)));
+		registry.put("next-"+noun,()->chooseAction.accept(get(next())));
+		registry.put("previous-"+noun,()->chooseAction.accept(get(previous())));
+		registry.put("record-"+noun,()->add(snapshotAction.get()));
+		registry.put("tag-"+noun,(args)->{
+			tag(SchemeConverter.toString(ScmList.first(args)));
+			return null;
+		});
+		registry.put(noun+"-limit",(ScmPairOrNil)->ScmInteger.valueOf(getLimit()));
+		registry.put("set-"+noun+"-limit",(args)->{
+			setLimit(SchemeConverter.toInteger(ScmList.first(args)));
+			return null;
+		});
 	}
 }

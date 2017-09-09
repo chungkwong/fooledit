@@ -14,20 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.example.browser;
-import cc.fooledit.api.*;
-import static cc.fooledit.api.DataObjectTypeRegistry.addDataEditor;
+package cc.fooledit.util;
+import com.github.chungkwong.jschememin.type.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BrowserModule{
-	public static final String NAME="editor.browser";
-	public static void onLoad(){
-		DataObjectTypeRegistry.addDataObjectType(BrowserDataType.INSTANCE);
-		addDataEditor(()->BrowserEditor.INSTANCE,BrowserData.class);
+public class SchemeConverter{
+	public static int toInteger(ScmObject obj){
+		if(obj instanceof ScmComplex)
+			return ((ScmComplex)obj).intValueExact();
+		else if(obj instanceof ScmString)
+			return Integer.parseInt(((ScmString)obj).getValue());
+		else
+			throw new NumberFormatException();
 	}
-	public static void onUnLoad(){
-
+	public static String toString(ScmObject obj){
+		return ((ScmString)obj).getValue();
 	}
 }
