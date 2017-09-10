@@ -17,6 +17,7 @@
 package cc.fooledit.example.text;
 import cc.fooledit.*;
 import cc.fooledit.api.*;
+import cc.fooledit.control.*;
 import cc.fooledit.editor.*;
 import cc.fooledit.editor.lex.*;
 import cc.fooledit.model.*;
@@ -39,6 +40,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
 	private final Map<String,Language> languages=new HashMap<>();
+	private final HistoryRing<String> clips=new HistoryRing<>();
 	public StructuredTextEditor(){
 		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("menubar-file",null)));
 
@@ -123,6 +125,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("current-position",Collections.emptyList(),(args,area)->{
 				return ScmInteger.valueOf(area.getArea().getCaretPosition());
 		});
+		clips.registryComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry);
+		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createSimple(null),true));
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 
 		try{
@@ -136,10 +140,13 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		json.stream().map((m)->Language.fromJSON(m)).forEach((l)->Arrays.stream(l.getMimeTypes()).forEach((mime)->languages.put(mime,l)));
 	}
 	private void addCommand(String name,Consumer<CodeEditor> action){
-		commandRegistry.put(name,()->action.accept((CodeEditor)Main.INSTANCE.getCurrentNode()));
+		commandRegistry.put(name,()->action.accept(getCurrentEditor()));
 	}
 	private void addCommand(String name,List<String> parameters,BiFunction<ScmPairOrNil,CodeEditor,ScmObject> action){
-		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(CodeEditor)Main.INSTANCE.getCurrentNode())));
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,getCurrentEditor())));
+	}
+	private CodeEditor getCurrentEditor(){
+		return (CodeEditor)Main.INSTANCE.getCurrentNode();
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

@@ -76,8 +76,14 @@ public class CodeEditor extends BorderPane{
 		super.requestFocus();
 		area.requestFocus();
 	}
-	public void setAutoCompleteProvider(AutoCompleteProvider provider){
-		new CompleteSupport(provider).apply(area);
+	private Runnable destroyCompleteSupport=null;
+	public void setAutoCompleteProvider(AutoCompleteProvider provider,boolean once){
+		if(destroyCompleteSupport!=null){
+			destroyCompleteSupport.run();
+			destroyCompleteSupport=null;
+		}
+		if(provider!=null)
+			destroyCompleteSupport=new CompleteSupport(provider).apply(area,once);
 	}
 	public Property<Object> syntaxTree(){
 		throw new UnsupportedOperationException();
