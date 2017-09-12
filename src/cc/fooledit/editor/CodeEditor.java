@@ -51,6 +51,7 @@ public class CodeEditor extends BorderPane{
 		if(lex!=null)
 			lex.apply(area);
 		//tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
+		area.currentParagraphProperty().addListener((e,o,n)->area.showParagraphInViewport(n));
 		area.setInputMethodRequests(new InputMethodRequestsObject());
 		area.setOnInputMethodTextChanged((e)->{
 			if(e.getCommitted()!=""){
@@ -77,13 +78,13 @@ public class CodeEditor extends BorderPane{
 		area.requestFocus();
 	}
 	private Runnable destroyCompleteSupport=null;
-	public void setAutoCompleteProvider(AutoCompleteProvider provider,boolean once){
+	public void setAutoCompleteProvider(AutoCompleteProvider provider){
 		if(destroyCompleteSupport!=null){
 			destroyCompleteSupport.run();
 			destroyCompleteSupport=null;
 		}
 		if(provider!=null)
-			destroyCompleteSupport=new CompleteSupport(provider).apply(area,once);
+			destroyCompleteSupport=new CompleteSupport(provider).apply(area);
 	}
 	public Property<Object> syntaxTree(){
 		throw new UnsupportedOperationException();

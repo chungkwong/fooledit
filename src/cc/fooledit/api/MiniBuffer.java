@@ -65,17 +65,22 @@ public class MiniBuffer extends BorderPane{
 					ScmObject obj=main.getCommandRegistry().get(input.getText()).accept(ScmNil.NIL);
 					if(obj!=null)
 						main.getNotifier().notify(obj.toExternalRepresentation());
+					focusCurrentNode();
 				}else{
 					executeCommand(command,new ArrayList<>(),command.getParameters());
 				}
 			}else{
 				try{
 					main.getNotifier().notify(Objects.toString(main.getScriptAPI().eval(input.getText())));
+					focusCurrentNode();
 				}catch(ScriptException ex){
 					Logger.getGlobal().log(Level.SEVERE,MessageRegistry.getString("FAILED"),ex);
 				}
 			}
 		});
+		focusCurrentNode();
+	}
+	private void focusCurrentNode(){
 		Node curr=Main.INSTANCE.getCurrentNode();
 		if(curr!=null)
 			curr.requestFocus();

@@ -48,7 +48,7 @@ public class CompleteSupport{
 		this.hints=hints;
 
 	}
-	public Runnable apply(CodeArea area,boolean once){
+	public Runnable apply(CodeArea area){
 		EventHandler<KeyEvent> keyHandler=(e)->{
 			if(popupHint.isShowing())
 				switch(e.getCode()){
@@ -60,13 +60,11 @@ public class CompleteSupport{
 		};
 		area.addEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
 		ChangeListener<Integer> caretListener=(e,o,n)->task.summit(new HintContext(hints,area.getText(),n,area));
-		if(!once)
-			area.caretPositionProperty().addListener(caretListener);
+		area.caretPositionProperty().addListener(caretListener);
 		task.summit(new HintContext(hints,area.getText(),area.getCaretPosition(),area));
 		return ()->{
 			area.removeEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
-			if(!once)
-				area.caretPositionProperty().removeListener(caretListener);
+			area.caretPositionProperty().removeListener(caretListener);
 		};
 	}
 	public static void main(String[] args){

@@ -19,6 +19,7 @@ import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -77,6 +78,9 @@ public class HistoryRing<T>{
 			currentIndex=0;
 		}
 		return currentIndex;
+	}
+	public Stream<T> stream(){
+		return list.stream();
 	}
 	public void registryComamnds(String noun,Supplier<T> snapshotAction,Consumer<T> chooseAction,CommandRegistry registry){
 		registry.put("first-"+noun,()->chooseAction.accept(get(0)));
