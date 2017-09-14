@@ -39,12 +39,15 @@ public class AntlrHighlighter implements TokenHighlighter{
 		this.superType=superType;
 	}
 	@Override
-	public void apply(CodeArea area){
+	public void apply(CodeEditor editor){
+		CodeArea area=editor.getArea();
 		RealTimeTask<String> task=new RealTimeTask<>((text)->{
-			StyleSpans<Collection<String>> highlighting=computeHighlighting(text);
+			List<? extends org.antlr.v4.runtime.Token> tokens=computeTokens(text);
+			StyleSpans<Collection<String>> highlighting=computeHighlighting(tokens);
 			Platform.runLater(()->{
 				try{
 					area.setStyleSpans(0,highlighting);
+					editor.cache(tokens);
 				}catch(Exception ex){
 					Logger.getGlobal().log(Level.FINEST,"",ex);
 				}
@@ -52,8 +55,7 @@ public class AntlrHighlighter implements TokenHighlighter{
 		});
 		area.textProperty().addListener((e,o,n)->task.summit(n));
 	}
-	private StyleSpans<Collection<String>> computeHighlighting(String text){
-		long time=System.currentTimeMillis();
+	private List<? extends org.antlr.v4.runtime.Token> computeTokens(String text){
 		//LexerInterpreter lexEngine=grammar.createLexerInterpreter(CharStreams.fromString(text));
 		Lexer lexEngine=lexerBuilder.create(text);
 		if(styles==null){
@@ -62,7 +64,9 @@ public class AntlrHighlighter implements TokenHighlighter{
 		//CommonTokenStream tokenstream=new CommonTokenStream(lexEngine);
 		//tokenstream.fill();
 		//List<org.antlr.v4.runtime.Token> tokens=tokenstream.getTokens();
-		List<? extends org.antlr.v4.runtime.Token> tokens=lexEngine.getAllTokens();
+		return lexEngine.getAllTokens();
+	}
+	private StyleSpans<Collection<String>> computeHighlighting(List<? extends org.antlr.v4.runtime.Token> tokens){
 		StyleSpansBuilder<Collection<String>> spansBuilder=new StyleSpansBuilder<>();
 		index=0;
 		tokens.forEach((t)->{
@@ -71,7 +75,6 @@ public class AntlrHighlighter implements TokenHighlighter{
 			index=t.getStopIndex()+1;
 			spansBuilder.add(styles[t.getType()+1],index-t.getStartIndex());
 		});
-		System.err.println(System.currentTimeMillis()-time);
 		return spansBuilder.create();
 	}
 	private void initStyles(Lexer lexEngine){

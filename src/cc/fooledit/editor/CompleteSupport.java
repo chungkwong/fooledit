@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor;
+import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.control.*;
 import cc.fooledit.editor.PopupHint;
@@ -48,7 +49,7 @@ public class CompleteSupport{
 		this.hints=hints;
 
 	}
-	public Runnable apply(CodeArea area){
+	public Runnable apply(CodeArea area,boolean once){
 		EventHandler<KeyEvent> keyHandler=(e)->{
 			if(popupHint.isShowing())
 				switch(e.getCode()){
@@ -58,13 +59,15 @@ public class CompleteSupport{
 					case ESCAPE:popupHint.hideHints();area.requestFocus();e.consume();break;
 				}
 		};
-		area.addEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
+		Main.getScene().addEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
 		ChangeListener<Integer> caretListener=(e,o,n)->task.summit(new HintContext(hints,area.getText(),n,area));
-		area.caretPositionProperty().addListener(caretListener);
+		if(!once)
+			area.caretPositionProperty().addListener(caretListener);
 		task.summit(new HintContext(hints,area.getText(),area.getCaretPosition(),area));
 		return ()->{
-			area.removeEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
-			area.caretPositionProperty().removeListener(caretListener);
+			Main.getScene().removeEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
+			if(!once)
+				area.caretPositionProperty().removeListener(caretListener);
 		};
 	}
 	public static void main(String[] args){

@@ -17,7 +17,7 @@
 package cc.fooledit.editor;
 import cc.fooledit.control.*;
 import cc.fooledit.editor.LineNumberFactory;
-import cc.fooledit.editor.parser.*;
+import cc.fooledit.editor.parser.Parser;
 import java.text.*;
 import java.util.*;
 import java.util.function.*;
@@ -31,6 +31,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.text.*;
+import org.antlr.v4.runtime.*;
 import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.*;
 import org.fxmisc.richtext.model.*;
@@ -49,7 +50,7 @@ public class CodeEditor extends BorderPane{
 	private final TreeSet<Marker> markers=new TreeSet<>();
 	public CodeEditor(Parser parser,TokenHighlighter lex){
 		if(lex!=null)
-			lex.apply(area);
+			lex.apply(this);
 		//tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
 		area.currentParagraphProperty().addListener((e,o,n)->area.showParagraphInViewport(n));
 		area.setInputMethodRequests(new InputMethodRequestsObject());
@@ -78,13 +79,22 @@ public class CodeEditor extends BorderPane{
 		area.requestFocus();
 	}
 	private Runnable destroyCompleteSupport=null;
-	public void setAutoCompleteProvider(AutoCompleteProvider provider){
+	public void setAutoCompleteProvider(AutoCompleteProvider provider,boolean once){
 		if(destroyCompleteSupport!=null){
 			destroyCompleteSupport.run();
 			destroyCompleteSupport=null;
 		}
 		if(provider!=null)
-			destroyCompleteSupport=new CompleteSupport(provider).apply(area);
+			destroyCompleteSupport=new CompleteSupport(provider).apply(area,once);
+	}
+	private List<? extends org.antlr.v4.runtime.Token> tokens;
+	void cache(List<? extends org.antlr.v4.runtime.Token> tokens){
+		this.tokens=tokens;
+	}
+	public Optional<? extends Token> getToken(int pos){
+		if(tokens==null)
+			return Optional.empty();
+		return tokens.stream().filter((t)->t.getStopIndex()>=pos).findFirst();
 	}
 	public Property<Object> syntaxTree(){
 		throw new UnsupportedOperationException();

@@ -127,8 +127,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				return ScmInteger.valueOf(area.getArea().getCaretPosition());
 		});
 		clips.registryComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry);
-		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createSimple(
-				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList()))));
+		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
+				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList())),true));
+		addCommand("highlight",(area)->area.getArea().setStyleClass(area.getArea().getSelection().getStart(),area.getArea().getSelection().getEnd(),"highlight"));
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 
 		try{
@@ -183,7 +184,6 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		TokenHighlighter highlighter=language!=null?language.getTokenHighlighter():null;
 		CodeEditor codeEditor=new CodeEditor(null,highlighter);
 		codeEditor.textProperty().bindBidirectional(data.getText());
-		codeEditor.setAutoCompleteProvider(AutoCompleteProvider.createSimple(Arrays.asList(AutoCompleteHint.create("aa","bb","cc"))));
 		return codeEditor;
 	}
 	@Override

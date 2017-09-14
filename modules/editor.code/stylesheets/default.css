@@ -29,6 +29,7 @@
 .type {-fx-fill: blue;}
 .binary{-fx-fill: black;}
 .Identifier{-fx-fill: purple;}
-.identifier{-fx-fill: purple;-fx-background-color: red;font-style: italic;}
+.identifier{-fx-fill: purple;}
 .Class{-fx-fill: yellow;}
-.highlight{-fx-background-color: yellow;}
+.highlight{-rtfx-background-color: yellow;}
+.error{-rtfx-background-color: red;}

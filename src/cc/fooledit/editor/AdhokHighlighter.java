@@ -32,7 +32,8 @@ public class AdhokHighlighter implements TokenHighlighter{
 		this.lex=lex;
 	}
 	@Override
-	public void apply(CodeArea area){
+	public void apply(CodeEditor editor){
+		CodeArea area=editor.getArea();
 		RealTimeTask<String> task=new RealTimeTask<>((text)->{
 			StyleSpans<Collection<String>> highlighting=computeHighlighting(text);
 			Platform.runLater(()->{

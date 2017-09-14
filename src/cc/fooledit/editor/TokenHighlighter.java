@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor;
-import org.fxmisc.richtext.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface TokenHighlighter{
-	void apply(CodeArea area);
+	void apply(CodeEditor area);
 }

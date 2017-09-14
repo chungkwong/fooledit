@@ -26,6 +26,9 @@ public interface AutoCompleteProvider{
 	static AutoCompleteProvider createSimple(Collection<AutoCompleteHint> hints){
 		return new SimpleAutoCompleteProvider(hints);
 	}
+	static AutoCompleteProvider createFixed(Collection<AutoCompleteHint> hints){
+		return new FixedAutoCompleteProvider(hints);
+	}
 }
 class SimpleAutoCompleteProvider implements AutoCompleteProvider{
 	private final Collection<AutoCompleteHint> hints;
@@ -37,5 +40,15 @@ class SimpleAutoCompleteProvider implements AutoCompleteProvider{
 		String prefix=text.substring(0,pos);
 		return hints.stream().filter((hint)->hint.getInputText().startsWith(prefix)&&hint.getInputText().length()>pos).
 				map((hint)->AutoCompleteHint.modify(hint.getInputText().substring(pos),hint));
+	}
+}
+class FixedAutoCompleteProvider implements AutoCompleteProvider{
+	private final Collection<AutoCompleteHint> hints;
+	public FixedAutoCompleteProvider(Collection<AutoCompleteHint> hints){
+		this.hints=hints;
+	}
+	@Override
+	public Stream<AutoCompleteHint> checkForHints(String text,int pos){
+		return hints.stream();
 	}
 }
