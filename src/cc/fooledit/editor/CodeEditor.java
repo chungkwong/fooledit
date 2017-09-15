@@ -17,13 +17,15 @@
 package cc.fooledit.editor;
 import cc.fooledit.control.*;
 import cc.fooledit.editor.LineNumberFactory;
-import cc.fooledit.editor.parser.Parser;
+import cc.fooledit.editor.parser.*;
+import cc.fooledit.util.*;
 import java.text.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.beans.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
+import javafx.collections.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -31,7 +33,6 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.text.*;
-import org.antlr.v4.runtime.*;
 import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.*;
 import org.fxmisc.richtext.model.*;
@@ -48,15 +49,18 @@ public class CodeEditor extends BorderPane{
 	private final IndentPolicy indentPolicy;
 	private final StringProperty textProperty=new PlainTextProperty();
 	private final TreeSet<Marker> markers=new TreeSet<>();
-	public CodeEditor(Parser parser,TokenHighlighter lex){
+	private final ObservableList<IndexRange> selections=FXCollections.observableArrayList();
+	private final ObservableList<Highlighter> highlighters=FXCollections.observableArrayList();
+	public CodeEditor(Parser parser,Highlighter lex){
 		if(lex!=null)
-			lex.apply(this);
+			lex.highlight(this);
 		//tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
 		area.currentParagraphProperty().addListener((e,o,n)->area.showParagraphInViewport(n));
 		area.setInputMethodRequests(new InputMethodRequestsObject());
 		area.setOnInputMethodTextChanged((e)->{
 			if(e.getCommitted()!=""){
 				area.insertText(area.getCaretPosition(),e.getCommitted());
+				System.out.println(e.getCommitted());
 			}
 		});
 		area.setParagraphGraphicFactory(header);
@@ -70,7 +74,11 @@ public class CodeEditor extends BorderPane{
 		indentPolicy=IndentPolicy.AS_PREVIOUS;
 
 		area.plainTextChanges().subscribe((e)->update(e));
-
+		RealTimeTask<String> task=new RealTimeTask<>((text)->{
+			highlighters.forEach((highlighter)->highlighter.highlight(CodeEditor.this));
+		});
+		area.textProperty().addListener((e,o,n)->task.summit(n));
+		highlighters.add(lex);
 		setCenter(new VirtualizedScrollPane(area));
 	}
 	@Override
@@ -91,11 +99,6 @@ public class CodeEditor extends BorderPane{
 	void cache(List<? extends org.antlr.v4.runtime.Token> tokens){
 		this.tokens=tokens;
 	}
-	public Optional<? extends Token> getToken(int pos){
-		if(tokens==null)
-			return Optional.empty();
-		return tokens.stream().filter((t)->t.getStopIndex()>=pos).findFirst();
-	}
 	public Property<Object> syntaxTree(){
 		throw new UnsupportedOperationException();
 //return tree.syntaxTree();
@@ -108,6 +111,9 @@ public class CodeEditor extends BorderPane{
 	}
 	Map<Integer,Node> annotations(){
 		return header.getMarks();
+	}
+	public ObservableList<IndexRange> selections(){
+		return selections;
 	}
 	public void newline(){
 		area.insertText(area.getCaretPosition(),"\n");
@@ -144,14 +150,14 @@ public class CodeEditor extends BorderPane{
 		area.replaceSelection("");
 	}
 	public void nextWord(NavigationActions.SelectionPolicy policy){
-		int pos=area.getCaretPosition();
-		StyleSpans<Collection<String>> styleSpans=area.getStyleSpans(pos,area.getLength());
-		area.moveTo(styleSpans.getSpanCount()==0?area.getLength():pos+styleSpans.getStyleSpan(0).getLength(),policy);
+		int from=area.getCaretPosition();
+		int to=tokens.stream().mapToInt((t)->t.getStartIndex()).filter((i)->i>from).findFirst().orElse(area.getLength());//TODO: bsearch is better
+		area.moveTo(to,policy);
 	}
 	public void previousWord(NavigationActions.SelectionPolicy policy){
-		int pos=area.getCaretPosition();
-		StyleSpans<Collection<String>> styleSpans=area.getStyleSpans(0,pos);
-		area.moveTo(styleSpans.getSpanCount()==0?0:pos-styleSpans.getStyleSpan(styleSpans.getSpanCount()-1).getLength(),policy);
+		int from=area.getCaretPosition();
+		int to=tokens.stream().mapToInt((t)->t.getStartIndex()).filter((i)->i<from).max().orElse(0);//TODO: bsearch is better
+		area.moveTo(to,policy);
 	}
 	public void deleteNextWord(){
 		nextWord(NavigationActions.SelectionPolicy.EXTEND);

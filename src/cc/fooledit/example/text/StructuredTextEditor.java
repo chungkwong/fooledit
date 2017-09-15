@@ -181,7 +181,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	public Node edit(TextObject data){
 		MetaLexer lex=null;
 		Language language=languages.get(DataObjectRegistry.getMIME(data));
-		TokenHighlighter highlighter=language!=null?language.getTokenHighlighter():null;
+		Highlighter highlighter=language!=null?language.getTokenHighlighter():null;
 		CodeEditor codeEditor=new CodeEditor(null,highlighter);
 		codeEditor.textProperty().bindBidirectional(data.getText());
 		return codeEditor;

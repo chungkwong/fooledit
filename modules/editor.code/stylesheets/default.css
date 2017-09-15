@@ -32,4 +32,5 @@
 .identifier{-fx-fill: purple;}
 .Class{-fx-fill: yellow;}
 .highlight{-rtfx-background-color: yellow;}
+.selection{-rtfx-background-color: grey;}
 .error{-rtfx-background-color: red;}

@@ -19,6 +19,6 @@ package cc.fooledit.editor;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface TokenHighlighter{
-	void apply(CodeEditor area);
+public interface Highlighter{
+	void highlight(CodeEditor area);
 }

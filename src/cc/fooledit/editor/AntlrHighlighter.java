@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor;
 import cc.fooledit.editor.lex.*;
-import cc.fooledit.util.*;
 import java.util.*;
 import java.util.logging.*;
 import javafx.application.*;
@@ -27,7 +26,7 @@ import org.fxmisc.richtext.model.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AntlrHighlighter implements TokenHighlighter{
+public class AntlrHighlighter implements Highlighter{
 	private final LexerBuilder lexerBuilder;
 	private Collection[] styles;
 	private Map<String,String> superType;
@@ -39,21 +38,20 @@ public class AntlrHighlighter implements TokenHighlighter{
 		this.superType=superType;
 	}
 	@Override
-	public void apply(CodeEditor editor){
+	public void highlight(CodeEditor editor){
 		CodeArea area=editor.getArea();
-		RealTimeTask<String> task=new RealTimeTask<>((text)->{
-			List<? extends org.antlr.v4.runtime.Token> tokens=computeTokens(text);
-			StyleSpans<Collection<String>> highlighting=computeHighlighting(tokens);
-			Platform.runLater(()->{
-				try{
-					area.setStyleSpans(0,highlighting);
-					editor.cache(tokens);
-				}catch(Exception ex){
-					Logger.getGlobal().log(Level.FINEST,"",ex);
-				}
-			});
+		List<? extends org.antlr.v4.runtime.Token> tokens=computeTokens(area.getText());
+		if(tokens.isEmpty())
+			return;
+		StyleSpans<Collection<String>> highlighting=computeHighlighting(tokens);
+		Platform.runLater(()->{
+			try{
+				area.setStyleSpans(0,highlighting);
+				editor.cache(tokens);
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.FINEST,"",ex);
+			}
 		});
-		area.textProperty().addListener((e,o,n)->task.summit(n));
 	}
 	private List<? extends org.antlr.v4.runtime.Token> computeTokens(String text){
 		//LexerInterpreter lexEngine=grammar.createLexerInterpreter(CharStreams.fromString(text));

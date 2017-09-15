@@ -39,13 +39,13 @@ public class Language{
 	private static final String SUPERTYPE="supertype";
 	private final String name;
 	private final String[] mimeTypes;
-	private final Cache<TokenHighlighter> highlighter;
-	public Language(String name,String[] mimeTypes,Supplier<TokenHighlighter> highlighter){
+	private final Cache<Highlighter> highlighter;
+	public Language(String name,String[] mimeTypes,Supplier<Highlighter> highlighter){
 		this.name=name;
 		this.mimeTypes=mimeTypes;
 		this.highlighter=new Cache<>(highlighter);
 	}
-	public TokenHighlighter getTokenHighlighter(){
+	public Highlighter getTokenHighlighter(){
 		return highlighter.get();
 	}
 	public String getName(){
@@ -57,7 +57,7 @@ public class Language{
 	public static Language fromJSON(Map<String,Object> obj){
 		String name=(String)obj.get(NAME);
 		String[] mime=((List<String>)obj.get(MIME)).toArray(new String[0]);
-		Supplier<TokenHighlighter> highlighter;
+		Supplier<Highlighter> highlighter;
 		String lexFileName=(String)obj.get(HIGHLIGHTER);
 		if(lexFileName.endsWith(".json")){
 			File lex=new File(Main.getDataPath(),lexFileName);

@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor;
 import cc.fooledit.editor.lex.*;
-import cc.fooledit.util.*;
 import java.util.*;
 import java.util.logging.*;
 import javafx.application.*;
@@ -26,25 +25,22 @@ import org.fxmisc.richtext.model.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AdhokHighlighter implements TokenHighlighter{
+public class AdhokHighlighter implements Highlighter{
 	private final MetaLexer lex;
 	public AdhokHighlighter(MetaLexer lex){
 		this.lex=lex;
 	}
 	@Override
-	public void apply(CodeEditor editor){
+	public void highlight(CodeEditor editor){
 		CodeArea area=editor.getArea();
-		RealTimeTask<String> task=new RealTimeTask<>((text)->{
-			StyleSpans<Collection<String>> highlighting=computeHighlighting(text);
-			Platform.runLater(()->{
-				try{
-					area.setStyleSpans(0,highlighting);
-				}catch(Exception ex){
-					Logger.getGlobal().log(Level.FINEST,"",ex);
-				}
-			});
+		StyleSpans<Collection<String>> highlighting=computeHighlighting(area.getText());
+		Platform.runLater(()->{
+			try{
+				area.setStyleSpans(0,highlighting);
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.FINEST,"",ex);
+			}
 		});
-		area.textProperty().addListener((e,o,n)->task.summit(n));
 	}
 	private StyleSpans<Collection<String>> computeHighlighting(String text){
 		long time=System.currentTimeMillis();

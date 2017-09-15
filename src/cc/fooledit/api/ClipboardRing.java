@@ -37,6 +37,12 @@ public class ClipboardRing extends HistoryRing<Map<DataFormat,Object>>{
 		super.add(obj);
 		clipBoard.setContent(obj);
 	}
+	private void syncClipboard(){
+		Map<DataFormat,Object> curr=getCurrentMap();
+		if(!curr.isEmpty()&&(size()==0||!curr.equals(get(size()-1)))){
+			super.add(curr);
+		}
+	}
 	private Map<DataFormat,Object> getCurrentMap(){
 		return clipBoard.getContentTypes().stream().collect(Collectors.toMap(Function.identity(),(format)->clipBoard.getContent(format)));
 	}
