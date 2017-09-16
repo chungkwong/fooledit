@@ -129,7 +129,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		clips.registryComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry);
 		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
 				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList())),true));
-		addCommand("highlight",(area)->area.getArea().setStyleClass(area.getArea().getSelection().getStart(),area.getArea().getSelection().getEnd(),"highlight"));
+		addCommand("highlight",(area)->area.selections().add(area.getArea().getSelection()));
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 
 		try{

@@ -22,6 +22,7 @@ import cc.fooledit.util.*;
 import java.text.*;
 import java.util.*;
 import java.util.function.*;
+import javafx.application.*;
 import javafx.beans.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
@@ -79,6 +80,7 @@ public class CodeEditor extends BorderPane{
 		});
 		area.textProperty().addListener((e,o,n)->task.summit(n));
 		highlighters.add(lex);
+		highlighters.add(SelectionHighlighter.INSTANCE);
 		setCenter(new VirtualizedScrollPane(area));
 	}
 	@Override
@@ -201,6 +203,7 @@ public class CodeEditor extends BorderPane{
 				oldPos=e.getRemovalEnd();
 				newPos=e.getPosition();
 				markers.subSet(new Marker(e.getPosition(),null),new Marker(e.getRemovalEnd(),null)).clear();
+				selections.removeIf((range)->range.getStart()<=e.getRemovalEnd()&&e.getPosition()<=range.getEnd());
 				break;
 			case INSERTION:
 				oldPos=e.getPosition();
@@ -210,6 +213,7 @@ public class CodeEditor extends BorderPane{
 				oldPos=e.getRemovalEnd();
 				newPos=e.getInsertionEnd();
 				markers.subSet(new Marker(e.getPosition(),null),new Marker(e.getRemovalEnd(),null)).clear();
+				selections.removeIf((range)->range.getStart()<=e.getRemovalEnd()&&e.getPosition()<=range.getEnd());
 				break;
 			default:
 				throw new RuntimeException();
@@ -226,6 +230,14 @@ public class CodeEditor extends BorderPane{
 			while(marker!=null&&marker.getOffset()>=oldPos){
 				marker.setOffset(marker.getOffset()+diff);
 				marker=markers.lower(marker);
+			}
+		}
+		for(ListIterator<IndexRange> iter=selections.listIterator();iter.hasNext();){
+			IndexRange range=iter.next();
+			if(range.getStart()>=oldPos){
+				iter.set(new IndexRange(range.getStart()+diff,range.getEnd()+diff));
+			}else if(range.getEnd()>=oldPos){
+				iter.set(new IndexRange(range.getStart(),range.getEnd()+diff));
 			}
 		}
 	}
@@ -374,5 +386,12 @@ class LineNumberFactory implements IntFunction<Node>{
 		else if(n<10000000)return 7;
 		else if(n<100000000)return 8;
 		else return 9;
+	}
+}
+class SelectionHighlighter implements Highlighter{
+	public static final SelectionHighlighter INSTANCE=new SelectionHighlighter();
+	@Override
+	public void highlight(CodeEditor area){
+		Platform.runLater(()->area.selections().forEach((range)->area.getArea().setStyleClass(range.getStart(),range.getEnd(),"selection")));
 	}
 }
