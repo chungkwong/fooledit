@@ -94,6 +94,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("select-to-file-end",(area)->area.getArea().end(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-file-begin",(area)->area.getArea().start(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("deselect",(area)->area.getArea().deselect());
+		addCommand("reverse-selection",(area)->area.reverseSelection());
 
 		addCommand("to-lowercase",(area)->area.transform(String::toLowerCase));
 		addCommand("to-uppercase",(area)->area.transform(String::toUpperCase));

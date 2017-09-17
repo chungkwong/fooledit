@@ -274,3 +274,15 @@ toggle-rect-select.shortcut=A+BACK_SLASH
 #}}}
 
 # 概念设计
+
+## 用户界面
+
+- 菜单
+- 命令
+- 脚本
+- 窗格
+- 状态列
+
+## 文本编辑器
+
+- 选择

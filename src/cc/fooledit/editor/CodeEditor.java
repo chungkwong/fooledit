@@ -78,10 +78,38 @@ public class CodeEditor extends BorderPane{
 		RealTimeTask<String> task=new RealTimeTask<>((text)->{
 			highlighters.forEach((highlighter)->highlighter.highlight(CodeEditor.this));
 		});
+		selections.addListener(new ListChangeListener<IndexRange>(){
+			@Override
+			public void onChanged(ListChangeListener.Change<? extends IndexRange> c){
+				c.next();
+				if(c.wasAdded())
+					SelectionHighlighter.INSTANCE.highlight(CodeEditor.this);
+			}
+		});
 		area.textProperty().addListener((e,o,n)->task.summit(n));
 		highlighters.add(lex);
 		highlighters.add(SelectionHighlighter.INSTANCE);
 		setCenter(new VirtualizedScrollPane(area));
+	}
+	public void reverseSelection(){
+		FXCollections.sort(selections,(x,y)->Integer.compare(x.getStart(),y.getStart()));
+		Iterator<IndexRange> iter=selections.iterator();
+		if(iter.hasNext()){
+			List<IndexRange> reversed=new ArrayList<>(selections.size()+1);
+			IndexRange prev=iter.next();
+			if(prev.getStart()!=0)
+				reversed.add(new IndexRange(0,prev.getStart()));
+			while(iter.hasNext()){
+				IndexRange range=iter.next();
+				reversed.add(new IndexRange(prev.getEnd(),range.getStart()));
+				prev=range;
+			}
+			if(prev.getEnd()!=area.getLength())
+				reversed.add(new IndexRange(prev.getEnd(),area.getLength()));
+			selections.setAll(reversed);
+		}else{
+			selections.add(new IndexRange(0,area.getLength()));
+		}
 	}
 	@Override
 	public void requestFocus(){
@@ -194,8 +222,8 @@ public class CodeEditor extends BorderPane{
 		area.replaceSelection(transformer.apply(area.getSelectedText()));
 	}
 	private void update(PlainTextChange e){
-		if(markers.isEmpty())
-			return;;
+		if(markers.isEmpty()&&selections.isEmpty())
+			return;
 		int oldPos;
 		int newPos;
 		switch(e.getType()){
@@ -219,19 +247,20 @@ public class CodeEditor extends BorderPane{
 				throw new RuntimeException();
 		}
 		int diff=newPos-oldPos;
-		if(diff<0){
-			Marker marker=markers.ceiling(new Marker(oldPos,null));
-			while(marker!=null){
-				marker.setOffset(marker.getOffset()+diff);
-				marker=markers.higher(marker);
+		if(!markers.isEmpty())
+			if(diff<0){
+				Marker marker=markers.ceiling(new Marker(oldPos,null));
+				while(marker!=null){
+					marker.setOffset(marker.getOffset()+diff);
+					marker=markers.higher(marker);
+				}
+			}else if(diff>0){
+				Marker marker=markers.last();
+				while(marker!=null&&marker.getOffset()>=oldPos){
+					marker.setOffset(marker.getOffset()+diff);
+					marker=markers.lower(marker);
+				}
 			}
-		}else if(diff>0){
-			Marker marker=markers.last();
-			while(marker!=null&&marker.getOffset()>=oldPos){
-				marker.setOffset(marker.getOffset()+diff);
-				marker=markers.lower(marker);
-			}
-		}
 		for(ListIterator<IndexRange> iter=selections.listIterator();iter.hasNext();){
 			IndexRange range=iter.next();
 			if(range.getStart()>=oldPos){
