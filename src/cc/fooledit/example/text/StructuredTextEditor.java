@@ -131,6 +131,12 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
 				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList())),true));
 		addCommand("highlight",(area)->area.selections().add(area.getArea().getSelection()));
+		addCommand("find-string",Collections.singletonList("target"),(args,area)->{
+				return ScmInteger.valueOf(area.find(SchemeConverter.toString(ScmList.first(args))));
+		});
+		addCommand("find-regex",Collections.singletonList("target"),(args,area)->{
+				return ScmInteger.valueOf(area.findRegex(SchemeConverter.toString(ScmList.first(args))));
+		});
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 
 		try{

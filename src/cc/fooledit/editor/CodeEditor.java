@@ -22,6 +22,7 @@ import cc.fooledit.util.*;
 import java.text.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.regex.*;
 import javafx.application.*;
 import javafx.beans.*;
 import javafx.beans.property.*;
@@ -110,6 +111,25 @@ public class CodeEditor extends BorderPane{
 		}else{
 			selections.add(new IndexRange(0,area.getLength()));
 		}
+	}
+	public int find(String target){
+		String text=area.getText();
+		List<IndexRange> results=new ArrayList<>();
+		int length=target.length();
+		int start=0;
+		while((start=text.indexOf(target,start))!=-1){
+			results.add(new IndexRange(start,start+=length));
+		}
+		selections.setAll(results);
+		return results.size();
+	}
+	public int findRegex(String regex){
+		Matcher matcher=Pattern.compile(regex).matcher(area.getText());
+		List<IndexRange> results=new ArrayList<>();
+		while(matcher.find())
+			results.add(new IndexRange(matcher.start(),matcher.end()));
+		selections.setAll(results);
+		return results.size();
 	}
 	@Override
 	public void requestFocus(){
