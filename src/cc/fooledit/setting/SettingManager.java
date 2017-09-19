@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.setting;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.json.*;
@@ -187,7 +187,7 @@ public class SettingManager{
 			});
 			return node;
 		});
-		EventManager.addEventListener(EventManager.SHUTDOWN,()->sync());
+		EventManager.addEventListener(EventManager.SHUTDOWN,(e)->sync());
 	}
 	private static final SettingEditorFactory DEFAULT_EDITOR_FACTORY=(key,grp)->{
 		TextArea node=new TextArea();

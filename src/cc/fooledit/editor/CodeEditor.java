@@ -224,6 +224,14 @@ public class CodeEditor extends BorderPane{
 		else
 			area.end(policy);
 	}
+	public void nextSelection(){
+		int curr=Math.max(area.getCaretPosition(),area.getAnchor());
+		selections.stream().filter((range)->range.getStart()>=curr).findFirst().ifPresent((range)->area.selectRange(range.getStart(),range.getEnd()));
+	}
+	public void previousSelection(){
+		int curr=Math.min(area.getCaretPosition(),area.getAnchor());
+		selections.stream().filter((range)->range.getStart()<curr).forEach((range)->area.selectRange(range.getStart(),range.getEnd()));
+	}
 	public void previousLine(NavigationActions.SelectionPolicy policy){
 		int targetParagraph=area.getCurrentParagraph()-1;
 		if(targetParagraph>=0)

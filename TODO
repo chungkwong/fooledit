@@ -345,6 +345,7 @@ toggle-rect-select.shortcut=A+BACK_SLASH
 	- 空格制表符转换
 	- URL、实体转换
 	- 排序、去重复、反转
+	- 重复行
 	- 转置
 	- 自动格式化
 	- 注释

@@ -16,6 +16,7 @@
  */
 package cc.fooledit.api;
 import java.util.*;
+import java.util.function.*;
 import java.util.logging.*;
 /**
  *
@@ -23,9 +24,9 @@ import java.util.logging.*;
  */
 public class EventManager{
 	public static final String SHUTDOWN="shutdown";
-	private static final Map<String,LinkedList<Runnable>> table=new HashMap<>();
-	public static void addEventListener(String event,Runnable action){
-		LinkedList<Runnable> list=table.get(event);
+	private static final Map<String,LinkedList<Consumer<Object>>> table=new HashMap<>();
+	public static void addEventListener(String event,Consumer<Object> action){
+		LinkedList<Consumer<Object>> list=table.get(event);
 		if(list==null){
 			list=new LinkedList<>();
 			table.put(event,list);
@@ -33,19 +34,19 @@ public class EventManager{
 		list.addFirst(action);
 	}
 	public static void removeEventListener(String event,Runnable action){
-		LinkedList<Runnable> list=table.get(event);
+		LinkedList<Consumer<Object>> list=table.get(event);
 		if(list!=null){
 			list.remove(action);
 			if(list.isEmpty())
 				table.remove(event);
 		}
 	}
-	public static void fire(String event){
-		LinkedList<Runnable> list=table.get(event);
+	public static void fire(String event,Object parameter){
+		LinkedList<Consumer<Object>> list=table.get(event);
 		if(list!=null){
 			try{
-				for(Runnable action:list)
-					action.run();
+				for(Consumer<Object> action:list)
+					action.accept(parameter);
 			}catch(BreakException ex){
 				Logger.getGlobal().log(Level.FINEST,null,ex);
 			}
@@ -65,6 +66,6 @@ public class EventManager{
 		}
 	}
 	static{
-		Runtime.getRuntime().addShutdownHook(new Thread(()->fire(SHUTDOWN)));
+		Runtime.getRuntime().addShutdownHook(new Thread(()->fire(SHUTDOWN,null)));
 	}
 }

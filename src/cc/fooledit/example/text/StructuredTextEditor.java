@@ -95,6 +95,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("select-to-file-begin",(area)->area.getArea().start(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("deselect",(area)->area.getArea().deselect());
 		addCommand("reverse-selection",(area)->area.reverseSelection());
+		addCommand("next-selection",(area)->area.nextSelection());
+		addCommand("previous-selection",(area)->area.previousSelection());
 
 		addCommand("to-lowercase",(area)->area.transform(String::toLowerCase));
 		addCommand("to-uppercase",(area)->area.transform(String::toUpperCase));
@@ -124,8 +126,23 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("current-column",Collections.emptyList(),(args,area)->{
 				return ScmInteger.valueOf(area.getArea().getCaretColumn());
 		});
-		addCommand("current-position",Collections.emptyList(),(args,area)->{
+		addCommand("current-caret",Collections.emptyList(),(args,area)->{
 				return ScmInteger.valueOf(area.getArea().getCaretPosition());
+		});
+		addCommand("current-anchor",Collections.emptyList(),(args,area)->{
+				return ScmInteger.valueOf(area.getArea().getAnchor());
+		});
+		addCommand("->position",Arrays.asList("line","column"),(args,area)->{
+				return ScmInteger.valueOf(area.getArea().getAbsolutePosition(SchemeConverter.toInteger(ScmList.first(args)),SchemeConverter.toInteger(ScmList.second(args))));
+		});
+		addCommand("length",Collections.emptyList(),(args,area)->{
+				return ScmInteger.valueOf(area.getArea().getLength());
+		});
+		addCommand("text",Collections.emptyList(),(args,area)->{
+				int argc=ScmList.getLength(args);
+				int start=argc>=1?SchemeConverter.toInteger(ScmList.first(args)):0;
+				int end=argc>=2?SchemeConverter.toInteger(ScmList.second(args)):area.getArea().getLength();
+				return new ScmString(area.getArea().getText(start,end));
 		});
 		clips.registryComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry);
 		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
