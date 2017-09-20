@@ -377,6 +377,7 @@ toggle-rect-select.shortcut=A+BACK_SLASH
 	- 大纲视图
 	- 语言检测
 	- 语言嵌套
+	- 大文件支持
 
 ## 其它特性
 

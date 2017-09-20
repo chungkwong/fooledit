@@ -16,6 +16,7 @@
  */
 package cc.fooledit.model;
 import cc.fooledit.api.*;
+import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.logging.*;
@@ -27,6 +28,7 @@ public class Command{
 	private final String name;
 	private final ThrowableFunction<ScmPairOrNil,ScmObject> action;
 	private final List<String> parameters;
+	private static Pair<Command,ScmPairOrNil> lastCommand=new Pair<>(null,null);
 	public Command(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
 		this(name,Collections.emptyList(),action);
 	}
@@ -47,6 +49,16 @@ public class Command{
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,name+MessageRegistry.getString("FAILED"),ex);
 			return null;
+		}finally{
+			if(!(name.equals("command")||name.equals("restore")))//FIXME
+				lastCommand=new Pair<>(this,t);
 		}
+	}
+	public static ScmObject repeat(){
+		System.out.println(lastCommand.getKey().name);
+		if(lastCommand!=null)
+			return lastCommand.getKey().accept(lastCommand.getValue());
+		else
+			return ScmNil.NIL;
 	}
 }

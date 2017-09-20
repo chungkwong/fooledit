@@ -128,6 +128,7 @@ public class Main extends Application{
 		globalCommandRegistry.put("stop-record",()->{recording=false;macro.remove(0);macro.remove(macro.size()-1);});
 		globalCommandRegistry.put("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
 		globalCommandRegistry.put("restore",()->getMiniBuffer().restore());
+		globalCommandRegistry.put("repeat",()->Command.repeat());
 		globalCommandRegistry.put("map-mime-to-type",(o)->{
 			DataObjectTypeRegistry.registerMime(((ScmString)ScmList.first(o)).getValue(),((ScmString)ScmList.second(o)).getValue());
 			return null;

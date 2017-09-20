@@ -61,6 +61,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("delete-next-word",(area)->area.deleteNextWord());
 		addCommand("delete-previous-word",(area)->area.deletePreviousWord());
 		addCommand("delete-line",(area)->area.deleteLine());
+		addCommand("clear",(area)->area.getArea().clear());
 		addCommand("new-line",(area)->area.newline());
 		addCommand("new-line-no-indent",(area)->area.getArea().replaceSelection("\n"));
 		addCommand("indent",(area)->area.getArea().replaceSelection("\t"));
