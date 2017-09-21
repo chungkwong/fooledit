@@ -38,7 +38,7 @@ public class Command{
 		this.parameters=parameters;
 	}
 	public String getDisplayName(){
-		return name;
+		return MessageRegistry.getString(name.toUpperCase().replace('-','_'));
 	}
 	public List<String> getParameters(){
 		return parameters;
@@ -50,15 +50,17 @@ public class Command{
 			Logger.getGlobal().log(Level.SEVERE,name+MessageRegistry.getString("FAILED"),ex);
 			return null;
 		}finally{
-			if(!(name.equals("command")||name.equals("restore")))//FIXME
+			if(!(name.equals("command")||name.equals("restore")||name.equals("repeat")))
 				lastCommand=new Pair<>(this,t);
 		}
 	}
-	public static ScmObject repeat(){
-		System.out.println(lastCommand.getKey().name);
-		if(lastCommand!=null)
-			return lastCommand.getKey().accept(lastCommand.getValue());
-		else
+	public static ScmObject repeat(int times){
+		if(lastCommand!=null){
+			ScmListBuilder buf=new ScmListBuilder();
+			for(int i=0;i<times;i++)
+				buf.add(lastCommand.getKey().accept(lastCommand.getValue()));
+			return buf.toList();
+		}else
 			return ScmNil.NIL;
 	}
 }

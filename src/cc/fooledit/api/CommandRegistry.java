@@ -33,7 +33,8 @@ public class CommandRegistry extends HashMap<String,Command>{
 		});
 	}
 	public void put(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
-		put(name,new Command(MessageRegistry.getString(name.toUpperCase().replace('-','_')),action));
+		put(name,new Command(name,action));
+		//System.err.println(new Command(name,action).getDisplayName());
 	}
 	public void putOnDemand(String name,Supplier<Command> supplier){
 		put(name,(t)->{

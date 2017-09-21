@@ -249,6 +249,9 @@ public class CodeEditor extends BorderPane{
 	public void transform(Function<String,String> transformer){
 		area.replaceSelection(transformer.apply(area.getSelectedText()));
 	}
+	public void  insertText(String text){
+
+	}
 	private void update(PlainTextChange e){
 		if(markers.isEmpty()&&selections.isEmpty())
 			return;
