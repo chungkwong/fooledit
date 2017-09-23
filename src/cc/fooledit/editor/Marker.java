@@ -22,8 +22,8 @@ import java.util.*;
  */
 public class Marker implements Comparable<Marker>{
 	private int offset;
-	private String tag;
-	public Marker(int offset,String tag){
+	private Object tag;
+	public Marker(int offset,Object tag){
 		this.offset=offset;
 		this.tag=tag;
 	}
@@ -33,7 +33,7 @@ public class Marker implements Comparable<Marker>{
 	public int getOffset(){
 		return offset;
 	}
-	public String getTag(){
+	public Object getTag(){
 		return tag;
 	}
 	@Override
