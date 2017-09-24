@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor;
+package cc.fooledit.example.text;
 import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.control.*;
-import cc.fooledit.editor.PopupHint;
+import cc.fooledit.example.text.PopupHint;
 import cc.fooledit.util.*;
 import java.util.logging.*;
 import java.util.stream.*;

@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor;
+package cc.fooledit.example.text;
 import cc.fooledit.control.*;
-import cc.fooledit.editor.LineNumberFactory;
 import cc.fooledit.editor.parser.*;
+import cc.fooledit.example.text.LineNumberFactory;
 import cc.fooledit.util.*;
 import java.text.*;
 import java.util.*;
@@ -113,11 +113,21 @@ public class CodeEditor extends BorderPane{
 			selections.add(createSelection(0,area.getLength()));
 		}
 	}
-	static Pair<Marker,Marker> createSelection(IndexRange range){
+	Pair<Marker,Marker> createSelection(IndexRange range){
 		return createSelection(range.getStart(),range.getEnd());
 	}
-	static Pair<Marker,Marker> createSelection(int start,int end){
-		return new Pair<>(new Marker(start,null),new Marker(end,null));
+	Pair<Marker,Marker> createSelection(int start,int end){
+		Marker startMarker=createMarker(start);
+		Marker endMarker=createMarker(end);
+		Pair<Marker,Marker> selection=new Pair<>(startMarker,endMarker);
+		startMarker.setTag(selection);
+		endMarker.setTag(selection);
+		return selection;
+	}
+	Marker createMarker(int pos){
+		Marker marker=new Marker(pos,null);
+		markers.add(marker);
+		return marker;
 	}
 	public int find(String target){
 		String text=area.getText();
@@ -277,11 +287,12 @@ public class CodeEditor extends BorderPane{
 			return;
 		int oldPos;
 		int newPos;
+
 		switch(e.getType()){
 			case DELETION:
 				oldPos=e.getRemovalEnd();
 				newPos=e.getPosition();
-				markers.subSet(new Marker(e.getPosition(),null),new Marker(e.getRemovalEnd(),null)).clear();
+				unmark(e.getPosition(),e.getRemovalEnd());
 //				selections.removeIf((range)->range.getStart()<=e.getRemovalEnd()&&e.getPosition()<=range.getEnd());
 				break;
 			case INSERTION:
@@ -291,7 +302,7 @@ public class CodeEditor extends BorderPane{
 			case REPLACEMENT:
 				oldPos=e.getRemovalEnd();
 				newPos=e.getInsertionEnd();
-				markers.subSet(new Marker(e.getPosition(),null),new Marker(e.getRemovalEnd(),null)).clear();
+				unmark(e.getPosition(),e.getRemovalEnd());
 //				selections.removeIf((range)->range.getStart()<=e.getRemovalEnd()&&e.getPosition()<=range.getEnd());
 				break;
 			default:
@@ -315,6 +326,12 @@ public class CodeEditor extends BorderPane{
 	}
 	public void mark(int offset,String tag){
 		markers.add(new Marker(offset,tag));
+	}
+	public void unmark(int start,int end){
+		SortedSet<Marker> subSet=markers.subSet(new Marker(start,null),new Marker(end,null));
+		subSet.forEach((mark)->mark.setTag(null));
+		selections.removeIf((range)->range.getKey().getTag()==null||range.getValue().getTag()==null);
+		subSet.clear();
 	}
 	public TreeSet<Marker> getMarkers(){
 		return markers;

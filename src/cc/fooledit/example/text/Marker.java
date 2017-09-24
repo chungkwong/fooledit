@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor;
+package cc.fooledit.example.text;
 import java.util.*;
 /**
  *
@@ -35,6 +35,9 @@ public class Marker implements Comparable<Marker>{
 	}
 	public Object getTag(){
 		return tag;
+	}
+	public void setTag(Object tag){
+		this.tag=tag;
 	}
 	@Override
 	public boolean equals(Object obj){

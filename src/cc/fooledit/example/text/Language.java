@@ -17,7 +17,6 @@
 package cc.fooledit.example.text;
 import cc.fooledit.*;
 import cc.fooledit.api.*;
-import cc.fooledit.editor.*;
 import cc.fooledit.editor.lex.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.json.*;

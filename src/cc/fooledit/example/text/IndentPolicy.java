@@ -14,11 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor;
+package cc.fooledit.example.text;
+import org.fxmisc.richtext.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface Highlighter{
-	void highlight(CodeEditor area);
+public interface IndentPolicy{
+	String apply(CodeArea area,int line);
+	public static final IndentPolicy NONE=(area,line)->"";
+	public static final IndentPolicy AS_PREVIOUS=(area,line)->line==0?"":area.getText(line-1).replaceFirst("\\S.*","");
 }
