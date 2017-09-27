@@ -87,14 +87,13 @@ public class CodeEditor extends BorderPane{
 					SelectionHighlighter.INSTANCE.highlight(CodeEditor.this);
 			}
 		});
-
 		area.textProperty().addListener((e,o,n)->task.summit(n));
 		highlighters.add(lex);
 		highlighters.add(SelectionHighlighter.INSTANCE);
 		setCenter(new VirtualizedScrollPane(area));
 	}
 	public void reverseSelection(){
-		FXCollections.sort(selections,(x,y)->Integer.compare(x.getKey().getOffset(),y.getKey().getOffset()));
+		sortSelection();
 		Iterator<Pair<Marker,Marker>> iter=selections.iterator();
 		if(iter.hasNext()){
 			List<Pair<Marker,Marker>> reversed=new ArrayList<>(selections.size()+1);
@@ -112,6 +111,9 @@ public class CodeEditor extends BorderPane{
 		}else{
 			selections.add(createSelection(0,area.getLength()));
 		}
+	}
+	private void sortSelection(){
+		FXCollections.sort(selections,(x,y)->Integer.compare(x.getKey().getOffset(),y.getKey().getOffset()));
 	}
 	Pair<Marker,Marker> createSelection(IndexRange range){
 		return createSelection(range.getStart(),range.getEnd());
@@ -282,12 +284,12 @@ public class CodeEditor extends BorderPane{
 	public void  insertText(String text){
 
 	}
+	private boolean changing=false;
 	private void update(PlainTextChange e){
-		if(markers.isEmpty()&&selections.isEmpty())
+		if(changing||markers.isEmpty())
 			return;
 		int oldPos;
 		int newPos;
-
 		switch(e.getType()){
 			case DELETION:
 				oldPos=e.getRemovalEnd();
@@ -309,7 +311,31 @@ public class CodeEditor extends BorderPane{
 				throw new RuntimeException();
 		}
 		int diff=newPos-oldPos;
-		if(!markers.isEmpty())
+		Optional<Pair<Marker,Marker>> selection=selections.stream().
+				filter((s)->s.getKey().getOffset()<=e.getPosition()&&s.getValue().getOffset()>=e.getRemovalEnd()).findAny();
+		if(selection.isPresent()){
+			changing=true;
+			String replacement=area.getText(selection.get().getKey().getOffset(),e.getPosition())
+					+e.getInserted()
+					+area.getText(e.getRemovalEnd()+diff,selection.get().getValue().getOffset()+diff);
+			diff=0;
+			for(Marker marker:markers){
+				marker.setOffset(marker.getOffset()+diff);
+				if(marker.getTag()instanceof Pair&&((Pair<Marker,Marker>)marker.getTag()).getKey()==marker){
+					int start=marker.getOffset();
+					int end=((Pair<Marker,Marker>)marker.getTag()).getValue().getOffset()+diff;
+					if(marker.getTag()!=selection.get()){
+						area.replaceText(start,end,replacement);
+						diff+=replacement.length()-(end-start);
+					}else{
+						int caret=e.getInsertionEnd()+diff;
+						Platform.runLater(()->area.selectRange(caret,caret));
+						diff+=newPos-oldPos;
+					}
+				}
+			}
+			changing=false;
+		}else if(!markers.isEmpty())
 			if(diff<0){
 				Marker marker=markers.ceiling(new Marker(oldPos,null));
 				while(marker!=null){

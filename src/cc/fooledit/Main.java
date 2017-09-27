@@ -374,10 +374,7 @@ public class Main extends Application{
 					if(code.equals(next)){
 						e.consume();
 						curr=null;
-						Command command=getCommandRegistry().get(commandName);
-						getNotifier().notifyStarted(command.getDisplayName());
-						command.accept(ScmNil.NIL);
-						getNotifier().notifyFinished(command.getDisplayName());
+						input.executeCommand(getCommandRegistry().get(commandName));
 						ignore=true;
 					}else if(next!=null&&next.startsWith(code+' ')){
 						e.consume();

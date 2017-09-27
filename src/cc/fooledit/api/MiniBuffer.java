@@ -60,15 +60,7 @@ public class MiniBuffer extends BorderPane{
 		input.setOnAction((e)->{
 			Command command=main.getCommandRegistry().get(input.getText());
 			if(command!=null){
-				if(command.getParameters().isEmpty()){
-					main.getNotifier().notify(MessageRegistry.getString("EXECUTING")+command.getDisplayName());
-					ScmObject obj=main.getCommandRegistry().get(input.getText()).accept(ScmNil.NIL);
-					if(obj!=null)
-						main.getNotifier().notify(obj.toExternalRepresentation());
-					focusCurrentNode();
-				}else{
-					executeCommand(command,new ArrayList<>(),command.getParameters());
-				}
+				executeCommand(command);
 			}else{
 				try{
 					main.getNotifier().notify(Objects.toString(main.getScriptAPI().eval(input.getText())));
@@ -85,9 +77,17 @@ public class MiniBuffer extends BorderPane{
 		if(curr!=null)
 			curr.requestFocus();
 	}
+	public void executeCommand(Command command){
+		executeCommand(command,new ArrayList<>(),command.getParameters());
+	}
 	private void executeCommand(Command command,List<ScmString> collected,List<String> missing){
 		if(missing.isEmpty()){
-			command.accept(ScmList.toList(collected));
+			main.getNotifier().notifyStarted(command.getDisplayName());
+			ScmObject obj=command.accept(ScmList.toList(collected));
+			if(obj!=null)
+				main.getNotifier().notify(obj.toExternalRepresentation());
+			else
+				main.getNotifier().notifyFinished(command.getDisplayName());
 			restore();
 		}else
 			setMode((p)->{
