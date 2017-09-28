@@ -40,6 +40,9 @@ public class Command{
 	public String getDisplayName(){
 		return MessageRegistry.getString(name.toUpperCase().replace('-','_'));
 	}
+	public String getName(){
+		return name;
+	}
 	public List<String> getParameters(){
 		return parameters;
 	}

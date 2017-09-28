@@ -148,11 +148,22 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
 				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList())),true));
 		addCommand("highlight",(area)->area.selections().add(area.createSelection(area.getArea().getSelection())));
+		addCommand("unhighlight",(area)->area.selections().clear());
 		addCommand("find-string",Collections.singletonList("target"),(args,area)->{
 				return ScmInteger.valueOf(area.find(SchemeConverter.toString(ScmList.first(args))));
 		});
 		addCommand("find-regex",Collections.singletonList("target"),(args,area)->{
 				return ScmInteger.valueOf(area.findRegex(SchemeConverter.toString(ScmList.first(args))));
+		});
+		addCommand("replace-string",Collections.singletonList("replacement"),(args,area)->{
+				String replacement=SchemeConverter.toString(ScmList.first(args));
+				area.replace((t)->replacement);
+				return null;
+		});
+		addCommand("replace",Collections.singletonList("function"),(args,area)->{
+				ScmProcedure function=(ScmProcedure)(ScmList.first(args));
+				area.replace((t)->((ScmString)function.call(ScmList.toList(new ScmString(t)))).getValue());
+				return null;
 		});
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 
@@ -186,7 +197,14 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	@Override
 	public Object getRemark(Node node){
 		CodeEditor editor=(CodeEditor)node;
-		return Arrays.asList(editor.getArea().getAnchor(),editor.getArea().getCaretPosition());
+		List<Integer> remark=new ArrayList<>(editor.selections().size()*2+2);
+		remark.add(editor.getArea().getAnchor());
+		remark.add(editor.getArea().getCaretPosition());
+		editor.selections().forEach((range)->{
+			remark.add(range.getKey().getOffset());
+			remark.add(range.getValue().getOffset());
+		});
+		return remark;
 	}
 	@Override
 	public KeymapRegistry getKeymapRegistry(){
@@ -198,6 +216,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		if(remark instanceof List){
 			List<Number> pair=(List<Number>)remark;
 			editor.getArea().selectRange(pair.get(0).intValue(),pair.get(1).intValue());
+			for(int i=2;i<pair.size();i+=2)
+				editor.selections().add(editor.createSelection(pair.get(i).intValue(),pair.get(i+1).intValue()));
 		}
 		return editor;
 	}

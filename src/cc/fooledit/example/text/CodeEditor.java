@@ -150,6 +150,21 @@ public class CodeEditor extends BorderPane{
 		selections.setAll(results);
 		return results.size();
 	}
+	public void replace(Function<String,String> tranform){
+		changing=true;
+		int diff=0;
+		for(Marker marker:markers){
+			marker.setOffset(marker.getOffset()+diff);
+			if(marker.getTag()instanceof Pair&&((Pair<Marker,Marker>)marker.getTag()).getKey()==marker){
+				int start=marker.getOffset();
+				int end=((Pair<Marker,Marker>)marker.getTag()).getValue().getOffset()+diff;
+				String replacement=tranform.apply(area.getText(start,end));
+				area.replaceText(start,end,replacement);
+				diff+=replacement.length()-(end-start);
+			}
+		}
+		changing=false;
+	}
 	@Override
 	public void requestFocus(){
 		super.requestFocus();
@@ -280,9 +295,6 @@ public class CodeEditor extends BorderPane{
 	}
 	public void transform(Function<String,String> transformer){
 		area.replaceSelection(transformer.apply(area.getSelectedText()));
-	}
-	public void  insertText(String text){
-
 	}
 	private boolean changing=false;
 	private void update(PlainTextChange e){

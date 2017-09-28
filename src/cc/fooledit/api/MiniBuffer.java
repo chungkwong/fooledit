@@ -88,7 +88,8 @@ public class MiniBuffer extends BorderPane{
 				main.getNotifier().notify(obj.toExternalRepresentation());
 			else
 				main.getNotifier().notifyFinished(command.getDisplayName());
-			restore();
+			if(!command.getName().equals("command"))
+				restore();
 		}else
 			setMode((p)->{
 				collected.add(new ScmString(p));
