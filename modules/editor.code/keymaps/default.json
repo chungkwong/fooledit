@@ -61,6 +61,7 @@
 	"Find":"find-string",
 	"C-S-F":"find-regex",
 	"S-Find":"find-regex",
+	"C-H":"replace-string",
 	"F3":"start-record",
 	"F4":"stop-record",
 	"F5":"replay",

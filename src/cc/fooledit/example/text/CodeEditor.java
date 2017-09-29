@@ -296,6 +296,10 @@ public class CodeEditor extends BorderPane{
 	public void transform(Function<String,String> transformer){
 		area.replaceSelection(transformer.apply(area.getSelectedText()));
 	}
+	public void unhighlight(){
+		selections.clear();
+		SelectionHighlighter.INSTANCE.highlight(this);
+	}
 	private boolean changing=false;
 	private void update(PlainTextChange e){
 		if(changing||markers.isEmpty())

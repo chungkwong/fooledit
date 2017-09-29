@@ -148,7 +148,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
 				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList())),true));
 		addCommand("highlight",(area)->area.selections().add(area.createSelection(area.getArea().getSelection())));
-		addCommand("unhighlight",(area)->area.selections().clear());
+		addCommand("unhighlight",(area)->area.unhighlight());
 		addCommand("find-string",Collections.singletonList("target"),(args,area)->{
 				return ScmInteger.valueOf(area.find(SchemeConverter.toString(ScmList.first(args))));
 		});
