@@ -70,7 +70,7 @@ public class ReversedList<T> implements List<T>{
 		Iterator<T> iter=iterator();
 		while(iter.hasNext()){
 			T next=iter.next();
-			if(next.equals(o)){
+			if(Objects.equals(next,o)){
 				iter.remove();
 				return true;
 			}

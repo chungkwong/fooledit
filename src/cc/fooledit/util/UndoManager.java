@@ -22,12 +22,39 @@ import java.util.*;
  */
 public class UndoManager{
 	private final LinkedList<UndoableAction> actions=new LinkedList<>();
+	private int curr=0;
 	public UndoManager(){
-	}
-	public void execute(UndoableAction action){
 
 	}
-	public void undo(){
-
+	public void record(UndoableAction action){
+		actions.add(action);
+		curr=actions.size();
+	}
+	public int getAllowedUndoCount(){
+		return curr;
+	}
+	public void undo(int count){
+		UndoableAction action;
+		if(count==1){
+			action=actions.get(curr-1);
+		}else{
+			action=UndoableAction.compose(actions.subList(curr-count,curr));
+		}
+		action.invert();
+		actions.add(action.inverse());
+		curr-=count;
+	}
+	public int getAllowedRedoCount(){
+		return actions.size()-curr;
+	}
+	public void redo(int count){
+		UndoableAction action;
+		if(count==1){
+			action=actions.get(curr);
+		}else{
+			action=UndoableAction.compose(actions.subList(curr,curr+count));
+		}
+		actions.add(action);
+		curr+=count;
 	}
 }

@@ -37,10 +37,13 @@ public class UndoableAction{
 		return new UndoableAction(backward,forward);
 	}
 	public static UndoableAction compose(List<UndoableAction> actions){
-		return new UndoableAction(()->actions.forEach((a)->a.execute()),()->{
-			for(ListIterator<UndoableAction> iter=actions.listIterator(actions.size());iter.hasPrevious();){
-				iter.previous().invert();
-			}
-		});
+		if(actions.size()==1){
+			return actions.get(0);
+		}else
+			return new UndoableAction(()->actions.forEach((a)->a.execute()),()->{
+				for(ListIterator<UndoableAction> iter=actions.listIterator(actions.size());iter.hasPrevious();){
+					iter.previous().invert();
+				}
+			});
 	}
 }

@@ -48,11 +48,22 @@ public class SubList<T> implements List<T>{
 	}
 	@Override
 	public Object[] toArray(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return toArray(new Object[size()]);
 	}
 	@Override
-	public <T> T[] toArray(T[] a){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public <S> S[] toArray(S[] a){
+		if(a.length>=size()){
+			int i=0;
+			Iterator<T> iter=iterator();
+			while(iter.hasNext()){
+				a[i++]=(S)iter.next();
+			}
+			for(;i<a.length;i++)
+				a[i]=null;
+			return  a;
+		}else{
+			return (S[])toArray();
+		}
 	}
 	@Override
 	public boolean add(T e){
@@ -61,27 +72,50 @@ public class SubList<T> implements List<T>{
 	}
 	@Override
 	public boolean remove(Object o){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		Iterator<T> iter=iterator();
+		while(iter.hasNext())
+			if(Objects.equals(o,iter.next())){
+				iter.remove();
+				return true;
+			}
+		return false;
 	}
 	@Override
 	public boolean containsAll(Collection<?> c){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return c.stream().allMatch((e)->contains(e));
 	}
 	@Override
 	public boolean addAll(Collection<? extends T> c){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return addAll(size(),c);
 	}
 	@Override
 	public boolean addAll(int index,Collection<? extends T> c){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		ListIterator<T> iter=listIterator(index);
+		for(T e:c)
+			iter.add(e);
+		return !c.isEmpty();
 	}
 	@Override
 	public boolean removeAll(Collection<?> c){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		Iterator<T> iter=iterator();
+		boolean changed=false;
+		while(iter.hasNext())
+			if(c.contains(iter.next())){
+				iter.remove();
+				changed=true;
+			}
+		return changed;
 	}
 	@Override
 	public boolean retainAll(Collection<?> c){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		Iterator<T> iter=iterator();
+		boolean changed=false;
+		while(iter.hasNext())
+			if(!c.contains(iter.next())){
+				iter.remove();
+				changed=true;
+			}
+		return changed;
 	}
 	@Override
 	public void clear(){
