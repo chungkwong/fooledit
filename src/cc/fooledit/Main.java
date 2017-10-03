@@ -115,9 +115,9 @@ public class Main extends Application{
 		globalCommandRegistry.put("maximize-frame",()->stage.setMaximized(true));
 		globalCommandRegistry.put("iconify-frame",()->stage.setIconified(true));
 		globalCommandRegistry.put("always-on-top-frame",()->stage.setAlwaysOnTop(true));
-		globalCommandRegistry.put("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
-		globalCommandRegistry.put("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
-		globalCommandRegistry.put("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentWorkSheet().getDataEditor()));
+		globalCommandRegistry.put("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
+		globalCommandRegistry.put("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
+		globalCommandRegistry.put("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		globalCommandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
 		globalCommandRegistry.put("file-system",()->addAndShow(new FileSystemData(null),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"File System")));
 		globalCommandRegistry.put("command",()->input.requestFocus());
@@ -149,7 +149,7 @@ public class Main extends Application{
 			DataObject curr=getCurrentDataObject();
 			DataObjectTypeRegistry.getDataEditors(curr.getClass()).forEach((editor)->{
 				MenuItem item=new MenuItem(editor.getName());
-				item.setOnAction((e)->getCurrentWorkSheet().keepOnly(curr,editor));
+				item.setOnAction((e)->getCurrentWorkSheet().keepOnly(curr,editor,null));
 				l.add(item);
 			});
 			l.add(new SeparatorMenuItem());
@@ -197,13 +197,19 @@ public class Main extends Application{
 		showDefault(data);
 	}
 	private static void showDefault(DataObject data){
-		getCurrentWorkSheet().keepOnly(data,getDefaultEditor(data));
+		getCurrentWorkSheet().keepOnly(data,getDefaultEditor(data),null);
 	}
 	public static DataEditor getDefaultEditor(DataObject data){
 		return DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0);
 	}
 	public static DataObject getCurrentDataObject(){
 		return getCurrentWorkSheet().getDataObject();
+	}
+	public static DataEditor getCurrentDataEditor(){
+		return getCurrentWorkSheet().getDataEditor();
+	}
+	public static Object getCurrentRemark(){
+		return getCurrentDataEditor().getRemark(currentNode);
 	}
 	public Node getCurrentNode(){
 		return currentNode;

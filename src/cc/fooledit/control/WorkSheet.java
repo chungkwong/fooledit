@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
 import cc.fooledit.util.*;
@@ -47,11 +47,11 @@ public class WorkSheet extends BorderPane{
 		super.requestFocus();
 		getCenter().requestFocus();
 	}
-	public void splitVertically(DataObject data,DataEditor editor){
-		split(pack(data,editor),Orientation.VERTICAL);
+	public void splitVertically(DataObject data,DataEditor editor,Object remark){
+		split(pack(data,editor,remark),Orientation.VERTICAL);
 	}
-	public void splitHorizontally(DataObject data,DataEditor editor){
-		split(pack(data,editor),Orientation.HORIZONTAL);
+	public void splitHorizontally(DataObject data,DataEditor editor,Object remark){
+		split(pack(data,editor,remark),Orientation.HORIZONTAL);
 	}
 	private void split(Node second,Orientation orientation){
 		Node first=getCenter();
@@ -76,13 +76,8 @@ public class WorkSheet extends BorderPane{
 		node.setUserData(new Pair<>(data,editor));
 		return node;
 	}
-	private static Node pack(DataObject data,DataEditor editor){
-		Node node=editor.edit(data);
-		node.setUserData(new Pair<>(data,editor));
-		return node;
-	}
-	public void keepOnly(DataObject data,DataEditor editor){
-		Node node=pack(data,editor);
+	public void keepOnly(DataObject data,DataEditor editor,Object remark){
+		Node node=pack(data,editor,remark);
 		setCenter(node);
 		node.requestFocus();
 	}

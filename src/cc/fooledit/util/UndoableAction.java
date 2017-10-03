@@ -16,6 +16,7 @@
  */
 package cc.fooledit.util;
 import java.util.*;
+import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -45,5 +46,9 @@ public class UndoableAction{
 					iter.previous().invert();
 				}
 			});
+	}
+	public static <T> UndoableAction executeBackupAction(Runnable forward,Supplier<T> backup,Consumer<T> recover){
+		T status=backup.get();
+		return new UndoableAction(forward,()->recover.accept(status));
 	}
 }

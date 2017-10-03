@@ -83,6 +83,8 @@ public class CodeEditor extends BorderPane{
 			@Override
 			public void onChanged(ListChangeListener.Change<? extends Pair<Marker,Marker>> c){
 				c.next();
+				System.out.println();
+				System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
 				if(c.wasAdded())
 					SelectionHighlighter.INSTANCE.highlight(CodeEditor.this);
 			}
