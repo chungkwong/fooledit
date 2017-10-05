@@ -19,6 +19,7 @@ import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.control.*;
 import cc.fooledit.editor.lex.*;
+import cc.fooledit.editor.parser.*;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
 import cc.fooledit.util.*;
@@ -165,6 +166,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				area.replace((t)->((ScmString)function.call(ScmList.toList(new ScmString(t)))).getValue());
 				return null;
 		});
+		addCommand("syntax-tree",Collections.emptyList(),(args,area)->{
+				return new ScmJavaObject(area.syntaxTree());
+		});
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 
 		try{
@@ -226,7 +230,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		MetaLexer lex=null;
 		Language language=languages.get(DataObjectRegistry.getMIME(data));
 		Highlighter highlighter=language!=null?language.getTokenHighlighter():null;
-		CodeEditor codeEditor=new CodeEditor(null,highlighter);
+		ParserBuilder parserBuilder=language!=null?language.getParserBuilder():null;
+		CodeEditor codeEditor=new CodeEditor(parserBuilder,highlighter);
 		codeEditor.textProperty().bindBidirectional(data.getText());
 		return codeEditor;
 	}

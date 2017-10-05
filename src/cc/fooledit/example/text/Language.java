@@ -18,6 +18,7 @@ package cc.fooledit.example.text;
 import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.editor.lex.*;
+import cc.fooledit.editor.parser.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
@@ -25,7 +26,6 @@ import java.net.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
-import org.antlr.v4.runtime.*;
 import org.antlr.v4.tool.*;
 /**
  *
@@ -35,17 +35,24 @@ public class Language{
 	private static final String NAME="name";
 	private static final String MIME="mimes";
 	private static final String HIGHLIGHTER="highlighter";
+	private static final String PARSER="parser";
 	private static final String SUPERTYPE="supertype";
+	private static final String RULE="rule";
 	private final String name;
 	private final String[] mimeTypes;
 	private final Cache<Highlighter> highlighter;
-	public Language(String name,String[] mimeTypes,Supplier<Highlighter> highlighter){
+	private final Cache<ParserBuilder> parser;
+	public Language(String name,String[] mimeTypes,Supplier<Highlighter> highlighter,Supplier<ParserBuilder> parser){
 		this.name=name;
 		this.mimeTypes=mimeTypes;
 		this.highlighter=new Cache<>(highlighter);
+		this.parser=new Cache<>(parser);
 	}
 	public Highlighter getTokenHighlighter(){
 		return highlighter.get();
+	}
+	public ParserBuilder getParserBuilder(){
+		return parser.get();
 	}
 	public String getName(){
 		return name;
@@ -57,6 +64,7 @@ public class Language{
 		String name=(String)obj.get(NAME);
 		String[] mime=((List<String>)obj.get(MIME)).toArray(new String[0]);
 		Supplier<Highlighter> highlighter;
+		Supplier<ParserBuilder> parser=()->null;
 		String lexFileName=(String)obj.get(HIGHLIGHTER);
 		if(lexFileName.endsWith(".json")){
 			File lex=new File(Main.getDataPath(),lexFileName);
@@ -85,13 +93,9 @@ public class Language{
 					return new AntlrHighlighter(lexer,superType);
 				};
 			}else{
-				int i=lexFileName.indexOf('!');
-				String jar=lexFileName.substring(0,i);
-				String cls=lexFileName.substring(i+1);
 				highlighter=()->{
 					try{
-						LexerBuilder lexer=LexerBuilder.wrap((Class<Lexer>)new URLClassLoader(new URL[]{new File(Main.getDataPath(),jar).toURI().toURL()}).loadClass(cls));
-						return new AntlrHighlighter(lexer,superType);
+						return new AntlrHighlighter(LexerBuilder.wrap(loadClass(lexFileName)),superType);
 					}catch(MalformedURLException|ClassNotFoundException ex){
 						Logger.getGlobal().log(Level.SEVERE,null,ex);
 						return null;
@@ -99,6 +103,31 @@ public class Language{
 				};
 			}
 		}
-		return new Language(name,mime,highlighter);
+		String parserFileName=(String)obj.get(PARSER);
+		String rule=(String)obj.get(RULE);
+		if(rule!=null&&parserFileName!=null){
+			File p=new File(Main.getDataPath(),parserFileName);
+			if(parserFileName.endsWith(".g4")){
+				parser=()->{
+					return ParserBuilder.wrap(Grammar.load(p.getAbsolutePath()),rule);
+				};
+			}else{
+				parser=()->{
+					try{
+						return ParserBuilder.wrap(loadClass(parserFileName),rule);
+					}catch(MalformedURLException|ClassNotFoundException ex){
+						Logger.getGlobal().log(Level.SEVERE,null,ex);
+						return null;
+					}
+				};
+			}
+		}
+		return new Language(name,mime,highlighter,parser);
+	}
+	private static <T> Class<T> loadClass(String location) throws ClassNotFoundException, MalformedURLException{
+		int i=location.indexOf('!');
+		String jar=location.substring(0,i);
+		String cls=location.substring(i+1);
+		return (Class<T>)new URLClassLoader(new URL[]{new File(Main.getDataPath(),jar).toURI().toURL()}).loadClass(cls);
 	}
 }

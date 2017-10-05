@@ -46,23 +46,23 @@ import org.reactfx.value.*;
  */
 public class CodeEditor extends BorderPane{
 	private final CodeArea area=new CodeArea();
-	//private final SyntaxSupport tree;
+	private final ParserBuilder parserBuilder;
 	private final LineNumberFactory header=new LineNumberFactory(area);
 	private final IndentPolicy indentPolicy;
 	private final StringProperty textProperty=new PlainTextProperty();
 	private final TreeSet<Marker> markers=new TreeSet<>();
 	private final ObservableList<Pair<Marker,Marker>> selections=FXCollections.observableArrayList();
 	private final ObservableList<Highlighter> highlighters=FXCollections.observableArrayList();
-	public CodeEditor(Parser parser,Highlighter lex){
+	public CodeEditor(ParserBuilder parserBuilder,Highlighter lex){
+		this.parserBuilder=parserBuilder;
 		if(lex!=null)
 			lex.highlight(this);
 		//tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
 		area.currentParagraphProperty().addListener((e,o,n)->area.showParagraphInViewport(n));
 		area.setInputMethodRequests(new InputMethodRequestsObject());
 		area.setOnInputMethodTextChanged((e)->{
-			if(e.getCommitted()!=""){
+			if(!e.getCommitted().isEmpty()){
 				area.insertText(area.getCaretPosition(),e.getCommitted());
-				System.out.println(e.getCommitted());
 			}
 		});
 		area.setParagraphGraphicFactory(header);
@@ -77,14 +77,13 @@ public class CodeEditor extends BorderPane{
 
 		area.plainTextChanges().subscribe((e)->update(e));
 		RealTimeTask<String> task=new RealTimeTask<>((text)->{
+			this.syntaxTree=null;
 			highlighters.forEach((highlighter)->highlighter.highlight(CodeEditor.this));
 		});
 		selections.addListener(new ListChangeListener<Pair<Marker,Marker>>(){
 			@Override
 			public void onChanged(ListChangeListener.Change<? extends Pair<Marker,Marker>> c){
 				c.next();
-				System.out.println();
-				System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
 				if(c.wasAdded())
 					SelectionHighlighter.INSTANCE.highlight(CodeEditor.this);
 			}
@@ -185,9 +184,12 @@ public class CodeEditor extends BorderPane{
 	void cache(List<? extends org.antlr.v4.runtime.Token> tokens){
 		this.tokens=tokens;
 	}
-	public Property<Object> syntaxTree(){
-		throw new UnsupportedOperationException();
-//return tree.syntaxTree();
+	private Object syntaxTree;
+	public Object syntaxTree(){
+		if(syntaxTree==null&&parserBuilder!=null){
+			syntaxTree=parserBuilder.parse(tokens);
+		}
+		return syntaxTree;
 	}
 	public CodeArea getArea(){
 		return area;

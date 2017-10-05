@@ -20,7 +20,7 @@
 	{"name":"haskell","highlighter":"mode.haskell/parser.jar!HaskellLexer","supertype":"mode.haskell/tokens.json","mimes":["text/x-haskell"]},
 	{"name":"java","highlighter":"mode.java/parser.jar!Java8Lexer","supertype":"mode.java/tokens.json","mimes":["text/x-java"]},
 	{"name":"javascript","highlighter":"mode.javascript/parser.jar!ECMAScriptLexer","supertype":"mode.javascript/tokens.json","mimes":["application/javascript"]},
-	{"name":"json","highlighter":"mode.json/parser.jar!JSONLexer","supertype":"mode.json/tokens.json","mimes":["application/json"]},
+	{"name":"json","highlighter":"mode.json/parser.jar!JSONLexer","supertype":"mode.json/tokens.json","parser":"mode.json/parser.jar!JSONParser","rule":"json","mimes":["application/json"]},
 	{"name":"lex","highlighter":"mode.lex/parser.jar!FlexLexer","supertype":"mode.lex/tokens.json","mimes":["text/x-lex"]},
 	{"name":"lua","highlighter":"mode.lua/parser.jar!LuaLexer","supertype":"mode.lua/tokens.json","mimes":["text/x-lua"]},
 	{"name":"m4","highlighter":"mode.m4/parser.jar!M4Lexer","supertype":"mode.m4/tokens.json","mimes":["application/x-m4"]},
