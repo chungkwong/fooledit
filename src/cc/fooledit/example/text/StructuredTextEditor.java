@@ -31,6 +31,7 @@ import java.util.function.*;
 import java.util.logging.*;
 import java.util.stream.*;
 import javafx.scene.Node;
+import org.antlr.v4.runtime.*;
 import org.fxmisc.richtext.model.*;
 /**
  *
@@ -167,7 +168,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				return null;
 		});
 		addCommand("syntax-tree",Collections.emptyList(),(args,area)->{
-				return new ScmJavaObject(area.syntaxTree());
+				OptionDialog.showDialog(new ParseTreeViewer((ParserRuleContext)area.syntaxTree()));
+				return null;
+//return new ScmJavaObject(area.syntaxTree());
 		});
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
+import javafx.scene.*;
 import javafx.scene.control.*;
 /**
  *
@@ -32,5 +33,11 @@ public class OptionDialog{
 		dialog.setTitle(title);
 		dialog.setHeaderText(prompt);
 		return dialog.showAndWait().get();
+	}
+	public static void showDialog(Node node){
+		Dialog dialog=new Dialog();
+		dialog.getDialogPane().setContent(node);
+		dialog.getDialogPane().getButtonTypes().setAll(ButtonType.CLOSE);
+		dialog.show();
 	}
 }
