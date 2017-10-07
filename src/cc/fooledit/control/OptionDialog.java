@@ -36,6 +36,7 @@ public class OptionDialog{
 	}
 	public static void showDialog(Node node){
 		Dialog dialog=new Dialog();
+		dialog.setResizable(true);
 		dialog.getDialogPane().setContent(node);
 		dialog.getDialogPane().getButtonTypes().setAll(ButtonType.CLOSE);
 		dialog.show();

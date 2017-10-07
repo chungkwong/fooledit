@@ -30,34 +30,24 @@ public class ParseTreeViewer extends TreeView{
 		setCellFactory((p)->new ParserCell());
 		setRoot(createTreeItem(context));
 	}
-	private TreeItem<ParseTree> createTreeItem(ParserRuleContext context){
-		if(context.getChildCount()>0){
-			return new LazyTreeItem<>(()->getChildren(context),context);
-		}else{
-			return new TreeItem<>(context);
-		}
-	}
-	private TreeItem<ParseTree> createTreeItem(ParseTree tree){
-		if(tree.getChildCount()>0){
+	private TreeItem<Tree> createTreeItem(Tree tree){
+		if(!(tree instanceof TerminalNode)){
 			return new LazyTreeItem<>(()->getChildren(tree),tree);
 		}else{
 			return new TreeItem<>(tree);
 		}
 	}
-	private Collection<TreeItem<ParseTree>> getChildren(ParserRuleContext context){
-		return context.children.stream().map((tree)->createTreeItem(tree)).collect(Collectors.toList());
-	}
-	private Collection<TreeItem<ParseTree>> getChildren(ParseTree tree){
+	private Collection<TreeItem<Tree>> getChildren(Tree tree){
 		return java.util.stream.IntStream.range(0,tree.getChildCount()).mapToObj((i)->createTreeItem(tree.getChild(i))).collect(Collectors.toList());
 	}
 	private static class ParserCell extends TreeCell{
 		@Override
 		protected void updateItem(Object item,boolean empty){
 			super.updateItem(item,empty);
-			if(item instanceof ParserRuleContext){
-				setText(((ParserRuleContext)item).toStringTree());
-			}else if(item instanceof ParseTree){
-				setText(((ParseTree)item).toStringTree());
+			if(item instanceof TerminalNode){
+				setText(((TerminalNode)item).getSymbol().getText());
+			}else if(item instanceof Tree){
+				setText(((Tree)item).getClass().getSimpleName());
 			}
 		}
 	}
