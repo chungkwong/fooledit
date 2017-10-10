@@ -48,6 +48,8 @@ public class ParseTreeViewer extends TreeView{
 				setText(((TerminalNode)item).getSymbol().getText());
 			}else if(item instanceof Tree){
 				setText(((Tree)item).getClass().getSimpleName());
+			}else{
+				setText("");
 			}
 		}
 	}

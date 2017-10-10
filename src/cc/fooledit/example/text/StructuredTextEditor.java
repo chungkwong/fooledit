@@ -99,6 +99,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("reverse-selection",(area)->area.reverseSelection());
 		addCommand("next-selection",(area)->area.nextSelection());
 		addCommand("previous-selection",(area)->area.previousSelection());
+		addCommand("select-node",(area)->area.selectNode());
 
 		addCommand("to-lowercase",(area)->area.transform(String::toLowerCase));
 		addCommand("to-uppercase",(area)->area.transform(String::toUpperCase));

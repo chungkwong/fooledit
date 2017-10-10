@@ -18,6 +18,7 @@ package cc.fooledit.example.text;
 import cc.fooledit.control.*;
 import cc.fooledit.editor.parser.*;
 import cc.fooledit.example.text.LineNumberFactory;
+import cc.fooledit.util.Pair;
 import cc.fooledit.util.*;
 import java.text.*;
 import java.util.*;
@@ -35,6 +36,8 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.text.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
 import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.*;
 import org.fxmisc.richtext.model.*;
@@ -190,6 +193,25 @@ public class CodeEditor extends BorderPane{
 			syntaxTree=parserBuilder.parse(tokens);
 		}
 		return syntaxTree;
+	}
+	public void selectNode(){
+		IndexRange oldselection=area.getSelection();
+		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
+		Interval newselection=node.getSourceInterval();
+		area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
+	}
+	public ParseTree getSurroundingNode(int start,int end){
+		ParseTree tree=(ParseTree)syntaxTree();
+		while(true){
+			int childCount=tree.getChildCount();
+			int index=0;
+			while(index<childCount&&tokens.get(tree.getChild(index).getSourceInterval().a).getStartIndex()<=start)
+				++index;
+			if(tokens.get(tree.getChild(index-1).getSourceInterval().b).getStopIndex()+1<end)
+				return tree;
+			else
+				tree=tree.getChild(index-1);
+		}
 	}
 	public CodeArea getArea(){
 		return area;
