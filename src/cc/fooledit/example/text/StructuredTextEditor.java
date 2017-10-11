@@ -100,6 +100,12 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("next-selection",(area)->area.nextSelection());
 		addCommand("previous-selection",(area)->area.previousSelection());
 		addCommand("select-node",(area)->area.selectNode());
+		addCommand("select-parent-node",(area)->area.selectParentNode());
+		addCommand("select-child-node",(area)->area.selectChildNode());
+		addCommand("select-next-node",(area)->area.selectNextNode());
+		addCommand("select-previous-node",(area)->area.selectPreviousNode());
+		addCommand("select-first-node",(area)->area.selectFirstNode());
+		addCommand("select-last-node",(area)->area.selectLastNode());
 
 		addCommand("to-lowercase",(area)->area.transform(String::toLowerCase));
 		addCommand("to-uppercase",(area)->area.transform(String::toUpperCase));

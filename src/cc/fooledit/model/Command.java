@@ -36,6 +36,7 @@ public class Command{
 		this.action=action;
 		this.name=name;
 		this.parameters=parameters;
+		//getDisplayName();
 	}
 	public String getDisplayName(){
 		return MessageRegistry.getString(name.toUpperCase().replace('-','_'));

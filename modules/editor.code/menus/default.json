@@ -24,7 +24,11 @@
 					{"name":"NEXT_PAGE","command":"move-to-next-page"},
 					{"name":"PREVIOUS_PAGE","command":"move-to-previous-page"},
 					{"name":"FILE_END","command":"move-to-file-end"},
-					{"name":"FILE_BEGIN","command":"move-to-file-begin"}
+					{"name":"FILE_BEGIN","command":"move-to-file-begin"},
+					{},
+					{"name":"MOVE_TO_PARAGRAPH","command":"move-to-paragraph"},
+					{"name":"MOVE_TO_COLUMN","command":"move-to-column"},
+					{"name":"MOVE_TO_POSITION","command":"move-to-position"}
 				]},
 				{"name":"SELECT_TO","children":[
 					{"name":"NEXT_CHARACTER","command":"select-to-next-character"},
@@ -46,7 +50,13 @@
 					{"name":"WORD","command":"select-word"},
 					{"name":"LINE","command":"select-line"},
 					{"name":"PARAGRAPH","command":"select-paragraph"},
-					{"name":"ALL","command":"select-all"}
+					{"name":"ALL","command":"select-all"},
+					{},
+					{"name":"SELECT_NODE","command":"select-node"},
+					{"name":"SELECT_PARENT_NODE","command":"select-parent-node"},
+					{"name":"SELECT_CHILD_NODE","command":"select-child-node"},
+					{"name":"SELECT_NEXT_NODE","command":"select-next-node"},
+					{"name":"SELECT_PREVIOUS_NODE","command":"select-previous-node"}
 				]},
 				{"name":"DESELECT","command":"deselect"},
 				{},

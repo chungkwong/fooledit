@@ -200,6 +200,78 @@ public class CodeEditor extends BorderPane{
 		Interval newselection=node.getSourceInterval();
 		area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
 	}
+	public void selectParentNode(){
+		IndexRange oldselection=area.getSelection();
+		ParseTree node=getOuterNode(getSurroundingNode(oldselection.getStart(),oldselection.getEnd()));
+		if(node!=null){
+			Interval newselection=node.getSourceInterval();
+			area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
+		}
+	}
+	public void selectChildNode(){
+		ParseTree node=getSurroundingNode(area.getSelection().getStart(),area.getSelection().getEnd());
+		Interval oldInterval=node.getSourceInterval();
+		while(node.getChildCount()>0){
+			node=node.getChild(0);
+			Interval newInterval=node.getSourceInterval();
+			if(newInterval.a!=oldInterval.a||newInterval.b!=oldInterval.b){
+				area.selectRange(tokens.get(newInterval.a).getStartIndex(),tokens.get(newInterval.b).getStopIndex()+1);
+				return;
+			}
+		}
+	}
+	public void selectPreviousNode(){
+		IndexRange oldselection=area.getSelection();
+		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
+		ParseTree parent=getOuterNode(node);
+		if(node!=null){
+			for(int i=0;i<parent.getChildCount();i++)
+				if(parent.getChild(i).getSourceInterval().equals(node.getSourceInterval())&&i>0){
+					Interval newselection=parent.getChild(i-1).getSourceInterval();
+					area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
+				}
+		}
+	}
+	public void selectNextNode(){
+		IndexRange oldselection=area.getSelection();
+		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
+		ParseTree parent=getOuterNode(node);
+		if(parent!=null){
+			for(int i=0;i<parent.getChildCount();i++)
+				if(parent.getChild(i).getSourceInterval().equals(node.getSourceInterval())&&i+1<parent.getChildCount()){
+					Interval newselection=parent.getChild(i+1).getSourceInterval();
+					area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
+				}
+		}
+	}
+	public void selectFirstNode(){
+		IndexRange oldselection=area.getSelection();
+		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
+		ParseTree parent=getOuterNode(node);
+		if(node!=null){
+			Interval newselection=parent.getChild(0).getSourceInterval();
+			area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
+		}
+	}
+	public void selectLastNode(){
+		IndexRange oldselection=area.getSelection();
+		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
+		ParseTree parent=getOuterNode(node);
+		if(node!=null){
+			Interval newselection=parent.getChild(parent.getChildCount()-1).getSourceInterval();
+			area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
+		}
+	}
+	private ParseTree getOuterNode(ParseTree node){
+		Interval oldInterval=node.getSourceInterval();
+		while(node.getParent()!=null){
+			node=node.getParent();
+			Interval newInterval=node.getSourceInterval();
+			if(newInterval.a!=oldInterval.a||newInterval.b!=oldInterval.b)
+				return node;
+		}
+		return null;
+	}
 	public ParseTree getSurroundingNode(int start,int end){
 		ParseTree tree=(ParseTree)syntaxTree();
 		while(true){
@@ -207,7 +279,7 @@ public class CodeEditor extends BorderPane{
 			int index=0;
 			while(index<childCount&&tokens.get(tree.getChild(index).getSourceInterval().a).getStartIndex()<=start)
 				++index;
-			if(tokens.get(tree.getChild(index-1).getSourceInterval().b).getStopIndex()+1<end)
+			if(index==0||tokens.get(tree.getChild(index-1).getSourceInterval().b).getStopIndex()+1<end)
 				return tree;
 			else
 				tree=tree.getChild(index-1);
