@@ -56,7 +56,9 @@
 					{"name":"SELECT_PARENT_NODE","command":"select-parent-node"},
 					{"name":"SELECT_CHILD_NODE","command":"select-child-node"},
 					{"name":"SELECT_NEXT_NODE","command":"select-next-node"},
-					{"name":"SELECT_PREVIOUS_NODE","command":"select-previous-node"}
+					{"name":"SELECT_PREVIOUS_NODE","command":"select-previous-node"},
+					{},
+					{"name":"SWAP_ANCHOR_AND_CARET","command":"swap-anchor-and-caret"}
 				]},
 				{"name":"DESELECT","command":"deselect"},
 				{},

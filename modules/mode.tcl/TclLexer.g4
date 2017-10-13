@@ -7,7 +7,7 @@ START
 mode expression;
 
 COMMENT
-    : '#' (~[\r\n\\]|'\\'(~[\r\n])|'\\'('\r''\n'?|'\n'))* ->skip
+    : '#' (~[\r\n\\]|'\\'(~[\r\n])|'\\'('\r''\n'?|'\n'))* ->channel(HIDDEN)
     ;
 
 PLAIN

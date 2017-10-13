@@ -36,6 +36,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.text.*;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import org.fxmisc.flowless.*;
@@ -354,6 +355,13 @@ public class CodeEditor extends BorderPane{
 		int to=tokens.stream().mapToInt((t)->t.getStartIndex()).filter((i)->i<from).max().orElse(0);//TODO: bsearch is better
 		area.moveTo(to,policy);
 	}
+	public void selectWord(){
+		int from=area.getCaretPosition();
+		Optional<? extends Token> token=tokens.stream().filter((t)->t.getStopIndex()>from).findFirst();
+		if(token.isPresent()){
+			area.selectRange(token.get().getStartIndex(),token.get().getStopIndex()+1);
+		}
+	}
 	public void deleteNextWord(){
 		nextWord(NavigationActions.SelectionPolicy.EXTEND);
 		area.replaceSelection("");
@@ -390,6 +398,9 @@ public class CodeEditor extends BorderPane{
 			area.deleteText(currentParagraph,0,currentParagraph+1,0);
 		else
 			area.deleteText(currentParagraph,0,currentParagraph,area.getParagraphLenth(currentParagraph));
+	}
+	public void swapAnchorAndCaret(){
+		area.selectRange(area.getCaretPosition(),area.getAnchor());
 	}
 	public void transform(Function<String,String> transformer){
 		area.replaceSelection(transformer.apply(area.getSelectedText()));

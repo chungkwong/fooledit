@@ -21,11 +21,11 @@ word
     ;
 
 quoted
-    : '{' (QUOTED|quoted)* '}'
+    : (START_QUOTE|MORE_QUOTE) (QUOTED|quoted)* LESS_QUOTE
     ;
 
 string
-    : '"' (STRING|variable|expression)* '"'
+    : START_STRING (STRING|variable|expression)* END_STRING
     ;
 
 variable
@@ -34,5 +34,5 @@ variable
     ;
 
 expression
-    : '[' program ']'
+    : (START_EXPRESSION|START_EXPRESSION_IN_INDEX|START_EXPRESSION_IN_STRING) program END_EXPRESSION
     ;

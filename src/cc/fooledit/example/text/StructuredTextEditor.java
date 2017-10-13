@@ -51,8 +51,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("cut",(area)->area.getArea().cut());
 		addCommand("copy",(area)->area.getArea().copy());
 		addCommand("paste",(area)->area.getArea().paste());
+		addCommand("swap-anchor-and-caret",(area)->area.swapAnchorAndCaret());
 		addCommand("select-all",(area)->area.getArea().selectAll());
-		addCommand("select-word",(area)->area.getArea().selectWord());
+		addCommand("select-word",(area)->area.selectWord());
 		addCommand("select-line",(area)->area.getArea().selectLine());
 		addCommand("select-paragraph",(area)->area.getArea().selectParagraph());
 		addCommand("delete-selection-or-next-character",(area)->area.delete());
