@@ -45,7 +45,8 @@ public class ParseTreeViewer extends TreeView{
 		protected void updateItem(Object item,boolean empty){
 			super.updateItem(item,empty);
 			if(item instanceof TerminalNode){
-				setText(((TerminalNode)item).getSymbol().getText());
+				Token symbol=((TerminalNode)item).getSymbol();
+				setText(symbol.getText()+':'+symbol.getTokenIndex()+':'+symbol.getType());
 			}else if(item instanceof Tree){
 				setText(((Tree)item).getClass().getSimpleName());
 			}else{

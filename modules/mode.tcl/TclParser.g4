@@ -3,9 +3,8 @@ parser grammar TclParser;
 options { tokenVocab=TclLexer; }
 
 program
-    :
-    | SEPARATOR (command SEPARATOR)* command?
-    | command (SEPARATOR command)* SEPARATOR?
+    : command (SEPARATOR+ command)* SEPARATOR*
+    | SEPARATOR+ (command SEPARATOR+)* command? 
     ;
 
 command

@@ -1,7 +1,7 @@
 lexer grammar TclLexer;
 
 START
-    : -> pushMode(expression)
+    : -> pushMode(expression),skip
     ;
 
 mode expression;
