@@ -52,3 +52,21 @@ attribute   :   Name '=' STRING ; // Our STRING is AttValue in spec
 chardata    :   TEXT | SEA_WS ;
 
 misc        :   COMMENT | PI | SEA_WS ;
+
+names       :   Name (' ' Name)* ;
+nmtokens    :   Nmtoken (' ' Nmtoken)* ;
+entityValue :   '"' (~[%&"]|peReference|reference)* '"'
+            |   '\'' (~[%&']|peReference|reference)* '\''
+            ;
+attValue    :   '"' (~[&<"]|reference)* '"'
+            |   '\'' (~[&<']|reference) '\''
+            ;
+systemLiteral
+            :   '"' (~["])* '"'
+            |   '\'' (~['])* '\''
+            ;
+pubidLiteral
+            :   '"' (pubidChar|'\'')* '"'
+            |   '\'' (pubidChar)* '\''
+            ;
+pubidChar   :   [-'()+,./:=?;!*#@$_% \r\na-zA-Z0-9];

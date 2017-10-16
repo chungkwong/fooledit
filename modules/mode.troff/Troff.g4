@@ -1,7 +1,7 @@
 grammar Troff;
 
 doc
-   : (COMMAND|COMMENT|WHITESPACE|PLAIN)*
+   : (COMMAND|WHITESPACE|PLAIN)*
    ;
 
 COMMAND
@@ -10,7 +10,7 @@ COMMAND
     ;
 
 COMMENT
-    : '\\' [#"] (~[\r\n])*
+    : '\\' [#"] (~[\r\n])*->channel(HIDDEN)
     ;
 
 WHITESPACE

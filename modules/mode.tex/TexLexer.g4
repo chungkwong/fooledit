@@ -1,16 +1,16 @@
 lexer grammar TexLexer;
 
 COMMAND: Command;
-COMMENT: Comment;
-START_INLINE: '$' ->pushMode(inline);
+COMMENT: Comment->channel(HIDDEN);
 START_DISPLAY: '$$' ->pushMode(display);
+START_INLINE: '$' ->pushMode(inline);
 PLAIN: Plain;
 OTHER: Other;
 
 mode inline;
 
 INLINE_COMMAND: Command;
-INLINE_COMMENT: Comment;
+INLINE_COMMENT: Comment->channel(HIDDEN);
 END_INLINE: '$' ->popMode;
 INLINE_PLAIN: Plain;
 INLINE_OTHER: Other;
@@ -18,7 +18,7 @@ INLINE_OTHER: Other;
 mode display;
 
 DISPLAY_COMMAND: Command;
-DISPLAY_COMMENT: Comment;
+DISPLAY_COMMENT: Comment->channel(HIDDEN);
 END_DISPLAY: '$$' ->popMode;
 DISPLAY_PLAIN: Plain;
 DISPLAY_OTHER: Other;
