@@ -30,44 +30,153 @@
 lexer grammar XMLLexer;
 
 // Default "mode": Everything OUTSIDE of a tag
-COMMENT     :   '<!--' .*? '-->' ;
-CDATA       :   '<![CDATA[' .*? ']]>' ;
+COMMENT     :   '<!--' ('-'? ~'-')* '-->' ;
+CHARDATA       :   '<![CDATA[' .*? ']]>' ;
 /** Scarf all DTD stuff, Entity Declarations like <!ENTITY ...>,
  *  and Notation Declarations <!NOTATION ...>
  */
-DTD         :   '<!' .*? '>'            -> skip ;
-EntityRef   :   '&' Name ';' ;
-CharRef     :   '&#' DIGIT+ ';'
-            |   '&#x' HEXDIGIT+ ';'
-            ;
-SEA_WS      :   (' '|'\t'|'\r'? '\n')+ ;
+EntityRef   :   ENTITY_REF;
+CharRef     :   CHAR_REF;
+PERef       :   PE_REF;
 
-OPEN        :   '<'                     -> pushMode(INSIDE) ;
-XMLDeclOpen :   '<?xml' S               -> pushMode(INSIDE) ;
-SPECIAL_OPEN:   '<?' Name               -> more, pushMode(PROC_INSTR) ;
+XMLDeclOpen :   '<?xml'                 -> pushMode(TAG) ;
+DTDDeclOpen :   '<!'                    -> pushMode(DTD) ;
+CondDeclOpen:   '<!['                   -> pushMode(DTD) ;
+OPEN        :   '<'                     -> pushMode(TAG) ;
+PI          :   '<?' NAME (S .*?)? '?>';
 
 TEXT        :   ~[<&]+ ;        // match any 16 bit char other than < and &
 
-// ----------------- Everything INSIDE of a tag ---------------------
-mode INSIDE;
+// ----------------- Everything TAG of a tag ---------------------
+mode TAG;
 
 CLOSE       :   '>'                     -> popMode ;
 SPECIAL_CLOSE:  '?>'                    -> popMode ; // close <?xml...?>
 SLASH_CLOSE :   '/>'                    -> popMode ;
 SLASH       :   '/' ;
-EQUALS      :   '=' ;
-STRING      :   '"' ~[<"]* '"'
-            |   '\'' ~[<']* '\''
+EQ          :   '=' ;
+START_QUOT_IN_TAG
+            :   '"'                     -> pushMode(QUOT_IN_TAG)
             ;
-Name        :   NameStartChar NameChar* ;
-Nmtoken     :   NameChar+ ;
-S           :   [ \t\r\n]+               -> skip ;
+START_APOS_IN_TAG
+            :   '\''                    -> pushMode(APOS_IN_TAG)
+            ;
+NameInTag   :   NAME ;
+TS          :   S;
+
+mode DTD;
+
+START_GROUP : '(';
+END_GROUP   : ')';
+START_BLOCK : '['                       -> pushMode(DTD);
+END_BLOCK   : ']'                       -> popMode;
+OPTIONAL    : '?';
+ZERO_PLUS   : '*';
+ONE_PLUS    : '+';
+PARAMETER   : '%';
+OR          : '|';
+CONCAT      : ',';
+KEY         : '#';
+DOCTYPE     : 'DOCTYPE';
+ELEMENT     : 'ELEMENT';
+EMPTY       : 'EMPTY';
+ANY         : 'ANY';
+PCDATA      : 'PCDATA';
+ATTLIST     : 'ATTLIST';
+CDATA       : 'CDATA';
+ID          : 'ID';
+IDREF       : 'IDREF';
+IDREFS      : 'IDREFS';
+ENTITY      : 'ENTITY';
+ENTITIES    : 'ENTITIES';
+NMTOKEN     : 'NMTOKEN';
+NMTOKENS    : 'NMTOKENS';
+NOTATION    : 'NOTATION';
+REQUIRED    : 'REQUIRED';
+IMPLIED     : 'IMPLIED';
+FIXED       : 'FIXED';
+INCLUDE     : 'INCLUDE';
+IGNORE      : 'IGNORE';
+SYSTEM      : 'SYSTEM';
+PUBLIC      : 'PUBLIC';
+NDATA       : 'NDATA';
+
+MORE_SECT   :   '<!['                   -> pushMode(DTD);
+END_SECT    :   ']]>'                   -> popMode;
+START_QUOT_IN_DTD
+            :   '"'                     -> pushMode(QUOT_IN_DTD)
+            ;
+START_APOS_IN_DTD
+            :   '\''                    -> pushMode(APOS_IN_DTD)
+            ;
+NameInDTD   :   NAME ;
+Nmtoken     :   NameChar+;
+DS          :   S;
+DTD_CLOSE   :   '>'                     -> popMode ;
+
+mode APOS_IN_TAG;
+
+PlainTextInApos
+            : ~[<'&]+
+            ;
+ReferenceInApos
+            : ENTITY_REF|CHAR_REF
+            ;
+EndAposInTag: '\''                      -> popMode;
+
+mode QUOT_IN_TAG;
+
+PlainTextInQuot
+            : ~[<"&]+
+            ;
+ReferenceInQuot
+            : ENTITY_REF|CHAR_REF
+            ;
+EndQuotInTag: '"'                      -> popMode;
+
+mode APOS_IN_DTD;
+
+PlainTextInAposDTD
+            : ~[<'&%]+
+            ;
+ReferenceInAposDTD
+            : ENTITY_REF|CHAR_REF|PE_REF
+            ;
+EndAposInDTD: '\''                      -> popMode;
+
+mode QUOT_IN_DTD;
+
+PlainTextInQuotDTD
+            : ~[<"&%]+
+            ;
+ReferenceInQuotDTD
+            : ENTITY_REF|CHAR_REF|PE_REF
+            ;
+EndQuotInDTD: '"'                      -> popMode;
+
+
+fragment
+ENTITY_REF  : '&' NAME ';' ;
+
+fragment
+PE_REF      : '%' NAME ';' ;
+
+fragment
+CHAR_REF     :   '&#' DIGIT+ ';'
+            |   '&#x' HEXDIGIT+ ';'
+            ;
 
 fragment
 HEXDIGIT    :   [a-fA-F0-9] ;
 
 fragment
 DIGIT       :   [0-9] ;
+
+fragment
+NAME        :   NameStartChar NameChar* ;
+fragment
+S           :   [ \t\r\n]+;
+
 
 fragment
 NameChar    :   NameStartChar
@@ -80,11 +189,5 @@ NameStartChar
             ;
             
 fragment
-Char        : [\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD\u{10000}-\u{10FFFF}]
+Char        : [\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD\u{10000}-\u{10FFFF}];
 
-
-// ----------------- Handle <? ... ?> ---------------------
-mode PROC_INSTR;
-
-PI          :   '?>'                    -> popMode ; // close <?...?>
-IGNORE      :   .                       -> more ;

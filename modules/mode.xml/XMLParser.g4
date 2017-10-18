@@ -31,42 +31,106 @@ parser grammar XMLParser;
 
 options { tokenVocab=XMLLexer; }
 
-document    :   prolog? misc* element misc*;
+document    :   prolog? element misc*;
 
-prolog      :   XMLDeclOpen attribute* SPECIAL_CLOSE ;
+prolog      :   xmlDecl? misc* (doctypeDecl misc*)? ;
+xmlDecl     :   '<?xml' versionInfo encodingDecl? sdDecl? s? '?>' ;
+versionInfo :   s name {$name.text.equals("version")}? EQ (startApos versionNum endApos|startQuot versionNum endQuot) ;
+versionNum  :   PlainTextInApos {XMLSupport.isVersionNumber($PlainTextInApos.text)}?| PlainTextInQuot {XMLSupport.isVersionNumber($PlainTextInQuot.text)}?;
+sdDecl      :   s name {$name.text.equals("standalone")}? EQ (startApos PlainTextInApos {XMLSupport.isYesNo($name.text)}? endApos|startQuot PlainTextInQuot {XMLSupport.isYesNo($name.text)}? endQuot) ;
+misc        :   COMMENT | PI | s ;
 
-content     :   chardata?
-                ((element | reference | CDATA | PI | COMMENT) chardata?)* ;
+doctypeDecl :   '<!' 'DOCTYPE' s name (s externalID)? s? ('[' intSubset ']' s?)? DTD_CLOSE;
+declSep     :   PERef | s;
+intSubset   :   (markupDecl | declSep)* ;
+markupDecl  :   elementDecl | attlistDecl | entityDecl | notationDecl | PI | COMMENT;
 
-element     :   '<' Name attribute* '>' content '<' '/' Name '>'
-            |   '<' Name attribute* '/>'
+extSubset   :   textDecl? extSubsetDecl;
+extSubsetDecl
+            :   (markupDecl|conditionalSect|declSep)* ;
+
+element     :   sTag content eTag
+            |   emptyElemTag
+            ;
+emptyElemTag:   '<' name (s attribute)* s? SLASH_CLOSE;
+sTag        :   '<' name (s attribute)* s? CLOSE;
+eTag        :   '<' '/' name s? CLOSE;
+attribute   :   name EQ attValue;
+content     :   charData?
+                ((element | reference | CHARDATA | PI | COMMENT) charData?)* ;
+
+elementDecl :   '<!' 'ELEMENT' s name s contentSpec s? DTD_CLOSE;
+contentSpec :   'EMPTY' | 'ANY' | mixed | children;
+children    :   (choice|seq) ('?'|'*'|'+')?;
+cp          :   (name|choice|seq) ('?'|'*'|'+')?;
+choice      :   '(' s? cp (s? '|' s? cp)+ s? ')';
+seq         :   '(' s? cp (s? ',' s? cp)* s? ')';
+mixed       :   '(' s? '#' 'PCDATA' (s? '|' s? name)* s? ')' '*'
+            |   '(' s? '#' 'PCDATA' s? ')'
             ;
 
-reference   :   EntityRef | CharRef ;
+attlistDecl :   '<!' 'ATTLIST' s name attDef* s? DTD_CLOSE;
+attDef      :   s name s attType s defaultDecl;
+attType     :   stringType|tokenizedType|enumeratedType;
+stringType  :   'CDATA';
+tokenizedType
+            :   'ID'|'IDREF'|'IDREFS'|'ENTITY'|'ENTITIES'|'NMTOKEN'|'NMTOKENS';
+enumeratedType
+            :   notationType|enumeration;
+notationType:   'NOTATION' s '(' s? name (s? '|' s? name)* s? ')';
+enumeration :   '(' s? (Nmtoken|NameInDTD) (s? '|' s? (Nmtoken|NameInDTD))* s? ')';
+defaultDecl :   '#' 'REQUIRED'|'#' 'IMPLIED'|('#' 'FIXED' s)?attValue;
 
-attribute   :   Name '=' STRING ; // Our STRING is AttValue in spec
+conditionalSect
+            :   includeSect|ignoreSect;
+includeSect :   CondDeclOpen s? 'INCLUDE' s? '[' extSubsetDecl ']]>';
+ignoreSect  :   CondDeclOpen s? 'IGNORE' s? '[' ignoreSectContents ']]>';
+ignoreSectContents
+            :   ignore (MORE_SECT ignoreSectContents ']]>' ignore)*
+            ;
+ignore      :   (START_QUOT_IN_DTD|START_APOS_IN_DTD|name|DS|DTD_CLOSE|PlainTextInAposDTD|ReferenceInAposDTD|EndAposInDTD|PlainTextInQuotDTD|ReferenceInQuotDTD|EndQuotInDTD)*;
+
+entityDecl  :   geDecl|peDecl;
+geDecl      :   '<!' 'ENTITY' s name s entityDef s? DTD_CLOSE;
+peDecl      :   '<!' 'ENTITY' s '%' s name s peDef s? DTD_CLOSE;
+entityDef   :   entityValue|externalID nDataDecl?;
+peDef       :   entityValue|externalID;
+externalID  :   'SYSTEM' s systemLiteral
+            |   'PUBLIC' s pubidLiteral systemLiteral;
+nDataDecl   :   s 'NDATA' s name;
+
+textDecl    :   '<?xml' versionInfo? encodingDecl s? '?>';
+extParsedEnt:   textDecl? content;
+encodingDecl:   s name {$name.text.equals("encoding")}? EQ (startQuot encName endQuot | startApos encName endApos ) ;
+encName     :   PlainTextInApos {XMLSupport.isEncName($PlainTextInApos.text)}?|PlainTextInQuot{XMLSupport.isEncName($PlainTextInQuot.text)}?;
+
+notationDecl:   '<!' 'NOTATION' s name s (externalID | publicID) s? DTD_CLOSE;
+publicID    :   'PUBLIC' s pubidLiteral;
+
+reference   :   EntityRef | CharRef ;
 
 /** ``All text that is not markup constitutes the character data of
  *  the document.''
  */
-chardata    :   TEXT | SEA_WS ;
-
-misc        :   COMMENT | PI | SEA_WS ;
-
-names       :   Name (' ' Name)* ;
-nmtokens    :   Nmtoken (' ' Nmtoken)* ;
-entityValue :   '"' (~[%&"]|peReference|reference)* '"'
-            |   '\'' (~[%&']|peReference|reference)* '\''
+charData    :   TEXT;
+s           :   TS|DS;
+name        :   NameInTag|NameInDTD|'DOCTYPE'|'ELEMENT'|'EMPTY'|'ANY'|'PCDATA'|'ATTLIST'|'CDATA'|'ID'|'IDREF'|'IDREFS'|'ENTITY'|'ENTITIES'|'NMTOKEN'|'NMTOKENS'|'NOTATION'|'REQUIRED'|'IMPLIED'|'FIXED'|'INCLUDE'|'IGNORE'|'SYSTEM'|'PUBLIC'|'NDATA';
+entityValue :   startQuot (ReferenceInQuotDTD|PlainTextInQuotDTD)* endQuot
+            |   startApos (ReferenceInAposDTD|PlainTextInAposDTD)* endApos
             ;
-attValue    :   '"' (~[&<"]|reference)* '"'
-            |   '\'' (~[&<']|reference) '\''
+attValue    :   startQuot (ReferenceInQuot|PlainTextInQuot)* endQuot
+            |   startApos (ReferenceInApos|PlainTextInApos)* endApos
             ;
 systemLiteral
-            :   '"' (~["])* '"'
-            |   '\'' (~['])* '\''
+            :   startQuot (ReferenceInAposDTD|PlainTextInAposDTD)* endQuot
+            |   startApos (ReferenceInAposDTD|PlainTextInAposDTD)* endApos
             ;
 pubidLiteral
-            :   '"' (pubidChar|'\'')* '"'
-            |   '\'' (pubidChar)* '\''
+            :   startQuot pubid endQuot
+            |   startApos pubid endApos
             ;
-pubidChar   :   [-'()+,./:=?;!*#@$_% \r\na-zA-Z0-9];
+startQuot   : START_QUOT_IN_DTD|START_QUOT_IN_TAG;
+endQuot     : EndQuotInDTD|EndQuotInTag;
+startApos   : START_APOS_IN_DTD|START_APOS_IN_TAG;
+endApos     : EndAposInDTD|EndAposInTag;
+pubid       : PlainTextInAposDTD {XMLSupport.isPublicId($PlainTextInAposDTD.text)}?|PlainTextInQuotDTD{XMLSupport.isPublicId($PlainTextInQuotDTD.text)}?;

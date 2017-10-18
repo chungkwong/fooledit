@@ -31,13 +31,58 @@ prog
    ;
 
 lin
-   : line? EOL
+   : line?
    ;
 
 line
-   : (label? subject pattern? (EQ expression +)? (COLON transfer)?)
-   | (COLON transfer)
-   | (COMMENT | END)
+   : statement (EOL|';')
+   | control EOL
+   | COMMENT EOL
+   ;
+
+statement
+   : assign
+   | match
+   | repl
+   | degen
+   | end
+   ;
+   
+control
+   : '-' ('LIST' ('LEFT'|'RIGHT'')|'UNLIST'|'EJECT')
+   ;
+   
+assign
+   : label? subject '=' object? next?
+   ;
+match
+   : label? subject '=' pattern next?
+   ;
+repl
+   : label? subject pattern '=' object? next?
+   ;
+degen
+   : label? subject?  next?
+   ;
+end
+   : 'END' (label|'END')?
+   ;
+
+next:
+   : ':' (location|'S' location ('F' location)?|'F' location ('S' location)?)
+   ;
+location
+   : '(' expression ')'
+   | '<' expression '>'
+   ;
+subject
+   : element
+   ;
+pattern
+   : expression
+   ;
+object
+   : expression
    ;
 
 label
@@ -299,7 +344,6 @@ STRINGLITERAL2
 
 
 STRING
-   : ('a' .. 'z' | 'A' .. 'Z') ('0' .. '9' | 'a' .. 'z' | 'A' .. 'Z')*
    ;
 
 

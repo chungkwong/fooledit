@@ -11,7 +11,7 @@
 	{"name":"csv","highlighter":"mode.csv/parser.jar!CSVLexer","supertype":"mode.csv/tokens.json","parser":"mode.csv/parser.jar!CSVParser","rule":"csvFile","mimes":["text/csv"]},
 	{"name":"diff","highlighter":"mode.diff/parser.jar!DiffLexer","supertype":"mode.diff/tokens.json","parser":"mode.diff/parser.jar!DiffParser","rule":"file","mimes":["text/x-patch","text/x-diff"]},
 	{"name":"dot","highlighter":"mode.dot/parser.jar!DOTLexer","supertype":"mode.dot/tokens.json","parser":"mode.dot/parser.jar!DOTParser","rule":"graph","mimes":["text/vnd.graphviz.json"]},
-	{"name":"dtd","highlighter":"mode.dtd/lex.json","mimes":["text/x-dtd"]},
+	{"name":"dtd","highlighter":"mode.xml/parser.jar!XMLLexer","supertype":"mode.xml/tokens.json","parser":"mode.xml/parser.jar!XMLParser","rule":"extSubset","mimes":["text/x-dtd"]},
 	{"name":"elisp","highlighter":"mode.elisp/parser.jar!EmacsLispLexer","supertype":"mode.elisp/tokens.json","mimes":["text/x-emacs-lisp"]},
 	{"name":"erlang","highlighter":"mode.erlang/parser.jar!ErlangLexer","supertype":"mode.erlang/tokens.json","parser":"mode.erlang/parser.jar!ErlangParser","rule":"forms","mimes":["text/x-erlang"]},
 	{"name":"fortran","highlighter":"mode.fortran/parser.jar!fortran77Lexer","supertype":"mode.fortran/tokens.json","parser":"mode.fortran/parser.jar!fortran77Parser","rule":"program","mimes":["text/x-fortran"]},
