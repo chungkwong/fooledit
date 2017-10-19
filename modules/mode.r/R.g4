@@ -46,6 +46,7 @@ grammar R;
 
 prog:   (   expr (';'|NL)
         |   NL
+        |   '#line' INT '[' STRING ']'
         )*
         EOF
     ;
@@ -88,7 +89,6 @@ expr:   expr '[[' sublist ']' ']'  // '[[' follows R's yacc grammar
     |   '(' expr ')'
     |   ID
     |   STRING
-    |   HEX
     |   INT
     |   FLOAT
     |   COMPLEX
@@ -115,31 +115,34 @@ form:   ID
 sublist : sub (',' sub)* ;
 
 sub :   expr
-    |   ID '='
-    |   ID '=' expr
-    |   STRING '='
-    |   STRING '=' expr
-    |   'NULL' '='
-    |   'NULL' '=' expr
+    |   ID '=' expr?
+    |   STRING '=' expr?
+    |   'NULL' '=' expr?
     |   '...'
     |
     ;
 
-HEX :   '0' ('x'|'X') HEXDIGIT+ [Ll]? ;
-
-INT :   DIGIT+ [Ll]? ;
+INT :   DIGIT+ [Ll]? 
+    |   '0' ('x'|'X') HEXDIGIT+ [Ll]?
+    ;
 
 fragment
 HEXDIGIT : ('0'..'9'|'a'..'f'|'A'..'F') ;
 
 FLOAT:  DIGIT+ '.' DIGIT* EXP? [Ll]?
-    |   DIGIT+ EXP? [Ll]?
+    |   DIGIT+ EXP [Ll]?
     |   '.' DIGIT+ EXP? [Ll]?
+    |   HEXDIGIT+ '.' HEXDIGIT* HEXP? [Ll]?
+    |   HEXDIGIT+ HEXP [Ll]?
+    |   '.' HEXDIGIT+ HEXP? [Ll]?
     ;
 fragment
 DIGIT:  '0'..'9' ; 
 fragment
 EXP :   ('E' | 'e') ('+' | '-')? INT ;
+fragment
+HEXP:   ('P' | 'p') ('+' | '-')? INT ;
+
 
 COMPLEX
     :   INT 'i'
@@ -162,7 +165,9 @@ ESC :   '\\' [abtnfrv"'\\]
 fragment
 UNICODE_ESCAPE
     :   '\\' 'u' HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
-    |   '\\' 'u' '{' HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT '}'
+    |   '\\' 'U' HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
+    |   '\\' 'u' '{' HEXDIGIT HEXDIGIT? HEXDIGIT? HEXDIGIT? '}'
+    |      '\\' 'U' '{' HEXDIGIT HEXDIGIT? HEXDIGIT? HEXDIGIT? HEXDIGIT? HEXDIGIT? HEXDIGIT? HEXDIGIT? '}'
     ;
 
 fragment
@@ -185,7 +190,7 @@ fragment LETTER  : [a-zA-Z] ;
 
 USER_OP :   '%' .*? '%' ;
 
-COMMENT :   '#' .*? '\r'? '\n' -> type(NL) ;
+COMMENT :   '#' .*? '\r'? '\n' -> type(NL);
 
 // Match both UNIX and Windows newlines
 NL      :   '\r'? '\n' ;

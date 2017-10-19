@@ -27,11 +27,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 grammar snobol;
 
 prog
-   : lin +
-   ;
-
-lin
-   : line?
+   : line*
    ;
 
 line
@@ -49,7 +45,7 @@ statement
    ;
    
 control
-   : '-' ('LIST' ('LEFT'|'RIGHT'')|'UNLIST'|'EJECT')
+   : '-' (('LIST' ('LEFT'|'RIGHT'))|'UNLIST'|'EJECT')
    ;
    
 assign
@@ -68,12 +64,39 @@ end
    : 'END' (label|'END')?
    ;
 
-next:
+next
    : ':' (location|'S' location ('F' location)?|'F' location ('S' location)?)
    ;
 location
    : '(' expression ')'
    | '<' expression '>'
+   ;
+function
+   : IDENTIFIER '(' arglist ')'
+   ;
+arglist
+   : expression (',' expression)*
+   ;
+expression
+   : (element|operation)?
+   ;
+operation
+   : element binary (element|expression)
+   ;
+element
+   : unary* (IDENTIFIER|literal|function|reference|'(' expression ')')
+   ;
+unary
+   : OPERATOR
+   ;
+binary
+   : OPERATOR | '**'
+   ;
+literal
+   : SLITERAL|DLITERAL|INTEGER|REAL
+   ;
+reference
+   : IDENTIFIER '<' arglist '>'
    ;
 subject
    : element
@@ -86,417 +109,37 @@ object
    ;
 
 label
-   : STRING
+   : LABEL|IDENTIFIER
    ;
-
-subject
-   : (AMP? STRING ('[' STRING (',' STRING)* ']')?)
-   ;
-
-pattern
-   : STRINGLITERAL1
-   | STRINGLITERAL2
-   ;
-
-expression
-   : multiplyingExpression ((PLUS | MINUS) multiplyingExpression)*
-   ;
-
-multiplyingExpression
-   : powExpression ((TIMES | DIV) powExpression)*
-   ;
-
-powExpression
-   : atom (POW expression)?
-   ;
-
-atom
-   : (STRINGLITERAL1 | STRINGLITERAL2 | INTEGER)
-   | subject
-   | command
-   | '[' expression (',' expression)* ']'
-   | LPAREN expression RPAREN
-   ;
-
-command
-   : ident
-   | differ
-   | eq
-   | ne
-   | ge
-   | le
-   | lt
-   | integer
-   | lgt
-   | atan
-   | chop
-   | cos
-   | exp
-   | ln
-   | remdr
-   | sin
-   | tan
-   | date
-   | dupl
-   | reverse
-   | replace
-   | size
-   | trim
-   | array
-   | sort
-   | table
-   | break_
-   ;
-
-ident
-   : 'ident' LPAREN expression RPAREN
-   ;
-
-differ
-   : 'differ' LPAREN expression RPAREN
-   ;
-
-eq
-   : 'eq' LPAREN expression RPAREN
-   ;
-
-ne
-   : 'ne' LPAREN expression RPAREN
-   ;
-
-ge
-   : 'ge' LPAREN expression RPAREN
-   ;
-
-gt
-   : 'gt' LPAREN expression RPAREN
-   ;
-
-le
-   : 'le' LPAREN expression RPAREN
-   ;
-
-lt
-   : 'lt' LPAREN expression RPAREN
-   ;
-
-integer
-   : 'integer' LPAREN expression RPAREN
-   ;
-
-lgt
-   : 'lgt' LPAREN expression RPAREN
-   ;
-
-atan
-   : 'atan' LPAREN expression RPAREN
-   ;
-
-chop
-   : 'chop' LPAREN expression RPAREN
-   ;
-
-cos
-   : 'cos' LPAREN expression RPAREN
-   ;
-
-exp
-   : 'exp' LPAREN expression RPAREN
-   ;
-
-ln
-   : 'ln' LPAREN expression RPAREN
-   ;
-
-remdr
-   : 'remdr' LPAREN expression RPAREN
-   ;
-
-sin
-   : 'sin' LPAREN expression RPAREN
-   ;
-
-tan
-   : 'tan' LPAREN expression RPAREN
-   ;
-
-dupl
-   : 'dupl' LPAREN expression COMMA expression RPAREN
-   ;
-
-reverse
-   : 'reverse' LPAREN expression RPAREN
-   ;
-
-date
-   : 'date' LPAREN RPAREN
-   ;
-
-replace
-   : 'replace' LPAREN expression COMMA expression COMMA expression RPAREN
-   ;
-
-size
-   : 'size' LPAREN expression RPAREN
-   ;
-
-trim
-   : 'trim' LPAREN expression RPAREN
-   ;
-
-array
-   : 'array' LPAREN expression COMMA expression RPAREN
-   ;
-
-convert
-   : 'convert' LPAREN expression COMMA expression RPAREN
-   ;
-
-table
-   : 'table' LPAREN expression RPAREN
-   ;
-
-sort
-   : 'sort' LPAREN expression RPAREN
-   ;
-
-break_
-   : 'break' LPAREN expression RPAREN
-   ;
-
-transfer
-   : (transferpre? LPAREN (label | END) RPAREN)?
-   ;
-
-transferpre
-   : ('f' | 'F' | 's' | 'S')
-   ;
-
-
-COMMA
-   : ','
-   ;
-
-
-LPAREN
-   : '('
-   ;
-
-
-RPAREN
-   : ')'
-   ;
-
-
-AMP
-   : '&'
-   ;
-
-
-PLUS
-   : '+'
-   ;
-
-
-MINUS
-   : '-'
-   ;
-
-
-TIMES
-   : '*'
-   ;
-
-
-DIV
-   : '/'
-   ;
-
-
-POW
-   : '^'
-   ;
-
-
-EQ
-   : '='
-   ;
-
-
-COLON
-   : ':'
-   ;
-
-
-END
-   : 'END'
-   ;
-
-
-STRINGLITERAL1
-   : '"' ~ ["\r\n]* '"'
-   ;
-
-
-STRINGLITERAL2
-   : '\'' ~['\r\n]* '\''
-   ;
-
-
-STRING
-   ;
-
-
-INTEGER
-   : ('+' | '-')? ('0' .. '9') +
-   ;
-
-
-REAL
-   : ('+' | '-')? ('0' .. '9') + ('.' ('0' .. '9') +)? (('e' | 'E') REAL)*
-   ;
-
-
-fragment A
-   : ('a' | 'A')
-   ;
-
-
-fragment B
-   : ('b' | 'B')
-   ;
-
-
-fragment C
-   : ('c' | 'C')
-   ;
-
-
-fragment D
-   : ('d' | 'D')
-   ;
-
-
-fragment E
-   : ('e' | 'E')
-   ;
-
-
-fragment F
-   : ('f' | 'F')
-   ;
-
-
-fragment G
-   : ('g' | 'G')
-   ;
-
-
-fragment H
-   : ('h' | 'H')
-   ;
-
-
-fragment I
-   : ('i' | 'I')
-   ;
-
-
-fragment J
-   : ('j' | 'J')
-   ;
-
-
-fragment K
-   : ('k' | 'K')
-   ;
-
-
-fragment L
-   : ('l' | 'L')
-   ;
-
-
-fragment M
-   : ('m' | 'M')
-   ;
-
-
-fragment N
-   : ('n' | 'N')
-   ;
-
-
-fragment O
-   : ('o' | 'O')
-   ;
-
-
-fragment P
-   : ('p' | 'P')
-   ;
-
-
-fragment Q
-   : ('q' | 'Q')
-   ;
-
-
-fragment R
-   : ('r' | 'R')
-   ;
-
-
-fragment S
-   : ('s' | 'S')
-   ;
-
-
-fragment T
-   : ('t' | 'T')
-   ;
-
-
-fragment U
-   : ('u' | 'U')
-   ;
-
-
-fragment V
-   : ('v' | 'V')
-   ;
-
-
-fragment W
-   : ('w' | 'W')
-   ;
-
-
-fragment X
-   : ('x' | 'X')
-   ;
-
-
-fragment Y
-   : ('y' | 'Y')
-   ;
-
-
-fragment Z
-   : ('z' | 'Z')
-   ;
-
 
 COMMENT
    : '*' ~ [\r\n]*
    ;
-
-
 EOL
    : [\r\n] +
    ;
 
-
 WS
-   : (' ' | '\t') + -> skip
+   : (' ' | '\t'| EOL [+.]) + -> skip
+   ;
+IDENTIFIER
+   : [a-zA-Z] [a-zA-Z0-9._]*
+   ;
+LABEL
+   : [0-9](~[ \t;])*
+   ; 
+SLITERAL
+   : '\'' (~'\'')* '\''
+   ;
+DLITERAL
+   : '"' (~'"')* '"'
+   ;
+INTEGER
+   : [0-9] +
+   ;
+REAL
+   : INTEGER '.' INTEGER
+   ;
+OPERATOR
+   : [-~|@?$.!%*/#+&]
    ;

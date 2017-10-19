@@ -26,40 +26,38 @@
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-parser grammar TclParser;
+parser grammar R7RSParser;
 
-options { tokenVocab=TclLexer; }
+options { tokenVocab=R7RSLexer; }
 
-program
-    : command (SEPARATOR+ command)* SEPARATOR*
-    | SEPARATOR+ (command SEPARATOR+)* command? 
-    ;
+repl
+   : datum*
+   ;
 
-command
-    : word+
-    ;
+datum
+   : simpleDatum
+   | compoundDatum
+   | SET_LABEL datum
+   | GET_LABEL '#'
+   | DATUM_COMMENT datum
+   ;
+simpleDatum
+   : BOOLEAN|NUMBER|CHARACTER|STRING|IDENTIFIER|bytevector
+   ;
+compoundDatum
+   : list|vector|abbreviation
+   ;
+list
+   : '(' datum* ')'
+   | '(' datum+ '.' datum ')'
+   ;
+abbreviation
+   : ABBREV datum
+   ;
+bytevector
+   : '#u8(' datum* ')'
+   ;
+vector
+   : '#(' datum* ')'
+   ;
 
-word
-    : PLAIN
-    | variable
-    | quoted
-    | string
-    | expression
-    ;
-
-quoted
-    : (START_QUOTE|MORE_QUOTE) (QUOTED|quoted)* LESS_QUOTE
-    ;
-
-string
-    : START_STRING (STRING|variable|expression)* END_STRING
-    ;
-
-variable
-    : VARIABLE
-    | (VARIABLE_START|VARIABLE_START_IN_INDEX|VARIABLE_START_IN_STRING) (INDEX|variable|expression)* ')'
-    ;
-
-expression
-    : (START_EXPRESSION|START_EXPRESSION_IN_INDEX|START_EXPRESSION_IN_STRING) program END_EXPRESSION
-    ;
