@@ -51,7 +51,7 @@
 /Users/parrt/antlr/code/grammars-v4/java8/./Test.java
 Total lexer+parser time 30844ms.
  */
-grammar Java8;
+grammar Java9;
 
 /*
  * Productions from §3 (Lexical Structure)
@@ -104,6 +104,11 @@ referenceType
 	|	arrayType
 	;
 
+/*classOrInterfaceType
+	:	classType
+	|	interfaceType
+	;
+*/
 classOrInterfaceType
 	:	(	classType_lfno_classOrInterfaceType
 		|	interfaceType_lfno_classOrInterfaceType
@@ -195,6 +200,11 @@ wildcardBounds
  * Productions from §6 (Names)
  */
 
+moduleName
+	:	Identifier
+	|	moduleName '.' Identifier
+	;
+
 packageName
 	:	Identifier
 	|	packageName '.' Identifier
@@ -229,7 +239,16 @@ ambiguousName
  */
 
 compilationUnit
+	:	ordinaryCompilation
+	|	modularCompilation
+	;
+
+ordinaryCompilation
 	:	packageDeclaration? importDeclaration* typeDeclaration* EOF
+	;
+
+modularCompilation
+	:	importDeclaration* moduleDeclaration
 	;
 
 packageDeclaration
@@ -267,6 +286,23 @@ typeDeclaration
 	:	classDeclaration
 	|	interfaceDeclaration
 	|	';'
+	;
+
+moduleDeclaration
+	:	annotation* 'open'? 'module' moduleName '{' moduleDirective '}'
+	;
+
+moduleDirective
+	:	'requires' requiresModifier* moduleName ';'
+	|	'exports' packageName ('to' moduleName (',' moduleName)*)? ';'
+	|	'opens' packageName ('to' moduleName (',' moduleName)*)? ';'
+	|	'uses' typeName ';'
+	|	'provides' typeName 'with' typeName (',' typeName)* ';'
+	;
+
+requiresModifier
+	:	'transitive'
+	|	'static'
 	;
 
 /*
@@ -380,6 +416,12 @@ unannReferenceType
 	|	unannArrayType
 	;
 
+/*unannClassOrInterfaceType
+	:	unannClassType
+	|	unannInterfaceType
+	;
+*/
+
 unannClassOrInterfaceType
 	:	(	unannClassType_lfno_unannClassOrInterfaceType
 		|	unannInterfaceType_lfno_unannClassOrInterfaceType
@@ -458,6 +500,7 @@ methodDeclarator
 formalParameterList
 	:	formalParameters ',' lastFormalParameter
 	|	lastFormalParameter
+	|	receiverParameter
 	;
 
 formalParameters
@@ -620,6 +663,7 @@ interfaceMethodDeclaration
 interfaceMethodModifier
 	:	annotation
 	|	'public'
+	|	'private'//Introduced in Java 9
 	|	'abstract'
 	|	'default'
 	|	'static'
@@ -822,7 +866,7 @@ switchBlockStatementGroup
 	;
 
 switchLabels
-	:	switchLabel switchLabel*
+	:	switchLabel+
 	;
 
 switchLabel
@@ -913,7 +957,7 @@ tryStatement
 	;
 
 catches
-	:	catchClause catchClause*
+	:	catchClause+
 	;
 
 catchClause
@@ -946,11 +990,23 @@ resourceList
 
 resource
 	:	variableModifier* unannType variableDeclaratorId '=' expression
+	|	variableAccess//Introduced in Java 9
+	;
+
+variableAccess
+	:	expressionName
+	|	fieldAccess
 	;
 
 /*
  * Productions from §15 (Expressions)
  */
+
+/*primary
+	:	primaryNoNewArray
+	|	arrayCreationExpression
+	;
+*/
 
 primary
 	:	(	primaryNoNewArray_lfno_primary
@@ -962,8 +1018,7 @@ primary
 
 primaryNoNewArray
 	:	literal
-	|	typeName ('[' ']')* '.' 'class'
-	|	'void' '.' 'class'
+	|	classLiteral
 	|	'this'
 	|	typeName '.' 'this'
 	|	'(' expression ')'
@@ -1043,6 +1098,11 @@ primaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary
 	|	methodReference_lfno_primary
 	;
 
+classLiteral
+	:	(typeName|numericType|'boolean') ('[' ']')* '.' 'class'
+	|	'void' '.' 'class'	
+	;
+
 classInstanceCreationExpression
 	:	'new' typeArguments? annotation* Identifier ('.' annotation* Identifier)* typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
 	|	expressionName '.' 'new' typeArguments? annotation* Identifier typeArgumentsOrDiamond? '(' argumentList? ')' classBody?
@@ -1078,6 +1138,12 @@ fieldAccess_lfno_primary
 	|	typeName '.' 'super' '.' Identifier
 	;
 
+/*arrayAccess
+	:	expressionName '[' expression ']'
+	|	primaryNoNewArray '[' expression ']'
+	;
+*/
+
 arrayAccess
 	:	(	expressionName '[' expression ']'
 		|	primaryNoNewArray_lfno_arrayAccess '[' expression ']'
@@ -1100,6 +1166,7 @@ arrayAccess_lfno_primary
 		(	primaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary '[' expression ']'
 		)*
 	;
+
 
 methodInvocation
 	:	methodName '(' argumentList? ')'
@@ -1157,7 +1224,7 @@ arrayCreationExpression
 	;
 
 dimExprs
-	:	dimExpr dimExpr*
+	:	dimExpr+
 	;
 
 dimExpr
@@ -1224,7 +1291,7 @@ assignmentOperator
 
 conditionalExpression
 	:	conditionalOrExpression
-	|	conditionalOrExpression '?' expression ':' conditionalExpression
+	|	conditionalOrExpression '?' expression ':' (conditionalExpression|lambdaExpression)
 	;
 
 conditionalOrExpression
@@ -1309,6 +1376,14 @@ unaryExpressionNotPlusMinus
 	|	'!' unaryExpression
 	|	castExpression
 	;
+
+/*postfixExpression
+	:	primary
+	|	expressionName
+	|	postIncrementExpression
+	|	postDecrementExpression
+	;
+*/
 
 postfixExpression
 	:	(	primary
@@ -1395,6 +1470,7 @@ TRY : 'try';
 VOID : 'void';
 VOLATILE : 'volatile';
 WHILE : 'while';
+UNDER_SCORE : '_';
 
 // §3.10.1 Integer Literals
 
@@ -1667,7 +1743,7 @@ ZeroToThree
 // This is not in the spec but prevents having to preprocess the input
 fragment
 UnicodeEscape
-    :   '\\' 'u' HexDigit HexDigit HexDigit HexDigit
+    :   '\\' 'u'+ HexDigit HexDigit HexDigit HexDigit
     ;
 
 // §3.10.7 The Null Literal
@@ -1687,6 +1763,10 @@ RBRACK : ']';
 SEMI : ';';
 COMMA : ',';
 DOT : '.';
+ELLIPSIS : '...';
+AT : '@';
+COLONCOLON : '::';
+
 
 // §3.12 Operators
 
@@ -1697,6 +1777,7 @@ BANG : '!';
 TILDE : '~';
 QUESTION : '?';
 COLON : ':';
+ARROW : '->';
 EQUAL : '==';
 LE : '<=';
 GE : '>=';
@@ -1713,8 +1794,9 @@ BITAND : '&';
 BITOR : '|';
 CARET : '^';
 MOD : '%';
-ARROW : '->';
-COLONCOLON : '::';
+//LSHIFT : '<<';
+//RSHIFT : '>>';
+//URSHIFT : '>>>';
 
 ADD_ASSIGN : '+=';
 SUB_ASSIGN : '-=';
@@ -1738,30 +1820,17 @@ fragment
 JavaLetter
 	:	[a-zA-Z$_] // these are the "java letters" below 0x7F
 	|	// covers all characters above 0x7F which are not a surrogate
-		~[\u0000-\u007F\uD800-\uDBFF]
+		~[\u0000-\u007F]
 		{Character.isJavaIdentifierStart(_input.LA(-1))}?
-	|	// covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
-		[\uD800-\uDBFF] [\uDC00-\uDFFF]
-		{Character.isJavaIdentifierStart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))}?
 	;
 
 fragment
 JavaLetterOrDigit
 	:	[a-zA-Z0-9$_] // these are the "java letters or digits" below 0x7F
 	|	// covers all characters above 0x7F which are not a surrogate
-		~[\u0000-\u007F\uD800-\uDBFF]
+		~[\u0000-\u007F]
 		{Character.isJavaIdentifierPart(_input.LA(-1))}?
-	|	// covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
-		[\uD800-\uDBFF] [\uDC00-\uDFFF]
-		{Character.isJavaIdentifierPart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))}?
 	;
-
-//
-// Additional symbols not defined in the lexical specification
-//
-
-AT : '@';
-ELLIPSIS : '...';
 
 //
 // Whitespace and comments
@@ -1771,9 +1840,9 @@ WS  :  [ \t\r\n\u000C]+ -> skip
     ;
 
 COMMENT
-    :   '/*' .*? '*/' -> skip
+    :   '/*' .*? '*/' -> channel(HIDDEN)
     ;
 
 LINE_COMMENT
-    :   '//' ~[\r\n]* -> skip
+    :   '//' ~[\r\n]* -> channel(HIDDEN)
     ;

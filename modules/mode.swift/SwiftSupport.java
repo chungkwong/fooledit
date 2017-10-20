@@ -128,23 +128,23 @@ public class SwiftSupport {
         // Java works with 16-bit unicode chars. However, it can work for targets in other languages, e.g. in Swift
         // operatorCharacter.set(0xE0100,0xE01EF+1);
 
-        leftWS.set(Swift3Parser.WS);
-        leftWS.set(Swift3Parser.LPAREN);
-        leftWS.set(Swift3Parser.LBRACK);
-        leftWS.set(Swift3Parser.LCURLY);
-        leftWS.set(Swift3Parser.COMMA);
-        leftWS.set(Swift3Parser.COLON);
-        leftWS.set(Swift3Parser.SEMI);
+        leftWS.set(Swift4Parser.WS);
+        leftWS.set(Swift4Parser.LPAREN);
+        leftWS.set(Swift4Parser.LBRACK);
+        leftWS.set(Swift4Parser.LCURLY);
+        leftWS.set(Swift4Parser.COMMA);
+        leftWS.set(Swift4Parser.COLON);
+        leftWS.set(Swift4Parser.SEMI);
 
-        rightWS.set(Swift3Parser.WS);
-        rightWS.set(Swift3Parser.RPAREN);
-        rightWS.set(Swift3Parser.RBRACK);
-        rightWS.set(Swift3Parser.RCURLY);
-        rightWS.set(Swift3Parser.COMMA);
-        rightWS.set(Swift3Parser.COLON);
-        rightWS.set(Swift3Parser.SEMI);
-        rightWS.set(Swift3Parser.Line_comment);
-        rightWS.set(Swift3Parser.Block_comment);
+        rightWS.set(Swift4Parser.WS);
+        rightWS.set(Swift4Parser.RPAREN);
+        rightWS.set(Swift4Parser.RBRACK);
+        rightWS.set(Swift4Parser.RCURLY);
+        rightWS.set(Swift4Parser.COMMA);
+        rightWS.set(Swift4Parser.COLON);
+        rightWS.set(Swift4Parser.SEMI);
+        rightWS.set(Swift4Parser.Line_comment);
+        rightWS.set(Swift4Parser.Block_comment);
     }
     
     private static boolean isCharacterFromSet(Token token, BitSet bitSet) {
@@ -189,7 +189,7 @@ public class SwiftSupport {
         
         
         // operator → dot-operator-head­ dot-operator-characters
-        if (currentToken.getType() == Swift3Parser.DOT && tokens.get(currentTokenIndex + 1).getType() == Swift3Parser.DOT) {
+        if (currentToken.getType() == Swift4Parser.DOT && tokens.get(currentTokenIndex + 1).getType() == Swift4Parser.DOT) {
             //System.out.println("DOT");
                 
             // dot-operator
@@ -197,7 +197,7 @@ public class SwiftSupport {
             currentToken = tokens.get(currentTokenIndex);
             
             // dot-operator-character → .­ | operator-character­
-            while (currentToken.getType() == Swift3Parser.DOT || isOperatorCharacter(currentToken)) {
+            while (currentToken.getType() == Swift4Parser.DOT || isOperatorCharacter(currentToken)) {
                 //System.out.println("DOT");
                 currentTokenIndex++;
                 currentToken = tokens.get(currentTokenIndex);
@@ -288,7 +288,7 @@ public class SwiftSupport {
         boolean nextIsWS = isRightOperatorWS(nextToken);
         boolean result =
             !prevIsWS && nextIsWS ||
-            !prevIsWS && nextToken.getType()==Swift3Parser.DOT;
+            !prevIsWS && nextToken.getType()==Swift4Parser.DOT;
         String text = tokens.getText(Interval.of(start, stop));
         // System.out.println("isPostfixOp: '"+prevToken+"','"+text+"','"+nextToken+"' is "+result);
         return result;

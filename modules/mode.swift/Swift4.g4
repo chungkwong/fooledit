@@ -29,7 +29,7 @@
  * Converted from Apple's doc, http://tinyurl.com/n8rkoue, to ANTLR's
  * meta-language.
  */
-grammar Swift3;
+grammar Swift4;
 
 top_level : statements? EOF;
 
@@ -996,10 +996,10 @@ type
  | function_type              #the_function_type
  | type_identifier            #the_type_identifier
  | tuple_type                 #the_tuple_type
- | optional_type              #the_optional_type
- | implicitly_unwrapped_optional_type  #the_implicitly_unwrapped_optional_type
+ | type '?'                   #the_optional_type
+ | type '!'                   #the_implicitly_unwrapped_optional_type
  | protocol_composition_type  #the_protocol_composition_type
- | metatype_type              #the_metatype_type
+ | type'.'('Type'|'Protocol') #the_metatype_type
  | 'Any'                      #the_any_type
  | 'Self'                     #the_self_type
  | '(' type ')'               #parenthesized
@@ -1052,12 +1052,12 @@ dictionary_type : '[' type ':' type ']' ;
 // GRAMMAR OF AN OPTIONAL TYPE
 
 // The following sets of rules are mutually left-recursive [type, optional_type, implicitly_unwrapped_optional_type, metatype_type]
-optional_type : type '?' ;
+// optional_type : type '?' ;
 
 // GRAMMAR OF AN IMPLICITLY UNWRAPPED OPTIONAL TYPE
 
 // The following sets of rules are mutually left-recursive [type, optional_type, implicitly_unwrapped_optional_type, metatype_type]
-implicitly_unwrapped_optional_type : type '!' ;
+// implicitly_unwrapped_optional_type : type '!' ;
 
 // GRAMMAR OF A PROTOCOL COMPOSITION TYPE
 
@@ -1066,10 +1066,10 @@ protocol_composition_type : type_identifier ('&' type_identifier)+ ;
 // GRAMMAR OF A METATYPE TYPE
 
 // The following sets of rules are mutually left-recursive [type, optional_type, implicitly_unwrapped_optional_type, metatype_type]
- metatype_type
-  : type '.' 'Type'
-  | type '.' 'Protocol'
-  ;
+// metatype_type
+//  : type '.' 'Type'
+//  | type '.' 'Protocol'
+//  ;
 
 // GRAMMAR OF A TYPE INHERITANCE CLAUSE
 

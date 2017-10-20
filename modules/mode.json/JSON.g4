@@ -65,7 +65,7 @@ fragment INT
 // no leading zeros
 
 fragment EXP
-   : [Ee] [+\-]? INT
+   : [Ee] [+\-]? [0-9]+
    ;
 
 // \- since - means "range" inside [...]
