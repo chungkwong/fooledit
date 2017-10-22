@@ -95,7 +95,7 @@ unsignedInteger
    ;
 
 unsignedReal
-   : NUM_INT
+   : NUM_REAL
    ;
 
 sign
@@ -962,9 +962,12 @@ STRING_LITERAL
 
 
 NUM_INT
-   : ('0' .. '9') + (('.' ('0' .. '9') + (EXPONENT)?)? | EXPONENT)
+   : ('0' .. '9') +
    ;
 
+NUM_REAL
+   : ('0' .. '9') + ('.' ('0' .. '9') + (EXPONENT)? | EXPONENT)
+   ;
 
 fragment EXPONENT
    : ('e') ('+' | '-')? ('0' .. '9') +

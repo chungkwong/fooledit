@@ -2,6 +2,7 @@
  * [The "BSD license"]
  *  Copyright (c) 2014 Terence Parr
  *  Copyright (c) 2014 Sam Harwell
+ *  Copyright (c) 2017 Chan Chung Kwong
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -38,17 +39,17 @@
  *
  * You can test with
  *
- *  $ antlr4 Java8.g4
+ *  $ antlr4 Java9.g4
  *  $ javac *.java
- *  $ grun Java8 compilationUnit *.java
+ *  $ grun Java9 compilationUnit *.java
  *
  * Or,
-~/antlr/code/grammars-v4/java8 $ java Test .
-/Users/parrt/antlr/code/grammars-v4/java8/./Java8BaseListener.java
-/Users/parrt/antlr/code/grammars-v4/java8/./Java8Lexer.java
-/Users/parrt/antlr/code/grammars-v4/java8/./Java8Listener.java
-/Users/parrt/antlr/code/grammars-v4/java8/./Java8Parser.java
-/Users/parrt/antlr/code/grammars-v4/java8/./Test.java
+~/antlr/code/grammars-v4/java9 $ java Test .
+/Users/parrt/antlr/code/grammars-v4/java9/./Java9BaseListener.java
+/Users/parrt/antlr/code/grammars-v4/java9/./Java9Lexer.java
+/Users/parrt/antlr/code/grammars-v4/java9/./Java9Listener.java
+/Users/parrt/antlr/code/grammars-v4/java9/./Java9Parser.java
+/Users/parrt/antlr/code/grammars-v4/java9/./Test.java
 Total lexer+parser time 30844ms.
  */
 grammar Java9;
