@@ -1,0 +1,10 @@
+{
+	"children":[
+		{
+			"name":"TERMINAL",
+			"children":[
+				{"name":"","command":""}
+			]
+		}
+	]
+}

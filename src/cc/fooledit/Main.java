@@ -22,6 +22,7 @@ import cc.fooledit.command.*;
 import cc.fooledit.control.*;
 import cc.fooledit.example.browser.*;
 import cc.fooledit.example.filesystem.*;
+import cc.fooledit.example.terminal.*;
 import cc.fooledit.example.text.*;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
@@ -119,6 +120,7 @@ public class Main extends Application{
 		globalCommandRegistry.put("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		globalCommandRegistry.put("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		globalCommandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
+		globalCommandRegistry.put("terminal",()->addAndShow(new TerminalData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Terminal")));
 		globalCommandRegistry.put("file-system",()->addAndShow(new FileSystemData(null),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"File System")));
 		globalCommandRegistry.put("command",()->input.requestFocus());
 		globalCommandRegistry.put("cancel",()->getCurrentNode().requestFocus());

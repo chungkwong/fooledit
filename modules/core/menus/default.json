@@ -27,7 +27,8 @@
 		{
 			"name":"TOOL",
 			"children":[
-				{"name":"BROWSER","command":"browser"}
+				{"name":"BROWSER","command":"browser"},
+				{"name":"TERMINAL","command":"terminal"}
 			]
 		},
 		{
