@@ -277,6 +277,11 @@ public class Main extends Application{
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		primaryStage.show();
 	}
+	@Override
+	public void stop() throws Exception{
+		super.stop();
+		System.exit(0);
+	}
 	public static File getSystemPath(){
 		return SYSTEM_PATH;
 	}

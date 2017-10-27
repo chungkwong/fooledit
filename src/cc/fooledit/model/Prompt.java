@@ -27,7 +27,7 @@ public abstract class Prompt implements DataObject<Prompt>,DataObjectType<Prompt
 	}
 	@Override
 	public boolean canRead(){
-		return true;
+		return false;
 	}
 	@Override
 	public boolean canWrite(){
