@@ -14,19 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.example.terminal;
-import cc.fooledit.api.*;
+package cc.fooledit.example.zip;
+import cc.fooledit.model.*;
+import java.util.zip.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TerminalModule{
-	public static final String NAME="editor.terminal";
-	public static void onLoad(){
-		DataObjectTypeRegistry.addDataObjectType(TerminalDataType.INSTANCE);
-		DataObjectTypeRegistry.addDataEditor(()->TerminalEditor.INSTANCE,TerminalData.class);
+public class ZipData implements DataObject<ZipData>{
+	private ZipFile file;
+	public ZipData(ZipFile file){
+		this.file=file;
 	}
-	public static void onUnLoad(){
-
+	public ZipFile getFile(){
+		return file;
+	}
+	@Override
+	public DataObjectType<ZipData> getDataObjectType(){
+		return ZipDataType.INSTANCE;
 	}
 }

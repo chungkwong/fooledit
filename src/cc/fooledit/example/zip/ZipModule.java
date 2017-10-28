@@ -14,17 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.example.terminal;
+package cc.fooledit.example.zip;
 import cc.fooledit.api.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TerminalModule{
-	public static final String NAME="editor.terminal";
+public class ZipModule{
+	public static final String NAME="editor.zip";
 	public static void onLoad(){
-		DataObjectTypeRegistry.addDataObjectType(TerminalDataType.INSTANCE);
-		DataObjectTypeRegistry.addDataEditor(()->TerminalEditor.INSTANCE,TerminalData.class);
+		DataObjectTypeRegistry.addDataObjectType(ZipDataType.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(()->ZipEditor.INSTANCE,ZipData.class);
+		DataObjectTypeRegistry.registerMime("application/zip","cc.fooledit.example.zip.ZipDataType");
 	}
 	public static void onUnLoad(){
 
