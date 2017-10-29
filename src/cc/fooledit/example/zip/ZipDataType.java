@@ -17,6 +17,8 @@
 package cc.fooledit.example.zip;
 import cc.fooledit.model.*;
 import java.io.*;
+import java.util.*;
+import java.util.zip.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -39,7 +41,7 @@ public class ZipDataType implements DataObjectType<ZipData>{
 	}
 	@Override
 	public ZipData create(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return new ZipData(Collections.emptyList());
 	}
 	@Override
 	public void writeTo(ZipData data,OutputStream out) throws Exception{
@@ -47,11 +49,18 @@ public class ZipDataType implements DataObjectType<ZipData>{
 	}
 	@Override
 	public ZipData readFrom(InputStream in) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		ZipInputStream zip=new ZipInputStream(in);
+		List<ZipEntry> entries=new ArrayList<>();
+		ZipEntry entry;
+		while((entry=zip.getNextEntry())!=null){
+			entries.add(entry);
+			zip.closeEntry();
+		}
+		return new ZipData(entries);
 	}
 	@Override
 	public String getName(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return "zip";
 	}
 
 }

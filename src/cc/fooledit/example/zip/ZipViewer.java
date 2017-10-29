@@ -34,16 +34,10 @@ import javafx.util.*;
  */
 public class ZipViewer extends BorderPane{
 	private final TableView<ZipEntry> tree=new TableView<>();
-	private final ZipFile file;
 	private Consumer<Collection<ZipEntry>> action;
 	private Collection<ZipEntry> marked=Collections.emptySet();
-	public ZipViewer(ZipFile file){
-		this.file=file;
-		Enumeration<? extends ZipEntry> entries=file.entries();
-		while(entries.hasMoreElements()){
-			ZipEntry entry=entries.nextElement();
-			tree.getItems().add(entry);
-		}
+	public ZipViewer(List<ZipEntry> entries){
+		tree.getItems().setAll(entries);
 		tree.setTableMenuButtonVisible(true);
 		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		this.<String>createColumnChooser(MessageRegistry.getString("NAME"),(param)->
@@ -64,19 +58,18 @@ public class ZipViewer extends BorderPane{
 		((TableColumn<ZipEntry,String>)tree.getColumns().get(0)).prefWidthProperty().bind(tree.widthProperty().multiply(0.4));
 		setCenter(tree);
 		tree.getFocusModel().focusedIndexProperty().addListener(((e,o,n)->tree.scrollTo(n.intValue())));
-		setBottom(new Label(file.getComment()));
 	}
 	private static String getFileName(ZipEntry entry){
 		return entry.getName();
 	}
 	private static String getLastModified(ZipEntry entry){
-		return entry.getLastModifiedTime().toString();
+		return Objects.toString(entry.getLastModifiedTime(),"");
 	}
 	private static String getLastAccessed(ZipEntry entry){
-		return entry.getLastAccessTime().toString();
+		return Objects.toString(entry.getLastAccessTime(),"");
 	}
 	private static String getCreation(ZipEntry entry){
-		return entry.getCreationTime().toString();
+		return Objects.toString(entry.getCreationTime(),"");
 	}
 	private static long getSize(ZipEntry entry){
 		return entry.getSize();

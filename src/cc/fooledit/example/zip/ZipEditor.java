@@ -27,7 +27,7 @@ public class ZipEditor implements DataEditor<ZipData>{
 	}
 	@Override
 	public Node edit(ZipData data){
-		return new ZipViewer(data.getFile());
+		return new ZipViewer(data.getEntries());
 	}
 	@Override
 	public String getName(){

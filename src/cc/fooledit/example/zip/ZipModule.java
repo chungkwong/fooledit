@@ -25,7 +25,6 @@ public class ZipModule{
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(ZipDataType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->ZipEditor.INSTANCE,ZipData.class);
-		DataObjectTypeRegistry.registerMime("application/zip","cc.fooledit.example.zip.ZipDataType");
 	}
 	public static void onUnLoad(){
 

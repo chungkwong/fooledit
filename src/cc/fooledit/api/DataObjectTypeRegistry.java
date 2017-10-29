@@ -51,6 +51,7 @@ public class DataObjectTypeRegistry{
 	public static List<DataObjectType> getPreferedDataObjectType(MimeType mime){
 		LinkedList<DataObjectType> cand=new LinkedList<DataObjectType>();
 		String t=mimes.get(mime.getBaseType());
+		System.err.println(mime.toString());
 		if(t!=null)
 			cand.add(types.get(t));
 		String type=mime.getPrimaryType();

@@ -1,2 +1,7 @@
 (import (java))
 (invoke-static 'cc.fooledit.example.zip.ZipModule 'onLoad)
+(map-mime-to-type "application/zip" "zip")
+(map-mime-to-type "application/x-zip-compressed" "zip")
+(map-mime-to-type "application/java-archive" "zip")
+(map-mime-to-type "application/x-java-archive" "zip")
+(map-mime-to-type "application/x-jar" "zip")
