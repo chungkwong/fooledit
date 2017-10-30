@@ -17,14 +17,15 @@
 package cc.fooledit.example.zip;
 import cc.fooledit.model.*;
 import java.io.*;
-import org.apache.commons.compress.compressors.*;
+import java.util.*;
+import java.util.zip.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ZipDataType implements DataObjectType<ZipData>{
-	public static final ZipDataType INSTANCE=new ZipDataType();
-	private ZipDataType(){
+public class ArchiveDataType implements DataObjectType<ArchiveData>{
+	public static final ArchiveDataType INSTANCE=new ArchiveDataType();
+	private ArchiveDataType(){
 	}
 	@Override
 	public boolean canRead(){
@@ -39,22 +40,26 @@ public class ZipDataType implements DataObjectType<ZipData>{
 		return true;
 	}
 	@Override
-	public ZipData create(){
-		return new ZipData(null);
+	public ArchiveData create(){
+		return new ArchiveData(Collections.emptyList());
 	}
 	@Override
-	public void writeTo(ZipData data,OutputStream out) throws Exception{
-		CompressorOutputStream compress=CompressorStreamFactory.getSingleton().createCompressorOutputStream(null,out);
-		data.getContent().getDataObjectType().writeTo(data,compress);
+	public void writeTo(ArchiveData data,OutputStream out) throws Exception{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public ZipData readFrom(InputStream in) throws Exception{
-		CompressorInputStream decompressed=CompressorStreamFactory.getSingleton().createCompressorInputStream(in);
-		DataObjectType contentType=null;//FIXME
-		return new ZipData(contentType.readFrom(decompressed));
+	public ArchiveData readFrom(InputStream in) throws Exception{
+		ZipInputStream zip=new ZipInputStream(in);
+		List<ZipEntry> entries=new ArrayList<>();
+		ZipEntry entry;
+		while((entry=zip.getNextEntry())!=null){
+			entries.add(entry);
+			zip.closeEntry();
+		}
+		return new ArchiveData(entries);
 	}
 	@Override
 	public String getName(){
-		return "zip";
+		return "archive";
 	}
 }

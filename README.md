@@ -46,7 +46,7 @@ __我们仅仅知道唯一的一门科学，即历史科学。__
 
 文本文件的高效编辑要求：
 - 快速选中待编辑处
-- 
+-
 
 ##### 语言支持情况
 
@@ -117,13 +117,23 @@ __我们仅仅知道唯一的一门科学，即历史科学。__
 
 现已支持播放MP3、AIFF（未压缩PCM）、WAV（未压缩PCM）、MPEG-4（AAC）格式的音频。
 
+#### 压缩和归档文件
+
+现已借助Apache Common Compress库支持支持AR、ARJ、CPIO、DUMP、JAR、7Z、TAR、ZIP等归档格式，支持Brotli、BZip2、DEFLATE、GZip、LZ4、LZ77、LZMA、LZW、PACK200、Snappy、XZ、Z等压缩方式。
+
 ### 辅助工具
 
 #### 文件系统查看器
 
+目前提供一个文件系统查看器，有待做得更友好。
+
 #### 浏览器
 
-目前提供JavaFX基于Webkit的浏览器，支持简单历史
+目前提供JavaFX基于Webkit的浏览器，支持简单历史。
+
+#### 终端模拟器
+
+目前提供基于jediterm的终端模拟器。
 
 #### 版本控制
 

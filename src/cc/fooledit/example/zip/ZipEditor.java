@@ -27,10 +27,10 @@ public class ZipEditor implements DataEditor<ZipData>{
 	}
 	@Override
 	public Node edit(ZipData data){
-		return new ZipViewer(data.getEntries());
+		return null;
 	}
 	@Override
 	public String getName(){
-		return "Archieve";
+		return "compressed";
 	}
 }

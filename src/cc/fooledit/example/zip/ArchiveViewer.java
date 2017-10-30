@@ -32,11 +32,11 @@ import javafx.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ZipViewer extends BorderPane{
+public class ArchiveViewer extends BorderPane{
 	private final TableView<ZipEntry> tree=new TableView<>();
 	private Consumer<Collection<ZipEntry>> action;
 	private Collection<ZipEntry> marked=Collections.emptySet();
-	public ZipViewer(List<ZipEntry> entries){
+	public ArchiveViewer(List<ZipEntry> entries){
 		tree.getItems().setAll(entries);
 		tree.setTableMenuButtonVisible(true);
 		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

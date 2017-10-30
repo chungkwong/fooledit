@@ -15,20 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.zip;
-import cc.fooledit.api.*;
+import cc.fooledit.model.*;
+import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ZipModule{
-	public static final String NAME="editor.zip";
-	public static void onLoad(){
-		DataObjectTypeRegistry.addDataObjectType(ArchiveDataType.INSTANCE);
-		DataObjectTypeRegistry.addDataEditor(()->ArchiveEditor.INSTANCE,ArchiveData.class);
-		DataObjectTypeRegistry.addDataObjectType(ZipDataType.INSTANCE);
-		DataObjectTypeRegistry.addDataEditor(()->ZipEditor.INSTANCE,ZipData.class);
+public class ArchiveEditor implements DataEditor<ArchiveData>{
+	public static final ArchiveEditor INSTANCE=new ArchiveEditor();
+	private ArchiveEditor(){
 	}
-	public static void onUnLoad(){
-
+	@Override
+	public Node edit(ArchiveData data){
+		return new ArchiveViewer(data.getEntries());
+	}
+	@Override
+	public String getName(){
+		return "Archieve";
 	}
 }

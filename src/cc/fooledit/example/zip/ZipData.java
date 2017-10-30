@@ -16,19 +16,17 @@
  */
 package cc.fooledit.example.zip;
 import cc.fooledit.model.*;
-import java.util.*;
-import java.util.zip.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ZipData implements DataObject<ZipData>{
-	private final List<ZipEntry> entries;
-	public ZipData(List<ZipEntry> entries){
-		this.entries=entries;
+	private final DataObject content;
+	public ZipData(DataObject content){
+		this.content=content;
 	}
-	public List<ZipEntry> getEntries(){
-		return entries;
+	public DataObject getContent(){
+		return content;
 	}
 	@Override
 	public DataObjectType<ZipData> getDataObjectType(){
