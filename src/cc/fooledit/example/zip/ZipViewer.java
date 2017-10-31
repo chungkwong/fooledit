@@ -15,34 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.zip;
-import cc.fooledit.api.*;
-import cc.fooledit.model.*;
-import java.util.*;
-import javafx.scene.*;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ZipEditor implements DataEditor<ZipData>{
-	public static final ZipEditor INSTANCE=new ZipEditor();
-	private ZipEditor(){
-	}
-	@Override
-	public Node edit(ZipData data){
-		List<DataEditor> editors=DataObjectTypeRegistry.getDataEditors(data.getContent().getClass());
-		if(!editors.isEmpty())
-			return editors.get(0).edit(data);
-		return null;
-	}
-	@Override
-	public Node edit(ZipData data,Object remark){
-		List<DataEditor> editors=DataObjectTypeRegistry.getDataEditors(data.getContent().getClass());
-		if(!editors.isEmpty())
-			return editors.get(0).edit(data,remark);
-		return null;
-	}
-	@Override
-	public String getName(){
-		return "compressed";
-	}
+public class ZipViewer{
+
 }

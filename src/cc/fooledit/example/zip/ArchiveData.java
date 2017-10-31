@@ -17,17 +17,18 @@
 package cc.fooledit.example.zip;
 import cc.fooledit.model.*;
 import java.util.*;
-import java.util.zip.*;
+import org.apache.commons.compress.archivers.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ArchiveData implements DataObject<ArchiveData>{
-	private final List<ZipEntry> entries;
-	public ArchiveData(List<ZipEntry> entries){
+	private final List<ArchiveEntry> entries;
+	public ArchiveData(List<ArchiveEntry> entries){
 		this.entries=entries;
+
 	}
-	public List<ZipEntry> getEntries(){
+	public List<ArchiveEntry> getEntries(){
 		return entries;
 	}
 	@Override

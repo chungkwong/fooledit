@@ -16,6 +16,7 @@
  */
 package cc.fooledit.model;
 import java.io.*;
+import java.net.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -28,4 +29,10 @@ public interface DataObjectType<T extends DataObject>{
 	void writeTo(T data,OutputStream out)throws Exception;
 	T readFrom(InputStream in)throws Exception;
 	String getName();
+	default void writeTo(T data,OutputStream out,URL url)throws Exception{
+		writeTo(data,out);
+	}
+	default T readFrom(InputStream in,URL url)throws Exception{
+		return readFrom(in);
+	}
 }

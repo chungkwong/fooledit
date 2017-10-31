@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.zip;
+import cc.fooledit.api.*;
 import cc.fooledit.model.*;
 import java.io.*;
+import java.net.*;
+import java.util.*;
+import javax.activation.*;
 import org.apache.commons.compress.compressors.*;
 /**
  *
@@ -50,8 +54,23 @@ public class ZipDataType implements DataObjectType<ZipData>{
 	@Override
 	public ZipData readFrom(InputStream in) throws Exception{
 		CompressorInputStream decompressed=CompressorStreamFactory.getSingleton().createCompressorInputStream(in);
-		DataObjectType contentType=null;//FIXME
+
+		DataObjectType contentType=null;
 		return new ZipData(contentType.readFrom(decompressed));
+	}
+	@Override
+	public ZipData readFrom(InputStream in,URL url) throws Exception{
+		CompressorInputStream decompressed=CompressorStreamFactory.getSingleton().createCompressorInputStream(in);
+		String file=url.getFile();
+		if(file.contains("."))
+			file=file.substring(0,file.lastIndexOf('.'));
+		List<String> geuss=FiletypeRegistry.geuss(new URL(url.getProtocol(),url.getHost(),url.getPort(),file));
+		if(!geuss.isEmpty()){
+			List<DataObjectType> contentType=DataObjectTypeRegistry.getPreferedDataObjectType(new MimeType(geuss.get(0)));
+			if(!contentType.isEmpty())
+				return new ZipData(contentType.get(0).readFrom(in));
+		}
+		throw new Exception();
 	}
 	@Override
 	public String getName(){

@@ -21,22 +21,22 @@ import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
-import java.util.zip.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.util.*;
+import org.apache.commons.compress.archivers.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ArchiveViewer extends BorderPane{
-	private final TableView<ZipEntry> tree=new TableView<>();
-	private Consumer<Collection<ZipEntry>> action;
-	private Collection<ZipEntry> marked=Collections.emptySet();
-	public ArchiveViewer(List<ZipEntry> entries){
+	private final TableView<ArchiveEntry> tree=new TableView<>();
+	private Consumer<Collection<ArchiveEntry>> action;
+	private Collection<ArchiveEntry> marked=Collections.emptySet();
+	public ArchiveViewer(List<ArchiveEntry> entries){
 		tree.getItems().setAll(entries);
 		tree.setTableMenuButtonVisible(true);
 		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -44,56 +44,36 @@ public class ArchiveViewer extends BorderPane{
 				new ReadOnlyStringWrapper(getFileName(param.getValue())),true);
 		this.<Number>createColumnChooser(MessageRegistry.getString("SIZE"),(param)->
 				new ReadOnlyLongWrapper(getSize(param.getValue())),true);
-		this.<Number>createColumnChooser(MessageRegistry.getString("COMPRESSED_SIZE"),(param)->
-				new ReadOnlyLongWrapper(getCompressedSize(param.getValue())),true);
-		this.<String>createColumnChooser(MessageRegistry.getString("CREATION"),(param)->
-				new ReadOnlyStringWrapper(getCreation(param.getValue())),true);
 		this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED"),(param)->
 				new ReadOnlyStringWrapper(getLastModified(param.getValue())),true);
-		this.<String>createColumnChooser(MessageRegistry.getString("LAST_ACCESSED"),(param)->
-				new ReadOnlyStringWrapper(getLastAccessed(param.getValue())),true);
-		this.<String>createColumnChooser(MessageRegistry.getString("COMMENT"),(param)->
-				new ReadOnlyStringWrapper(getComment(param.getValue())),true);
-		((TableColumn<ZipEntry,String>)tree.getColumns().get(0)).setCellFactory((p)->new ZipCell());
-		((TableColumn<ZipEntry,String>)tree.getColumns().get(0)).prefWidthProperty().bind(tree.widthProperty().multiply(0.4));
+		((TableColumn<ArchiveEntry,String>)tree.getColumns().get(0)).setCellFactory((p)->new ZipCell());
+		((TableColumn<ArchiveEntry,String>)tree.getColumns().get(0)).prefWidthProperty().bind(tree.widthProperty().multiply(0.4));
 		setCenter(tree);
 		tree.getFocusModel().focusedIndexProperty().addListener(((e,o,n)->tree.scrollTo(n.intValue())));
 	}
-	private static String getFileName(ZipEntry entry){
+	private static String getFileName(ArchiveEntry entry){
 		return entry.getName();
 	}
-	private static String getLastModified(ZipEntry entry){
-		return Objects.toString(entry.getLastModifiedTime(),"");
+	private static String getLastModified(ArchiveEntry entry){
+		return Objects.toString(entry.getLastModifiedDate(),"");
 	}
-	private static String getLastAccessed(ZipEntry entry){
-		return Objects.toString(entry.getLastAccessTime(),"");
-	}
-	private static String getCreation(ZipEntry entry){
-		return Objects.toString(entry.getCreationTime(),"");
-	}
-	private static long getSize(ZipEntry entry){
+	private static long getSize(ArchiveEntry entry){
 		return entry.getSize();
 	}
-	private static long getCompressedSize(ZipEntry entry){
-		return entry.getCompressedSize();
-	}
-	private static String getComment(ZipEntry entry){
-		return entry.getComment();
-	}
-	private static boolean isDirectory(ZipEntry entry){
+	private static boolean isDirectory(ArchiveEntry entry){
 		return entry.isDirectory();
 	}
-	private <T> void createColumnChooser(String name,Callback<TableColumn.CellDataFeatures<ZipEntry,T>,ObservableValue<T>> callback,boolean visible){
-		TableColumn<ZipEntry,T> column=new TableColumn<>(name);
+	private <T> void createColumnChooser(String name,Callback<TableColumn.CellDataFeatures<ArchiveEntry,T>,ObservableValue<T>> callback,boolean visible){
+		TableColumn<ArchiveEntry,T> column=new TableColumn<>(name);
 		column.setCellValueFactory(callback);
 		column.setEditable(true);
 		tree.getColumns().add(column);
 		column.setVisible(visible);
 	}
-	public void setAction(Consumer<Collection<ZipEntry>> action){
+	public void setAction(Consumer<Collection<ArchiveEntry>> action){
 		this.action=action;
 	}
-	public Consumer<Collection<ZipEntry>> getAction(){
+	public Consumer<Collection<ArchiveEntry>> getAction(){
 		return action;
 	}
 	public void fireAction(){
@@ -103,27 +83,27 @@ public class ArchiveViewer extends BorderPane{
 	public void markPaths(){
 		marked=getSelectedPaths();
 	}
-	public Collection<ZipEntry> getMarkedPaths(){
+	public Collection<ArchiveEntry> getMarkedPaths(){
 		return marked;
 	}
 	@Override
 	public void requestFocus(){
 		tree.requestFocus();
 	}
-	public final Collection<ZipEntry> getSelectedPaths(){
+	public final Collection<ArchiveEntry> getSelectedPaths(){
 		return tree.getSelectionModel().getSelectedItems();
 	}
-	TableView<ZipEntry> getTree(){
+	TableView<ArchiveEntry> getTree(){
 		return tree;
 	}
-	class ZipCell extends TableCell<ZipEntry,String>{
+	class ZipCell extends TableCell<ArchiveEntry,String>{
 		public ZipCell(){
 		}
 		@Override
 		protected void updateItem(String item,boolean empty){
 			super.updateItem(item,empty);
-			ZipEntry entry=(ZipEntry)getTableRow().getItem();
-			if(empty||item==null){
+			ArchiveEntry entry=(ArchiveEntry)getTableRow().getItem();
+			if(empty||entry==null||item==null){
 				setText(null);
 				setGraphic(null);
 			}else{

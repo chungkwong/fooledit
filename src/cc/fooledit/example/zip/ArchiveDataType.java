@@ -18,7 +18,7 @@ package cc.fooledit.example.zip;
 import cc.fooledit.model.*;
 import java.io.*;
 import java.util.*;
-import java.util.zip.*;
+import org.apache.commons.compress.archivers.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -33,7 +33,7 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 	}
 	@Override
 	public boolean canWrite(){
-		return true;
+		return false;//TODO
 	}
 	@Override
 	public boolean canCreate(){
@@ -49,14 +49,14 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 	}
 	@Override
 	public ArchiveData readFrom(InputStream in) throws Exception{
-		ZipInputStream zip=new ZipInputStream(in);
-		List<ZipEntry> entries=new ArrayList<>();
-		ZipEntry entry;
-		while((entry=zip.getNextEntry())!=null){
-			entries.add(entry);
-			zip.closeEntry();
+		try(ArchiveInputStream archive=new ArchiveStreamFactory().createArchiveInputStream(in)){
+			ArchiveEntry entry;
+			List<ArchiveEntry> entries=new ArrayList<>();
+			while((entry=archive.getNextEntry())!=null){
+				entries.add(entry);
+			}
+			return new ArchiveData(entries);
 		}
-		return new ArchiveData(entries);
 	}
 	@Override
 	public String getName(){
