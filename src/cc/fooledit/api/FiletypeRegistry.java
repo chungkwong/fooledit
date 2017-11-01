@@ -24,14 +24,14 @@ import java.util.*;
  */
 public class FiletypeRegistry{
 	private static final List<MimeGeusser> GEUSSERS=new ArrayList<>();
-	private static final MimeGeusser URL_GEUSSER=new MimeGeusser.URLPatternGeusser();
+	private static final MimeGeusser.URLPatternGeusser URL_GEUSSER=new MimeGeusser.URLPatternGeusser();
 	private static final MimeGeusser SYSTEM_GEUSSERS=new MimeGeusser.SystemGeusser();
 	private static final Map<String,String> SUBCLASSES=new HashMap<>();
 	private static final Map<String,String> ALIASES=new HashMap<>();
 	public static List<MimeGeusser> getGEUSSERS(){
 		return GEUSSERS;
 	}
-	public static MimeGeusser getURL_GEUSSER(){
+	public static MimeGeusser.URLPatternGeusser getURL_GEUSSER(){
 		return URL_GEUSSER;
 	}
 	public static List<String> geuss(byte[] beginning){

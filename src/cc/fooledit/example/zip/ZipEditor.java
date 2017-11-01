@@ -31,14 +31,14 @@ public class ZipEditor implements DataEditor<ZipData>{
 	public Node edit(ZipData data){
 		List<DataEditor> editors=DataObjectTypeRegistry.getDataEditors(data.getContent().getClass());
 		if(!editors.isEmpty())
-			return editors.get(0).edit(data);
+			return editors.get(0).edit(data.getContent());
 		return null;
 	}
 	@Override
 	public Node edit(ZipData data,Object remark){
 		List<DataEditor> editors=DataObjectTypeRegistry.getDataEditors(data.getContent().getClass());
 		if(!editors.isEmpty())
-			return editors.get(0).edit(data,remark);
+			return editors.get(0).edit(data.getContent(),remark);
 		return null;
 	}
 	@Override

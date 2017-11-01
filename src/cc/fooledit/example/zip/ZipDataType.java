@@ -53,10 +53,7 @@ public class ZipDataType implements DataObjectType<ZipData>{
 	}
 	@Override
 	public ZipData readFrom(InputStream in) throws Exception{
-		CompressorInputStream decompressed=CompressorStreamFactory.getSingleton().createCompressorInputStream(in);
-
-		DataObjectType contentType=null;
-		return new ZipData(contentType.readFrom(decompressed));
+		return readFrom(in,null);//FIXME
 	}
 	@Override
 	public ZipData readFrom(InputStream in,URL url) throws Exception{
@@ -64,11 +61,12 @@ public class ZipDataType implements DataObjectType<ZipData>{
 		String file=url.getFile();
 		if(file.contains("."))
 			file=file.substring(0,file.lastIndexOf('.'));
-		List<String> geuss=FiletypeRegistry.geuss(new URL(url.getProtocol(),url.getHost(),url.getPort(),file));
+		url=new URL(url.getProtocol(),url.getHost(),url.getPort(),file);
+		List<String> geuss=FiletypeRegistry.geuss(url);
 		if(!geuss.isEmpty()){
 			List<DataObjectType> contentType=DataObjectTypeRegistry.getPreferedDataObjectType(new MimeType(geuss.get(0)));
 			if(!contentType.isEmpty())
-				return new ZipData(contentType.get(0).readFrom(in));
+				return new ZipData(contentType.get(0).readFrom(decompressed,url));
 		}
 		throw new Exception();
 	}

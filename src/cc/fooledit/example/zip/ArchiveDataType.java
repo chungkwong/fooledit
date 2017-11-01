@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.zip;
+import cc.fooledit.api.*;
 import cc.fooledit.model.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import org.apache.commons.compress.archivers.*;
 /**
@@ -41,7 +43,7 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 	}
 	@Override
 	public ArchiveData create(){
-		return new ArchiveData(Collections.emptyList());
+		return new ArchiveData(Collections.emptyList(),null);
 	}
 	@Override
 	public void writeTo(ArchiveData data,OutputStream out) throws Exception{
@@ -55,11 +57,45 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 			while((entry=archive.getNextEntry())!=null){
 				entries.add(entry);
 			}
-			return new ArchiveData(entries);
+			return new ArchiveData(entries,null);
+		}
+	}
+	@Override
+	public ArchiveData readFrom(InputStream in,URL url) throws Exception{
+		String mime=FiletypeRegistry.getURL_GEUSSER().geuss(url).get(0);
+		try(ArchiveInputStream archive=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(mime),in)){
+			ArchiveEntry entry;
+			List<ArchiveEntry> entries=new ArrayList<>();
+			while((entry=archive.getNextEntry())!=null){
+				entries.add(entry);
+			}
+			return new ArchiveData(entries,url);
 		}
 	}
 	@Override
 	public String getName(){
 		return "archive";
+	}
+	public static void main(String[] args){
+		System.err.println(new ArchiveStreamFactory().getInputStreamArchiveNames());
+		System.err.println(ArchiveStreamFactory.TAR);
+	}
+
+	private static String getArchiver(String mime){
+		return mime2archive.get(mime);
+	}
+	private static final Map<String,String> mime2archive=new HashMap<>();
+	static{
+		mime2archive.put("application/x-7z-compressed","7Z");
+		mime2archive.put("application/x-archive","AR");
+		mime2archive.put("application/x-arj","ARJ");
+		mime2archive.put("application/x-cpio","CPIO");
+		mime2archive.put("application/x-gtar","TAR");
+		mime2archive.put("application/java-archive","JAR");
+		mime2archive.put("application/x-java-archive","JAR");
+		mime2archive.put("application/x-jar","JAR");
+		mime2archive.put("application/x-tar","TAR");
+		mime2archive.put("application/zip","ZIP");
+		mime2archive.put("application/x-zip-compressed","ZIP");
 	}
 }

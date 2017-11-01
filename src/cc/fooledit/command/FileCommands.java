@@ -74,7 +74,6 @@ public class FileCommands{
 		}
 	}
 	public static void open(URL file,MimeType mime){
-
 		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
 			if(tryOpen(file,type,mime))
 				return;

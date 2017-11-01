@@ -70,7 +70,8 @@ public class DataObjectRegistry{
 			if(old.isPresent())
 				return old.get();
 			try{
-				object=builder.readFrom(new URL(uri).openConnection().getInputStream());
+				URL url=new URL(uri);
+				object=builder.readFrom(url.openConnection().getInputStream(),url);
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 				object=builder.create();

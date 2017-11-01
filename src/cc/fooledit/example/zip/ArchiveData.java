@@ -16,6 +16,7 @@
  */
 package cc.fooledit.example.zip;
 import cc.fooledit.model.*;
+import java.net.*;
 import java.util.*;
 import org.apache.commons.compress.archivers.*;
 /**
@@ -24,12 +25,16 @@ import org.apache.commons.compress.archivers.*;
  */
 public class ArchiveData implements DataObject<ArchiveData>{
 	private final List<ArchiveEntry> entries;
-	public ArchiveData(List<ArchiveEntry> entries){
+	private final URL url;
+	public ArchiveData(List<ArchiveEntry> entries,URL url){
 		this.entries=entries;
-
+		this.url=url;
 	}
 	public List<ArchiveEntry> getEntries(){
 		return entries;
+	}
+	public URL getUrl(){
+		return url;
 	}
 	@Override
 	public DataObjectType<ArchiveData> getDataObjectType(){

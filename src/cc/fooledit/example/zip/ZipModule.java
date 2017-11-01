@@ -27,6 +27,21 @@ public class ZipModule{
 		DataObjectTypeRegistry.addDataEditor(()->ArchiveEditor.INSTANCE,ArchiveData.class);
 		DataObjectTypeRegistry.addDataObjectType(ZipDataType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->ZipEditor.INSTANCE,ZipData.class);
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.7z$","application/x-7z-compressed");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.ar$","application/x-archive");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.arj$","application/x-arj");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.bz2$","application/x-bzip2");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.cpio$","application/x-cpio");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.gz$","application/x-gzip");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.jar$","application/x-jar");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.pack$","application/x-java-pack200");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.lz4$","application/x-lz4");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.lzma$","application/x-lzma");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.tar$","application/x-tar");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.xz$","application/x-xz");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.zip$","application/x-zip-compressed");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.Z$","application/zlib");
+		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.zz$","application/zlib");
 	}
 	public static void onUnLoad(){
 
