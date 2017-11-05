@@ -26,6 +26,7 @@ import cc.fooledit.example.terminal.*;
 import cc.fooledit.example.text.*;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
+import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import com.github.chungkwong.json.*;
@@ -72,6 +73,9 @@ public class Main extends Application{
 	public Main(){
 		INSTANCE=this;
 		System.setProperty("user.dir",SYSTEM_PATH.toString());
+		URL.setURLStreamHandlerFactory(URLProtocolRegistry.get());
+		URLConnection.setContentHandlerFactory(ContentTypeRegistry.get());
+		URLConnection.setFileNameMap(FileNamePatternRegistry.get());
 		notifier=new Notifier(this);
 		Logger.getGlobal().setLevel(Level.INFO);
 		try{

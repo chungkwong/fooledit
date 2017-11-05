@@ -126,8 +126,8 @@ public class ArchiveStreamHandler extends URLStreamHandler{
 		// 2. relative (i.e. url + foo/bar/baz.ext)
 		// 3. anchor-only (i.e. url + #foo), which we already did (refOnly)
 		boolean absoluteSpec=false;
-		if(spec.length()>=4){
-			absoluteSpec=spec.substring(0,4).equalsIgnoreCase("jar:");
+		if(spec.length()>=8){
+			absoluteSpec=spec.substring(0,8).equalsIgnoreCase("archive:");
 		}
 		spec=spec.substring(start,limit);
 		if(absoluteSpec){
@@ -206,7 +206,8 @@ class ArchiveConnection extends URLConnection{
 			archiveFileURLConnection=getArchiveFileURL().openConnection();
 			if((entryName!=null)){
 				try{
-					archiveFile=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(archiveFileURLConnection.getContentType()),archiveFileURLConnection.getInputStream());
+					archiveFile=new ArchiveStreamFactory().createArchiveInputStream(archiveFileURLConnection.getInputStream());
+					//archiveFile=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(archiveFileURLConnection.getContentType()),archiveFileURLConnection.getInputStream());
 					while((archiveEntry=archiveFile.getNextEntry())!=null){
 						if(archiveEntry.getName().equals(entryName))
 							break;
@@ -370,5 +371,11 @@ class ArchiveConnection extends URLConnection{
 		mime2archive.put("application/x-tar","TAR");
 		mime2archive.put("application/zip","ZIP");
 		mime2archive.put("application/x-zip-compressed","ZIP");
+	}
+	public static void main(String[] args) throws Exception{
+		System.out.println(new URL("file:/home/kwong/javatool/bsh-2.0b4.jar").getFile());
+		URL url=new URL(new URL("file:/home/kwong/javatool/bsh-2.0b4.jar"),"archive:file:/home/kwong/javatool//bsh-2.0b4.jar!/META-INF/MANIFEST.MF",new ArchiveStreamHandler());
+		BufferedReader in=new BufferedReader(new InputStreamReader(url.openStream()));
+		in.lines().forEach((s)->System.out.println(s));
 	}
 }

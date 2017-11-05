@@ -14,35 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.util;
-import java.lang.ref.*;
-import java.util.function.*;
+package cc.fooledit.spi;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Cache<T> implements Supplier<T>{
-	private final Supplier<T> supplier;
-	private SoftReference<T> cache;
-	private boolean nulled=false;
-	public Cache(Supplier<T> supplier){
-		this.supplier=supplier;
-	}
-	@Override
-	public T get(){
-		T obj;
-		if(nulled)
-			return null;
-		if(cache!=null&&(obj=cache.get())!=null){
-			return obj;
-		}else{
-			obj=supplier.get();
-			if(obj==null)
-				nulled=true;
-			else{
-				cache=new SoftReference<>(obj);
-			}
-			return obj;
-		}
-	}
+public class ServiceRegistry{
+
 }
