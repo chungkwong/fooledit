@@ -1,3 +1,5 @@
 /dist/
 /modules/mode.*/parser.jar
 *.tokens
+/nbproject/private/
+/build/

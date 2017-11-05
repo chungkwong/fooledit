@@ -32,6 +32,7 @@ import java.util.logging.*;
 import java.util.stream.*;
 import javafx.scene.Node;
 import org.antlr.v4.runtime.*;
+import org.fxmisc.richtext.NavigationActions;
 import org.fxmisc.richtext.model.*;
 /**
  *
@@ -116,7 +117,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("scroll-to-bottom",(area)->area.getArea().showParagraphAtBottom(area.getArea().getCurrentParagraph()));
 		addCommand("move-to-paragraph",Collections.singletonList("line"),(args,area)->{
 				int index=SchemeConverter.toInteger(ScmList.first(args));
-				area.getArea().moveTo(index,Math.min(area.getArea().getCaretColumn(),area.getArea().getParagraphLenth(index)));
+				area.getArea().moveTo(index,Math.min(area.getArea().getCaretColumn(),area.getArea().getParagraphLength(index)));
 				area.getArea().showParagraphInViewport(index);
 				return null;
 		});

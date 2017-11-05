@@ -41,6 +41,7 @@ import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.*;
+import org.fxmisc.richtext.Caret.CaretVisibility;
 import org.fxmisc.richtext.model.*;
 import org.reactfx.collection.*;
 import org.reactfx.value.*;
@@ -75,7 +76,7 @@ public class CodeEditor extends BorderPane{
 				area.setStyle("-fx-caret-blink-rate:500ms;");
 			else
 				area.setStyle("-fx-caret-blink-rate:0ms;");
-			area.showCaretProperty().setValue(ViewActions.CaretVisibility.ON);
+			area.showCaretProperty().setValue(CaretVisibility.ON);
 		});
 		indentPolicy=IndentPolicy.AS_PREVIOUS;
 
@@ -373,7 +374,7 @@ public class CodeEditor extends BorderPane{
 	public void nextLine(NavigationActions.SelectionPolicy policy){
 		int targetParagraph=area.getCurrentParagraph()+1;
 		if(targetParagraph<area.getParagraphs().size())
-			area.moveTo(targetParagraph,Math.min(area.getCaretColumn(),area.getParagraphLenth(targetParagraph)),policy);
+			area.moveTo(targetParagraph,Math.min(area.getCaretColumn(),area.getParagraphLength(targetParagraph)),policy);
 		else
 			area.end(policy);
 	}
@@ -388,7 +389,7 @@ public class CodeEditor extends BorderPane{
 	public void previousLine(NavigationActions.SelectionPolicy policy){
 		int targetParagraph=area.getCurrentParagraph()-1;
 		if(targetParagraph>=0)
-			area.moveTo(targetParagraph,Math.min(area.getCaretColumn(),area.getParagraphLenth(targetParagraph)),policy);
+			area.moveTo(targetParagraph,Math.min(area.getCaretColumn(),area.getParagraphLength(targetParagraph)),policy);
 		else
 			area.start(policy);
 	}
@@ -397,7 +398,7 @@ public class CodeEditor extends BorderPane{
 		if(currentParagraph+1<area.getParagraphs().size())
 			area.deleteText(currentParagraph,0,currentParagraph+1,0);
 		else
-			area.deleteText(currentParagraph,0,currentParagraph,area.getParagraphLenth(currentParagraph));
+			area.deleteText(currentParagraph,0,currentParagraph,area.getParagraphLength(currentParagraph));
 	}
 	public void swapAnchorAndCaret(){
 		area.selectRange(area.getCaretPosition(),area.getAnchor());
@@ -413,28 +414,10 @@ public class CodeEditor extends BorderPane{
 	private void update(PlainTextChange e){
 		if(changing||markers.isEmpty())
 			return;
-		int oldPos;
-		int newPos;
-		switch(e.getType()){
-			case DELETION:
-				oldPos=e.getRemovalEnd();
-				newPos=e.getPosition();
-				unmark(e.getPosition(),e.getRemovalEnd());
-//				selections.removeIf((range)->range.getStart()<=e.getRemovalEnd()&&e.getPosition()<=range.getEnd());
-				break;
-			case INSERTION:
-				oldPos=e.getPosition();
-				newPos=e.getInsertionEnd();
-				break;
-			case REPLACEMENT:
-				oldPos=e.getRemovalEnd();
-				newPos=e.getInsertionEnd();
-				unmark(e.getPosition(),e.getRemovalEnd());
-//				selections.removeIf((range)->range.getStart()<=e.getRemovalEnd()&&e.getPosition()<=range.getEnd());
-				break;
-			default:
-				throw new RuntimeException();
-		}
+	        int oldPos=e.getRemovalEnd();
+                int newPos=e.getInsertionEnd();
+                unmark(e.getPosition(),e.getRemovalEnd());
+                //selections.removeIf((range)->range.getStart()<=e.getRemovalEnd()&&e.getPosition()<=range.getEnd());
 		int diff=newPos-oldPos;
 		Optional<Pair<Marker,Marker>> selection=selections.stream().
 				filter((s)->s.getKey().getOffset()<=e.getPosition()&&s.getValue().getOffset()>=e.getRemovalEnd()).findAny();
