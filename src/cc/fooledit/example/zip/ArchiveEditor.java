@@ -18,6 +18,7 @@ package cc.fooledit.example.zip;
 import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
+import java.io.*;
 import java.net.*;
 import java.util.logging.*;
 import javafx.scene.*;
@@ -37,7 +38,12 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 			entries.forEach((entry)->{
 				URL url=null;
 				try{
-					url=new URL(data.getUrl(),null,null);//FIXME
+					url=new URL(data.getUrl(),'!'+entry.getName(),new URLStreamHandler() {
+						@Override
+						protected URLConnection openConnection(URL u) throws IOException{
+							throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+						}
+					});//FIXME
 				}catch(MalformedURLException ex){
 					Logger.getGlobal().log(Level.SEVERE,null,ex);
 				}
