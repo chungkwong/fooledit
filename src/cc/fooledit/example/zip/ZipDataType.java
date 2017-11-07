@@ -53,11 +53,19 @@ public class ZipDataType implements DataObjectType<ZipData>{
 	}
 	@Override
 	public ZipData readFrom(InputStream in) throws Exception{
-		return readFrom(in,null);//FIXME
+		CompressorInputStream decompressed=CompressorStreamFactory.getSingleton().createCompressorInputStream(in);
+		List<String> geuss=FiletypeRegistry.guess(in);
+		if(!geuss.isEmpty()){
+			List<DataObjectType> contentType=DataObjectTypeRegistry.getPreferedDataObjectType(new MimeType(geuss.get(0)));
+			if(!contentType.isEmpty())
+				return new ZipData(contentType.get(0).readFrom(decompressed));
+		}
+		throw new Exception();
 	}
 	@Override
-	public ZipData readFrom(InputStream in,URL url) throws Exception{
-		CompressorInputStream decompressed=CompressorStreamFactory.getSingleton().createCompressorInputStream(in);
+	public ZipData readFrom(URLConnection connection) throws Exception{
+		CompressorInputStream decompressed=CompressorStreamFactory.getSingleton().createCompressorInputStream(connection.getInputStream());
+		URL url=connection.getURL();
 		String file=url.getFile();
 		if(file.contains("."))
 			file=file.substring(0,file.lastIndexOf('.'));
@@ -66,7 +74,7 @@ public class ZipDataType implements DataObjectType<ZipData>{
 		if(!geuss.isEmpty()){
 			List<DataObjectType> contentType=DataObjectTypeRegistry.getPreferedDataObjectType(new MimeType(geuss.get(0)));
 			if(!contentType.isEmpty())
-				return new ZipData(contentType.get(0).readFrom(decompressed,url));
+				return new ZipData(contentType.get(0).readFrom(decompressed));
 		}
 		throw new Exception();
 	}

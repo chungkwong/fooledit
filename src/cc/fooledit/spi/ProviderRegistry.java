@@ -14,29 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.model;
-import java.io.*;
-import java.net.*;
+package cc.fooledit.spi;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface DataObjectType<T extends DataObject>{
-	boolean canRead();
-	boolean canWrite();
-	boolean canCreate();
-	T create();
-	void writeTo(T data,OutputStream out)throws Exception;
-	T readFrom(InputStream in)throws Exception;
-	String getName();
-	default void writeTo(T data,URLConnection connection)throws Exception{
-		try(OutputStream out=connection.getOutputStream()){
-			writeTo(data,out);
+public class ProviderRegistry{
+	private static final Map<String,Map<String,String>> serviceProviders=new HashMap<>();
+	public static void register(String service,String provider,String module){
+		Map<String,String> providers=serviceProviders.get(service);
+		if(providers==null){
+			providers=new HashMap<>();
+			serviceProviders.put(service,providers);
 		}
+		providers.put(provider,module);
 	}
-	default T readFrom(URLConnection connection)throws Exception{
-		try(InputStream in=connection.getInputStream()){
-			return readFrom(in);
-		}
+	public static String get(String service,String provider){
+		Map<String,String> providers=serviceProviders.get(service);
+		return providers!=null?providers.get(provider):null;
 	}
 }

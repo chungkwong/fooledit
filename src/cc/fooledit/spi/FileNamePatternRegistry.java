@@ -31,10 +31,10 @@ public class FileNamePatternRegistry implements FileNameMap{
 	private FileNamePatternRegistry(){
 
 	}
-	public static void registry(String suffix,String type){
+	public static void register(String suffix,String type){
 		suffices.put(suffix,type);
 	}
-	public static void registryWildcard(String regex,String type){
+	public static void registerWildcard(String regex,String type){
 		wildcard.add(0,new Pair<>(Pattern.compile(regex).asPredicate(),type));
 	}
 	public static FileNamePatternRegistry get(){
@@ -44,10 +44,11 @@ public class FileNamePatternRegistry implements FileNameMap{
 	public String getContentTypeFor(String fileName){
 		int delim=fileName.lastIndexOf('.');
 		if(delim>0){
-		String type=suffices.get(fileName.substring(delim+1));
-		if(type!=null)
-			return type;
+			String type=suffices.get(fileName.substring(delim+1));
+			if(type!=null)
+				return type;
 		}
-		return wildcard.stream().filter((entry)->entry.getKey().test(fileName)).findFirst().get().getValue();
+		Optional<String> type=wildcard.stream().filter((entry)->entry.getKey().test(fileName)).findFirst().map((entry)->entry.getValue());
+		return type.orElse("application/octet-stream");
 	}
 }

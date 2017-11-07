@@ -18,6 +18,7 @@ package cc.fooledit.api;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -34,11 +35,24 @@ public class FiletypeRegistry{
 	public static MimeGeusser.URLPatternGeusser getURL_GEUSSER(){
 		return URL_GEUSSER;
 	}
-	public static List<String> geuss(byte[] beginning){
+	public static List<String> guess(byte[] beginning){
 		for(MimeGeusser geusser:GEUSSERS){
 			List<String> geuss=geusser.geuss(beginning);
 			if(!geuss.isEmpty()){
 				return geuss;
+			}
+		}
+		return Collections.singletonList("application/octet-stream");
+	}
+	public static List<String> guess(InputStream in){
+		if(in.markSupported()){
+			try{
+				int size=Math.min(in.available(),4096);
+				in.mark(size);
+				byte[] buf=new byte[size];
+				return guess(buf);
+			}catch(IOException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
 		}
 		return Collections.singletonList("application/octet-stream");

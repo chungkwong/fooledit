@@ -61,9 +61,10 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 		}
 	}
 	@Override
-	public ArchiveData readFrom(InputStream in,URL url) throws Exception{
+	public ArchiveData readFrom(URLConnection connection) throws Exception{
+		URL url=connection.getURL();
 		String mime=FiletypeRegistry.getURL_GEUSSER().geuss(url).get(0);
-		try(ArchiveInputStream archive=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(mime),in)){
+		try(ArchiveInputStream archive=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(mime),connection.getInputStream())){
 			ArchiveEntry entry;
 			List<ArchiveEntry> entries=new ArrayList<>();
 			while((entry=archive.getNextEntry())!=null){

@@ -16,6 +16,7 @@
  */
 package cc.fooledit.example.zip;
 import cc.fooledit.api.*;
+import cc.fooledit.spi.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -42,6 +43,8 @@ public class ZipModule{
 		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.zip$","application/x-zip-compressed");
 		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.Z$","application/zlib");
 		FiletypeRegistry.getURL_GEUSSER().registerPathPattern(".*\\.zz$","application/zlib");
+		URLProtocolRegistry.register("archive",()->new ArchiveStreamHandler());
+		URLProtocolRegistry.register("compressed",()->new ZipStreamHandler());
 	}
 	public static void onUnLoad(){
 

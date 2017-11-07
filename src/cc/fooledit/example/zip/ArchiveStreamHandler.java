@@ -142,7 +142,7 @@ public class ArchiveStreamHandler extends URLStreamHandler{
 			afterBangSlash=canonizer.canonizeString(afterBangSlash);
 			file=toBangSlash+afterBangSlash;
 		}
-		setURL(url,"jar","",-1,file,ref);
+		setURL(url,"archive","",-1,file,ref);
 	}
 	private String parseAbsoluteSpec(String spec){
 		URL url=null;

@@ -87,14 +87,14 @@ public class FileCommands{
 		else
 			try{
 				File file=new File(new URI(url));
-				data.getDataObjectType().writeTo(data,new FileOutputStream(file),file.toURI().toURL());
+				data.getDataObjectType().writeTo(data,file.toURI().toURL().openConnection());
 			}catch(Exception ex){
 				Logger.getLogger(FileCommands.class.getName()).log(Level.SEVERE,null,ex);
 			}
 	}
 	private static boolean tryOpen(URL f,DataObjectType type,MimeType mime){
-		try(InputStream in=f.openStream()){
-			Main.addAndShow(type.readFrom(in,f),DataObjectRegistry.createProperties(extractFilename(f),f.toString(),mime.toString()));
+		try{
+			Main.addAndShow(type.readFrom(f.openConnection()),DataObjectRegistry.createProperties(extractFilename(f),f.toString(),mime.toString()));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return false;
@@ -112,8 +112,8 @@ public class FileCommands{
 	}
 	public static void saveAs(Path p){
 		DataObject data=Main.INSTANCE.getCurrentDataObject();
-		try(OutputStream out=Files.newOutputStream(p)){
-			data.getDataObjectType().writeTo(data,out,p.toUri().toURL());
+		try{
+			data.getDataObjectType().writeTo(data,p.toUri().toURL().openConnection());
 			DataObjectRegistry.getProperties(data).put(DataObjectRegistry.URI,p.toUri().toString());
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);

@@ -31,10 +31,10 @@ public class ContentTypeRegistry implements ContentHandlerFactory{
 	private ContentTypeRegistry(){
 
 	}
-	public static void registry(String mimetype,Supplier<ContentHandler> handler){
+	public static void register(String mimetype,Supplier<ContentHandler> handler){
 		registry.put(mimetype,handler);
 	}
-	public static void registryWildcard(String regex,Supplier<ContentHandler> handler){
+	public static void registerWildcard(String regex,Supplier<ContentHandler> handler){
 		wildcard.add(0,new Pair<>(Pattern.compile(regex).asPredicate(),handler));
 	}
 	public static ContentTypeRegistry get(){

@@ -28,7 +28,7 @@ public class URLProtocolRegistry implements URLStreamHandlerFactory{
 	private URLProtocolRegistry(){
 
 	}
-	public static void registry(String protocol,Supplier<URLStreamHandler> handler){
+	public static void register(String protocol,Supplier<URLStreamHandler> handler){
 		registry.put(protocol,handler);
 	}
 	public static URLProtocolRegistry get(){
@@ -52,7 +52,9 @@ public class URLProtocolRegistry implements URLStreamHandlerFactory{
 				}
 			}
 			if(cls!=null){
-				return (URLStreamHandler)cls.newInstance();
+				URLStreamHandler handler=(URLStreamHandler)cls.newInstance();
+				registry.put(protocol,()->handler);
+				return handler;
 			}
 		}catch(Exception e){
 
