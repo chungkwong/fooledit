@@ -66,7 +66,44 @@ public class MarkableInputStream extends InputStream{
 	}
 	@Override
 	public int read(byte[] b,int off,int len) throws IOException{
-		return super.read(b,off,len); //TODO
+		int count=0;
+		if(readLimit==-1){
+			if(buf==null){
+				count=base.read(b,off,len);
+			}else{
+				count=Math.min(len,writePosition-readPosition);
+				System.arraycopy(buf,readPosition,b,off,count);
+				readPosition+=count;
+				off+=count;
+				len-=count;
+				if(readPosition==writePosition)
+					buf=null;
+				if(len>0){
+					int read=base.read(b,off,len);
+					if(read!=-1)
+						count+=read;
+				}
+			}
+		}else{
+			if(readPosition<writePosition){
+				count=Math.min(len,writePosition-readPosition);
+				System.arraycopy(buf,readPosition,b,off,count);
+				readPosition+=count;
+				off+=count;
+				len-=count;
+			}
+			if(len>0){
+				count=base.read(b,off,len);
+				if(count!=-1){
+					System.arraycopy(b,off,buf,writePosition,count);
+					writePosition+=count;
+					readPosition+=count;
+					len-=count;
+					off+=count;
+				}
+			}
+		}
+		return count;
 	}
 	@Override
 	public int read() throws IOException{

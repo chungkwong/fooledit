@@ -64,6 +64,7 @@ public class ZipDataType implements DataObjectType<ZipData>{
 	}
 	@Override
 	public ZipData readFrom(URLConnection connection) throws Exception{
+		System.out.println(connection.getURL());
 		CompressorInputStream decompressed=CompressorStreamFactory.getSingleton().createCompressorInputStream(connection.getInputStream());
 		URL url=connection.getURL();
 		String file=url.getFile();

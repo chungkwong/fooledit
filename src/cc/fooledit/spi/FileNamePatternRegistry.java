@@ -31,7 +31,7 @@ public class FileNamePatternRegistry implements FileNameMap{
 	private FileNamePatternRegistry(){
 
 	}
-	public static void register(String suffix,String type){
+	public static void registerSuffix(String suffix,String type){
 		suffices.put(suffix,type);
 	}
 	public static void registerWildcard(String regex,String type){

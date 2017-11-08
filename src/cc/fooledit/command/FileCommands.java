@@ -36,7 +36,7 @@ public class FileCommands{
 	}
 	public static void open(){
 		FileSystemData files=new FileSystemData();
-		files.setInitialPath(geussDefaultPath());
+		files.setInitialPath(guessDefaultPath());
 		files.setAction((paths)->{
 			paths.forEach((p)->open(p));
 			DataObjectRegistry.removeDataObject(files);
@@ -103,7 +103,7 @@ public class FileCommands{
 	}
 	public static void saveAs(){
 		FileSystemData files=new FileSystemData();
-		files.setInitialPath(geussDefaultPath());
+		files.setInitialPath(guessDefaultPath());
 		files.setAction((paths)->{
 			paths.forEach((p)->saveAs(p));
 			DataObjectRegistry.removeDataObject(files);
@@ -119,14 +119,14 @@ public class FileCommands{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
-	private static Path geussDefaultPath(){
+	private static Path guessDefaultPath(){
 		try{
 			return new File(new URI(DataObjectRegistry.getURL(Main.getCurrentDataObject()))).toPath();
 		}catch(Exception ex){
 			return null;
 		}
 	}
-	private static MimeType geussContentType(Path file){
+	private static MimeType guessContentType(Path file){
 		try{
 			return new MimeType(Files.probeContentType(file));
 		}catch(IOException|MimeTypeParseException ex){

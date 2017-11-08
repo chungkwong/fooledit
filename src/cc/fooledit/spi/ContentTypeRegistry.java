@@ -28,6 +28,9 @@ public class ContentTypeRegistry implements ContentHandlerFactory{
 	private static final ContentTypeRegistry INSTNACE=new ContentTypeRegistry();
 	private static final Map<String,Supplier<ContentHandler>> registry=new HashMap<>();
 	private static final List<Pair<Predicate<String>,Supplier<ContentHandler>>> wildcard=new LinkedList<>();
+	private static final Map<String,String> SUBCLASSES=new HashMap<>();
+	private static final Map<String,String> ALIASES=new HashMap<>();
+
 	private ContentTypeRegistry(){
 
 	}
@@ -39,6 +42,25 @@ public class ContentTypeRegistry implements ContentHandlerFactory{
 	}
 	public static ContentTypeRegistry get(){
 		return INSTNACE;
+	}
+	public static void registerSubclass(String subclass,String parent){
+		SUBCLASSES.put(subclass,parent);
+	}
+	public static boolean isSubclassOf(String type,String ancestor){
+		type=normalize(type);
+		ancestor=normalize(ancestor);
+		while(type!=null){
+			if(type.equals(ancestor))
+				return true;
+			type=normalize(SUBCLASSES.get(type));
+		}
+		return false;
+	}
+	public static void registerAlias(String alias,String standard){
+		ALIASES.put(alias,standard);
+	}
+	public static String normalize(String type){
+		return ALIASES.getOrDefault(type,type);
 	}
 	@Override
 	public ContentHandler createContentHandler(String mimetype){
