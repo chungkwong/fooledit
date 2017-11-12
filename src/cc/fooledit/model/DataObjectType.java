@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.model;
-import java.io.*;
 import java.net.*;
 /**
  *
@@ -26,17 +25,7 @@ public interface DataObjectType<T extends DataObject>{
 	boolean canWrite();
 	boolean canCreate();
 	T create();
-	void writeTo(T data,OutputStream out)throws Exception;
-	T readFrom(InputStream in)throws Exception;
 	String getName();
-	default void writeTo(T data,URLConnection connection)throws Exception{
-		try(OutputStream out=connection.getOutputStream()){
-			writeTo(data,out);
-		}
-	}
-	default T readFrom(URLConnection connection)throws Exception{
-		try(InputStream in=connection.getInputStream()){
-			return readFrom(in);
-		}
-	}
+	void writeTo(T data,URLConnection connection)throws Exception;
+	T readFrom(URLConnection connection) throws Exception;
 }

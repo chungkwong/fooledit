@@ -14,40 +14,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.example.zip;
-import cc.fooledit.*;
-import cc.fooledit.api.*;
+package cc.fooledit.spi;
 import cc.fooledit.model.*;
+import java.io.*;
 import java.net.*;
-import java.util.logging.*;
-import javafx.scene.*;
+import java.util.*;
+import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ArchiveEditor implements DataEditor<ArchiveData>{
-	public static final ArchiveEditor INSTANCE=new ArchiveEditor();
-	private ArchiveEditor(){
+public class ApplicationRegistry extends URLStreamHandler{
+	private static final Map<String,Supplier<DataObject>> registry=new HashMap<>();
+	public static void registry(String path,Supplier<DataObject> factory){
+		registry.put(path,factory);
 	}
 	@Override
-	public Node edit(ArchiveData data){
-		ArchiveViewer viewer=new ArchiveViewer(data.getEntries());
-		viewer.setAction((entries)->{
-			entries.forEach((entry)->{
-				URL url=null;
-				try{
-					url=new URL("archive","",data.getUrl().getFile()+'!'+entry.getName());
-					Main.show(DataObjectRegistry.readFrom(url));
-				}catch(Exception ex){
-					Logger.getGlobal().log(Level.SEVERE,null,ex);
-				}
+	protected URLConnection openConnection(URL u) throws IOException{
+		return new ApplicationURLConnection(u);
+	}
+	private class ApplicationURLConnection extends URLConnection{
+		public ApplicationURLConnection(URL url){
+			super(url);
+		}
+		@Override
+		public void connect() throws IOException{
 
-			});
-		});
-		return viewer;
-	}
-	@Override
-	public String getName(){
-		return "Archive";
+		}
+		@Override
+		public String getContentType(){
+			return super.getContentType(); //To change body of generated methods, choose Tools | Templates.
+		}
+
 	}
 }

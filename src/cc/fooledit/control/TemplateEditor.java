@@ -32,15 +32,15 @@ import javafx.scene.layout.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class TemplateEditor extends Prompt{
-	public static final TemplateEditor INSTANCE=new TemplateEditor();
 	private static final Map<String,Function<Map<Object,Object>,Template>> templateTypes=new HashMap<>();
 	//private static final List<Map<Object,Object>> recent=(List<Map<Object,Object>>)PersistenceStatusManager.getOrDefault("template",()->Collections.emptyList());
-	private TemplateEditor(){
+	private final TemplateChooser chooser=new TemplateChooser();
+	public TemplateEditor(){
 
 	}
 	@Override
 	public javafx.scene.Node edit(Prompt data){
-		return new TemplateChooser();
+		return chooser;
 	}
 	@Override
 	public KeymapRegistry getKeymapRegistry(){
@@ -109,8 +109,10 @@ public class TemplateEditor extends Prompt{
 				props.put("user","kwong");
 				DataObject obj=template.apply(props);
 				System.out.println(template.getMimeType());
-				Main.addAndShow(obj,Helper.hashMap(DataObjectRegistry.TYPE,obj.getDataObjectType(),
-						DataObjectRegistry.MIME,template.getMimeType()));
+				DataObjectRegistry.addDataObject(obj,Helper.hashMap(DataObjectRegistry.TYPE,obj.getDataObjectType().getClass().getName(),
+						DataObjectRegistry.MIME,template.getMimeType(),DataObjectRegistry.DEFAULT_NAME,((Template)item).getName()));
+				Main.show(obj);
+				DataObjectRegistry.removeDataObject(TemplateEditor.this);
 			}
 		}
 	}

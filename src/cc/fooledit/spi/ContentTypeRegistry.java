@@ -30,7 +30,6 @@ public class ContentTypeRegistry implements ContentHandlerFactory{
 	private static final List<Pair<Predicate<String>,Supplier<ContentHandler>>> wildcard=new LinkedList<>();
 	private static final Map<String,String> SUBCLASSES=new HashMap<>();
 	private static final Map<String,String> ALIASES=new HashMap<>();
-
 	private ContentTypeRegistry(){
 
 	}
@@ -61,6 +60,15 @@ public class ContentTypeRegistry implements ContentHandlerFactory{
 	}
 	public static String normalize(String type){
 		return ALIASES.getOrDefault(type,type);
+	}
+	public static List<String> getAllSuperClasses(String type){
+		ArrayList<String> list=new ArrayList<>();
+		while(type!=null){
+			type=normalize(type);
+			list.add(type);
+			type=SUBCLASSES.get(type);
+		}
+		return list;
 	}
 	@Override
 	public ContentHandler createContentHandler(String mimetype){

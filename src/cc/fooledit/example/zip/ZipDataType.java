@@ -17,11 +17,7 @@
 package cc.fooledit.example.zip;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
-import java.io.*;
 import java.net.*;
-import java.util.*;
-import javax.activation.*;
-import org.apache.commons.compress.compressors.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -47,37 +43,12 @@ public class ZipDataType implements DataObjectType<ZipData>{
 		return new ZipData(null);
 	}
 	@Override
-	public void writeTo(ZipData data,OutputStream out) throws Exception{
-		CompressorOutputStream compress=CompressorStreamFactory.getSingleton().createCompressorOutputStream(null,out);
-		data.getContent().getDataObjectType().writeTo(data,compress);
-	}
-	@Override
-	public ZipData readFrom(InputStream in) throws Exception{
-		CompressorInputStream decompressed=CompressorStreamFactory.getSingleton().createCompressorInputStream(in);
-		List<String> geuss=FiletypeRegistry.guess(in);
-		if(!geuss.isEmpty()){
-			List<DataObjectType> contentType=DataObjectTypeRegistry.getPreferedDataObjectType(new MimeType(geuss.get(0)));
-			if(!contentType.isEmpty())
-				return new ZipData(contentType.get(0).readFrom(decompressed));
-		}
-		throw new Exception();
-	}
-	@Override
 	public ZipData readFrom(URLConnection connection) throws Exception{
-		System.out.println(connection.getURL());
-		CompressorInputStream decompressed=CompressorStreamFactory.getSingleton().createCompressorInputStream(connection.getInputStream());
-		URL url=connection.getURL();
-		String file=url.getFile();
-		if(file.contains("."))
-			file=file.substring(0,file.lastIndexOf('.'));
-		url=new URL(url.getProtocol(),url.getHost(),url.getPort(),file);
-		List<String> geuss=FiletypeRegistry.geuss(url);
-		if(!geuss.isEmpty()){
-			List<DataObjectType> contentType=DataObjectTypeRegistry.getPreferedDataObjectType(new MimeType(geuss.get(0)));
-			if(!contentType.isEmpty())
-				return new ZipData(contentType.get(0).readFrom(decompressed));
-		}
-		throw new Exception();
+		return new ZipData(DataObjectRegistry.readFrom(new URL("compressed","",connection.getURL().toString())));
+	}
+	@Override
+	public void writeTo(ZipData data,URLConnection connection) throws Exception{
+		data.getContent().getDataObjectType().writeTo(data,FoolURLConnection.open(new URL("compressed","",connection.getURL().toString())));
 	}
 	@Override
 	public String getName(){

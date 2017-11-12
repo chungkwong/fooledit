@@ -33,7 +33,6 @@ import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
-import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
@@ -169,13 +168,13 @@ public class Main extends Application{
 				MenuItem item=new MenuItem(prop.get(DataObjectRegistry.BUFFER_NAME));
 				item.setOnAction((e)->{
 					try{
-						Path file=new File(new URI(prop.get(DataObjectRegistry.URI))).toPath();
+						URL file=new URI(prop.get(DataObjectRegistry.URI)).toURL();
 						if(prop.containsKey(DataObjectRegistry.MIME)){
-							FileCommands.open(file,new MimeType(prop.get(DataObjectRegistry.MIME)));
+							show(DataObjectRegistry.readFrom(file,new MimeType(prop.get(DataObjectRegistry.MIME))));
 						}else{
-							FileCommands.open(file);
+							show(DataObjectRegistry.readFrom(file));
 						}
-					}catch(URISyntaxException|MimeTypeParseException ex){
+					}catch(Exception ex){
 						Logger.getGlobal().log(Level.SEVERE,null,ex);
 					}
 				});
@@ -200,6 +199,9 @@ public class Main extends Application{
 	}
 	public static void addAndShow(DataObject data,Map<String,String> prop){
 		DataObjectRegistry.addDataObject(data,prop);
+		showDefault(data);
+	}
+	public static void show(DataObject data){
 		showDefault(data);
 	}
 	private static void showDefault(DataObject data){

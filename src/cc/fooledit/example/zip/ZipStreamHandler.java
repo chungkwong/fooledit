@@ -120,7 +120,8 @@ public class ZipStreamHandler extends URLStreamHandler{
 class ZipConnection extends URLConnection{
 	private URL compressedFileURL;
 	private URLConnection compressedFileURLConnection;
-	private CompressorInputStream compressedFile;
+	private CompressorInputStream compressedFileInputStream;
+	private CompressorOutputStream compressedFileOutputStream;
 	private String contentType;
 	public ZipConnection(URL url,ZipStreamHandler handler)
 			throws MalformedURLException,IOException{
@@ -133,18 +134,33 @@ class ZipConnection extends URLConnection{
 	public void connect() throws IOException{
 		if(!connected){
 			compressedFileURLConnection=getCompressedFileURL().openConnection();
-			try{
-				compressedFile=new CompressorStreamFactory().createCompressorInputStream(compressedFileURLConnection.getInputStream());
-			}catch(CompressorException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-			}
 			connected=true;
 		}
 	}
 	@Override
 	public InputStream getInputStream() throws IOException{
-		connect();
-		return compressedFile;
+		if(compressedFileInputStream==null){
+			connect();
+			try{
+				compressedFileInputStream=new CompressorStreamFactory().createCompressorInputStream(compressedFileURLConnection.getInputStream());
+			}catch(CompressorException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+		}
+		return compressedFileInputStream;
+	}
+	@Override
+	public OutputStream getOutputStream() throws IOException{
+		if(compressedFileOutputStream==null){
+			connect();
+			try{
+				String archiver=mime2compressor.get(compressedFileURLConnection.getContentType());
+				compressedFileOutputStream=new CompressorStreamFactory().createCompressorOutputStream(archiver,compressedFileURLConnection.getOutputStream());
+			}catch(CompressorException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+		}
+		return compressedFileOutputStream;
 	}
 	@Override
 	public int getContentLength(){

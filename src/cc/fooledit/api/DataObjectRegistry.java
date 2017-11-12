@@ -20,6 +20,7 @@ import cc.fooledit.setting.*;
 import java.net.*;
 import java.util.*;
 import java.util.logging.*;
+import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -144,5 +145,49 @@ public class DataObjectRegistry{
 		prop.put(MIME,mime);
 		prop.put(URI,uri);
 		return prop;
+	}
+	public static DataObject readFrom(URL url)throws Exception{
+		FoolURLConnection connection=FoolURLConnection.open(url);
+		for(String mime:connection.getPossibleContentTypes()){
+			try{
+				return readFrom(url);
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+		}
+		throw new Exception();
+	}
+	public static DataObject readFrom(URL url,MimeType mime)throws Exception{
+		return readFrom(FoolURLConnection.open(url),mime);
+	}
+	public static DataObject readFrom(URLConnection connection,MimeType mime)throws Exception{
+		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
+			try{
+				return readFrom(connection,type);
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.INFO,null,ex);
+			}
+		}
+		throw new Exception();
+	}
+	public static DataObject readFrom(URL url,DataObjectType type)throws Exception{
+		return readFrom(FoolURLConnection.open(url),type);
+	}
+	public static DataObject readFrom(URLConnection connection,DataObjectType type)throws Exception{
+		String mime=connection.getContentType();
+		DataObject data=type.readFrom(connection);
+		addDataObject(data,Helper.hashMap(URI,connection.getURL().toString(),MIME,mime,DEFAULT_NAME,getLastComponent(connection.getURL().getPath()),TYPE,type.getClass().getName()));
+		return data;
+	}
+	private static String getLastComponent(String path){
+		int i=path.lastIndexOf('/');
+		return i==-1?path:path.substring(i+1);
+	}
+	public static void write(DataObject data) throws Exception{
+		writeTo(data,new URL(getURL(data)));
+	}
+	public static void writeTo(DataObject data,URL url)throws Exception{
+		data.getDataObjectType().writeTo(data,FoolURLConnection.open(url));
+		getProperties(data).put(URI,url.toString());
 	}
 }

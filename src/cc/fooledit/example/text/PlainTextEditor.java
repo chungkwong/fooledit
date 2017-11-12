@@ -15,24 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.text;
-import cc.fooledit.util.Cache;
-import cc.fooledit.model.DataEditor;
-import cc.fooledit.api.MenuRegistry;
-import cc.fooledit.api.MessageRegistry;
-import cc.fooledit.api.CommandRegistry;
-import java.io.*;
-import java.util.logging.*;
-import javafx.application.*;
-import static javafx.application.Application.launch;
+import cc.fooledit.api.*;
+import cc.fooledit.model.*;
+import cc.fooledit.util.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PlainTextEditor extends Application implements DataEditor<TextObject>{
+public class PlainTextEditor implements DataEditor<TextObject>{
 	private final MenuRegistry menuRegistry=new MenuRegistry();
 	public PlainTextEditor(){
 		menuRegistry.getMenuBar().getMenus().add(new Menu("Text"));
@@ -54,41 +46,6 @@ public class PlainTextEditor extends Application implements DataEditor<TextObjec
 		CommandRegistry registry=new CommandRegistry();
 		return registry;
 	});
-	@Override
-	public void start(Stage primaryStage){
-		TextObject data;
-		try{
-			FileInputStream in=new FileInputStream("/home/kwong/下载/train");
-			data=TextObjectType.INSTANCE.readFrom(in);
-			in.close();
-		}catch(Exception ex){
-			Logger.getLogger(PlainTextEditor.class.getName()).log(Level.SEVERE,null,ex);
-			throw new RuntimeException();
-		}
-		Node edit=new PlainTextEditor().edit(data);
-		Button save=new Button("Save");
-		save.setOnAction((e)->{
-			try{
-				FileOutputStream out=new FileOutputStream("/home/kwong/下载/train");
-				data.getDataObjectType().writeTo(data,out);
-				out.close();
-			}catch(Exception ex){
-				Logger.getLogger(PlainTextEditor.class.getName()).log(Level.SEVERE,null,ex);
-			}
-		});
-		Scene scene=new Scene(new BorderPane(edit,save,null,null,null));
-		//new KeymapRegistry(scene,new CommandRegistry()).applyTo(edit);
-		primaryStage.setTitle("IDEM");
-		primaryStage.setScene(scene);
-		primaryStage.setMaximized(true);
-		primaryStage.show();
-	}
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String[] args){
-		launch(args);
-	}
 	@Override
 	public String getName(){
 		return MessageRegistry.getString("TEXT_EDITOR");

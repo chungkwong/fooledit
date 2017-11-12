@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.zip;
-import cc.fooledit.api.*;
 import cc.fooledit.model.*;
-import java.io.*;
+import cc.fooledit.spi.*;
 import java.net.*;
 import java.util.*;
 import org.apache.commons.compress.archivers.*;
@@ -46,24 +45,9 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 		return new ArchiveData(Collections.emptyList(),null);
 	}
 	@Override
-	public void writeTo(ArchiveData data,OutputStream out) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public ArchiveData readFrom(InputStream in) throws Exception{
-		try(ArchiveInputStream archive=new ArchiveStreamFactory().createArchiveInputStream(in)){
-			ArchiveEntry entry;
-			List<ArchiveEntry> entries=new ArrayList<>();
-			while((entry=archive.getNextEntry())!=null){
-				entries.add(entry);
-			}
-			return new ArchiveData(entries,null);
-		}
-	}
-	@Override
 	public ArchiveData readFrom(URLConnection connection) throws Exception{
 		URL url=connection.getURL();
-		String mime=FiletypeRegistry.getURL_GEUSSER().geuss(url).get(0);
+		String mime=ContentTypeDetectorRegistry.geuss(connection).get(0);
 		try(ArchiveInputStream archive=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(mime),connection.getInputStream())){
 			ArchiveEntry entry;
 			List<ArchiveEntry> entries=new ArrayList<>();
@@ -98,5 +82,9 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 		mime2archive.put("application/x-tar","TAR");
 		mime2archive.put("application/zip","ZIP");
 		mime2archive.put("application/x-zip-compressed","ZIP");
+	}
+	@Override
+	public void writeTo(ArchiveData data,URLConnection connection) throws Exception{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

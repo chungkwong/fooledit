@@ -17,6 +17,7 @@
 package cc.fooledit.example.text;
 import cc.fooledit.model.*;
 import java.io.*;
+import java.net.*;
 import java.util.stream.*;
 /**
  *
@@ -36,12 +37,22 @@ public class TextObjectType implements DataObjectType<TextObject>{
 		return true;
 	}
 	@Override
+	public void writeTo(TextObject data,URLConnection connection) throws Exception{
+		try(OutputStream out=connection.getOutputStream()){
+			writeTo(data,out);
+		}
+	}
 	public void writeTo(TextObject data,OutputStream out) throws Exception{
 		BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out));
 		writer.write(data.getText().get());
 		writer.flush();
 	}
 	@Override
+	public TextObject readFrom(URLConnection connection) throws Exception{
+		try(InputStream in=connection.getInputStream()){
+			return readFrom(in);
+		}
+	}
 	public TextObject readFrom(InputStream in) throws Exception{
 		StringBuilder buf=new StringBuilder();
 		BufferedReader reader=new BufferedReader(new InputStreamReader(in));

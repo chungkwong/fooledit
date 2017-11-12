@@ -14,52 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.api;
+package cc.fooledit.spi;
+import cc.fooledit.model.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FiletypeRegistry{
-	private static final List<MimeGeusser> GEUSSERS=new ArrayList<>();
-	private static final MimeGeusser.URLPatternGeusser URL_GEUSSER=new MimeGeusser.URLPatternGeusser();
-	private static final MimeGeusser SYSTEM_GEUSSERS=new MimeGeusser.SystemGeusser();
-	public static List<MimeGeusser> getGEUSSERS(){
+public class ContentTypeDetectorRegistry{
+	private static final List<ContentTypeDetector> GEUSSERS=new ArrayList<>();
+	private static final ContentTypeDetector.URLPatternGeusser URL_GEUSSER=new ContentTypeDetector.URLPatternGeusser();
+	private static final ContentTypeDetector SYSTEM_GEUSSERS=new ContentTypeDetector.SystemGeusser();
+	public static List<ContentTypeDetector> getGEUSSERS(){
 		return GEUSSERS;
 	}
-	public static MimeGeusser.URLPatternGeusser getURL_GEUSSER(){
+	public static ContentTypeDetector.URLPatternGeusser getURL_GEUSSER(){
 		return URL_GEUSSER;
 	}
-	public static List<String> guess(byte[] beginning){
-		for(MimeGeusser geusser:GEUSSERS){
-			List<String> geuss=geusser.geuss(beginning);
-			if(!geuss.isEmpty()){
-				return geuss;
-			}
-		}
-		return Collections.singletonList("application/octet-stream");
-	}
-	public static List<String> guess(InputStream in){
-		if(in.markSupported()){
-			try{
-				int size=Math.min(in.available(),4096);
-				in.mark(size);
-				byte[] buf=new byte[size];
-				return guess(buf);
-			}catch(IOException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-			}
-		}
-		return Collections.singletonList("application/octet-stream");
-	}
-	public static List<String> geuss(URL url){
-		for(MimeGeusser geusser:GEUSSERS){
-			List<String> geuss=geusser.geuss(url);
-			if(!geuss.isEmpty()){
-				return geuss;
+	public static List<String> geuss(URLConnection connection){
+		for(ContentTypeDetector guesser:GEUSSERS){
+			List<String> guess=guesser.listAllPossible(connection);
+			if(!guess.isEmpty()){
+				return guess;
 			}
 		}
 		return Collections.singletonList("application/octet-stream");

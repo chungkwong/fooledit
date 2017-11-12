@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.api;
+package cc.fooledit.model;
 import cc.fooledit.util.*;
 import java.io.*;
 import java.net.*;
@@ -27,10 +27,11 @@ import java.util.stream.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface MimeGeusser{
-	List<String> geuss(byte[] beginning);
-	List<String> geuss(URL url);
-	public static class URLPatternGeusser implements MimeGeusser{
+public interface ContentTypeDetector{
+	enum State{LIKELY,POSSIBLE,IMPOSSIBLE}
+	List<String> listAllPossible(URLConnection connection);
+	State probe(URLConnection connection,String mime);
+	public static class URLPatternGeusser implements ContentTypeDetector{
 		private final List<Pair<Predicate<String>,String>> pattern2mime=new ArrayList<>();
 		public void registerPathPattern(String regex,String mime){
 			registerPathPattern(Pattern.compile(regex).asPredicate(),mime);
@@ -39,36 +40,38 @@ public interface MimeGeusser{
 			pattern2mime.add(new Pair<>(pred,mime));
 		}
 		@Override
-		public List<String> geuss(byte[] beginning){
-			return Collections.emptyList();
-		}
-		@Override
-		public List<String> geuss(URL url){
-			String name=url.toString();
-			List<String> candidates=pattern2mime.stream().filter((pair)->pair.getKey().test(name)).
-					map(Pair::getValue).collect(Collectors.toList());
+		public List<String> listAllPossible(URLConnection connection){
+			String name=connection.getURL().toString();
+			List<String> candidates=pattern2mime.stream().filter((pair)->pair.getKey().test(name)).map(Pair::getValue).collect(Collectors.toList());
 			return candidates;
 		}
-	}
-	public static class SystemGeusser implements MimeGeusser{
 		@Override
-		public List<String> geuss(byte[] beginning){
-			return Collections.emptyList();
+		public State probe(URLConnection connection,String mime){
+			String name=connection.getURL().toString();
+			boolean possible=pattern2mime.stream().filter((pair)->pair.getKey().test(name)).map(Pair::getValue).allMatch((type)->Objects.equals(mime,type));
+			return possible?State.LIKELY:State.POSSIBLE;
+		}
+	}
+	public static class SystemGeusser implements ContentTypeDetector{
+		@Override
+		public List<String> listAllPossible(URLConnection connection){
+			String guess=guess(connection);
+			return guess==null?Collections.emptyList():Collections.singletonList(guess);
 		}
 		@Override
-		public List<String> geuss(URL url){
+		public State probe(URLConnection connection,String mime){
+			return Objects.equals(guess(connection),mime)?State.LIKELY:State.POSSIBLE;
+		}
+		private String guess(URLConnection connection){
 			try{
+				URL url=connection.getURL();
 				String type;
 				if(url.getProtocol().equals("file"))
-					type=Files.probeContentType(new File(url.toURI()).toPath());
+					return Files.probeContentType(new File(url.toURI()).toPath());
 				else
-					type=url.openConnection().getContentType();
-				if(type==null)
-					return Collections.emptyList();
-				else
-					return Collections.singletonList(type);
+					return URLConnection.guessContentTypeFromName(url.getFile());
 			}catch(IOException|URISyntaxException ex){
-				return Collections.emptyList();
+				return null;
 			}
 		}
 	}

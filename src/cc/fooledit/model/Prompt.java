@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.model;
-import java.io.*;
+import java.net.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -42,11 +42,11 @@ public abstract class Prompt implements DataObject<Prompt>,DataObjectType<Prompt
 		return this;
 	}
 	@Override
-	public void writeTo(Prompt data,OutputStream out) throws Exception{
+	public void writeTo(Prompt data,URLConnection connection) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public Prompt readFrom(InputStream in) throws Exception{
+	public Prompt readFrom(URLConnection connection) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

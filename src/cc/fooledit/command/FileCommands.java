@@ -38,46 +38,26 @@ public class FileCommands{
 		FileSystemData files=new FileSystemData();
 		files.setInitialPath(guessDefaultPath());
 		files.setAction((paths)->{
-			paths.forEach((p)->open(p));
+			paths.forEach((p)->{
+				try{
+					Main.show(DataObjectRegistry.readFrom(p.toUri().toURL()));
+				}catch(Exception ex){
+					Logger.getGlobal().log(Level.SEVERE,null,ex);
+				}
+			});
 			DataObjectRegistry.removeDataObject(files);
 		});
-		Main.INSTANCE.addAndShow(files,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("OPEN")));
+		DataObjectRegistry.addDataObject(files,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("OPEN")));
+		Main.INSTANCE.show(files);
 	}
 	public static void openUrl(){
 		Main.INSTANCE.getMiniBuffer().setMode((url)->{
 			try{
-				open(new URL(url));
-			}catch(MalformedURLException ex){
+				Main.show(DataObjectRegistry.readFrom(new URL(url)));
+			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
 		},null,"",new Label("URL:"),null);
-	}
-	public static void open(Path file){
-		try{
-			open(file.toUri().toURL());
-		}catch(MalformedURLException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
-	}
-	public static void open(Path file,MimeType mime){
-		try{
-			open(file.toUri().toURL(),mime);
-		}catch(MalformedURLException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
-	}
-	public static void open(URL file){
-		try{
-			open(file,new MimeType(FiletypeRegistry.geuss(file).get(0)));
-		}catch(MimeTypeParseException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
-	}
-	public static void open(URL file,MimeType mime){
-		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
-			if(tryOpen(file,type,mime))
-				return;
-		}
 	}
 	public static void save(){
 		DataObject data=Main.INSTANCE.getCurrentDataObject();
@@ -86,20 +66,10 @@ public class FileCommands{
 			saveAs();
 		else
 			try{
-				File file=new File(new URI(url));
-				data.getDataObjectType().writeTo(data,file.toURI().toURL().openConnection());
+				DataObjectRegistry.write(data);
 			}catch(Exception ex){
 				Logger.getLogger(FileCommands.class.getName()).log(Level.SEVERE,null,ex);
 			}
-	}
-	private static boolean tryOpen(URL f,DataObjectType type,MimeType mime){
-		try{
-			Main.addAndShow(type.readFrom(f.openConnection()),DataObjectRegistry.createProperties(extractFilename(f),f.toString(),mime.toString()));
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-			return false;
-		}
-		return true;
 	}
 	public static void saveAs(){
 		FileSystemData files=new FileSystemData();
@@ -108,7 +78,8 @@ public class FileCommands{
 			paths.forEach((p)->saveAs(p));
 			DataObjectRegistry.removeDataObject(files);
 		});
-		Main.INSTANCE.addAndShow(files,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("SAVE_AS")));
+		DataObjectRegistry.addDataObject(files,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("SAVE_AS")));
+		Main.INSTANCE.show(files);
 	}
 	public static void saveAs(Path p){
 		DataObject data=Main.INSTANCE.getCurrentDataObject();
@@ -147,6 +118,8 @@ public class FileCommands{
 		return path;
 	}
 	public static void create(){
-		Main.INSTANCE.addAndShow(TemplateEditor.INSTANCE,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("TEMPLATE")));
+		TemplateEditor templateEditor=new TemplateEditor();
+		DataObjectRegistry.addDataObject(templateEditor,Helper.hashMap());
+		Main.INSTANCE.show(templateEditor);
 	}
 }

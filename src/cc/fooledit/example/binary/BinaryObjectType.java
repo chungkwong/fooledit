@@ -17,6 +17,7 @@
 package cc.fooledit.example.binary;
 import cc.fooledit.model.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
 /**
  *
@@ -43,10 +44,20 @@ public class BinaryObjectType implements DataObjectType<BinaryObject>{
 		return new BinaryObject(new byte[0]);
 	}
 	@Override
+	public void writeTo(BinaryObject data,URLConnection connection) throws Exception{
+		try(OutputStream out=connection.getOutputStream()){
+			writeTo(data,out);
+		}
+	}
 	public void writeTo(BinaryObject data,OutputStream out) throws Exception{
 		out.write(data.dataProperty().getValue());
 	}
 	@Override
+	public BinaryObject readFrom(URLConnection connection) throws Exception{
+		try(InputStream in=connection.getInputStream()){
+			return readFrom(in);
+		}
+	}
 	public BinaryObject readFrom(InputStream in) throws Exception{
 		List<byte[]> bufs=new ArrayList<>();
 		List<Integer> lens=new ArrayList<>();

@@ -16,9 +16,7 @@
  */
 package cc.fooledit.example.browser;
 import cc.fooledit.model.*;
-import java.io.*;
-import java.nio.charset.*;
-import java.util.stream.*;
+import java.net.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -37,15 +35,12 @@ public class BrowserDataType implements DataObjectType<BrowserData>{
 		return false;
 	}
 	@Override
-	public void writeTo(BrowserData data,OutputStream out) throws Exception{
+	public void writeTo(BrowserData data,URLConnection connection) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public BrowserData readFrom(InputStream in) throws Exception{
-		String content=new BufferedReader(new InputStreamReader(in,StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
-		BrowserData data=new BrowserData();
-		data.getWebView().getEngine().loadContent(content);
-		return data;
+	public BrowserData readFrom(URLConnection connection) throws Exception{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
 	public BrowserData create(){

@@ -16,7 +16,7 @@
  */
 package cc.fooledit.example.terminal;
 import cc.fooledit.model.*;
-import java.io.*;
+import java.net.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -43,16 +43,16 @@ public class TerminalDataType implements DataObjectType<TerminalData>{
 		return new TerminalData();
 	}
 	@Override
-	public void writeTo(TerminalData data,OutputStream out) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public TerminalData readFrom(InputStream in) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
 	public String getName(){
 		return "terminal";
+	}
+	@Override
+	public void writeTo(TerminalData data,URLConnection connection) throws Exception{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public TerminalData readFrom(URLConnection connection) throws Exception{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }
