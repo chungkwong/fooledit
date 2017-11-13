@@ -16,6 +16,7 @@
  */
 package cc.fooledit.example.zip;
 import cc.fooledit.api.*;
+import cc.fooledit.model.*;
 import cc.fooledit.spi.*;
 /**
  *
@@ -28,21 +29,22 @@ public class ZipModule{
 		DataObjectTypeRegistry.addDataEditor(()->ArchiveEditor.INSTANCE,ArchiveData.class);
 		DataObjectTypeRegistry.addDataObjectType(ZipDataType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->ZipEditor.INSTANCE,ZipData.class);
-		FileNamePatternRegistry.registerSuffix("7z$","application/x-7z-compressed");
-		FileNamePatternRegistry.registerSuffix("ar$","application/x-archive");
-		FileNamePatternRegistry.registerSuffix("arj$","application/x-arj");
-		FileNamePatternRegistry.registerSuffix("bz2$","application/x-bzip2");
-		FileNamePatternRegistry.registerSuffix("cpio$","application/x-cpio");
-		FileNamePatternRegistry.registerSuffix("gz$","application/x-gzip");
-		FileNamePatternRegistry.registerSuffix("jar$","application/x-jar");
-		FileNamePatternRegistry.registerSuffix("pack$","application/x-java-pack200");
-		FileNamePatternRegistry.registerSuffix("lz4$","application/x-lz4");
-		FileNamePatternRegistry.registerSuffix("lzma$","application/x-lzma");
-		FileNamePatternRegistry.registerSuffix("tar$","application/x-tar");
-		FileNamePatternRegistry.registerSuffix("xz$","application/x-xz");
-		FileNamePatternRegistry.registerSuffix("zip$","application/x-zip-compressed");
-		FileNamePatternRegistry.registerSuffix("Z$","application/zlib");
-		FileNamePatternRegistry.registerSuffix("zz$","application/zlib");
+		ContentTypeDetector.SuffixGuesser guesser=ContentTypeDetectorRegistry.getSUFFIX_GEUSSER();
+		guesser.registerSuffix("7z","application/x-7z-compressed");
+		guesser.registerSuffix("ar","application/x-archive");
+		guesser.registerSuffix("arj","application/x-arj");
+		guesser.registerSuffix("bz2","application/x-bzip2");
+		guesser.registerSuffix("cpio","application/x-cpio");
+		guesser.registerSuffix("gz","application/x-gzip");
+		guesser.registerSuffix("jar","application/x-jar");
+		guesser.registerSuffix("pack","application/x-java-pack200");
+		guesser.registerSuffix("lz4","application/x-lz4");
+		guesser.registerSuffix("lzma","application/x-lzma");
+		guesser.registerSuffix("tar","application/x-tar");
+		guesser.registerSuffix("xz","application/x-xz");
+		guesser.registerSuffix("zip","application/x-zip-compressed");
+		guesser.registerSuffix("Z","application/zlib");
+		guesser.registerSuffix("zz","application/zlib");
 		URLProtocolRegistry.register("archive",()->new ArchiveStreamHandler());
 		URLProtocolRegistry.register("compressed",()->new ZipStreamHandler());
 	}

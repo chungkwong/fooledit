@@ -1,9 +1,27 @@
 {
 	"children":[
 		{
-			"name":"ZIP",
+			"name":"NAVIGATE",
 			"children":[
-				{"name":"","command":""}
+				{"name":"FOCUS_NEXT","command":"focus-next"},
+				{"name":"FOCUS_PREVIOUS","command":"focus-previous"},
+				{"name":"FOCUS_UP","command":"focus-up"},
+				{"name":"FOCUS_DOWN","command":"focus-down"},
+				{"name":"FOCUS_FIRST_IN_DIRECTORY","command":"focus-first-in-directory"},
+				{"name":"FOCUS_LAST_IN_DIRECTORY","command":"focus-last-in-directory"},
+				{"name":"FOCUS_FIRST","command":"focus-first"},
+				{"name":"FOCUS_LAST","command":"focus-last"}
+			]
+		},
+		{
+			"name":"EDIT",
+			"children":[
+				{"name":"SELECT","command":"select"},
+				{"name":"SELECT_TO","command":"select-to"},
+				{"name":"DESELECT","command":"deselect"},
+				{"name":"CLEAR_SELECTION","command":"clear-selection"},
+				{},
+				{"name":"SUBMIT","command":"submit"}
 			]
 		}
 	]

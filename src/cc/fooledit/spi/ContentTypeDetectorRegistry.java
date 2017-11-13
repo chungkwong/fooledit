@@ -25,13 +25,17 @@ import java.util.*;
  */
 public class ContentTypeDetectorRegistry{
 	private static final List<ContentTypeDetector> GEUSSERS=new ArrayList<>();
-	private static final ContentTypeDetector.URLPatternGeusser URL_GEUSSER=new ContentTypeDetector.URLPatternGeusser();
-	private static final ContentTypeDetector SYSTEM_GEUSSERS=new ContentTypeDetector.SystemGeusser();
+	private static final ContentTypeDetector.URLPatternGuesser URL_GEUSSER=new ContentTypeDetector.URLPatternGuesser();
+	private static final ContentTypeDetector.SuffixGuesser SUFFIX_GEUSSER=new ContentTypeDetector.SuffixGuesser();
+	private static final ContentTypeDetector SYSTEM_GEUSSERS=new ContentTypeDetector.SystemGuesser();
 	public static List<ContentTypeDetector> getGEUSSERS(){
 		return GEUSSERS;
 	}
-	public static ContentTypeDetector.URLPatternGeusser getURL_GEUSSER(){
+	public static ContentTypeDetector.URLPatternGuesser getURL_GEUSSER(){
 		return URL_GEUSSER;
+	}
+	public static ContentTypeDetector.SuffixGuesser getSUFFIX_GEUSSER(){
+		return SUFFIX_GEUSSER;
 	}
 	public static List<String> geuss(URLConnection connection){
 		for(ContentTypeDetector guesser:GEUSSERS){
@@ -49,6 +53,7 @@ public class ContentTypeDetectorRegistry{
 	}
 	static{
 		GEUSSERS.add(URL_GEUSSER);
+		GEUSSERS.add(SUFFIX_GEUSSER);
 		GEUSSERS.add(SYSTEM_GEUSSERS);
 	}
 }

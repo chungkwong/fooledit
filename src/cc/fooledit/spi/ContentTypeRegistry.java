@@ -24,17 +24,13 @@ import java.util.regex.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ContentTypeRegistry implements ContentHandlerFactory{
+public class ContentTypeRegistry{
 	private static final ContentTypeRegistry INSTNACE=new ContentTypeRegistry();
-	private static final Map<String,Supplier<ContentHandler>> registry=new HashMap<>();
 	private static final List<Pair<Predicate<String>,Supplier<ContentHandler>>> wildcard=new LinkedList<>();
 	private static final Map<String,String> SUBCLASSES=new HashMap<>();
 	private static final Map<String,String> ALIASES=new HashMap<>();
 	private ContentTypeRegistry(){
 
-	}
-	public static void register(String mimetype,Supplier<ContentHandler> handler){
-		registry.put(mimetype,handler);
 	}
 	public static void registerWildcard(String regex,Supplier<ContentHandler> handler){
 		wildcard.add(0,new Pair<>(Pattern.compile(regex).asPredicate(),handler));
@@ -69,12 +65,5 @@ public class ContentTypeRegistry implements ContentHandlerFactory{
 			type=SUBCLASSES.get(type);
 		}
 		return list;
-	}
-	@Override
-	public ContentHandler createContentHandler(String mimetype){
-		Supplier<ContentHandler> handler=registry.get(mimetype);
-		if(handler!=null)
-			return handler.get();
-		return wildcard.stream().filter((entry)->entry.getKey().test(mimetype)).findFirst().get().getValue().get();
 	}
 }

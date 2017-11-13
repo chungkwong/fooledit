@@ -31,7 +31,7 @@ public interface ContentTypeDetector{
 	enum State{LIKELY,POSSIBLE,IMPOSSIBLE}
 	List<String> listAllPossible(URLConnection connection);
 	State probe(URLConnection connection,String mime);
-	public static class URLPatternGeusser implements ContentTypeDetector{
+	public static class URLPatternGuesser implements ContentTypeDetector{
 		private final List<Pair<Predicate<String>,String>> pattern2mime=new ArrayList<>();
 		public void registerPathPattern(String regex,String mime){
 			registerPathPattern(Pattern.compile(regex).asPredicate(),mime);
@@ -52,7 +52,26 @@ public interface ContentTypeDetector{
 			return possible?State.LIKELY:State.POSSIBLE;
 		}
 	}
-	public static class SystemGeusser implements ContentTypeDetector{
+	public static class SuffixGuesser implements ContentTypeDetector{
+		private static final MultiMap<String,String> suffices=new MultiMap<>();
+		public void registerSuffix(String suffix,String mime){
+			suffices.add(suffix,mime);
+		}
+		@Override
+		public List<String> listAllPossible(URLConnection connection){
+			String name=connection.getURL().toString();
+			int delim=name.lastIndexOf('.');
+			if(delim>0&&name.charAt(delim-1)!='/'&&name.charAt(delim-1)!='\\'){
+				return new ArrayList<>(suffices.get(name.substring(delim+1)));
+			}
+			return Collections.emptyList();
+		}
+		@Override
+		public State probe(URLConnection connection,String mime){
+			return listAllPossible(connection).contains(mime)?State.LIKELY:State.POSSIBLE;
+		}
+	}
+	public static class SystemGuesser implements ContentTypeDetector{
 		@Override
 		public List<String> listAllPossible(URLConnection connection){
 			String guess=guess(connection);

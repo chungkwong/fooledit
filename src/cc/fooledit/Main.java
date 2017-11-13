@@ -73,8 +73,6 @@ public class Main extends Application{
 		INSTANCE=this;
 		System.setProperty("user.dir",SYSTEM_PATH.toString());
 		URL.setURLStreamHandlerFactory(URLProtocolRegistry.get());
-		URLConnection.setContentHandlerFactory(ContentTypeRegistry.get());
-		URLConnection.setFileNameMap(FileNamePatternRegistry.get());
 		notifier=new Notifier(this);
 		Logger.getGlobal().setLevel(Level.INFO);
 		try{
