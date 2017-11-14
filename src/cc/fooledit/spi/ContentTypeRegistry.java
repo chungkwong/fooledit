@@ -15,28 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
-import cc.fooledit.util.*;
-import java.net.*;
 import java.util.*;
-import java.util.function.*;
-import java.util.regex.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ContentTypeRegistry{
 	private static final ContentTypeRegistry INSTNACE=new ContentTypeRegistry();
-	private static final List<Pair<Predicate<String>,Supplier<ContentHandler>>> wildcard=new LinkedList<>();
 	private static final Map<String,String> SUBCLASSES=new HashMap<>();
 	private static final Map<String,String> ALIASES=new HashMap<>();
 	private ContentTypeRegistry(){
 
-	}
-	public static void registerWildcard(String regex,Supplier<ContentHandler> handler){
-		wildcard.add(0,new Pair<>(Pattern.compile(regex).asPredicate(),handler));
-	}
-	public static ContentTypeRegistry get(){
-		return INSTNACE;
 	}
 	public static void registerSubclass(String subclass,String parent){
 		SUBCLASSES.put(subclass,parent);
@@ -51,11 +40,18 @@ public class ContentTypeRegistry{
 		}
 		return false;
 	}
+	public static String getParent(String type){
+		return SUBCLASSES.get(type);
+	}
 	public static void registerAlias(String alias,String standard){
-		ALIASES.put(alias,standard);
+		ALIASES.put(alias,normalize(standard));//TODO: Detect loops and find the closure
 	}
 	public static String normalize(String type){
-		return ALIASES.getOrDefault(type,type);
+		String con;
+		while((con=ALIASES.get(type))!=null){
+			type=con;
+		}
+		return type;
 	}
 	public static List<String> getAllSuperClasses(String type){
 		ArrayList<String> list=new ArrayList<>();

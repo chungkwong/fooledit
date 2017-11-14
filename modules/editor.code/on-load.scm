@@ -9,4 +9,6 @@
 (map-mime-to-type "application/x-php-source" "text")
 (map-mime-to-type "application/x-ruby" "text")
 (map-mime-to-type "application/xml" "text")
+(map-mime-to-type "test/x-manifest" "text")
+(map-suffix-to-mime "mf" "test/x-manifest")
 

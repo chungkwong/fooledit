@@ -136,6 +136,10 @@ public class Main extends Application{
 			DataObjectTypeRegistry.registerMime(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
+		globalCommandRegistry.put("map-suffix-to-mime",(o)->{
+			ContentTypeDetectorRegistry.getSUFFIX_GEUSSER().registerSuffix(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			return null;
+		});
 		globalCommandRegistry.put("ensure-loaded",(o)->{
 			ModuleRegistry.ensureLoaded(SchemeConverter.toString(ScmList.first(o)));
 			return null;

@@ -90,7 +90,14 @@ public class FoolURLConnection extends URLConnection{
 					types=possible;
 			}
 		}
-		return types;
+		ArrayList<String> cand=new ArrayList<>(types);
+		for(int i=0;i<cand.size();i++){
+			String parent=ContentTypeRegistry.getParent(cand.get(i));
+			if(parent!=null)
+				cand.add(parent);
+		}
+		//TODO UNIQ!
+		return cand;
 	}
 	@Override
 	public long getDate(){

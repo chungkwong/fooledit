@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.model;
+import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import java.io.*;
 import java.net.*;
@@ -37,7 +38,7 @@ public interface ContentTypeDetector{
 			registerPathPattern(Pattern.compile(regex).asPredicate(),mime);
 		}
 		public void registerPathPattern(Predicate<String> pred,String mime){
-			pattern2mime.add(new Pair<>(pred,mime));
+			pattern2mime.add(new Pair<>(pred,ContentTypeRegistry.normalize(mime)));
 		}
 		@Override
 		public List<String> listAllPossible(URLConnection connection){
@@ -53,16 +54,16 @@ public interface ContentTypeDetector{
 		}
 	}
 	public static class SuffixGuesser implements ContentTypeDetector{
-		private static final MultiMap<String,String> suffices=new MultiMap<>();
+		private static final ListMultiMap<String,String> suffices=new ListMultiMap<>();
 		public void registerSuffix(String suffix,String mime){
-			suffices.add(suffix,mime);
+			suffices.add(suffix.toLowerCase(),ContentTypeRegistry.normalize(mime));
 		}
 		@Override
 		public List<String> listAllPossible(URLConnection connection){
 			String name=connection.getURL().toString();
 			int delim=name.lastIndexOf('.');
 			if(delim>0&&name.charAt(delim-1)!='/'&&name.charAt(delim-1)!='\\'){
-				return new ArrayList<>(suffices.get(name.substring(delim+1)));
+				return suffices.get(name.substring(delim+1).toLowerCase());
 			}
 			return Collections.emptyList();
 		}
@@ -75,7 +76,7 @@ public interface ContentTypeDetector{
 		@Override
 		public List<String> listAllPossible(URLConnection connection){
 			String guess=guess(connection);
-			return guess==null?Collections.emptyList():Collections.singletonList(guess);
+			return guess==null?Collections.emptyList():Collections.singletonList(ContentTypeRegistry.normalize(guess));
 		}
 		@Override
 		public State probe(URLConnection connection,String mime){
