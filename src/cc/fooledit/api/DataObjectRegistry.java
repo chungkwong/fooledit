@@ -17,6 +17,7 @@
 package cc.fooledit.api;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
+import cc.fooledit.spi.*;
 import java.net.*;
 import java.util.*;
 import java.util.logging.*;
@@ -148,7 +149,7 @@ public class DataObjectRegistry{
 	}
 	public static DataObject readFrom(URL url)throws Exception{
 		FoolURLConnection connection=FoolURLConnection.open(url);
-		for(String mime:connection.getPossibleContentTypes()){
+		for(String mime:ContentTypeDetectorRegistry.geuss(connection)){
 			try{
 				return readFrom(url,new MimeType(mime));
 			}catch(Exception ex){

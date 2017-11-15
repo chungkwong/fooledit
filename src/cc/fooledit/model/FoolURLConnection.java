@@ -64,40 +64,8 @@ public class FoolURLConnection extends URLConnection{
 	}
 	@Override
 	public String getContentType(){
-		List<String> types=getPossibleContentTypes();
+		List<String> types=ContentTypeDetectorRegistry.geuss(this);
 		return types.isEmpty()?null:types.get(0);
-	}
-	public List<String> getPossibleContentTypes(){
-		List<String> types=Collections.emptyList();
-		for(ContentTypeDetector detector:ContentTypeDetectorRegistry.getGEUSSERS()){
-			if(types.isEmpty())
-				types=detector.listAllPossible(this);
-			else{
-				List<String> likely=new ArrayList<>();
-				List<String> possible=new ArrayList<>();
-				for(String type:types)
-					switch(detector.probe(this,type)){
-						case LIKELY:
-							likely.add(type);
-							break;
-						case POSSIBLE:
-							possible.add(type);
-							break;
-					}
-				if(!likely.isEmpty())
-					types=likely;
-				else if(!possible.isEmpty())
-					types=possible;
-			}
-		}
-		ArrayList<String> cand=new ArrayList<>(types);
-		for(int i=0;i<cand.size();i++){
-			String parent=ContentTypeRegistry.getParent(cand.get(i));
-			if(parent!=null)
-				cand.add(parent);
-		}
-		//TODO UNIQ!
-		return cand;
 	}
 	@Override
 	public long getDate(){

@@ -25,8 +25,6 @@
 package cc.fooledit.example.zip;
 import java.io.*;
 import java.net.URLConnection;
-import static java.net.URLConnection.guessContentTypeFromName;
-import static java.net.URLConnection.guessContentTypeFromStream;
 import java.net.*;
 import java.util.*;
 import java.util.logging.*;
@@ -256,27 +254,6 @@ class ArchiveConnection extends URLConnection{
 		}catch(IOException e){
 		}
 		return result;
-	}
-	public String getContentType(){
-		if(contentType==null){
-			if(contentType==null){
-				contentType=guessContentTypeFromName(entryName);
-			}
-			try{
-				connect();
-				InputStream in=archiveFile;
-				in.mark(4096);
-				contentType=guessContentTypeFromStream(
-						new BufferedInputStream(in));
-				in.reset();
-			}catch(IOException e){
-				// don't do anything
-			}
-			if(contentType==null){
-				contentType="application/octet-stream";
-			}
-		}
-		return contentType;
 	}
 	@Override
 	public String getHeaderField(String name){

@@ -38,13 +38,36 @@ public class ContentTypeDetectorRegistry{
 		return SUFFIX_GEUSSER;
 	}
 	public static List<String> geuss(URLConnection connection){
-		for(ContentTypeDetector guesser:GEUSSERS){
-			List<String> guess=guesser.listAllPossible(connection);
-			if(!guess.isEmpty()){
-				return guess;
+		List<String> types=Collections.emptyList();
+		for(ContentTypeDetector detector:ContentTypeDetectorRegistry.getGEUSSERS()){
+			if(types.isEmpty())
+				types=detector.listAllPossible(connection);
+			else{
+				List<String> likely=new ArrayList<>();
+				List<String> possible=new ArrayList<>();
+				for(String type:types)
+					switch(detector.probe(connection,type)){
+						case LIKELY:
+							likely.add(type);
+							break;
+						case POSSIBLE:
+							possible.add(type);
+							break;
+					}
+				if(!likely.isEmpty())
+					types=likely;
+				else if(!possible.isEmpty())
+					types=possible;
 			}
 		}
-		return Collections.singletonList("application/octet-stream");
+		ArrayList<String> cand=new ArrayList<>(types);
+		for(int i=0;i<cand.size();i++){
+			String parent=ContentTypeRegistry.getParent(cand.get(i));
+			if(parent!=null)
+				cand.add(parent);
+		}
+		//TODO UNIQ!
+		return cand.isEmpty()?Collections.singletonList("application/octet-stream"):cand;
 	}
 	public static void main(String[] args) throws IOException{
 		//System.out.println(new String(new byte[]{0,5,0}).length());

@@ -16,7 +16,6 @@
  */
 package cc.fooledit.example.zip;
 import java.io.*;
-import static java.net.URLConnection.guessContentTypeFromName;
 import java.net.*;
 import java.util.*;
 import java.util.logging.*;
@@ -122,7 +121,7 @@ class ZipConnection extends URLConnection{
 	private URLConnection compressedFileURLConnection;
 	private CompressorInputStream compressedFileInputStream;
 	private CompressorOutputStream compressedFileOutputStream;
-	private String contentType;
+	private LinkedHashMap<String,List<String>> headers=new LinkedHashMap<>();
 	public ZipConnection(URL url,ZipStreamHandler handler)
 			throws MalformedURLException,IOException{
 		super(url);
@@ -175,32 +174,9 @@ class ZipConnection extends URLConnection{
 		return -1;
 	}
 	@Override
-	public String getContentType(){
-		if(contentType==null){
-			String file=getCompressedFileURL().getFile();
-			if(file.contains(".")){
-				file=file.substring(0,file.lastIndexOf('.'));
-				contentType=guessContentTypeFromName(file);
-			}/*
-			try{
-				connect();
-				InputStream in=compressedFile;
-				in.mark(4096);
-				contentType=guessContentTypeFromStream(
-						new BufferedInputStream(in));
-				in.reset();
-			}catch(IOException e){
-				// don't do anything
-			}*/
-			if(contentType==null){
-				contentType="application/octet-stream";
-			}
-		}
-		return contentType;
-	}
-	@Override
 	public String getHeaderField(String name){
-		return compressedFileURLConnection.getHeaderField(name);
+		List<String> values=headers.get(name);
+		return values!=null&&!values.isEmpty()?values.get(values.size()-1):null;
 	}
 	@Override
 	public void setRequestProperty(String key,String value){
@@ -245,6 +221,23 @@ class ZipConnection extends URLConnection{
 	@Override
 	public boolean getDefaultUseCaches(){
 		return compressedFileURLConnection.getDefaultUseCaches();
+	}
+	@Override
+	public Map<String,List<String>> getHeaderFields(){
+		return headers;
+	}
+	@Override
+	public String getHeaderField(int n){
+		Iterator<List<String>> iterator=headers.values().iterator();
+		while(n>0&&iterator.hasNext()){
+			iterator.next();
+		}
+		if(iterator.hasNext()){
+			List<String> values=iterator.next();
+			return values!=null&&!values.isEmpty()?values.get(values.size()-1):null;
+		}else{
+			return null;
+		}
 	}
     protected URLConnection jarFileURLConnection;
 	private void parseSpecs(URL url) throws MalformedURLException {
