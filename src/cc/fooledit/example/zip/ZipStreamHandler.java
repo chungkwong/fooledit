@@ -121,13 +121,29 @@ class ZipConnection extends URLConnection{
 	private URLConnection compressedFileURLConnection;
 	private CompressorInputStream compressedFileInputStream;
 	private CompressorOutputStream compressedFileOutputStream;
-	private LinkedHashMap<String,List<String>> headers=new LinkedHashMap<>();
+	private HashMap<String,List<String>> headers;
 	public ZipConnection(URL url,ZipStreamHandler handler)
 			throws MalformedURLException,IOException{
 		super(url);
 		parseSpecs(url);
 		compressedFileURL=getCompressedFileURL();
 		compressedFileURLConnection=compressedFileURL.openConnection();
+		headers=new HashMap<>(compressedFileURLConnection.getHeaderFields());
+		setField("content-length","-1");
+		String file=compressedFileURL.getFile();
+		int delim=file.lastIndexOf('.');
+		if(delim>0&&file.charAt(delim-1)!='/'&&file.charAt(delim-1)!='\\')
+			setField("content-name",file.substring(0,delim));
+	}
+	private void setField(String key,String value){
+		List<String> values=headers.get(key);
+		if(values==null){
+			headers.put(key,Collections.singletonList(value));
+		}else{
+			values=new ArrayList<>(values);
+			values.add(value);
+			headers.put(key,values);
+		}
 	}
 	@Override
 	public void connect() throws IOException{
@@ -227,17 +243,21 @@ class ZipConnection extends URLConnection{
 		return headers;
 	}
 	@Override
-	public String getHeaderField(int n){
-		Iterator<List<String>> iterator=headers.values().iterator();
+	public String getHeaderFieldKey(int n){
+		Iterator<String> iterator=headers.keySet().iterator();
 		while(n>0&&iterator.hasNext()){
 			iterator.next();
 		}
 		if(iterator.hasNext()){
-			List<String> values=iterator.next();
-			return values!=null&&!values.isEmpty()?values.get(values.size()-1):null;
+			return iterator.next();
 		}else{
 			return null;
 		}
+	}
+
+	@Override
+	public String getHeaderField(int n){
+		return getHeaderField(getHeaderFieldKey(n));
 	}
     protected URLConnection jarFileURLConnection;
 	private void parseSpecs(URL url) throws MalformedURLException {

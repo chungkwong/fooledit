@@ -28,7 +28,7 @@ public class ProjectTypeManager{
 	}
 	public static Optional<Project> gaussProject(File file){
 		for(ProjectType type:TYPES){
-			Optional<Project> directory=type.geussDirectory(file);
+			Optional<Project> directory=type.guessDirectory(file);
 			if(directory.isPresent())
 				return directory;
 		}

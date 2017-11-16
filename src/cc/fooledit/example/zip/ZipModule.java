@@ -37,7 +37,9 @@ public class ZipModule{
 		ContentTypeRegistry.registerAlias("application/x-zip-compressed","application/zip");
 		ContentTypeRegistry.registerAlias("application/x-gzip","application/gzip");
 		ContentTypeRegistry.registerAlias("application/x-bzip2","application/x-bzip");
-		ContentTypeDetector.SuffixGuesser guesser=ContentTypeDetectorRegistry.getSUFFIX_GEUSSER();
+		ContentTypeRegistry.registerAlias("application/x-deb","application/vnd.debian.binary-package");
+		ContentTypeRegistry.registerAlias("application/x-debian-package","application/vnd.debian.binary-package");
+		ContentTypeDetector.SuffixGuesser guesser=ContentTypeDetectorRegistry.getSUFFIX_GUESSER();
 		guesser.registerSuffix("7z","application/x-7z-compressed");
 		guesser.registerSuffix("ar","application/x-archive");
 		guesser.registerSuffix("arj","application/x-arj");

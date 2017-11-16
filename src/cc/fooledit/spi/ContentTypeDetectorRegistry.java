@@ -24,22 +24,22 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ContentTypeDetectorRegistry{
-	private static final List<ContentTypeDetector> GEUSSERS=new ArrayList<>();
-	private static final ContentTypeDetector.URLPatternGuesser URL_GEUSSER=new ContentTypeDetector.URLPatternGuesser();
-	private static final ContentTypeDetector.SuffixGuesser SUFFIX_GEUSSER=new ContentTypeDetector.SuffixGuesser();
-	private static final ContentTypeDetector SYSTEM_GEUSSERS=new ContentTypeDetector.SystemGuesser();
-	public static List<ContentTypeDetector> getGEUSSERS(){
-		return GEUSSERS;
+	private static final List<ContentTypeDetector> GUESSERS=new ArrayList<>();
+	private static final ContentTypeDetector.URLPatternGuesser URL_GUESSER=new ContentTypeDetector.URLPatternGuesser();
+	private static final ContentTypeDetector.SuffixGuesser SUFFIX_GUESSER=new ContentTypeDetector.SuffixGuesser();
+	private static final ContentTypeDetector SYSTEM_GUESSERS=new ContentTypeDetector.SystemGuesser();
+	public static List<ContentTypeDetector> getGUESSERS(){
+		return GUESSERS;
 	}
-	public static ContentTypeDetector.URLPatternGuesser getURL_GEUSSER(){
-		return URL_GEUSSER;
+	public static ContentTypeDetector.URLPatternGuesser getURL_GUESSER(){
+		return URL_GUESSER;
 	}
-	public static ContentTypeDetector.SuffixGuesser getSUFFIX_GEUSSER(){
-		return SUFFIX_GEUSSER;
+	public static ContentTypeDetector.SuffixGuesser getSUFFIX_GUESSER(){
+		return SUFFIX_GUESSER;
 	}
-	public static List<String> geuss(URLConnection connection){
+	public static List<String> guess(URLConnection connection){
 		List<String> types=Collections.emptyList();
-		for(ContentTypeDetector detector:ContentTypeDetectorRegistry.getGEUSSERS()){
+		for(ContentTypeDetector detector:ContentTypeDetectorRegistry.getGUESSERS()){
 			if(types.isEmpty())
 				types=detector.listAllPossible(connection);
 			else{
@@ -75,8 +75,8 @@ public class ContentTypeDetectorRegistry{
 		//System.out.println(new URL("file:///home/kwong/NetBeansProjects/JSchemeMin/doc/overview.pdf").openConnection().getContentType());
 	}
 	static{
-		GEUSSERS.add(URL_GEUSSER);
-		GEUSSERS.add(SUFFIX_GEUSSER);
-		GEUSSERS.add(SYSTEM_GEUSSERS);
+		GUESSERS.add(URL_GUESSER);
+		GUESSERS.add(SUFFIX_GUESSER);
+		GUESSERS.add(SYSTEM_GUESSERS);
 	}
 }

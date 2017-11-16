@@ -23,6 +23,6 @@ import java.util.*;
  */
 public interface ProjectType<T extends Project>{
 	T createProject(File directory);
-	Optional<T> geussDirectory(File file);
+	Optional<T> guessDirectory(File file);
 	String getName();
 }

@@ -149,7 +149,7 @@ public class DataObjectRegistry{
 	}
 	public static DataObject readFrom(URL url)throws Exception{
 		FoolURLConnection connection=FoolURLConnection.open(url);
-		for(String mime:ContentTypeDetectorRegistry.geuss(connection)){
+		for(String mime:ContentTypeDetectorRegistry.guess(connection)){
 			try{
 				return readFrom(url,new MimeType(mime));
 			}catch(Exception ex){

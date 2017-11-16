@@ -137,7 +137,11 @@ public class Main extends Application{
 			return null;
 		});
 		globalCommandRegistry.put("map-suffix-to-mime",(o)->{
-			ContentTypeDetectorRegistry.getSUFFIX_GEUSSER().registerSuffix(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			ContentTypeDetectorRegistry.getSUFFIX_GUESSER().registerSuffix(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			return null;
+		});
+		globalCommandRegistry.put("mime-alias",(o)->{
+			ContentTypeRegistry.registerAlias(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
 		globalCommandRegistry.put("ensure-loaded",(o)->{

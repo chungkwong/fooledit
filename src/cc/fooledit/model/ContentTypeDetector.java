@@ -42,13 +42,13 @@ public interface ContentTypeDetector{
 		}
 		@Override
 		public List<String> listAllPossible(URLConnection connection){
-			String name=connection.getURL().toString();
+			String name=getFile(connection);
 			List<String> candidates=pattern2mime.stream().filter((pair)->pair.getKey().test(name)).map(Pair::getValue).collect(Collectors.toList());
 			return candidates;
 		}
 		@Override
 		public State probe(URLConnection connection,String mime){
-			String name=connection.getURL().toString();
+			String name=getFile(connection);
 			boolean possible=pattern2mime.stream().filter((pair)->pair.getKey().test(name)).map(Pair::getValue).allMatch((type)->Objects.equals(mime,type));
 			return possible?State.LIKELY:State.POSSIBLE;
 		}
@@ -60,7 +60,7 @@ public interface ContentTypeDetector{
 		}
 		@Override
 		public List<String> listAllPossible(URLConnection connection){
-			String name=connection.getURL().toString();
+			String name=getFile(connection);
 			int delim=name.lastIndexOf('.');
 			if(delim>0&&name.charAt(delim-1)!='/'&&name.charAt(delim-1)!='\\'){
 				return suffices.get(name.substring(delim+1).toLowerCase());
@@ -94,5 +94,9 @@ public interface ContentTypeDetector{
 				return null;
 			}
 		}
+	}
+	static String getFile(URLConnection connection){
+		String file=connection.getHeaderField("content-name");
+		return file!=null?file:connection.getURL().getFile();
 	}
 }

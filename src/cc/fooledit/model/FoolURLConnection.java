@@ -64,7 +64,7 @@ public class FoolURLConnection extends URLConnection{
 	}
 	@Override
 	public String getContentType(){
-		List<String> types=ContentTypeDetectorRegistry.geuss(this);
+		List<String> types=ContentTypeDetectorRegistry.guess(this);
 		return types.isEmpty()?null:types.get(0);
 	}
 	@Override
