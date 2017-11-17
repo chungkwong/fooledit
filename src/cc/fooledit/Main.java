@@ -140,6 +140,10 @@ public class Main extends Application{
 			ContentTypeDetectorRegistry.getSUFFIX_GUESSER().registerSuffix(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
+		globalCommandRegistry.put("map-glob-to-mime",(o)->{
+			ContentTypeDetectorRegistry.getURL_GUESSER().registerPathPattern(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			return null;
+		});
 		globalCommandRegistry.put("mime-alias",(o)->{
 			ContentTypeRegistry.registerAlias(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
