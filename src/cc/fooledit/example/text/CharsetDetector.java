@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.text;
+import cc.fooledit.util.*;
 import java.io.*;
+import java.nio.*;
 import java.nio.charset.*;
 import java.util.*;
 /**
@@ -24,21 +26,77 @@ import java.util.*;
  */
 public class CharsetDetector{
 	private static final List<Charset> perferedEncodings=new ArrayList<>();
-	public static String probeCharset(InputStream in){
-		throw new UnsupportedOperationException();
+	public static String probeCharset(InputStream in) throws IOException{
+		for(Charset set:perferedEncodings)
+			if(isPossible(in,set))
+				return set.name();
+		List<String> cand=probeCharsets(in);
+		return cand.isEmpty()?null:cand.get(0);
 	}
-	public static List<String> probeCharsets(InputStream in){
-		throw new UnsupportedOperationException();
+	public static List<String> probeCharsets(InputStream in) throws IOException{
+		return probeCharsets(in,true);
 	}
-	public static boolean isPossible(InputStream in,Charset charset){
-		throw new UnsupportedOperationException();
+	public static List<String> probeCharsets(InputStream in,boolean strict) throws IOException{
+		SortedMap<String,Charset> charsets=Charset.availableCharsets();
+		if(in.markSupported()){
+			ByteBuffer buf=readBlock(in);
+			List<String> cand=new ArrayList<>();
+			Iterator<Map.Entry<String,Charset>> iterator=charsets.entrySet().iterator();
+			while(iterator.hasNext()){
+				Map.Entry<String,Charset> entry=iterator.next();
+				if(isPossible(buf,entry.getValue(),strict)){
+					cand.add(entry.getKey());
+				}
+			}
+			return cand;
+		}
+		return new ArrayList<>(charsets.keySet());
+	}
+	public static boolean isPossible(InputStream in,Charset charset)throws IOException{
+		return isPossible(in,charset,true);
+	}
+	public static boolean isPossible(InputStream in,Charset charset,boolean strict)throws IOException{
+		if(in.markSupported()){
+			return isPossible(readBlock(in),charset,strict);
+		}
+		return true;
+	}
+	private static ByteBuffer readBlock(InputStream in) throws IOException{
+		byte[] data=new byte[4096];
+		in.mark(4096);
+		int size=in.read(data);
+		in.reset();
+		ByteBuffer buf=size>=0?ByteBuffer.wrap(data,0,size):ByteBuffer.allocate(0);
+		buf.mark();
+		return buf;
+	}
+	private static boolean isPossible(ByteBuffer buf,Charset charset,boolean strict){
+		buf.reset();
+		CharsetDecoder decoder=charset.newDecoder();
+		decoder.onMalformedInput(CodingErrorAction.REPORT);
+		decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+		CharBuffer text=CharBuffer.allocate((int)(1+buf.remaining()*decoder.maxCharsPerByte()));
+		if(decoder.decode(buf,text,false).isError()){
+			return false;
+		}else{
+			text.limit(text.position());
+			text.position(0);
+			return !strict||text.codePoints().allMatch((c)->isCommonCodepoint(c));
+		}
 	}
 	public static List<Charset> getPerferedEncodings(){
 		return perferedEncodings;
 	}
+	private static boolean isCommonCodepoint(int c){
+		return Character.isValidCodePoint(c)&&!((c>=0x00&&c<0x09)||(c>=0x0E&&c<0x1C));
+	}
 	static{
 		perferedEncodings.add(StandardCharsets.UTF_8);
 		perferedEncodings.add(StandardCharsets.UTF_16);
-		perferedEncodings.add(StandardCharsets.ISO_8859_1);
+	}
+	public static void main(String[] args) throws IOException{
+		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/sysu_learning/政治课/eassy.tex"))));
+		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/sysu_learning/政治课/《毛泽东选集》第一卷.txt"))));
+		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/sysu_learning/政治课/中国近现代史纲要.xlsx"))));
 	}
 }
