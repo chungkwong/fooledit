@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.text;
-import cc.fooledit.model.DataObjectType;
-import cc.fooledit.model.DataObject;
+import cc.fooledit.model.*;
 import javafx.beans.property.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TextObject implements DataObject<TextObject>{
+public class TextObject extends AbstractDataObject<TextObject>{
 	private final SimpleStringProperty text;
 	public TextObject(String init){
 		this.text=new SimpleStringProperty(init);

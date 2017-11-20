@@ -35,6 +35,7 @@ public class TemplateEditor extends Prompt{
 	private static final Map<String,Function<Map<Object,Object>,Template>> templateTypes=new HashMap<>();
 	//private static final List<Map<Object,Object>> recent=(List<Map<Object,Object>>)PersistenceStatusManager.getOrDefault("template",()->Collections.emptyList());
 	private final TemplateChooser chooser=new TemplateChooser();
+	public static final TemplateEditor INSTANCE=new TemplateEditor();
 	public TemplateEditor(){
 
 	}
@@ -108,9 +109,9 @@ public class TemplateEditor extends Prompt{
 				props.put("date","2017-6-29");
 				props.put("user","kwong");
 				DataObject obj=template.apply(props);
-				System.out.println(template.getMimeType());
-				DataObjectRegistry.addDataObject(obj,Helper.hashMap(DataObjectRegistry.TYPE,obj.getDataObjectType().getClass().getName(),
-						DataObjectRegistry.MIME,template.getMimeType(),DataObjectRegistry.DEFAULT_NAME,((Template)item).getName()));
+				obj.getProperties().put(DataObject.TYPE,obj.getDataObjectType().getClass().getName());
+				obj.getProperties().put(DataObject.MIME,template.getMimeType());
+				obj.getProperties().put(DataObject.DEFAULT_NAME,((Template)item).getName());
 				Main.show(obj);
 				DataObjectRegistry.removeDataObject(TemplateEditor.this);
 			}

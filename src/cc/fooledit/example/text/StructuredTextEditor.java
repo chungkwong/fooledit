@@ -33,7 +33,6 @@ import java.util.stream.*;
 import javafx.scene.Node;
 import org.antlr.v4.runtime.*;
 import org.fxmisc.richtext.NavigationActions;
-import org.fxmisc.richtext.model.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -240,7 +239,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	@Override
 	public Node edit(TextObject data){
 		MetaLexer lex=null;
-		Language language=languages.get(DataObjectRegistry.getMIME(data));
+		Language language=languages.get(data.getProperties().get(DataObject.MIME));
 		Highlighter highlighter=language!=null?language.getTokenHighlighter():null;
 		ParserBuilder parserBuilder=language!=null?language.getParserBuilder():null;
 		CodeEditor codeEditor=new CodeEditor(parserBuilder,highlighter);

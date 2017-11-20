@@ -22,7 +22,7 @@ import javafx.scene.web.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BrowserData implements DataObject<BrowserData>{
+public class BrowserData extends AbstractDataObject<BrowserData>{
 	private final WebView webView;
 	private final Node editor;
 	public BrowserData(){

@@ -15,11 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.model;
-
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface DataObject<T extends DataObject>{
+	public static final String MIME="MIME";
+	public static final String URI="URI";
+	public static final String DEFAULT_NAME="DEFAULT_NAME";
+	public static final String BUFFER_NAME="BUFFER_NAME";
+	public static final String TYPE="TYPE";
 	DataObjectType<T> getDataObjectType();
+	Map<String,String> getProperties();
 }

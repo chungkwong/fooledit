@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.project;
-import cc.fooledit.api.*;
 import cc.fooledit.model.*;
 import java.io.*;
 import java.net.*;
@@ -32,7 +31,7 @@ public class ProjectRegistry{
 	}
 	public static Project getProject(DataObject obj){
 		try{
-			Optional<Project> project=ProjectTypeManager.gaussProject(new File(new URI(DataObjectRegistry.getURL(obj))));
+			Optional<Project> project=ProjectTypeManager.gaussProject(new File(new URI((String)obj.getProperties().get(DataObject.URI))));
 			if(project.isPresent()){
 				projects.add(project.get());
 				return project.get();

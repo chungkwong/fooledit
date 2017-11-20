@@ -26,7 +26,7 @@ import javax.swing.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TerminalData implements DataObject<TerminalData>{
+public class TerminalData extends AbstractDataObject<TerminalData>{
 	private final JComponent terminal;
 	public TerminalData(){
 		JComponent comp=null;

@@ -22,7 +22,7 @@ import javafx.scene.image.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ImageObject implements DataObject<ImageObject>{
+public class ImageObject extends AbstractDataObject<ImageObject>{
 	private final Canvas canvas;
 	public ImageObject(Image image){
 		canvas=new Canvas(image.getWidth(),image.getHeight());

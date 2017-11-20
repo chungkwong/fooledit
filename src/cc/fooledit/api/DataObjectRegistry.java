@@ -27,17 +27,11 @@ import javax.activation.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class DataObjectRegistry{
-	public static final String MIME="MIME";
-	public static final String URI="URI";
-	public static final String DEFAULT_NAME="DEFAULT_NAME";
-	public static final String BUFFER_NAME="BUFFER_NAME";
-	public static final String TYPE="TYPE";
 	private static final String UNTITLED=MessageRegistry.getString("UNTITLED");
 	private static final String KEY="file_history.json";
 	private static final String LIMIT="limit";
 	private static final String ENTRIES="entries";
 	private static final TreeMap<String,DataObject> objects=new TreeMap<>();
-	private static final IdentityHashMap<DataObject,Map<String,String>> properties=new IdentityHashMap<>();
 	private static final Map<String,Object> HISTORY=(Map<String,Object>)PersistenceStatusManager.USER.
 			getOrDefault(KEY,()->Helper.hashMap(LIMIT,20,ENTRIES,new LinkedList<>()));
 	public static DataObject getDataObject(String name){
@@ -46,29 +40,14 @@ public class DataObjectRegistry{
 	public static Set<String> getDataObjectNames(){
 		return objects.keySet();
 	}
-	public static String getProperty(String key,DataObject data){
-		return properties.get(data).get(key);
-	}
-	public static Map<String,String> getProperties(DataObject data){
-		return properties.get(data);
-	}
-	public static String getURL(DataObject data){
-		return (String)properties.get(data).get(URI);
-	}
-	public static String getMIME(DataObject data){
-		return (String)properties.get(data).get(MIME);
-	}
-	public static String getName(DataObject data){
-		return (String)properties.get(data).get(BUFFER_NAME);
-	}
 	public static DataObject get(Object json){
 		Map<String,String> prop=(Map<String,String>)json;
-		String type=prop.get(TYPE);
+		String type=prop.get(DataObject.TYPE);
 		DataObjectType builder=DataObjectTypeRegistry.getDataObjectTypes().values().stream().filter((t)->t.getClass().getName().equals(type)).findFirst().get();
 		DataObject object;
-		if(prop.containsKey(URI)){
-			String uri=prop.get(URI);
-			Optional<DataObject> old=objects.values().stream().filter((o)->uri.equals(getURL(o))).findAny();
+		if(prop.containsKey(DataObject.URI)){
+			String uri=prop.get(DataObject.URI);
+			Optional<DataObject> old=objects.values().stream().filter((o)->uri.equals(o.getProperties().get(DataObject.URI))).findAny();
 			if(old.isPresent())
 				return old.get();
 			try{
@@ -76,18 +55,19 @@ public class DataObjectRegistry{
 				object=builder.readFrom(connection);
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				object=builder.create();
+				object=create(builder);
 			}
 		}else{
-			object=builder.create();
+			object=create(builder);
 		}
-		addDataObject(object,prop);
+		addDataObject(object);
 		return object;
 	}
-	public static void addDataObject(DataObject data,Map<String,String> prop){
-		if(properties.containsKey(data))
+	public static void addDataObject(DataObject data){
+		if(objects.containsValue(data))
 			return;
-		String name=(String)prop.getOrDefault(DEFAULT_NAME,UNTITLED);
+		Map<String,String> prop=data.getProperties();
+		String name=(String)prop.getOrDefault(DataObject.DEFAULT_NAME,UNTITLED);
 		if(objects.containsKey(name)){
 			for(int i=1;;i++){
 				String tmp=name+":"+i;
@@ -97,23 +77,21 @@ public class DataObjectRegistry{
 				}
 			}
 		}
-		prop.put(BUFFER_NAME,name);
-		prop.put(TYPE,data.getDataObjectType().getClass().getName());
+		prop.put(DataObject.BUFFER_NAME,name);
+		prop.put(DataObject.TYPE,data.getDataObjectType().getClass().getName());
 		objects.put(name,data);
-		properties.put(data,prop);
 		addHistoryEntry(prop);
 	}
 	public static void removeDataObject(DataObject data){
-		objects.remove(getName(data));
-		properties.remove(data);
+		objects.remove((String)data.getProperties().get(DataObject.BUFFER_NAME));
 	}
 	private static void addHistoryEntry(Map<String,String> prop){
-		if(prop.containsKey(URI)){
-			String uri=prop.get(URI);
+		if(prop.containsKey(DataObject.URI)){
+			String uri=prop.get(DataObject.URI);
 			List<Map<String,String>> list=getHistoryList();
 			Iterator<Map<String,String>> iter=list.iterator();
 			while(iter.hasNext()){
-				if(uri.equals(iter.next().get(URI))){
+				if(uri.equals(iter.next().get(DataObject.URI))){
 					iter.remove();
 				}
 			}
@@ -127,25 +105,24 @@ public class DataObjectRegistry{
 		return (List)HISTORY.get(ENTRIES);
 	}
 	public static DataObject getNextDataObject(DataObject curr){
-		Map.Entry<String,DataObject> next=objects.higherEntry((String)properties.get(curr).get(BUFFER_NAME));
+		Map.Entry<String,DataObject> next=objects.higherEntry((String)curr.getProperties().get(DataObject.BUFFER_NAME));
 		if(next==null)
 			return objects.firstEntry().getValue();
 		else
 			return next.getValue();
 	}
 	public static DataObject getPreviousDataObject(DataObject curr){
-		Map.Entry<String,DataObject> prev=objects.lowerEntry((String)properties.get(curr).get(BUFFER_NAME));
+		Map.Entry<String,DataObject> prev=objects.lowerEntry((String)curr.getProperties().get(DataObject.BUFFER_NAME));
 		if(prev==null)
 			return objects.lastEntry().getValue();
 		else
 			return prev.getValue();
 	}
-	public static Map<String,String> createProperties(String name,String uri,String mime){
-		HashMap<String,String> prop=new HashMap<>();
-		prop.put(DEFAULT_NAME,name);
-		prop.put(MIME,mime);
-		prop.put(URI,uri);
-		return prop;
+	public static <T extends DataObject> T create(DataObjectType<T> type){
+		T object=type.create();
+		object.getProperties().put(DataObject.TYPE,type.getClass().getName());
+		object.getProperties().putIfAbsent(DataObject.DEFAULT_NAME,type.getName());
+		return object;
 	}
 	public static DataObject readFrom(URL url)throws Exception{
 		FoolURLConnection connection=FoolURLConnection.open(url);
@@ -177,7 +154,11 @@ public class DataObjectRegistry{
 	public static DataObject readFrom(URLConnection connection,DataObjectType type)throws Exception{
 		String mime=connection.getContentType();
 		DataObject data=type.readFrom(connection);
-		addDataObject(data,Helper.hashMap(URI,connection.getURL().toString(),MIME,mime,DEFAULT_NAME,getLastComponent(connection.getURL().getPath()),TYPE,type.getClass().getName()));
+		data.getProperties().put(DataObject.URI,connection.getURL().toString());
+		data.getProperties().put(DataObject.MIME,mime);
+		data.getProperties().put(DataObject.DEFAULT_NAME,getLastComponent(connection.getURL().getPath()));
+		data.getProperties().put(DataObject.TYPE,type.getClass().getName());
+		addDataObject(data);
 		return data;
 	}
 	private static String getLastComponent(String path){
@@ -185,10 +166,10 @@ public class DataObjectRegistry{
 		return i==-1?path:path.substring(i+1);
 	}
 	public static void write(DataObject data) throws Exception{
-		writeTo(data,new URL(getURL(data)));
+		writeTo(data,new URL((String)data.getProperties().get(DataObject.URI)));
 	}
 	public static void writeTo(DataObject data,URL url)throws Exception{
 		data.getDataObjectType().writeTo(data,FoolURLConnection.open(url));
-		getProperties(data).put(URI,url.toString());
+		data.getProperties().put(DataObject.URI,url.toString());
 	}
 }

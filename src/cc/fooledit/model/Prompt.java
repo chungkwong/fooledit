@@ -20,7 +20,7 @@ import java.net.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class Prompt implements DataObject<Prompt>,DataObjectType<Prompt>,DataEditor<Prompt>{
+public abstract class Prompt  extends AbstractDataObject<Prompt> implements DataObjectType<Prompt>,DataEditor<Prompt>{
 	@Override
 	public DataObjectType<Prompt> getDataObjectType(){
 		return this;

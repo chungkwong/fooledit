@@ -23,7 +23,7 @@ import org.apache.commons.compress.archivers.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ArchiveData implements DataObject<ArchiveData>{
+public class ArchiveData extends AbstractDataObject<ArchiveData>{
 	private final List<ArchiveEntry> entries;
 	private final URL url;
 	public ArchiveData(List<ArchiveEntry> entries,URL url){

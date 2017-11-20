@@ -14,23 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.example.binary;
-import cc.fooledit.model.*;
-import javafx.beans.property.*;
+package cc.fooledit.model;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BinaryObject extends AbstractDataObject<BinaryObject>{
-	private final Property<byte[]> property;
-	public BinaryObject(byte[] data){
-		this.property=new SimpleObjectProperty<>(this,"data",data);
-	}
-	public Property<byte[]> dataProperty(){
-		return property;
-	}
+public abstract class AbstractDataObject<T extends AbstractDataObject> implements DataObject<T>{
+	private final Map<String,String> properties=new HashMap<>();
 	@Override
-	public DataObjectType<BinaryObject> getDataObjectType(){
-		return BinaryObjectType.INSTANCE;
+	public Map<String,String> getProperties(){
+		return properties;
 	}
+
 }

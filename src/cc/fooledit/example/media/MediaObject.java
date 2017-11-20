@@ -15,15 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.media;
-import cc.fooledit.model.DataObjectType;
-import cc.fooledit.model.DataObject;
+import cc.fooledit.model.*;
 import javafx.beans.property.*;
 import javafx.scene.media.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class MediaObject implements DataObject<MediaObject>{
+public class MediaObject extends AbstractDataObject<MediaObject>{
 	private final Property<MediaPlayer> property;
 	public MediaObject(MediaPlayer audio){
 		this.property=new SimpleObjectProperty<>(audio);

@@ -99,7 +99,7 @@ public class WorkSheet extends BorderPane{
 			map.put(CURRENT,Main.getCurrentWorkSheet()==this);
 			map.put(EDITOR,getDataEditor().getClass().getName());
 			map.put(REMARK,getDataEditor().getRemark(center));
-			map.put(BUFFER,DataObjectRegistry.getProperties(getDataObject()));
+			map.put(BUFFER,getDataObject().getProperties());
 		}
 		return map;
 	}

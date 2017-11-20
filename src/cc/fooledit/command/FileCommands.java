@@ -35,7 +35,7 @@ public class FileCommands{
 
 	}
 	public static void open(){
-		FileSystemData files=new FileSystemData();
+		FileSystemData files=DataObjectRegistry.create(FileSystemDataType.INSTANCE);
 		files.setInitialPath(guessDefaultPath());
 		files.setAction((paths)->{
 			paths.forEach((p)->{
@@ -47,7 +47,8 @@ public class FileCommands{
 			});
 			DataObjectRegistry.removeDataObject(files);
 		});
-		DataObjectRegistry.addDataObject(files,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("OPEN")));
+		files.getProperties().put(DataObject.DEFAULT_NAME,MessageRegistry.getString("OPEN"));
+		DataObjectRegistry.addDataObject(files);
 		Main.INSTANCE.show(files);
 	}
 	public static void openUrl(){
@@ -60,8 +61,8 @@ public class FileCommands{
 		},null,"",new Label("URL:"),null);
 	}
 	public static void save(){
-		DataObject data=Main.INSTANCE.getCurrentDataObject();
-		String url=DataObjectRegistry.getURL(data);
+		DataObject data=Main.getCurrentDataObject();
+		String url=(String)data.getProperties().get(DataObject.URI);
 		if(url==null)
 			saveAs();
 		else
@@ -72,27 +73,28 @@ public class FileCommands{
 			}
 	}
 	public static void saveAs(){
-		FileSystemData files=new FileSystemData();
+		FileSystemData files=DataObjectRegistry.create(FileSystemDataType.INSTANCE);
 		files.setInitialPath(guessDefaultPath());
 		files.setAction((paths)->{
 			paths.forEach((p)->saveAs(p));
 			DataObjectRegistry.removeDataObject(files);
 		});
-		DataObjectRegistry.addDataObject(files,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,MessageRegistry.getString("SAVE_AS")));
+		files.getProperties().put(DataObject.DEFAULT_NAME,MessageRegistry.getString("SAVE"));
+		DataObjectRegistry.addDataObject(files);
 		Main.INSTANCE.show(files);
 	}
 	public static void saveAs(Path p){
 		DataObject data=Main.INSTANCE.getCurrentDataObject();
 		try{
 			data.getDataObjectType().writeTo(data,p.toUri().toURL().openConnection());
-			DataObjectRegistry.getProperties(data).put(DataObjectRegistry.URI,p.toUri().toString());
+			data.getProperties().put(DataObject.URI,p.toUri().toString());
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
 	private static Path guessDefaultPath(){
 		try{
-			return new File(new URI(DataObjectRegistry.getURL(Main.getCurrentDataObject()))).toPath();
+			return new File(new URI((String)Main.getCurrentDataObject().getProperties().get(DataObject.URI))).toPath();
 		}catch(Exception ex){
 			return null;
 		}
@@ -118,8 +120,8 @@ public class FileCommands{
 		return path;
 	}
 	public static void create(){
-		TemplateEditor templateEditor=new TemplateEditor();
-		DataObjectRegistry.addDataObject(templateEditor,Helper.hashMap());
+		DataObject templateEditor=DataObjectRegistry.create(TemplateEditor.INSTANCE);
+		DataObjectRegistry.addDataObject(templateEditor);
 		Main.INSTANCE.show(templateEditor);
 	}
 }

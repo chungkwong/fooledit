@@ -120,9 +120,9 @@ public class Main extends Application{
 		globalCommandRegistry.put("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		globalCommandRegistry.put("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		globalCommandRegistry.put("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
-		globalCommandRegistry.put("browser",()->addAndShow(new BrowserData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Browser")));
-		globalCommandRegistry.put("terminal",()->addAndShow(new TerminalData(),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"Terminal")));
-		globalCommandRegistry.put("file-system",()->addAndShow(new FileSystemData(null),Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,"File System")));
+		globalCommandRegistry.put("browser",()->addAndShow(DataObjectRegistry.create(BrowserDataType.INSTANCE)));
+		globalCommandRegistry.put("terminal",()->addAndShow(DataObjectRegistry.create(TerminalDataType.INSTANCE)));
+		globalCommandRegistry.put("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemDataType.INSTANCE)));
 		globalCommandRegistry.put("command",()->input.requestFocus());
 		globalCommandRegistry.put("cancel",()->getCurrentNode().requestFocus());
 		globalCommandRegistry.put("next-buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
@@ -175,12 +175,12 @@ public class Main extends Application{
 	private Consumer<ObservableList<MenuItem>> getHistoryMenu(){
 		return (l)->{
 			for(Map<String,String> prop:DataObjectRegistry.getHistoryList()){
-				MenuItem item=new MenuItem(prop.get(DataObjectRegistry.BUFFER_NAME));
+				MenuItem item=new MenuItem(prop.get(DataObject.BUFFER_NAME));
 				item.setOnAction((e)->{
 					try{
-						URL file=new URI(prop.get(DataObjectRegistry.URI)).toURL();
-						if(prop.containsKey(DataObjectRegistry.MIME)){
-							show(DataObjectRegistry.readFrom(file,new MimeType(prop.get(DataObjectRegistry.MIME))));
+						URL file=new URI(prop.get(DataObject.URI)).toURL();
+						if(prop.containsKey(DataObject.MIME)){
+							show(DataObjectRegistry.readFrom(file,new MimeType(prop.get(DataObject.MIME))));
 						}else{
 							show(DataObjectRegistry.readFrom(file));
 						}
@@ -207,8 +207,8 @@ public class Main extends Application{
 			commandRegistry.setLocal(getLocalCommandRegistry());
 		}
 	}
-	public static void addAndShow(DataObject data,Map<String,String> prop){
-		DataObjectRegistry.addDataObject(data,prop);
+	public static void addAndShow(DataObject data){
+		DataObjectRegistry.addDataObject(data);
 		showDefault(data);
 	}
 	public static void show(DataObject data){
@@ -245,8 +245,9 @@ public class Main extends Application{
 		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
 		root.setCenter((WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
 			String msg=MessageRegistry.getString("WELCOME");
-			TextObject welcome=new TextObject(msg);
-			DataObjectRegistry.addDataObject(welcome,Helper.hashMap(DataObjectRegistry.DEFAULT_NAME,msg,DataObjectRegistry.TYPE,TextObjectType.class.getName()));
+			TextObject welcome=DataObjectRegistry.create(TextObjectType.INSTANCE);
+			welcome.getText().set(msg);
+			DataObjectRegistry.addDataObject(welcome);
 			WorkSheet workSheet=new WorkSheet(welcome,getDefaultEditor(welcome),null);
 			setCurrentWorkSheet(workSheet);
 			return workSheet;
