@@ -18,6 +18,8 @@ package cc.fooledit.example.text;
 import cc.fooledit.model.*;
 import java.io.*;
 import java.net.*;
+import java.nio.charset.*;
+import java.util.logging.*;
 import java.util.stream.*;
 /**
  *
@@ -25,6 +27,7 @@ import java.util.stream.*;
  */
 public class TextObjectType implements DataObjectType<TextObject>{
 	public static final TextObjectType INSTANCE=new TextObjectType();
+	private static final String CHARSET="CHAESET";
 	private TextObjectType(){
 
 	}
@@ -43,20 +46,47 @@ public class TextObjectType implements DataObjectType<TextObject>{
 		}
 	}
 	public void writeTo(TextObject data,OutputStream out) throws Exception{
-		BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out));
+		Charset charset;
+		String charsetName=data.getProperties().get(CHARSET);
+		try{
+			charset=Charset.forName(charsetName);
+		}catch(IllegalArgumentException ex){
+			Logger.getGlobal().log(Level.INFO,"Unsupported character set:{0}",charsetName);
+			charset=StandardCharsets.UTF_8;
+		}
+		BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out,charset));
 		writer.write(data.getText().get());
 		writer.flush();
 	}
 	@Override
 	public TextObject readFrom(URLConnection connection) throws Exception{
 		try(InputStream in=connection.getInputStream()){
-			return readFrom(in);
+			String charsetName=connection.getContentEncoding();
+			Charset charset=null;
+			try{
+				charset=Charset.forName(charsetName);
+				if(!CharsetDetector.isPossible(in,charset))
+					charset=null;
+			}catch(IllegalArgumentException ex){
+				Logger.getGlobal().log(Level.INFO,"Unsupported character set:{0}",charsetName);
+			}catch(IOException ex){
+
+			}
+			if(charset==null)
+				try{
+					charset=CharsetDetector.probeCharset(in);
+				}catch(IOException ex){
+					charset=StandardCharsets.UTF_8;
+				}
+			return readFrom(in,charset);
 		}
 	}
-	public TextObject readFrom(InputStream in) throws Exception{
+	public TextObject readFrom(InputStream in,Charset charset) throws Exception{
 		StringBuilder buf=new StringBuilder();
-		BufferedReader reader=new BufferedReader(new InputStreamReader(in));
-		return new TextObject(reader.lines().collect(Collectors.joining("\n")));
+		BufferedReader reader=new BufferedReader(new InputStreamReader(in,charset));
+		TextObject object=new TextObject(reader.lines().collect(Collectors.joining("\n")));
+		object.getProperties().put(CHARSET,charset.name());
+		return object;
 	}
 	@Override
 	public boolean canCreate(){

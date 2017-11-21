@@ -26,31 +26,31 @@ import java.util.*;
  */
 public class CharsetDetector{
 	private static final List<Charset> perferedEncodings=new ArrayList<>();
-	public static String probeCharset(InputStream in) throws IOException{
+	public static Charset probeCharset(InputStream in) throws IOException{
 		for(Charset set:perferedEncodings)
 			if(isPossible(in,set))
-				return set.name();
-		List<String> cand=probeCharsets(in);
+				return set;
+		List<Charset> cand=probeCharsets(in);
 		return cand.isEmpty()?null:cand.get(0);
 	}
-	public static List<String> probeCharsets(InputStream in) throws IOException{
+	public static List<Charset> probeCharsets(InputStream in) throws IOException{
 		return probeCharsets(in,true);
 	}
-	public static List<String> probeCharsets(InputStream in,boolean strict) throws IOException{
+	public static List<Charset> probeCharsets(InputStream in,boolean strict) throws IOException{
 		SortedMap<String,Charset> charsets=Charset.availableCharsets();
 		if(in.markSupported()){
 			ByteBuffer buf=readBlock(in);
-			List<String> cand=new ArrayList<>();
+			List<Charset> cand=new ArrayList<>();
 			Iterator<Map.Entry<String,Charset>> iterator=charsets.entrySet().iterator();
 			while(iterator.hasNext()){
 				Map.Entry<String,Charset> entry=iterator.next();
 				if(isPossible(buf,entry.getValue(),strict)){
-					cand.add(entry.getKey());
+					cand.add(entry.getValue());
 				}
 			}
 			return cand;
 		}
-		return new ArrayList<>(charsets.keySet());
+		return new ArrayList<>(charsets.values());
 	}
 	public static boolean isPossible(InputStream in,Charset charset)throws IOException{
 		return isPossible(in,charset,true);
@@ -95,8 +95,9 @@ public class CharsetDetector{
 		perferedEncodings.add(StandardCharsets.UTF_16);
 	}
 	public static void main(String[] args) throws IOException{
-		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/sysu_learning/政治课/eassy.tex"))));
-		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/sysu_learning/政治课/《毛泽东选集》第一卷.txt"))));
-		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/sysu_learning/政治课/中国近现代史纲要.xlsx"))));
+		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/NetBeansProjects/jtk/test/cc/fooledit/example/text/GBK.txt"))));
+		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/NetBeansProjects/jtk/test/cc/fooledit/example/text/UTF-8.txt"))));
+		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/NetBeansProjects/jtk/test/cc/fooledit/example/text/UTF-16.txt"))));
+		//System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/sysu_learning/政治课/中国近现代史纲要.xlsx"))));
 	}
 }

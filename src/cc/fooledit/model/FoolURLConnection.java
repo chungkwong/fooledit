@@ -52,7 +52,7 @@ public class FoolURLConnection extends URLConnection{
 	}
 	@Override
 	public String getContentEncoding(){
-		return base.getContentEncoding();//TODO
+		return base.getContentEncoding();
 	}
 	@Override
 	public int getContentLength(){

@@ -22,6 +22,9 @@ import java.util.*;
  */
 public abstract class AbstractDataObject<T extends AbstractDataObject> implements DataObject<T>{
 	private final Map<String,String> properties=new HashMap<>();
+	public AbstractDataObject(){
+		properties.put(MODIFIED,"false");
+	}
 	@Override
 	public Map<String,String> getProperties(){
 		return properties;

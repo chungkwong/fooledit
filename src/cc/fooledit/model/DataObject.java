@@ -26,6 +26,7 @@ public interface DataObject<T extends DataObject>{
 	public static final String DEFAULT_NAME="DEFAULT_NAME";
 	public static final String BUFFER_NAME="BUFFER_NAME";
 	public static final String TYPE="TYPE";
+	public static final String MODIFIED="MODIFIED";
 	DataObjectType<T> getDataObjectType();
 	Map<String,String> getProperties();
 }

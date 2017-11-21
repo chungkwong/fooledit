@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.text;
+import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.control.*;
+import cc.fooledit.model.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -27,6 +29,13 @@ public class TextEditorModule{
 		DataObjectTypeRegistry.addDataObjectType(TextObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->new StructuredTextEditor(),TextObject.class);
 		TemplateEditor.registerTemplateType("text",(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
+		Main.INSTANCE.getMenuRegistry().registerDynamicMenu("charset",(items)->{
+			DataObject curr=Main.getCurrentDataObject();
+			String url=(String)curr.getProperties().get(DataObject.URI);
+			if(url!=null){
+			
+			}
+		});
 	}
 	public static void onUnLoad(){
 
