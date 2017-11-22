@@ -51,8 +51,16 @@ public class DataObjectRegistry{
 			if(old.isPresent())
 				return old.get();
 			try{
-				URLConnection connection=new URL(uri).openConnection();
-				object=builder.readFrom(connection);
+				String mime=prop.get(DataObject.MIME);
+				if(mime!=null){
+					try{
+						object=readFrom(new URL(uri),new MimeType(mime));
+					}catch(Exception ex){
+						object=readFrom(new URL(uri));
+					}
+				}else{
+					object=readFrom(new URL(uri));
+				}
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 				object=create(builder);
@@ -141,21 +149,20 @@ public class DataObjectRegistry{
 	public static DataObject readFrom(URLConnection connection,MimeType mime)throws Exception{
 		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
 			try{
-				return readFrom(connection,type);
+				return readFrom(connection,type,mime);
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.INFO,null,ex);
 			}
 		}
 		throw new Exception();
 	}
-	public static DataObject readFrom(URL url,DataObjectType type)throws Exception{
-		return readFrom(FoolURLConnection.open(url),type);
+	public static DataObject readFrom(URL url,DataObjectType type,MimeType mime)throws Exception{
+		return readFrom(FoolURLConnection.open(url),type,mime);
 	}
-	public static DataObject readFrom(URLConnection connection,DataObjectType type)throws Exception{
-		String mime=connection.getContentType();
+	public static DataObject readFrom(URLConnection connection,DataObjectType type,MimeType mime)throws Exception{
 		DataObject data=type.readFrom(connection);
 		data.getProperties().put(DataObject.URI,connection.getURL().toString());
-		data.getProperties().put(DataObject.MIME,mime);
+		data.getProperties().put(DataObject.MIME,mime.toString());
 		data.getProperties().put(DataObject.DEFAULT_NAME,getLastComponent(connection.getURL().getPath()));
 		data.getProperties().put(DataObject.TYPE,type.getClass().getName());
 		addDataObject(data);

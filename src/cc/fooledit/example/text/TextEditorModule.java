@@ -18,7 +18,16 @@ package cc.fooledit.example.text;
 import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.control.*;
+import cc.fooledit.example.text.CharsetDetector;
 import cc.fooledit.model.*;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.*;
+import java.util.function.*;
+import java.util.logging.*;
+import java.util.stream.*;
+import javafx.scene.control.*;
+import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -29,13 +38,49 @@ public class TextEditorModule{
 		DataObjectTypeRegistry.addDataObjectType(TextObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->new StructuredTextEditor(),TextObject.class);
 		TemplateEditor.registerTemplateType("text",(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
-		Main.INSTANCE.getMenuRegistry().registerDynamicMenu("charset",(items)->{
+		Main.INSTANCE.getMenuRegistry().registerDynamicMenu("reload",(items)->{
 			DataObject curr=Main.getCurrentDataObject();
 			String url=(String)curr.getProperties().get(DataObject.URI);
+			String currCharset=(String)curr.getProperties().getOrDefault("CHARSET","UTF-8");
 			if(url!=null){
-			
+				ToggleGroup group=new ToggleGroup();
+				Consumer<Charset> reload=(set)->{
+					try{
+						MimeType mime=new MimeType((String)curr.getProperties().get(DataObject.MIME));
+						mime.setParameter("charset",set.name());
+						Main.show(DataObjectRegistry.readFrom(new URL(url),TextObjectType.INSTANCE,mime));
+					}catch(Exception ex){
+						Logger.getLogger(TextEditorModule.class.getName()).log(Level.SEVERE,null,ex);
+					}
+				};
+				try(InputStream in=FoolURLConnection.open(new URL(url)).getInputStream()){
+					items.setAll(CharsetDetector.probeCharsets(in).stream()
+							.map((set)->createCharsetItem(set,reload,group,currCharset)).collect(Collectors.toList()));
+				}catch(IOException ex){
+					Logger.getGlobal().log(Level.INFO,null,ex);
+					items.setAll(Charset.availableCharsets().values().stream()
+							.map((set)->createCharsetItem(set,reload,group,currCharset)).collect(Collectors.toList()));
+				}
 			}
 		});
+		Main.INSTANCE.getMenuRegistry().registerDynamicMenu("charset",(items)->{
+			TextObject curr=(TextObject)Main.getCurrentDataObject();
+			String currCharset=(String)curr.getProperties().getOrDefault("CHARSET","UTF-8");
+			ToggleGroup group=new ToggleGroup();
+			items.setAll(Charset.availableCharsets().values().stream()
+					.map((set)->createCharsetItem(set,(s)->{
+						curr.getProperties().put("CHARSET",s.name());
+					},group,currCharset)).collect(Collectors.toList()));
+		});
+
+	}
+	private static MenuItem createCharsetItem(Charset charset,Consumer<Charset> action,ToggleGroup group,String def){
+		RadioMenuItem radioMenuItem=new RadioMenuItem(charset.displayName());
+		radioMenuItem.setToggleGroup(group);
+		if(charset.name().equalsIgnoreCase(def))
+			group.selectToggle(radioMenuItem);
+		radioMenuItem.setOnAction((e)->action.accept(charset));
+		return radioMenuItem;
 	}
 	public static void onUnLoad(){
 

@@ -31,8 +31,9 @@ import java.util.function.*;
 import java.util.logging.*;
 import java.util.stream.*;
 import javafx.scene.Node;
+import javax.activation.*;
 import org.antlr.v4.runtime.*;
-import org.fxmisc.richtext.NavigationActions;
+import org.fxmisc.richtext.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -239,7 +240,12 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	@Override
 	public Node edit(TextObject data){
 		MetaLexer lex=null;
-		Language language=languages.get(data.getProperties().get(DataObject.MIME));
+		Language language;
+		try{
+			language=languages.get(new MimeType(data.getProperties().getOrDefault(DataObject.MIME,"text/plain")).getBaseType());
+		}catch(MimeTypeParseException ex){
+			language=null;
+		}
 		Highlighter highlighter=language!=null?language.getTokenHighlighter():null;
 		ParserBuilder parserBuilder=language!=null?language.getParserBuilder():null;
 		CodeEditor codeEditor=new CodeEditor(parserBuilder,highlighter);

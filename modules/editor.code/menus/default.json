@@ -77,7 +77,16 @@
 				{"name":"TRANSFORM","children":[
 					{"name":"TO_UPPERCASE","command":"to-uppercase"},
 					{"name":"TO_LOWERCASE","command":"to-lowercase"}
-				]}
+				]},
+				{},
+				{
+					"name":"RELOAD",
+					"provider":"reload"
+				},
+				{
+					"name":"CHARSET",
+					"provider":"charset"
+				}
 			]
 		}
 	]

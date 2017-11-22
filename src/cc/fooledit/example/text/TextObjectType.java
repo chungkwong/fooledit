@@ -21,6 +21,7 @@ import java.net.*;
 import java.nio.charset.*;
 import java.util.logging.*;
 import java.util.stream.*;
+import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -61,17 +62,14 @@ public class TextObjectType implements DataObjectType<TextObject>{
 	@Override
 	public TextObject readFrom(URLConnection connection) throws Exception{
 		try(InputStream in=connection.getInputStream()){
-			String charsetName=connection.getContentEncoding();
 			Charset charset=null;
 			try{
-				charset=Charset.forName(charsetName);
-				if(!CharsetDetector.isPossible(in,charset))
-					charset=null;
-			}catch(IllegalArgumentException ex){
-				Logger.getGlobal().log(Level.INFO,"Unsupported character set:{0}",charsetName);
-			}catch(IOException ex){
-
+				charset=checkForCharset(in,new MimeType(connection.getContentType()).getParameter("charset"));
+			}catch(MimeTypeParseException ex){
+				Logger.getGlobal().log(Level.INFO,null,ex);
 			}
+			if(charset==null)
+				charset=checkForCharset(in,connection.getContentEncoding());
 			if(charset==null)
 				try{
 					charset=CharsetDetector.probeCharset(in);
@@ -80,6 +78,18 @@ public class TextObjectType implements DataObjectType<TextObject>{
 				}
 			return readFrom(in,charset);
 		}
+	}
+	private static Charset checkForCharset(InputStream in,String charsetName){
+		try{
+			Charset charset=Charset.forName(charsetName);
+			if(CharsetDetector.isPossible(in,charset))
+				return charset;
+		}catch(IllegalArgumentException ex){
+			Logger.getGlobal().log(Level.INFO,"Unsupported character set:{0}",charsetName);
+		}catch(IOException ex){
+
+		}
+		return null;
 	}
 	public TextObject readFrom(InputStream in,Charset charset) throws Exception{
 		StringBuilder buf=new StringBuilder();
