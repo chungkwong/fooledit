@@ -28,7 +28,7 @@ import javax.activation.*;
  */
 public class TextObjectType implements DataObjectType<TextObject>{
 	public static final TextObjectType INSTANCE=new TextObjectType();
-	private static final String CHARSET="CHAESET";
+	private static final String CHARSET="CHARSET";
 	private TextObjectType(){
 
 	}
@@ -61,13 +61,20 @@ public class TextObjectType implements DataObjectType<TextObject>{
 	}
 	@Override
 	public TextObject readFrom(URLConnection connection) throws Exception{
+		MimeType mime=null;
+		try{
+			mime=new MimeType(connection.getContentType());
+		}catch(MimeTypeParseException ex){
+			Logger.getGlobal().log(Level.INFO,null,ex);
+			mime=new MimeType("text/plain");
+		}
+		return readFrom(connection,mime);
+	}
+	@Override
+	public TextObject readFrom(URLConnection connection,MimeType mime) throws Exception{
 		try(InputStream in=connection.getInputStream()){
 			Charset charset=null;
-			try{
-				charset=checkForCharset(in,new MimeType(connection.getContentType()).getParameter("charset"));
-			}catch(MimeTypeParseException ex){
-				Logger.getGlobal().log(Level.INFO,null,ex);
-			}
+			charset=checkForCharset(in,mime.getParameter("charset"));
 			if(charset==null)
 				charset=checkForCharset(in,connection.getContentEncoding());
 			if(charset==null)

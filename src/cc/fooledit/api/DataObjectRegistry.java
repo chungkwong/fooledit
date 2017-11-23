@@ -160,7 +160,7 @@ public class DataObjectRegistry{
 		return readFrom(FoolURLConnection.open(url),type,mime);
 	}
 	public static DataObject readFrom(URLConnection connection,DataObjectType type,MimeType mime)throws Exception{
-		DataObject data=type.readFrom(connection);
+		DataObject data=type.readFrom(connection,mime);
 		data.getProperties().put(DataObject.URI,connection.getURL().toString());
 		data.getProperties().put(DataObject.MIME,mime.toString());
 		data.getProperties().put(DataObject.DEFAULT_NAME,getLastComponent(connection.getURL().getPath()));

@@ -15,19 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
+import cc.fooledit.api.*;
 import cc.fooledit.model.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.function.*;
+import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ApplicationRegistry extends URLStreamHandler{
-	private static final Map<String,Supplier<DataObject>> registry=new HashMap<>();
-	public static void registry(String path,Supplier<DataObject> factory){
-		registry.put(path,factory);
+	private static final Map<String,MimeType> registry=new HashMap<>();
+	public static void register(String path,String baseType,DataObjectType factory) throws MimeTypeParseException{
+		registry.put(path,new MimeType(baseType));
+		DataObjectTypeRegistry.addDataObjectType(factory);
+		DataObjectTypeRegistry.registerMime(baseType,factory.getName());
 	}
 	@Override
 	protected URLConnection openConnection(URL u) throws IOException{
@@ -43,7 +46,7 @@ public class ApplicationRegistry extends URLStreamHandler{
 		}
 		@Override
 		public String getContentType(){
-			return super.getContentType(); //To change body of generated methods, choose Tools | Templates.
+			return super.getContentType();
 		}
 
 	}
