@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.browser;
-import cc.fooledit.api.*;
-import static cc.fooledit.api.DataObjectTypeRegistry.addDataEditor;
+import cc.fooledit.spi.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -24,8 +23,7 @@ import static cc.fooledit.api.DataObjectTypeRegistry.addDataEditor;
 public class BrowserModule{
 	public static final String NAME="editor.browser";
 	public static void onLoad(){
-		DataObjectTypeRegistry.addDataObjectType(BrowserDataType.INSTANCE);
-		addDataEditor(()->BrowserEditor.INSTANCE,BrowserData.class);
+		ApplicationRegistry.register("browser","fooledit/browser",BrowserDataType.INSTANCE,BrowserData.class,()->BrowserEditor.INSTANCE);
 	}
 	public static void onUnLoad(){
 

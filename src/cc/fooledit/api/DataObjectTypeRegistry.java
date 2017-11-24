@@ -21,6 +21,7 @@ import cc.fooledit.example.image.*;
 import cc.fooledit.example.media.*;
 import cc.fooledit.example.text.*;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import java.util.*;
 import java.util.function.*;
@@ -72,7 +73,6 @@ public class DataObjectTypeRegistry{
 		//addDataObjectType(TextObjectType.INSTANCE);
 		//addDataEditor(()->new TextEditor(),TextObject.class);
 		//addDataEditor(()->new StructuredTextEditor(),TextObject.class);
-		addDataObjectType(new TemplateEditor());//TODO
-		addDataEditor(()->new TemplateEditor(),TemplateEditor.class);
+		ApplicationRegistry.register("browser","fooledit/browser",TemplateEditor.INSTANCE,TemplateEditor.class,()->TemplateEditor.INSTANCE);addDataObjectType(new TemplateEditor());//TODO
 	}
 }

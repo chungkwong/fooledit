@@ -31,6 +31,17 @@ public class Helper{
 			map.put(val[i],val[i+1]);
 		return map;
 	}
+	public static <T> void uniq(Collection<T> list){
+		Iterator<T> iterator=list.iterator();
+		Set<T> founded=new HashSet<>();
+		while(iterator.hasNext()){
+			T next=iterator.next();
+			if(founded.contains(next))
+				iterator.remove();
+			else
+				founded.add(next);
+		}
+	}
 	public static String readText(String resource){
 		return readText(new InputStreamReader(Helper.class.getResourceAsStream(resource),StandardCharsets.UTF_8));
 	}

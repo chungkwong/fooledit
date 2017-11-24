@@ -25,7 +25,6 @@ import java.net.*;
 import java.nio.file.*;
 import java.util.logging.*;
 import javafx.scene.control.*;
-import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -97,19 +96,6 @@ public class FileCommands{
 			return new File(new URI((String)Main.getCurrentDataObject().getProperties().get(DataObject.URI))).toPath();
 		}catch(Exception ex){
 			return null;
-		}
-	}
-	private static MimeType guessContentType(Path file){
-		try{
-			return new MimeType(Files.probeContentType(file));
-		}catch(IOException|MimeTypeParseException ex){
-			Logger.getGlobal().log(Level.INFO,null,ex);
-			try{
-				return new MimeType("application/octet-stream");
-			}catch(MimeTypeParseException ex1){
-				Logger.getGlobal().log(Level.SEVERE,null,ex1);
-				return null;
-			}
 		}
 	}
 	private static String extractFilename(URL url){

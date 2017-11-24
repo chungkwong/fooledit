@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.model;
-import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import java.io.*;
 import java.net.*;
@@ -64,8 +63,9 @@ public class FoolURLConnection extends URLConnection{
 	}
 	@Override
 	public String getContentType(){
-		List<String> types=ContentTypeDetectorRegistry.guess(this);
-		return types.isEmpty()?null:types.get(0);
+		return base.getContentType();
+		//List<String> types=ContentTypeDetectorRegistry.guess(this);
+		//return types.isEmpty()?null:types.get(0);
 	}
 	@Override
 	public long getDate(){
