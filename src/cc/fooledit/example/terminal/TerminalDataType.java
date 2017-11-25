@@ -17,6 +17,7 @@
 package cc.fooledit.example.terminal;
 import cc.fooledit.model.*;
 import java.net.*;
+import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -52,7 +53,11 @@ public class TerminalDataType implements DataObjectType<TerminalData>{
 	}
 	@Override
 	public TerminalData readFrom(URLConnection connection) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return create();
+	}
+	@Override
+	public TerminalData readFrom(URLConnection connection,MimeType mime) throws Exception{
+		return create();
 	}
 
 }

@@ -23,7 +23,7 @@ import cc.fooledit.spi.*;
 public class TerminalModule{
 	public static final String NAME="editor.terminal";
 	public static void onLoad(){
-		ApplicationRegistry.register("browser","fooledit/browser",TerminalDataType.INSTANCE,TerminalData.class,()->TerminalEditor.INSTANCE);
+		ApplicationRegistry.register("terminal","fooledit/terminal",TerminalDataType.INSTANCE,TerminalData.class,()->TerminalEditor.INSTANCE);
 	}
 	public static void onUnLoad(){
 

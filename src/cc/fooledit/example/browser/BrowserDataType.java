@@ -17,6 +17,7 @@
 package cc.fooledit.example.browser;
 import cc.fooledit.model.*;
 import java.net.*;
+import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -39,16 +40,20 @@ public class BrowserDataType implements DataObjectType<BrowserData>{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public BrowserData readFrom(URLConnection connection) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
 	public BrowserData create(){
 		return new BrowserData();
 	}
 	@Override
 	public boolean canCreate(){
 		return true;
+	}
+	@Override
+	public BrowserData readFrom(URLConnection connection) throws Exception{
+		return create();
+	}
+	@Override
+	public BrowserData readFrom(URLConnection connection,MimeType mime) throws Exception{
+		return create();
 	}
 	@Override
 	public String getName(){

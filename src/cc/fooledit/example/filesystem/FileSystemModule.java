@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.filesystem;
-import static cc.fooledit.api.DataObjectTypeRegistry.addDataEditor;
+import cc.fooledit.spi.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -23,7 +23,7 @@ import static cc.fooledit.api.DataObjectTypeRegistry.addDataEditor;
 public class FileSystemModule{
 	public static final String NAME="editor.filesystem";
 	public static void onLoad(){
-		addDataEditor(()->FileSystemEditor.INSTANCE,FileSystemData.class);
+		ApplicationRegistry.register("filesystem","fooledit/directory",FileSystemDataType.INSTANCE,FileSystemData.class,()->FileSystemEditor.INSTANCE);
 	}
 	public static void onUnLoad(){
 

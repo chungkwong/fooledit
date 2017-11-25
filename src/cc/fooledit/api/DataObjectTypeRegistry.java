@@ -73,6 +73,6 @@ public class DataObjectTypeRegistry{
 		//addDataObjectType(TextObjectType.INSTANCE);
 		//addDataEditor(()->new TextEditor(),TextObject.class);
 		//addDataEditor(()->new StructuredTextEditor(),TextObject.class);
-		ApplicationRegistry.register("browser","fooledit/browser",TemplateEditor.INSTANCE,TemplateEditor.class,()->TemplateEditor.INSTANCE);addDataObjectType(new TemplateEditor());//TODO
+		ApplicationRegistry.register("template","fooledit/template",TemplateEditor.INSTANCE,TemplateEditor.class,()->TemplateEditor.INSTANCE);addDataObjectType(new TemplateEditor());//TODO
 	}
 }

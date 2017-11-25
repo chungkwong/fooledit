@@ -17,6 +17,7 @@
 package cc.fooledit.example.filesystem;
 import cc.fooledit.model.*;
 import java.net.*;
+import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -44,7 +45,11 @@ public class FileSystemDataType implements DataObjectType<FileSystemData>{
 	}
 	@Override
 	public FileSystemData readFrom(URLConnection connection) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return create();
+	}
+	@Override
+	public FileSystemData readFrom(URLConnection connection,MimeType mime) throws Exception{
+		return create();
 	}
 	@Override
 	public FileSystemData create(){

@@ -16,6 +16,7 @@
  */
 package cc.fooledit.model;
 import java.net.*;
+import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -47,6 +48,10 @@ public abstract class Prompt  extends AbstractDataObject<Prompt> implements Data
 	}
 	@Override
 	public Prompt readFrom(URLConnection connection) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return this;
+	}
+	@Override
+	public Prompt readFrom(URLConnection connection,MimeType mime) throws Exception{
+		return this;
 	}
 }

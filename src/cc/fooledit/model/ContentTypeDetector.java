@@ -89,7 +89,7 @@ public interface ContentTypeDetector{
 				if(url.getProtocol().equals("file"))
 					return Files.probeContentType(new File(url.toURI()).toPath());
 				else
-					return URLConnection.guessContentTypeFromName(url.getFile());
+					return connection.getContentType();
 			}catch(IOException|URISyntaxException ex){
 				return null;
 			}
