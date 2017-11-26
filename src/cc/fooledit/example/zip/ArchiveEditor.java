@@ -81,7 +81,7 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 	}
 	@Override
 	public String getName(){
-		return "Archive";
+		return MessageRegistry.getString("ARCHIVE_EDITOR");
 	}
 	private void focusUp(TableView<ArchiveEntry> tree){
 		focusBeginOfDirectory(tree);

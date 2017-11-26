@@ -22,7 +22,7 @@ import static cc.fooledit.api.DataObjectTypeRegistry.addDataObjectType;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class BinaryEditorModule{
-	public static final String NAME="editor.image";
+	public static final String NAME="editor.binary";
 	public static void onLoad(){
 		addDataObjectType(BinaryObjectType.INSTANCE);
 		addDataEditor(()->new BinaryEditor(),BinaryObject.class);
