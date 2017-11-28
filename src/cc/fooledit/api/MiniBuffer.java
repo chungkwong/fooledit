@@ -66,7 +66,7 @@ public class MiniBuffer extends BorderPane{
 					main.getNotifier().notify(Objects.toString(main.getScriptAPI().eval(input.getText())));
 					focusCurrentNode();
 				}catch(ScriptException ex){
-					Logger.getGlobal().log(Level.SEVERE,MessageRegistry.getString("FAILED"),ex);
+					Logger.getGlobal().log(Level.SEVERE,MessageRegistry.getString("FAILED",CoreModule.NAME),ex);
 				}
 			}
 		});
@@ -94,7 +94,7 @@ public class MiniBuffer extends BorderPane{
 			setMode((p)->{
 				collected.add(new ScmString(p));
 				executeCommand(command,collected,missing.subList(1,missing.size()));
-			},null,"",new Label(MessageRegistry.getString(missing.get(0))),null);
+			},null,"",new Label(MessageRegistry.getString(missing.get(0),command.getModule())),null);
 	}
 	@Override
 	public void requestFocus(){

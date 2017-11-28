@@ -25,12 +25,12 @@ import java.util.function.*;
  */
 public class UndoableCommand extends Command{
 	private final Function<ScmPairOrNil,UndoableAction> backup;
-	public UndoableCommand(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,Function<ScmPairOrNil,UndoableAction> backup){
-		super(name,action);
+	public UndoableCommand(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,Function<ScmPairOrNil,UndoableAction> backup,String module){
+		super(name,action,module);
 		this.backup=backup;
 	}
-	public UndoableCommand(String name,List<String> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,Function<ScmPairOrNil,UndoableAction> backup){
-		super(name,parameters,action);
+	public UndoableCommand(String name,List<String> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,Function<ScmPairOrNil,UndoableAction> backup,String module){
+		super(name,parameters,action,module);
 		this.backup=backup;
 	}
 	public UndoableAction getUndoAction(ScmPairOrNil args){

@@ -52,12 +52,12 @@ public class TemplateEditor extends Prompt{
 	@Override
 	public CommandRegistry getCommandRegistry(){
 		CommandRegistry commands=new CommandRegistry();
-		commands.put("create",()->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose());
+		commands.put("create",()->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose(),CoreModule.NAME);
 		return commands;
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("TEMPLATES");
+		return MessageRegistry.getString("TEMPLATES",CoreModule.NAME);
 	}
 	public static void registerTemplateType(String key,Function<Map<Object,Object>,Template> type){
 		templateTypes.put(key,type);
@@ -82,7 +82,7 @@ public class TemplateEditor extends Prompt{
 		private TreeItem buildTree(Map<Object,Object> obj){
 			TreeItem item;
 			if(obj.containsKey("children")){
-				item=new TreeItem(MessageRegistry.getString((String)obj.get("name")));
+				item=new TreeItem(MessageRegistry.getString((String)obj.get("name"),CoreModule.NAME));//FIXME
 				List<Map<Object,Object>> children=(List<Map<Object,Object>>)obj.get("children");
 				item.getChildren().setAll(children.stream().map(this::buildTree).collect(Collectors.toList()));
 			}else if(templateTypes.containsKey((String)obj.get("type"))){
@@ -127,7 +127,7 @@ public class TemplateEditor extends Prompt{
 				setText(null);
 				setGraphic(null);
 			}else if(item instanceof Template){
-				setText(MessageRegistry.getString(((Template)item).getName()));
+				setText(MessageRegistry.getString(((Template)item).getName(),CoreModule.NAME));//FIXME
 			}else if(item instanceof String){
 				setText((String)item);
 			}

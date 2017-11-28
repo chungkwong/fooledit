@@ -35,7 +35,7 @@ import org.apache.commons.compress.archivers.*;
  */
 public class ArchiveEditor implements DataEditor<ArchiveData>{
 	public static final ArchiveEditor INSTANCE=new ArchiveEditor();
-	private final MenuRegistry menuRegistry=new MenuRegistry();
+	private final MenuRegistry menuRegistry=new MenuRegistry(ZipModule.NAME);
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
 	private ArchiveEditor(){
@@ -56,11 +56,10 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 		addCommand("toggle-selection",(viewer)->toggleSelection(viewer.getTree()));
 		addCommand("mark",(viewer)->viewer.markPaths());
 		addCommand("submit",(viewer)->viewer.fireAction());
-		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(ZipModule.NAME).get("menubar-file",null)));
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(ZipModule.NAME).get("keymap-file",null)));
 	}
 	private void addCommand(String name,Consumer<ArchiveViewer> action){
-		commandRegistry.put(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()));
+		commandRegistry.put(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),ZipModule.NAME);
 	}
 	@Override
 	public Node edit(ArchiveData data){
@@ -81,7 +80,7 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("ARCHIVE_EDITOR");
+		return MessageRegistry.getString("ARCHIVE_EDITOR",ZipModule.NAME);
 	}
 	private void focusUp(TableView<ArchiveEntry> tree){
 		focusBeginOfDirectory(tree);

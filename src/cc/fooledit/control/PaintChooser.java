@@ -16,6 +16,7 @@
  */
 package cc.fooledit.control;
 import cc.fooledit.api.*;
+import cc.fooledit.example.image.*;
 import java.io.*;
 import java.util.*;
 import java.util.stream.*;
@@ -62,7 +63,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("COLOR");
+			return MessageRegistry.getString("COLOR",ImageEditorModule.NAME);
 		}
 	}
 	private class ImageChooser implements MinorChooser{
@@ -87,7 +88,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("IMAGE");
+			return MessageRegistry.getString("IMAGE",ImageEditorModule.NAME);
 		}
 	}
 	private class LinearChooser implements MinorChooser{
@@ -118,7 +119,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("LINEAR_GRADIENT");
+			return MessageRegistry.getString("LINEAR_GRADIENT",ImageEditorModule.NAME);
 		}
 		private class StopEditor extends HBox{
 			private final Button remove=new Button("X");
@@ -164,7 +165,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("RADIAL_GRADIENT");
+			return MessageRegistry.getString("RADIAL_GRADIENT",ImageEditorModule.NAME);
 		}
 		private class StopEditor extends HBox{
 			private final Button remove=new Button("X");

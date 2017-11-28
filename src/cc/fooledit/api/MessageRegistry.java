@@ -16,6 +16,7 @@
  */
 package cc.fooledit.api;
 import cc.fooledit.*;
+import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.logging.*;
@@ -24,28 +25,29 @@ import java.util.logging.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MessageRegistry{
-	private static final HashMap<String,String> dynamicBundle=new HashMap<>();
-	public static void addString(String key,String value){
-		dynamicBundle.put(key,value);
+	private static final HashMap<String,ResourceBundle> bundles=new HashMap<>();
+	public static void addBundle(String id,ResourceBundle bundle){
+		bundles.put(id,bundle);
 	}
-	public static void addBundle(ResourceBundle bundle){
-		for(String key:bundle.keySet())
-			addString(key,bundle.getString(key));
+	public static void addBundle(String module){
+		try{
+			addBundle(module,ResourceBundle.getBundle("messages",Locale.getDefault(),
+					new URLClassLoader(new URL[]{new File(new File(Main.getDataPath(),module),"locales").toURI().toURL()})));
+		}catch(MalformedURLException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
 	}
-	public static String getString(String key){
-		if(dynamicBundle.containsKey(key)){
-			return dynamicBundle.get(key);
-		}else{
+	public static String getString(String key,String bundleId){
+		ResourceBundle bundle=bundles.get(bundleId);
+		String value;
+		if(bundle!=null&&(value=bundle.getString(key))!=null)
+			return value;
+		else{
 			Logger.getGlobal().log(Level.INFO,"Missing string: {0}",key);
 			return key;
 		}
 	}
 	static{
-		try{
-			addBundle(ResourceBundle.getBundle("core.locales.base",Locale.getDefault(),
-					new URLClassLoader(new URL[]{Main.getDataPath().toURI().toURL()})));
-		}catch(MalformedURLException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
+		addBundle("core");
 	}
 }

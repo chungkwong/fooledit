@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.image;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.control.*;
 import cc.fooledit.model.*;
@@ -48,7 +48,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("IMAGE_EDITOR");
+		return MessageRegistry.getString("IMAGE_EDITOR",ImageEditorModule.NAME);
 	}
 	@Override
 	public void start(Stage stage) throws Exception{
@@ -68,9 +68,9 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		private final TextField thickChooser=new TextField();
 		private final PaintChooser strokeChooser=new PaintChooser(Color.BLACK);
 		private final PaintChooser fillChooser=new PaintChooser(Color.WHITE);
-		private final ToggleButton fill=new ToggleButton(MessageRegistry.getString("FILL"));
-		private final ToggleButton border=new ToggleButton(MessageRegistry.getString("BORDER"));
-		private final ToggleButton close=new ToggleButton(MessageRegistry.getString("CLOSE"));
+		private final ToggleButton fill=new ToggleButton(MessageRegistry.getString("FILL",ImageEditorModule.NAME));
+		private final ToggleButton border=new ToggleButton(MessageRegistry.getString("BORDER",ImageEditorModule.NAME));
+		private final ToggleButton close=new ToggleButton(MessageRegistry.getString("CLOSE",ImageEditorModule.NAME));
 
 		private double lastx=Double.NaN,lasty=Double.NaN;
 		private double lastlastx=Double.NaN,lastlasty=Double.NaN;
@@ -91,7 +91,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		private Node getPathBar(){
 			GraphicsContext g2d=canvas.getGraphicsContext2D();
 			GraphicsContext pg2d=preview.getGraphicsContext2D();
-			Button draw=new Button(MessageRegistry.getString("DRAW"));
+			Button draw=new Button(MessageRegistry.getString("DRAW",ImageEditorModule.NAME));
 			draw.setOnAction((e)->{
 				draw(g2d);
 				clearPreview();
@@ -101,7 +101,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			VBox bar=new VBox(draw,new Separator(Orientation.VERTICAL),border,fill,close,new Separator(Orientation.VERTICAL));
 			ToggleGroup elements=new ToggleGroup();
 			for(Element shape:Element.values()){
-				ToggleButton button=new ToggleButton(MessageRegistry.getString(shape.name()));
+				ToggleButton button=new ToggleButton(MessageRegistry.getString(shape.name(),ImageEditorModule.NAME));
 				button.setUserData(shape);
 				elements.getToggles().add(button);
 				bar.getChildren().add(button);
@@ -128,9 +128,9 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			return new HBox(effectChooser,scaleChooser,rotateChooser);
 		}
 		private Node getPropertiesBar(){
-			TabPane tabs=new TabPane(new Tab(MessageRegistry.getString("STROKE"),getStrokePropertiesBar()),
-					new Tab(MessageRegistry.getString("FILL"),getFillPropertiesBar()),
-					new Tab(MessageRegistry.getString("TEXT"),getTextPropertiesBar()));
+			TabPane tabs=new TabPane(new Tab(MessageRegistry.getString("STROKE",ImageEditorModule.NAME),getStrokePropertiesBar()),
+					new Tab(MessageRegistry.getString("FILL",ImageEditorModule.NAME),getFillPropertiesBar()),
+					new Tab(MessageRegistry.getString("TEXT",ImageEditorModule.NAME),getTextPropertiesBar()));
 			tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 			return tabs;
 		}
@@ -142,9 +142,9 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			capChooser.setConverter(new EnumStringConvertor<>(StrokeLineCap.class));
 			capChooser.getItems().setAll(StrokeLineCap.values());
 			capChooser.getSelectionModel().select(g2d.getLineCap());
-			Label dashLabel=new Label(MessageRegistry.getString("DASH"));
+			Label dashLabel=new Label(MessageRegistry.getString("DASH",ImageEditorModule.NAME));
 			dashChooser.setText(fromDashArray(g2d.getLineDashes()));
-			Label thickLabel=new Label(MessageRegistry.getString("THICK"));
+			Label thickLabel=new Label(MessageRegistry.getString("THICK",ImageEditorModule.NAME));
 			thickChooser.setText(Double.toString(g2d.getLineWidth()));
 			return new HBox(joinChooser,capChooser,dashLabel,dashChooser,thickLabel,thickChooser,strokeChooser);
 		}
@@ -212,7 +212,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			return supplier.get();
 		}
 		public String toString(){
-			return MessageRegistry.getString(name());
+			return MessageRegistry.getString(name(),ImageEditorModule.NAME);
 		}
 	}
 	private enum Element{

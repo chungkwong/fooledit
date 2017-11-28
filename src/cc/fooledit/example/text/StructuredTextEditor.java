@@ -42,13 +42,12 @@ import org.fxmisc.richtext.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class StructuredTextEditor implements DataEditor<TextObject>{
-	private final MenuRegistry menuRegistry=new MenuRegistry();
+	private final MenuRegistry menuRegistry=new MenuRegistry(TextEditorModule.NAME);
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
 	private final Map<String,Language> languages=new HashMap<>();
 	private final HistoryRing<String> clips=new HistoryRing<>();
 	public StructuredTextEditor(){
-		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("menubar-file",null)));
 		menuRegistry.registerDynamicMenu("reload",(items)->{
 			DataObject curr=Main.getCurrentDataObject();
 			String url=(String)curr.getProperties().get(DataObject.URI);
@@ -231,10 +230,10 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		json.stream().map((m)->Language.fromJSON(m)).forEach((l)->Arrays.stream(l.getMimeTypes()).forEach((mime)->languages.put(mime,l)));
 	}
 	private void addCommand(String name,Consumer<CodeEditor> action){
-		commandRegistry.put(name,()->action.accept(getCurrentEditor()));
+		commandRegistry.put(name,()->action.accept(getCurrentEditor()),TextEditorModule.NAME);
 	}
 	private void addCommand(String name,List<String> parameters,BiFunction<ScmPairOrNil,CodeEditor,ScmObject> action){
-		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,getCurrentEditor())));
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,getCurrentEditor()),TextEditorModule.NAME));
 	}
 	private CodeEditor getCurrentEditor(){
 		return (CodeEditor)Main.INSTANCE.getCurrentNode();
@@ -291,7 +290,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("CODE_EDITOR");
+		return MessageRegistry.getString("CODE_EDITOR",TextEditorModule.NAME);
 	}
 	private static String encodeURL(String url){
 		try{

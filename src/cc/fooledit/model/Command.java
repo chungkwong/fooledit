@@ -25,24 +25,29 @@ import java.util.logging.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Command{
+	private final String module;
 	private final String name;
 	private final ThrowableFunction<ScmPairOrNil,ScmObject> action;
 	private final List<String> parameters;
 	private static Pair<Command,ScmPairOrNil> lastCommand=new Pair<>(null,null);
-	public Command(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
-		this(name,Collections.emptyList(),action);
+	public Command(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
+		this(name,Collections.emptyList(),action,module);
 	}
-	public Command(String name,List<String> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action){
+	public Command(String name,List<String> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
 		this.action=action;
+		this.module=module;
 		this.name=name;
 		this.parameters=parameters;
 		//getDisplayName();
 	}
 	public String getDisplayName(){
-		return MessageRegistry.getString(name.toUpperCase().replace('-','_'));
+		return MessageRegistry.getString(name.toUpperCase().replace('-','_'),module);
 	}
 	public String getName(){
 		return name;
+	}
+	public String getModule(){
+		return module;
 	}
 	public List<String> getParameters(){
 		return parameters;
@@ -51,7 +56,7 @@ public class Command{
 		try{
 			return action.accept(t);
 		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,name+MessageRegistry.getString("FAILED"),ex);
+			Logger.getGlobal().log(Level.SEVERE,name+MessageRegistry.getString("FAILED",CoreModule.NAME),ex);
 			return null;
 		}finally{
 			if(!(name.equals("command")||name.equals("restore")||name.equals("repeat")))

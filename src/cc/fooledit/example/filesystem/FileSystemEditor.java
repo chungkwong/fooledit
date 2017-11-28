@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.filesystem;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.control.*;
 import cc.fooledit.model.*;
@@ -35,7 +35,7 @@ import javafx.scene.control.*;
  */
 public class FileSystemEditor implements DataEditor<FileSystemData>{
 	public static final FileSystemEditor INSTANCE=new FileSystemEditor();
-	private final MenuRegistry menuRegistry=new MenuRegistry();
+	private final MenuRegistry menuRegistry=new MenuRegistry(FileSystemModule.NAME);
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
 	private FileSystemEditor(){
@@ -66,11 +66,10 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 		addCommand("hard-link",(viewer)->viewer.getMarkedPaths().forEach((from)->viewer.getCurrentDirectories().forEach((dir)->hardLink(from,dir))));
 		addCommand("create-directory",(viewer)->viewer.getCurrentDirectories().forEach((path)->createDirectory(path)));
 		addCommand("create-file",(viewer)->viewer.getCurrentDirectories().forEach((path)->createFile(path)));
-		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(FileSystemModule.NAME).get("menubar-file",null)));
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(FileSystemModule.NAME).get("keymap-file",null)));
 	}
 	private void addCommand(String name,Consumer<FileSystemViewer> action){
-		commandRegistry.put(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()));
+		commandRegistry.put(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),FileSystemModule.NAME);
 	}
 	private void moveToPreviousPage(TreeTableView<Path> tree){
 		int newIndex=((TreeTableViewSkin)tree.getSkin()).onScrollPageUp(true);
@@ -140,7 +139,7 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 			}
 			Main.INSTANCE.getMiniBuffer().restore();
 			Main.INSTANCE.getCurrentNode().requestFocus();
-		},null,"",new Label(MessageRegistry.getString("NAME")),null);
+		},null,"",new Label(MessageRegistry.getString("NAME",FileSystemModule.NAME)),null);
 	}
 	private static void createFile(Path from){
 		Main.INSTANCE.getMiniBuffer().setMode((name)->{
@@ -152,7 +151,7 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 			}
 			Main.INSTANCE.getMiniBuffer().restore();
 			Main.INSTANCE.getCurrentNode().requestFocus();
-		},null,"",new Label(MessageRegistry.getString("NAME")),null);
+		},null,"",new Label(MessageRegistry.getString("NAME",FileSystemModule.NAME)),null);
 	}
 	private static void rename(Path from){
 		Main.INSTANCE.getMiniBuffer().setMode((name)->{
@@ -174,7 +173,7 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 			}catch(IOException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
-		},null,from.getFileName().toString(),new Label(MessageRegistry.getString("RENAME_TO")),null);
+		},null,from.getFileName().toString(),new Label(MessageRegistry.getString("RENAME_TO",FileSystemModule.NAME)),null);
 	}
 	private static void move(Path from,Path dir){
 		fileToDirectory(from,dir,(f,t,o)->{
@@ -223,14 +222,14 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 		}
 	}
 	private static void onOverride(Runnable action){
-		String yes=MessageRegistry.getString("YES");
-		String no=MessageRegistry.getString("NO");
+		String yes=MessageRegistry.getString("YES",FileSystemModule.NAME);
+		String no=MessageRegistry.getString("NO",FileSystemModule.NAME);
 		Main.INSTANCE.getMiniBuffer().setMode((ans)->{
 			if(ans.equals(yes))
 				action.run();
 			Main.INSTANCE.getMiniBuffer().restore();
 		},AutoCompleteProvider.createSimple(Arrays.asList(AutoCompleteHint.create(yes,yes,""),AutoCompleteHint.create(no,no,"")))
-		,"",new Label(MessageRegistry.getString("OVERRIDE_EXIST")),null);
+		,"",new Label(MessageRegistry.getString("OVERRIDE_EXIST",FileSystemModule.NAME)),null);
 		Main.INSTANCE.getMiniBuffer().restore();
 		Main.INSTANCE.getCurrentNode().requestFocus();
 	}
@@ -245,7 +244,7 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("FILE_SYSTEM_VIEWER");
+		return MessageRegistry.getString("FILE_SYSTEM_VIEWER",FileSystemModule.NAME);
 	}
 	@Override
 	public CommandRegistry getCommandRegistry(){

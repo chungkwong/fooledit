@@ -58,23 +58,23 @@ public class FileSystemViewer extends BorderPane{
 		tree.setTableMenuButtonVisible(true);
 		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		setCenter(tree);
-		this.<String>createColumnChooser(MessageRegistry.getString("NAME"),(param)->
+		this.<String>createColumnChooser(MessageRegistry.getString("NAME",FileSystemModule.NAME),(param)->
 				new ReadOnlyStringWrapper(getFileName(param.getValue().getValue())),true);
-		this.<String>createColumnChooser(MessageRegistry.getString("OWNER"),(param)->
+		this.<String>createColumnChooser(MessageRegistry.getString("OWNER",FileSystemModule.NAME),(param)->
 				new ReadOnlyStringWrapper(getOwnerName(param.getValue().getValue())),true);
-		this.<Boolean>createColumnChooser(MessageRegistry.getString("READABLE"),(param)->
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("READABLE",FileSystemModule.NAME),(param)->
 				new ReadOnlyBooleanWrapper(Files.isReadable(param.getValue().getValue())),true);
-		this.<Boolean>createColumnChooser(MessageRegistry.getString("WRITABLE"),(param)->
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("WRITABLE",FileSystemModule.NAME),(param)->
 				new ReadOnlyBooleanWrapper(Files.isWritable(param.getValue().getValue())),true);
-		this.<Boolean>createColumnChooser(MessageRegistry.getString("EXECUTABLE"),(param)->
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("EXECUTABLE",FileSystemModule.NAME),(param)->
 				new ReadOnlyBooleanWrapper(Files.isExecutable(param.getValue().getValue())),true);
-		this.<Boolean>createColumnChooser(MessageRegistry.getString("HIDDEN"),(param)->
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("HIDDEN",FileSystemModule.NAME),(param)->
 				new ReadOnlyBooleanWrapper(isHidden(param.getValue().getValue())),true);
-		this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED"),(param)->
+		this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED",FileSystemModule.NAME),(param)->
 				new ReadOnlyStringWrapper(getLastModified(param.getValue().getValue())),true);
-		this.<Number>createColumnChooser(MessageRegistry.getString("SIZE"),(param)->
+		this.<Number>createColumnChooser(MessageRegistry.getString("SIZE",FileSystemModule.NAME),(param)->
 				new ReadOnlyLongWrapper(getSize(param.getValue().getValue())),true);
-		this.<String>createColumnChooser(MessageRegistry.getString("SYMBOLIC_LINK"),(param)->
+		this.<String>createColumnChooser(MessageRegistry.getString("SYMBOLIC_LINK",FileSystemModule.NAME),(param)->
 				new ReadOnlyStringWrapper(getLinkTarget(param.getValue().getValue())),false);
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).setCellFactory((p)->new FileCell());
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).prefWidthProperty().bind(tree.widthProperty().multiply(0.4));
@@ -89,14 +89,14 @@ public class FileSystemViewer extends BorderPane{
 		try{
 			return Files.getOwner(path,LinkOption.NOFOLLOW_LINKS).getName();
 		}catch(IOException ex){
-			return MessageRegistry.getString("UNKNOWN");
+			return MessageRegistry.getString("UNKNOWN",FileSystemModule.NAME);
 		}
 	}
 	private static String getLastModified(Path path){
 		try{
 			return Files.getLastModifiedTime(path).toString();
 		}catch(IOException ex){
-			return MessageRegistry.getString("UNKNOWN");
+			return MessageRegistry.getString("UNKNOWN",FileSystemModule.NAME);
 		}
 	}
 	private static long getSize(Path path){

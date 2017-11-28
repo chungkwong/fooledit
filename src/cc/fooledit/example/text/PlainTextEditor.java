@@ -48,6 +48,6 @@ public class PlainTextEditor implements DataEditor<TextObject>{
 	});
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("TEXT_EDITOR");
+		return MessageRegistry.getString("TEXT_EDITOR",TextEditorModule.NAME);
 	}
 }

@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.control.*;
+import cc.fooledit.setting.*;
 import com.github.chungkwong.jschememin.type.*;
+import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.collections.*;
@@ -28,12 +30,15 @@ import javafx.scene.layout.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MenuRegistry{
+	private final String module;
 	private final MenuBar bar=new MenuBar();
 	private final Map<String,Consumer<ObservableList<MenuItem>>> dynamic=new HashMap<>();
-	public MenuRegistry(){
+	public MenuRegistry(String module){
+		this.module=module;
+		setMenus(Main.loadJSON((File)SettingManager.getOrCreate(module).get("menubar-file",null)));
 		HBox.setHgrow(bar,Priority.NEVER);
 	}
-	public void setMenus(Map<Object,Object> json){
+	private void setMenus(Map<Object,Object> json){
 		List<Map<Object,Object>> menus=(List<Map<Object,Object>>)json.get(CHILDREN);
 		bar.getMenus().setAll(menus.stream().map((e)->addMenu(e)).toArray(Menu[]::new));
 	}
@@ -60,8 +65,8 @@ public class MenuRegistry{
 			return new OnDemandMenu(getName(json),(items)->dynamic.get(id).accept(items));
 		}
 	}
-	private static String getName(Map<Object,Object> json){
-		return MessageRegistry.getString((String)json.get(NAME));
+	private String getName(Map<Object,Object> json){
+		return MessageRegistry.getString((String)json.get(NAME),module);
 	}
 	public void registerDynamicMenu(String id,Consumer<ObservableList<MenuItem>> provider){
 		dynamic.put(id,provider);

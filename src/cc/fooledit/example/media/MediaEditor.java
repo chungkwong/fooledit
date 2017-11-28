@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.media;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.example.text.*;
 import cc.fooledit.model.*;
@@ -39,7 +39,7 @@ import javafx.util.*;
  */
 public class MediaEditor extends Application implements DataEditor<MediaObject>{
 	public static final MediaEditor INSTANCE=new MediaEditor();
-	private final MenuRegistry menuRegistry=new MenuRegistry();
+	private final MenuRegistry menuRegistry=new MenuRegistry(MediaEditorModule.NAME);
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
 	private MediaEditor(){
@@ -57,14 +57,13 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 				items.add(item);
 			});
 		});
-		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(MediaEditorModule.NAME).get("menubar-file",null)));
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(MediaEditorModule.NAME).get("keymap-file",null)));
 	}
 	@Override
 	public Node edit(MediaObject data){
 		MediaView editor=new MediaView();
 		MediaPlayer player=data.getProperty().getValue();
-		player.statusProperty().addListener((e,o,n)->Main.INSTANCE.getNotifier().notify(MessageRegistry.getString(n.toString())));
+		player.statusProperty().addListener((e,o,n)->Main.INSTANCE.getNotifier().notify(MessageRegistry.getString(n.toString(),MediaEditorModule.NAME)));
 		player.setOnMarker((e)->Main.INSTANCE.getNotifier().notify(e.getMarker().getKey()));
 		editor.setMediaPlayer(player);
 		player.play();
@@ -99,10 +98,10 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("MEDIA_PLAYER");
+		return MessageRegistry.getString("MEDIA_PLAYER",MediaEditorModule.NAME);
 	}
 	private void addCommand(String name,Consumer<MediaPlayer> action){
-		commandRegistry.put(name,()->action.accept(((MediaObject)Main.INSTANCE.getCurrentDataObject()).getProperty().getValue()));
+		commandRegistry.put(name,()->action.accept(((MediaObject)Main.INSTANCE.getCurrentDataObject()).getProperty().getValue()),MediaEditorModule.NAME);
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

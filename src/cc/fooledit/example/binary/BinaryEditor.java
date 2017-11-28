@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.binary;
-import cc.fooledit.model.DataEditor;
-import cc.fooledit.api.MessageRegistry;
+import cc.fooledit.api.*;
+import cc.fooledit.model.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.util.*;
@@ -35,7 +35,7 @@ public class BinaryEditor implements DataEditor<BinaryObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("BINARY_EDITOR");
+		return MessageRegistry.getString("BINARY_EDITOR",BinaryEditorModule.NAME);
 	}
 	private static class HexConvertor extends StringConverter<byte[]>{
 		static String[] units=new String[]{

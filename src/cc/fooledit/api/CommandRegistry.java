@@ -26,21 +26,21 @@ import java.util.function.*;
 public class CommandRegistry extends HashMap<String,Command>{
 	public CommandRegistry(){
 	}
-	public void put(String name,Runnable action){
+	public void put(String name,Runnable action,String module){
 		put(name,(t)->{
 			action.run();
 			return null;
-		});
+		},module);
 	}
-	public void put(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
-		put(name,new Command(name,action));
+	public void put(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
+		put(name,new Command(name,action,module));
 		//System.err.println(new Command(name,action).getDisplayName());
 	}
-	public void putOnDemand(String name,Supplier<Command> supplier){
+	public void putOnDemand(String name,Supplier<Command> supplier,String module){
 		put(name,(t)->{
 			Command command=supplier.get();
 			put(name,command);
 			return command.accept(t);
-		});
+		},module);
 	}
 }

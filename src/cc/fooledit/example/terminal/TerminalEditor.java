@@ -36,7 +36,7 @@ public class TerminalEditor implements DataEditor<TerminalData>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("TERMINAL");
+		return MessageRegistry.getString("TERMINAL",TerminalModule.NAME);
 	}
 
 }

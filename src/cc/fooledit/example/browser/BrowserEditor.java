@@ -32,7 +32,7 @@ import javafx.scene.web.*;
  */
 public class BrowserEditor implements DataEditor<BrowserData>{
 	public static final BrowserEditor INSTANCE=new BrowserEditor();
-	private final MenuRegistry menuRegistry=new MenuRegistry();
+	private final MenuRegistry menuRegistry=new MenuRegistry(BrowserModule.NAME);
 	private final CommandRegistry commandRegistry=new CommandRegistry();
 	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
 	private BrowserEditor(){
@@ -40,7 +40,6 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 		addCommand("move-to-next-page",(viewer)->viewer.forward());
 		addCommand("refresh",(viewer)->viewer.refresh());
 		addCommand("set-location",(viewer)->viewer.locate());
-		menuRegistry.setMenus(Main.loadJSON((File)SettingManager.getOrCreate(BrowserModule.NAME).get("menubar-file",null)));
 		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(BrowserModule.NAME).get("keymap-file",null)));
 		menuRegistry.registerDynamicMenu("editor.browser.ForwardPages",(items)->{
 			WebHistory history=((BrowserData)Main.INSTANCE.getCurrentDataObject()).getWebView().getEngine().getHistory();
@@ -72,7 +71,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 		});
 	}
 	private void addCommand(String name,Consumer<BrowserViewer> action){
-		commandRegistry.put(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()));
+		commandRegistry.put(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()),BrowserModule.NAME);
 	}
 	@Override
 	public Node edit(BrowserData data){
@@ -80,7 +79,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("BROWSER");
+		return MessageRegistry.getString("BROWSER",BrowserModule.NAME);
 	}
 	@Override
 	public CommandRegistry getCommandRegistry(){

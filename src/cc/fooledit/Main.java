@@ -96,8 +96,7 @@ public class Main extends Application{
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
 	private void initMenuBar(){
-		menuRegistry=new MenuRegistry();
-		menuRegistry.setMenus(loadJSON((File)SettingManager.getOrCreate("core").get("menubar-file",null)));
+		menuRegistry=new MenuRegistry(CoreModule.NAME);
 		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
 		menuRegistry.registerDynamicMenu("file_history",getHistoryMenu());
 		input=new MiniBuffer(this);
@@ -107,52 +106,58 @@ public class Main extends Application{
 		root.setTop(commander);
 	}
 	private void registerStandardCommand(){
-		globalCommandRegistry.put("new",()->FileCommands.create());
-		globalCommandRegistry.put("open-file",()->FileCommands.open());
-		globalCommandRegistry.put("open-url",()->FileCommands.openUrl());
-		globalCommandRegistry.put("save",()->FileCommands.save());
-		globalCommandRegistry.put("save-as",()->FileCommands.saveAs());
-		globalCommandRegistry.put("full-screen",()->stage.setFullScreen(true));
-		globalCommandRegistry.put("toggle-full-screen",()->stage.setFullScreen(!stage.isFullScreen()));
-		globalCommandRegistry.put("exit-full-screen",()->stage.setFullScreen(false));
-		globalCommandRegistry.put("maximize-frame",()->stage.setMaximized(true));
-		globalCommandRegistry.put("iconify-frame",()->stage.setIconified(true));
-		globalCommandRegistry.put("always-on-top-frame",()->stage.setAlwaysOnTop(true));
-		globalCommandRegistry.put("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
-		globalCommandRegistry.put("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
-		globalCommandRegistry.put("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
-		globalCommandRegistry.put("browser",()->addAndShow(DataObjectRegistry.create(BrowserDataType.INSTANCE)));
-		globalCommandRegistry.put("terminal",()->addAndShow(DataObjectRegistry.create(TerminalDataType.INSTANCE)));
-		globalCommandRegistry.put("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemDataType.INSTANCE)));
-		globalCommandRegistry.put("command",()->input.requestFocus());
-		globalCommandRegistry.put("cancel",()->getCurrentNode().requestFocus());
-		globalCommandRegistry.put("next-buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
-		globalCommandRegistry.put("previous-buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
-		globalCommandRegistry.put("start-record",()->{macro.clear();recording=true;});
-		globalCommandRegistry.put("stop-record",()->{recording=false;macro.remove(0);macro.remove(macro.size()-1);});
-		globalCommandRegistry.put("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
-		globalCommandRegistry.put("restore",()->getMiniBuffer().restore());
-		globalCommandRegistry.put("repeat",(o)->Command.repeat(o instanceof ScmNil?1:SchemeConverter.toInteger(ScmList.first(o))));
-		globalCommandRegistry.put("map-mime-to-type",(o)->{
+		addCommand("new",()->FileCommands.create());
+		addCommand("open-file",()->FileCommands.open());
+		addCommand("open-url",()->FileCommands.openUrl());
+		addCommand("save",()->FileCommands.save());
+		addCommand("save-as",()->FileCommands.saveAs());
+		addCommand("full-screen",()->stage.setFullScreen(true));
+		addCommand("toggle-full-screen",()->stage.setFullScreen(!stage.isFullScreen()));
+		addCommand("exit-full-screen",()->stage.setFullScreen(false));
+		addCommand("maximize-frame",()->stage.setMaximized(true));
+		addCommand("iconify-frame",()->stage.setIconified(true));
+		addCommand("always-on-top-frame",()->stage.setAlwaysOnTop(true));
+		addCommand("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
+		addCommand("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
+		addCommand("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
+		addCommand("browser",()->addAndShow(DataObjectRegistry.create(BrowserDataType.INSTANCE)));
+		addCommand("terminal",()->addAndShow(DataObjectRegistry.create(TerminalDataType.INSTANCE)));
+		addCommand("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemDataType.INSTANCE)));
+		addCommand("command",()->input.requestFocus());
+		addCommand("cancel",()->getCurrentNode().requestFocus());
+		addCommand("next-buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
+		addCommand("previous-buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
+		addCommand("start-record",()->{macro.clear();recording=true;});
+		addCommand("stop-record",()->{recording=false;macro.remove(0);macro.remove(macro.size()-1);});
+		addCommand("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
+		addCommand("restore",()->getMiniBuffer().restore());
+		addCommand("repeat",(o)->Command.repeat(o instanceof ScmNil?1:SchemeConverter.toInteger(ScmList.first(o))));
+		addCommand("map-mime-to-type",(o)->{
 			DataObjectTypeRegistry.registerMime(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
-		globalCommandRegistry.put("map-suffix-to-mime",(o)->{
+		addCommand("map-suffix-to-mime",(o)->{
 			ContentTypeDetectorRegistry.getSUFFIX_GUESSER().registerSuffix(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
-		globalCommandRegistry.put("map-glob-to-mime",(o)->{
+		addCommand("map-glob-to-mime",(o)->{
 			ContentTypeDetectorRegistry.getURL_GUESSER().registerPathPattern(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
-		globalCommandRegistry.put("mime-alias",(o)->{
+		addCommand("mime-alias",(o)->{
 			ContentTypeRegistry.registerAlias(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
-		globalCommandRegistry.put("ensure-loaded",(o)->{
+		addCommand("ensure-loaded",(o)->{
 			ModuleRegistry.ensureLoaded(SchemeConverter.toString(ScmList.first(o)));
 			return null;
 		});
+	}
+	private void addCommand(String name,Runnable action){
+		globalCommandRegistry.put(name,action,CoreModule.NAME);
+	}
+	private void addCommand(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
+		globalCommandRegistry.put(name,action,CoreModule.NAME);
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
@@ -194,7 +199,7 @@ public class Main extends Application{
 		};
 	}
 	private MenuItem createCommandMenuItem(String name){
-		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase()));
+		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase(),CoreModule.NAME));
 		item.setOnAction((e)->globalCommandRegistry.get(name).accept(ScmNil.NIL));
 		return item;
 	}
@@ -245,7 +250,7 @@ public class Main extends Application{
 		},globalCommandRegistry);
 		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
 		root.setCenter((WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
-			String msg=MessageRegistry.getString("WELCOME");
+			String msg=MessageRegistry.getString("WELCOME",CoreModule.NAME);
 			TextObject welcome=DataObjectRegistry.create(TextObjectType.INSTANCE);
 			welcome.getText().set(msg);
 			DataObjectRegistry.addDataObject(welcome);
@@ -410,7 +415,7 @@ public class Main extends Application{
 					}else if(next!=null&&next.startsWith(code+' ')){
 						e.consume();
 						curr=code;
-						getNotifier().notify(MessageRegistry.getString("ENTERED")+code);
+						getNotifier().notify(MessageRegistry.getString("ENTERED",CoreModule.NAME)+code);
 						ignore=true;
 					}else{
 						curr=null;

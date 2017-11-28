@@ -16,6 +16,7 @@
  */
 package cc.fooledit.control;
 import cc.fooledit.api.*;
+import cc.fooledit.example.image.*;
 import javafx.geometry.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -30,7 +31,7 @@ public class FontChooser extends HBox{
 	private final ComboBox<FontSmoothingType> smoothing=new ComboBox<>();
 	private final ComboBox<TextAlignment> alignment=new ComboBox<>();
 	private final ComboBox<VPos> baseline=new ComboBox<>();
-	private final TextField preview=new TextField(MessageRegistry.getString("FONT_PREVIEW_TEXT"));
+	private final TextField preview=new TextField(MessageRegistry.getString("FONT_PREVIEW_TEXT",ImageEditorModule.NAME));
 	private final Spinner size=new Spinner(0.0,100.0,Font.getDefault().getSize(),0.5);
 	private final ToggleButton italic=new ToggleButton("I");
 	public FontChooser(){

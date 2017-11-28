@@ -27,7 +27,7 @@ import javax.activation.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class DataObjectRegistry{
-	private static final String UNTITLED=MessageRegistry.getString("UNTITLED");
+	private static final String UNTITLED=MessageRegistry.getString("UNTITLED",CoreModule.NAME);
 	private static final String KEY="file_history.json";
 	private static final String LIMIT="limit";
 	private static final String ENTRIES="entries";

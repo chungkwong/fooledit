@@ -40,11 +40,11 @@ public class ArchiveViewer extends BorderPane{
 		tree.getItems().setAll(entries);
 		tree.setTableMenuButtonVisible(true);
 		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		this.<String>createColumnChooser(MessageRegistry.getString("NAME"),(param)->
+		this.<String>createColumnChooser(MessageRegistry.getString("NAME",ZipModule.NAME),(param)->
 				new ReadOnlyStringWrapper(getFileName(param.getValue())),true);
-		this.<Number>createColumnChooser(MessageRegistry.getString("SIZE"),(param)->
+		this.<Number>createColumnChooser(MessageRegistry.getString("SIZE",ZipModule.NAME),(param)->
 				new ReadOnlyLongWrapper(getSize(param.getValue())),true);
-		this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED"),(param)->
+		this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED",ZipModule.NAME),(param)->
 				new ReadOnlyStringWrapper(getLastModified(param.getValue())),true);
 		((TableColumn<ArchiveEntry,String>)tree.getColumns().get(0)).setCellFactory((p)->new ZipCell());
 		((TableColumn<ArchiveEntry,String>)tree.getColumns().get(0)).prefWidthProperty().bind(tree.widthProperty().multiply(0.4));

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
-import cc.fooledit.Main;
+import cc.fooledit.*;
 import java.text.*;
 import java.util.*;
 import java.util.logging.Formatter;
@@ -46,10 +46,10 @@ public class Notifier extends Handler{
 		Platform.runLater(()->label.setText(msg));
 	}
 	public void notifyStarted(String task){
-		notify(MessageRegistry.getString("EXECUTING")+task);
+		notify(MessageRegistry.getString("EXECUTING",CoreModule.NAME)+task);
 	}
 	public void notifyFinished(String task){
-		notify(MessageRegistry.getString("EXECUTED")+task);
+		notify(MessageRegistry.getString("EXECUTED",CoreModule.NAME)+task);
 	}
 	@Override
 	public void publish(LogRecord record){

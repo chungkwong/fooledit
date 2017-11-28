@@ -46,7 +46,7 @@ public class FileCommands{
 			});
 			DataObjectRegistry.removeDataObject(files);
 		});
-		files.getProperties().put(DataObject.DEFAULT_NAME,MessageRegistry.getString("OPEN"));
+		files.getProperties().put(DataObject.DEFAULT_NAME,MessageRegistry.getString("OPEN",CoreModule.NAME));
 		DataObjectRegistry.addDataObject(files);
 		Main.INSTANCE.show(files);
 	}
@@ -78,7 +78,7 @@ public class FileCommands{
 			paths.forEach((p)->saveAs(p));
 			DataObjectRegistry.removeDataObject(files);
 		});
-		files.getProperties().put(DataObject.DEFAULT_NAME,MessageRegistry.getString("SAVE"));
+		files.getProperties().put(DataObject.DEFAULT_NAME,MessageRegistry.getString("SAVE",CoreModule.NAME));
 		DataObjectRegistry.addDataObject(files);
 		Main.INSTANCE.show(files);
 	}
