@@ -136,10 +136,10 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		}
 		private Node getStrokePropertiesBar(){
 			GraphicsContext g2d=canvas.getGraphicsContext2D();
-			joinChooser.setConverter(new EnumStringConvertor<>(StrokeLineJoin.class));
+			joinChooser.setConverter(new EnumStringConvertor<>(StrokeLineJoin.class,ImageEditorModule.NAME));
 			joinChooser.getItems().setAll(StrokeLineJoin.values());
 			joinChooser.getSelectionModel().select(g2d.getLineJoin());
-			capChooser.setConverter(new EnumStringConvertor<>(StrokeLineCap.class));
+			capChooser.setConverter(new EnumStringConvertor<>(StrokeLineCap.class,ImageEditorModule.NAME));
 			capChooser.getItems().setAll(StrokeLineCap.values());
 			capChooser.getSelectionModel().select(g2d.getLineCap());
 			Label dashLabel=new Label(MessageRegistry.getString("DASH",ImageEditorModule.NAME));
@@ -149,7 +149,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			return new HBox(joinChooser,capChooser,dashLabel,dashChooser,thickLabel,thickChooser,strokeChooser);
 		}
 		private Node getFillPropertiesBar(){
-			fillRuleChooser.setConverter(new EnumStringConvertor<>(FillRule.class));
+			fillRuleChooser.setConverter(new EnumStringConvertor<>(FillRule.class,ImageEditorModule.NAME));
 			fillRuleChooser.getItems().setAll(FillRule.values());
 			fillRuleChooser.getSelectionModel().select(FillRule.NON_ZERO);
 			alphaChooser.setEditable(true);

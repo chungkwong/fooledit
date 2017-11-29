@@ -191,7 +191,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				int end=argc>=2?SchemeConverter.toInteger(ScmList.second(args)):area.getArea().getLength();
 				return new ScmString(area.getArea().getText(start,end));
 		});
-		clips.registryComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry);
+		clips.registerComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry);
 		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
 				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList())),true));
 		addCommand("highlight",(area)->area.selections().add(area.createSelection(area.getArea().getSelection())));

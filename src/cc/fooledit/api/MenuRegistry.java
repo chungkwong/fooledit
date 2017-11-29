@@ -33,6 +33,9 @@ public class MenuRegistry{
 	private final String module;
 	private final MenuBar bar=new MenuBar();
 	private final Map<String,Consumer<ObservableList<MenuItem>>> dynamic=new HashMap<>();
+	public MenuRegistry(){
+		this.module=null;
+	}
 	public MenuRegistry(String module){
 		this.module=module;
 		setMenus(Main.loadJSON((File)SettingManager.getOrCreate(module).get("menubar-file",null)));

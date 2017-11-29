@@ -82,20 +82,20 @@ public class HistoryRing<T>{
 	public Stream<T> stream(){
 		return list.stream();
 	}
-	public void registryComamnds(String noun,Supplier<T> snapshotAction,Consumer<T> chooseAction,CommandRegistry registry){
-		registry.put("first-"+noun,()->chooseAction.accept(get(0)));
-		registry.put("last-"+noun,()->chooseAction.accept(get(size()-1)));
-		registry.put("next-"+noun,()->chooseAction.accept(get(next())));
-		registry.put("previous-"+noun,()->chooseAction.accept(get(previous())));
-		registry.put("record-"+noun,()->add(snapshotAction.get()));
+	public void registerComamnds(String noun,Supplier<T> snapshotAction,Consumer<T> chooseAction,CommandRegistry registry){
+		registry.put("first-"+noun,()->chooseAction.accept(get(0)),CoreModule.NAME);
+		registry.put("last-"+noun,()->chooseAction.accept(get(size()-1)),CoreModule.NAME);
+		registry.put("next-"+noun,()->chooseAction.accept(get(next())),CoreModule.NAME);
+		registry.put("previous-"+noun,()->chooseAction.accept(get(previous())),CoreModule.NAME);
+		registry.put("record-"+noun,()->add(snapshotAction.get()),CoreModule.NAME);
 		registry.put("tag-"+noun,(args)->{
 			tag(SchemeConverter.toString(ScmList.first(args)));
 			return null;
-		});
-		registry.put(noun+"-limit",(ScmPairOrNil)->ScmInteger.valueOf(getLimit()));
+		},CoreModule.NAME);
+		registry.put(noun+"-limit",(ScmPairOrNil)->ScmInteger.valueOf(getLimit()),CoreModule.NAME);
 		registry.put("set-"+noun+"-limit",(args)->{
 			setLimit(SchemeConverter.toInteger(ScmList.first(args)));
 			return null;
-		});
+		},CoreModule.NAME);
 	}
 }

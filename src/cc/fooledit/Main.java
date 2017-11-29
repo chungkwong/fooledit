@@ -245,7 +245,7 @@ public class Main extends Application{
 		updateCurrentNode(workSheet.getCenter());
 	}
 	private void loadDefaultWorkSheet(){
-		worksheets.registryComamnds("worksheet",()->((WorkSheet)root.getCenter()).toJSON(),(json)->{
+		worksheets.registerComamnds("worksheet",()->((WorkSheet)root.getCenter()).toJSON(),(json)->{
 			root.setCenter(WorkSheet.fromJSON(json));
 		},globalCommandRegistry);
 		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);

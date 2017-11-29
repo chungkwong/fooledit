@@ -23,12 +23,14 @@ import javafx.util.*;
  */
 public class EnumStringConvertor<E extends Enum<E>> extends StringConverter<E>{
 	private final Class<E> cls;
-	public EnumStringConvertor(Class<E> cls){
+	private final String module;
+	public EnumStringConvertor(Class<E> cls,String module){
 		this.cls=cls;
+		this.module=module;
 	}
 	@Override
 	public String toString(E object){
-		return MessageRegistry.getString(object.toString());
+		return MessageRegistry.getString(object.toString(),module);
 	}
 	@Override
 	public E fromString(String string){

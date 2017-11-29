@@ -24,7 +24,7 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class OnDemandMenu extends Menu{
-	private final MenuItem stub=new MenuItem(MessageRegistry.getString("NO_MORE"));
+	private final MenuItem stub=new MenuItem(MessageRegistry.getString("NO_MORE",CoreModule.NAME));
 	public OnDemandMenu(String title,Consumer<ObservableList<MenuItem>> setter){
 		super(title);
 		stub.setDisable(true);
