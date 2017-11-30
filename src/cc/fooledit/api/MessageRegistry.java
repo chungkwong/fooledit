@@ -29,6 +29,19 @@ public class MessageRegistry{
 	public static void addBundle(String id,ResourceBundle bundle){
 		bundles.put(id,bundle);
 	}
+	public static String getString(String key,String bundleId){
+		ResourceBundle bundle=bundles.get(bundleId);
+		if(bundle==null){
+			addBundle(bundleId);
+			bundle=bundles.get(bundleId);
+		}
+		if(bundle!=null&&bundle.containsKey(key))
+			return bundle.getString(key);
+		else{
+			Logger.getGlobal().log(Level.INFO,"Missing string: {0}",key);
+			return key;
+		}
+	}
 	public static void addBundle(String module){
 		try{
 			addBundle(module,ResourceBundle.getBundle("messages",Locale.getDefault(),
@@ -36,18 +49,5 @@ public class MessageRegistry{
 		}catch(MalformedURLException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
-	}
-	public static String getString(String key,String bundleId){
-		ResourceBundle bundle=bundles.get(bundleId);
-		String value;
-		if(bundle!=null&&(value=bundle.getString(key))!=null)
-			return value;
-		else{
-			Logger.getGlobal().log(Level.INFO,"Missing string: {0}",key);
-			return key;
-		}
-	}
-	static{
-		addBundle("core");
 	}
 }

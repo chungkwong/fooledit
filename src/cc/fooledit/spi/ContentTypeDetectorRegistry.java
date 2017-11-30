@@ -68,7 +68,7 @@ public class ContentTypeDetectorRegistry{
 				cand.add(parent);
 		}
 		Helper.uniq(cand);
-		System.out.println(cand);
+		//System.out.println(cand);
 		return cand.isEmpty()?Collections.singletonList("application/octet-stream"):cand;
 	}
 	public static void main(String[] args) throws IOException{

@@ -61,11 +61,6 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 	public String getName(){
 		return "archive";
 	}
-	public static void main(String[] args){
-		System.err.println(new ArchiveStreamFactory().getInputStreamArchiveNames());
-		System.err.println(ArchiveStreamFactory.TAR);
-	}
-
 	private static String getArchiver(String mime){
 		return mime2archive.get(mime);
 	}

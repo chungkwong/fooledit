@@ -62,9 +62,6 @@ public class TemplateEditor extends Prompt{
 	public static void registerTemplateType(String key,Function<Map<Object,Object>,Template> type){
 		templateTypes.put(key,type);
 	}
-	public static void main(String[] args){
-		System.out.println(System.getProperties());
-	}
 	private class TemplateChooser extends BorderPane{
 		private final TreeView templates;
 		private final TextField filename=new TextField();

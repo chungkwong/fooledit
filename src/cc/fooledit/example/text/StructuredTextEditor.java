@@ -20,7 +20,6 @@ import cc.fooledit.api.*;
 import cc.fooledit.control.*;
 import cc.fooledit.editor.lex.*;
 import cc.fooledit.editor.parser.*;
-import cc.fooledit.example.text.CharsetDetector;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
 import cc.fooledit.util.*;
@@ -314,7 +313,6 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		if(charset.name().equalsIgnoreCase(def))
 			group.selectToggle(radioMenuItem);
 		radioMenuItem.setOnAction((e)->action.accept(charset));
-		System.out.println(def+":"+charset.name());
 		return radioMenuItem;
 	}
 }
