@@ -79,7 +79,7 @@ public class BinaryObjectType implements DataObjectType<BinaryObject>{
 		return new BinaryObject(data);
 	}
 	@Override
-	public String getName(){
+	public String getDisplayName(){
 		return "binary";
 	}
 }

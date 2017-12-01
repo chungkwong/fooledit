@@ -66,7 +66,7 @@ public class ImageObjectType implements DataObjectType<ImageObject>{
 		return new ImageObject(new WritableImage(200,200));
 	}
 	@Override
-	public String getName(){
+	public String getDisplayName(){
 		return "image";
 	}
 }

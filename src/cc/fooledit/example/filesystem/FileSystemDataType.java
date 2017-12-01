@@ -56,7 +56,7 @@ public class FileSystemDataType implements DataObjectType<FileSystemData>{
 		return new FileSystemData(null);
 	}
 	@Override
-	public String getName(){
+	public String getDisplayName(){
 		return "filesystem";
 	}
 }

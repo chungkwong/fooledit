@@ -26,7 +26,7 @@ public interface DataObjectType<T extends DataObject>{
 	boolean canWrite();
 	boolean canCreate();
 	T create();
-	String getName();
+	String getDisplayName();
 	void writeTo(T data,URLConnection connection)throws Exception;
 	T readFrom(URLConnection connection) throws Exception;
 	default T readFrom(URLConnection connection,MimeType mime) throws Exception{

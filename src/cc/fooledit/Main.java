@@ -20,9 +20,7 @@ import static cc.fooledit.api.KeymapRegistry.encode;
 import cc.fooledit.api.*;
 import cc.fooledit.command.*;
 import cc.fooledit.control.*;
-import cc.fooledit.example.browser.*;
 import cc.fooledit.example.filesystem.*;
-import cc.fooledit.example.terminal.*;
 import cc.fooledit.example.text.*;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
@@ -120,8 +118,6 @@ public class Main extends Application{
 		addCommand("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		addCommand("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		addCommand("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
-		addCommand("browser",()->addAndShow(DataObjectRegistry.create(BrowserDataType.INSTANCE)));
-		addCommand("terminal",()->addAndShow(DataObjectRegistry.create(TerminalDataType.INSTANCE)));
 		addCommand("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemDataType.INSTANCE)));
 		addCommand("command",()->input.requestFocus());
 		addCommand("cancel",()->getCurrentNode().requestFocus());

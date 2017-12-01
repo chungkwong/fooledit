@@ -44,7 +44,7 @@ public class TerminalDataType implements DataObjectType<TerminalData>{
 		return new TerminalData();
 	}
 	@Override
-	public String getName(){
+	public String getDisplayName(){
 		return "terminal";
 	}
 	@Override

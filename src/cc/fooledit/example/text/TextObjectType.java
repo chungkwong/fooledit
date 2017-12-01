@@ -114,7 +114,7 @@ public class TextObjectType implements DataObjectType<TextObject>{
 		return new TextObject("");
 	}
 	@Override
-	public String getName(){
+	public String getDisplayName(){
 		return "text";
 	}
 }

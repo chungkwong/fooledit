@@ -37,7 +37,7 @@ public class ApplicationRegistry extends URLStreamHandler{
 		}
 		DataObjectTypeRegistry.addDataObjectType(factory);
 		DataObjectTypeRegistry.addDataEditor(editorSupplier,cls);
-		DataObjectTypeRegistry.registerMime(baseType,factory.getName());
+		DataObjectTypeRegistry.registerMime(baseType,factory.getDisplayName());
 	}
 	@Override
 	protected URLConnection openConnection(URL u) throws IOException{

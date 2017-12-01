@@ -52,8 +52,12 @@ public class TemplateEditor extends Prompt{
 	@Override
 	public CommandRegistry getCommandRegistry(){
 		CommandRegistry commands=new CommandRegistry();
-		commands.put("create",()->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose(),CoreModule.NAME);
+		commands.put("create",()->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose(),CoreModule.NAME);//FIXME
 		return commands;
+	}
+	@Override
+	public String getDisplayName(){
+		return MessageRegistry.getString("TEMPLATES",CoreModule.NAME);
 	}
 	@Override
 	public String getName(){

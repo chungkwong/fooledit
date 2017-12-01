@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.terminal;
+import cc.fooledit.*;
+import cc.fooledit.api.*;
 import cc.fooledit.spi.*;
 /**
  *
@@ -24,6 +26,7 @@ public class TerminalModule{
 	public static final String NAME="editor.terminal";
 	public static void onLoad(){
 		ApplicationRegistry.register("terminal","fooledit/terminal",TerminalDataType.INSTANCE,TerminalData.class,()->TerminalEditor.INSTANCE);
+		Main.INSTANCE.getGlobalCommandRegistry().put("terminal",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(TerminalDataType.INSTANCE)),NAME);
 	}
 	public static void onUnLoad(){
 

@@ -58,7 +58,7 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 		}
 	}
 	@Override
-	public String getName(){
+	public String getDisplayName(){
 		return "archive";
 	}
 	private static String getArchiver(String mime){

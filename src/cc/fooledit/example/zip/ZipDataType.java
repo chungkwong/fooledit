@@ -51,7 +51,7 @@ public class ZipDataType implements DataObjectType<ZipData>{
 		data.getContent().getDataObjectType().writeTo(data,FoolURLConnection.open(new URL("compressed","",connection.getURL().toString())));
 	}
 	@Override
-	public String getName(){
+	public String getDisplayName(){
 		return "zip";
 	}
 }

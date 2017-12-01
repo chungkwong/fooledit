@@ -56,7 +56,7 @@ public class BrowserDataType implements DataObjectType<BrowserData>{
 		return create();
 	}
 	@Override
-	public String getName(){
+	public String getDisplayName(){
 		return "browser";
 	}
 }

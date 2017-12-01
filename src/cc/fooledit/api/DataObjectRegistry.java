@@ -129,7 +129,7 @@ public class DataObjectRegistry{
 	public static <T extends DataObject> T create(DataObjectType<T> type){
 		T object=type.create();
 		object.getProperties().put(DataObject.TYPE,type.getClass().getName());
-		object.getProperties().putIfAbsent(DataObject.DEFAULT_NAME,type.getName());
+		object.getProperties().putIfAbsent(DataObject.DEFAULT_NAME,type.getDisplayName());
 		return object;
 	}
 	public static DataObject readFrom(URL url)throws Exception{

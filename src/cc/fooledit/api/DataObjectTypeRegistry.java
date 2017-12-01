@@ -36,7 +36,7 @@ public class DataObjectTypeRegistry{
 	private static final Map<String,DataObjectType> types=new HashMap<>();
 	private static final Map<String,String> mimes=new HashMap<>();
 	public static void addDataObjectType(DataObjectType type){
-		types.put(type.getName(),type);
+		types.put(type.getDisplayName(),type);
 	}
 	public static void addDataEditor(Supplier<DataEditor> editor,Class<? extends DataObject> objectClass){
 		if(!editors.containsKey(objectClass))
