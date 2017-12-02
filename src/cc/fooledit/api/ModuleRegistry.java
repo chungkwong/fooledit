@@ -59,10 +59,10 @@ public class ModuleRegistry{
 		return Collections.unmodifiableMap(loadedModules);
 	}
 	public static ModuleDescriptor getModuleDescriptor(String name){
-		return ModuleDescriptor.fromJSON(Main.loadJSON(new File(Main.getModulePath(name),"descriptor.json")));
+		return ModuleDescriptor.fromJSON(Main.INSTANCE.loadJSON(new File(Main.INSTANCE.getModulePath(name),"descriptor.json")));
 	}
 	public static Collection<String> getInstalledModules(){
-		return Arrays.stream(Main.getDataPath().listFiles((File file)->file.isDirectory())).
+		return Arrays.stream(Main.INSTANCE.getDataPath().listFiles((File file)->file.isDirectory())).
 				map((f)->f.getName()).collect(Collectors.toSet());
 	}
 	public static List<ModuleDescriptor> listDownloadable(){
@@ -77,7 +77,7 @@ public class ModuleRegistry{
 	}
 	public File download(ModuleDescriptor module) throws IOException{
 		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL(module.getURL()).openStream()),StandardCharsets.UTF_8)){
-			File base=Main.getModulePath(module.getName());
+			File base=Main.INSTANCE.getModulePath(module.getName());
 			base.mkdirs();
 			ZipEntry entry;
 			byte[] buf=new byte[4096];

@@ -56,7 +56,7 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 		addCommand("toggle-selection",(viewer)->toggleSelection(viewer.getTree()));
 		addCommand("mark",(viewer)->viewer.markPaths());
 		addCommand("submit",(viewer)->viewer.fireAction());
-		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(ZipModule.NAME).get("keymap-file",null)));
+		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(ZipModule.NAME).get("keymap-file",null)));
 	}
 	private void addCommand(String name,Consumer<ArchiveViewer> action){
 		commandRegistry.put(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),ZipModule.NAME);
@@ -69,7 +69,7 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 				URL url=null;
 				try{
 					url=new URL("archive","",data.getUrl().toString()+"!/"+entry.getName());
-					Main.show(DataObjectRegistry.readFrom(url));
+					Main.INSTANCE.show(DataObjectRegistry.readFrom(url));
 				}catch(Exception ex){
 					Logger.getGlobal().log(Level.SEVERE,null,ex);
 				}

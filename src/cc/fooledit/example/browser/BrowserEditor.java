@@ -40,7 +40,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 		addCommand("move-to-next-page",(viewer)->viewer.forward());
 		addCommand("refresh",(viewer)->viewer.refresh());
 		addCommand("set-location",(viewer)->viewer.locate());
-		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(BrowserModule.NAME).get("keymap-file",null)));
+		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(BrowserModule.NAME).get("keymap-file",null)));
 		menuRegistry.registerDynamicMenu("editor.browser.ForwardPages",(items)->{
 			WebHistory history=((BrowserData)Main.INSTANCE.getCurrentDataObject()).getWebView().getEngine().getHistory();
 			ObservableList<WebHistory.Entry> entries=history.getEntries();

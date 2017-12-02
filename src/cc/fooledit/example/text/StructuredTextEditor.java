@@ -48,7 +48,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final HistoryRing<String> clips=new HistoryRing<>();
 	public StructuredTextEditor(){
 		menuRegistry.registerDynamicMenu("reload",(items)->{
-			DataObject curr=Main.getCurrentDataObject();
+			DataObject curr=Main.INSTANCE.getCurrentDataObject();
 			String url=(String)curr.getProperties().get(DataObject.URI);
 			String currCharset=(String)curr.getProperties().getOrDefault("CHARSET","UTF-8");
 			if(url!=null){
@@ -57,7 +57,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 					try{
 						MimeType mime=new MimeType((String)curr.getProperties().get(DataObject.MIME));
 						mime.setParameter("charset",set.name());
-						Main.show(DataObjectRegistry.readFrom(new URL(url),TextObjectType.INSTANCE,mime));
+						Main.INSTANCE.show(DataObjectRegistry.readFrom(new URL(url),TextObjectType.INSTANCE,mime));
 					}catch(Exception ex){
 						Logger.getLogger(TextEditorModule.class.getName()).log(Level.SEVERE,null,ex);
 					}
@@ -73,7 +73,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			}
 		});
 		menuRegistry.registerDynamicMenu("charset",(items)->{
-			TextObject curr=(TextObject)Main.getCurrentDataObject();
+			TextObject curr=(TextObject)Main.INSTANCE.getCurrentDataObject();
 			String currCharset=(String)curr.getProperties().getOrDefault("CHARSET","UTF-8");
 			ToggleGroup group=new ToggleGroup();
 			items.setAll(Charset.availableCharsets().values().stream()
@@ -216,16 +216,16 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				return null;
 //return new ScmJavaObject(area.syntaxTree());
 		});
-		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
+		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 
 		try{
 			//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
-			Main.getScene().getStylesheets().add(((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("stylesheet-file",null)).toURI().toURL().toString());
+			Main.INSTANCE.getScene().getStylesheets().add(((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("stylesheet-file",null)).toURI().toURL().toString());
 		}catch(MalformedURLException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 
-		List<Map<String,Object>> json=((Map<String,List<Map<String,Object>>>)(Object)Main.loadJSON(new File(Main.getModulePath(TextEditorModule.NAME),"modes.json"))).get("languages");
+		List<Map<String,Object>> json=((Map<String,List<Map<String,Object>>>)(Object)Main.INSTANCE.loadJSON(new File(Main.INSTANCE.getModulePath(TextEditorModule.NAME),"modes.json"))).get("languages");
 		json.stream().map((m)->Language.fromJSON(m)).forEach((l)->Arrays.stream(l.getMimeTypes()).forEach((mime)->languages.put(mime,l)));
 	}
 	private void addCommand(String name,Consumer<CodeEditor> action){

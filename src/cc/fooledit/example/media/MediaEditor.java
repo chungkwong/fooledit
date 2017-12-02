@@ -57,7 +57,7 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 				items.add(item);
 			});
 		});
-		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.loadJSON((File)SettingManager.getOrCreate(MediaEditorModule.NAME).get("keymap-file",null)));
+		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(MediaEditorModule.NAME).get("keymap-file",null)));
 	}
 	@Override
 	public Node edit(MediaObject data){

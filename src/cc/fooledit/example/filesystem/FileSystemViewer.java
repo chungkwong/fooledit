@@ -303,8 +303,8 @@ public class FileSystemViewer extends BorderPane{
 	private static Image FOLDER,REGULAR;
 	static{
 		try{
-			FOLDER=new Image(new FileInputStream(Main.getFile("icons/folder.png","core")));
-			REGULAR=new Image(new FileInputStream(Main.getFile("icons/regular.png","core")));
+			FOLDER=new Image(new FileInputStream(Main.INSTANCE.getFile("icons/folder.png","core")));
+			REGULAR=new Image(new FileInputStream(Main.INSTANCE.getFile("icons/regular.png","core")));
 		}catch(FileNotFoundException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}

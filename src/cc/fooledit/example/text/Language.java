@@ -67,7 +67,7 @@ public class Language{
 		Supplier<ParserBuilder> parser=()->null;
 		String lexFileName=(String)obj.get(HIGHLIGHTER);
 		if(lexFileName.endsWith(".json")){
-			File lex=new File(Main.getDataPath(),lexFileName);
+			File lex=new File(Main.INSTANCE.getDataPath(),lexFileName);
 			highlighter=()->{
 				NaiveLexer naiveLexer=new NaiveLexer();
 				try{
@@ -79,7 +79,7 @@ public class Language{
 				}
 			};
 		}else{
-			File superTypeFile=new File(Main.getDataPath(),(String)obj.get(SUPERTYPE));
+			File superTypeFile=new File(Main.INSTANCE.getDataPath(),(String)obj.get(SUPERTYPE));
 			Map<String,String> superType=new HashMap<>();
 			try{
 				superType.putAll((Map<String,String>)JSONDecoder.decode(Helper.readText(superTypeFile)));
@@ -87,7 +87,7 @@ public class Language{
 				Logger.getLogger(Language.class.getName()).log(Level.INFO,null,ex);
 			}
 			if(lexFileName.endsWith(".g4")){
-				File lex=new File(Main.getDataPath(),lexFileName);
+				File lex=new File(Main.INSTANCE.getDataPath(),lexFileName);
 				highlighter=()->{
 					LexerBuilder lexer=LexerBuilder.wrap(Grammar.load(lex.getAbsolutePath()));
 					return new AntlrHighlighter(lexer,superType);
@@ -106,7 +106,7 @@ public class Language{
 		String parserFileName=(String)obj.get(PARSER);
 		String rule=(String)obj.get(RULE);
 		if(rule!=null&&parserFileName!=null){
-			File p=new File(Main.getDataPath(),parserFileName);
+			File p=new File(Main.INSTANCE.getDataPath(),parserFileName);
 			if(parserFileName.endsWith(".g4")){
 				parser=()->{
 					return ParserBuilder.wrap(Grammar.load(p.getAbsolutePath()),rule);
@@ -128,6 +128,6 @@ public class Language{
 		int i=location.indexOf('!');
 		String jar=location.substring(0,i);
 		String cls=location.substring(i+1);
-		return (Class<T>)new URLClassLoader(new URL[]{new File(Main.getDataPath(),jar).toURI().toURL()}).loadClass(cls);
+		return (Class<T>)new URLClassLoader(new URL[]{new File(Main.INSTANCE.getDataPath(),jar).toURI().toURL()}).loadClass(cls);
 	}
 }

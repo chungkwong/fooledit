@@ -38,7 +38,7 @@ public class MenuRegistry{
 	}
 	public MenuRegistry(String module){
 		this.module=module;
-		setMenus(Main.loadJSON((File)SettingManager.getOrCreate(module).get("menubar-file",null)));
+		setMenus(Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(module).get("menubar-file",null)));
 		HBox.setHgrow(bar,Priority.NEVER);
 	}
 	private void setMenus(Map<Object,Object> json){

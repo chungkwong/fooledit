@@ -45,7 +45,7 @@ public class MessageRegistry{
 	public static void addBundle(String module){
 		try{
 			addBundle(module,ResourceBundle.getBundle("messages",Locale.getDefault(),
-					new URLClassLoader(new URL[]{new File(new File(Main.getDataPath(),module),"locales").toURI().toURL()})));
+					new URLClassLoader(new URL[]{new File(new File(Main.INSTANCE.getDataPath(),module),"locales").toURI().toURL()})));
 		}catch(MalformedURLException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}

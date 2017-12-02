@@ -16,7 +16,6 @@
  */
 package cc.fooledit.control;
 import cc.fooledit.*;
-import static cc.fooledit.Main.loadJSON;
 import cc.fooledit.api.*;
 import cc.fooledit.example.text.*;
 import cc.fooledit.model.*;
@@ -70,7 +69,7 @@ public class TemplateEditor extends Prompt{
 		private final TreeView templates;
 		private final TextField filename=new TextField();
 		public TemplateChooser(){
-			templates=new TreeView(buildTree(loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("template-index",null))));
+			templates=new TreeView(buildTree(Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("template-index",null))));
 			templates.setOnMouseClicked((e)->{
 				if(e.getClickCount()==2){
 					choose();
@@ -113,7 +112,7 @@ public class TemplateEditor extends Prompt{
 				obj.getProperties().put(DataObject.TYPE,obj.getDataObjectType().getClass().getName());
 				obj.getProperties().put(DataObject.MIME,template.getMimeType());
 				obj.getProperties().put(DataObject.DEFAULT_NAME,((Template)item).getName());
-				Main.show(obj);
+				Main.INSTANCE.show(obj);
 				DataObjectRegistry.removeDataObject(TemplateEditor.this);
 			}
 		}

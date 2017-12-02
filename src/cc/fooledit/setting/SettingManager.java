@@ -49,7 +49,7 @@ public class SettingManager{
 		return new File(getModuleDirectory(module),"module.json");
 	}
 	private static File getModuleDirectory(String module){
-		return new File(Main.getDataPath(),module);
+		return new File(Main.INSTANCE.getDataPath(),module);
 	}
 	public static Set<String> getChildren(String parent){
 		if(parent.isEmpty()){

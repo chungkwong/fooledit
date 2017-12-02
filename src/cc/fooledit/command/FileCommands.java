@@ -39,28 +39,28 @@ public class FileCommands{
 		files.setAction((paths)->{
 			paths.forEach((p)->{
 				try{
-					Main.show(DataObjectRegistry.readFrom(p.toUri().toURL()));
+					Main.INSTANCE.show(DataObjectRegistry.readFrom(p.toUri().toURL()));
 				}catch(Exception ex){
 					Logger.getGlobal().log(Level.SEVERE,null,ex);
 				}
 			});
 			DataObjectRegistry.removeDataObject(files);
 		});
-		files.getProperties().put(DataObject.DEFAULT_NAME,MessageRegistry.getString("OPEN",CoreModule.NAME));
+		files.getProperties().put(DataObject.DEFAULT_NAME,MessageRegistry.getString("OPEN_FILE",CoreModule.NAME));
 		DataObjectRegistry.addDataObject(files);
 		Main.INSTANCE.show(files);
 	}
 	public static void openUrl(){
 		Main.INSTANCE.getMiniBuffer().setMode((url)->{
 			try{
-				Main.show(DataObjectRegistry.readFrom(new URL(url)));
+				Main.INSTANCE.show(DataObjectRegistry.readFrom(new URL(url)));
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
 		},null,"",new Label("URL:"),null);
 	}
 	public static void save(){
-		DataObject data=Main.getCurrentDataObject();
+		DataObject data=Main.INSTANCE.getCurrentDataObject();
 		String url=(String)data.getProperties().get(DataObject.URI);
 		if(url==null)
 			saveAs();
@@ -93,7 +93,7 @@ public class FileCommands{
 	}
 	private static Path guessDefaultPath(){
 		try{
-			return new File(new URI((String)Main.getCurrentDataObject().getProperties().get(DataObject.URI))).toPath();
+			return new File(new URI((String)Main.INSTANCE.getCurrentDataObject().getProperties().get(DataObject.URI))).toPath();
 		}catch(Exception ex){
 			return null;
 		}

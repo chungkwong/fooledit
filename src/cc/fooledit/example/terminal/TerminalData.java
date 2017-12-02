@@ -31,7 +31,7 @@ public class TerminalData extends AbstractDataObject<TerminalData>{
 	public TerminalData(){
 		JComponent comp=null;
 		try{
-			File root=Main.getModulePath("editor.terminal");
+			File root=Main.INSTANCE.getModulePath("editor.terminal");
 			List<URL> paths=new ArrayList<>();
 			for(File f:new File(root,"lib").listFiles())
 				paths.add(f.toURI().toURL());

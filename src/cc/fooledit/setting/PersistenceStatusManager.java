@@ -31,7 +31,7 @@ public class PersistenceStatusManager{
 	private final Map<String,Object> objects=new HashMap<>();
 	private static final Map<String,StringConverter> covertors=new HashMap<>();
 	private final File directory;
-	public static PersistenceStatusManager USER=new PersistenceStatusManager(Main.getUserPath());
+	public static PersistenceStatusManager USER=new PersistenceStatusManager(Main.INSTANCE.getUserPath());
 	public PersistenceStatusManager(File directory){
 		this.directory=directory;
 		EventManager.addEventListener(EventManager.SHUTDOWN,(e)->sync());

@@ -59,13 +59,13 @@ public class CompleteSupport{
 					case ESCAPE:popupHint.hideHints();area.requestFocus();e.consume();break;
 				}
 		};
-		Main.getScene().addEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
+		Main.INSTANCE.getScene().addEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
 		ChangeListener<Integer> caretListener=(e,o,n)->task.summit(new HintContext(hints,area.getText(),n,area));
 		if(!once)
 			area.caretPositionProperty().addListener(caretListener);
 		task.summit(new HintContext(hints,area.getText(),area.getCaretPosition(),area));
 		return ()->{
-			Main.getScene().removeEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
+			Main.INSTANCE.getScene().removeEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
 			if(!once)
 				area.caretPositionProperty().removeListener(caretListener);
 		};

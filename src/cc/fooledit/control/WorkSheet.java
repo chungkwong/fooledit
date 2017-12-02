@@ -96,7 +96,7 @@ public class WorkSheet extends BorderPane{
 			map.put(DIVIDERS,Arrays.stream(((SplitPane)center).getDividerPositions()).boxed().collect(Collectors.toList()));
 			map.put(CHILDREN,((SplitPane)center).getItems().stream().map((c)->((WorkSheet)c).toJSON()).collect(Collectors.toList()));
 		}else{
-			map.put(CURRENT,Main.getCurrentWorkSheet()==this);
+			map.put(CURRENT,Main.INSTANCE.getCurrentWorkSheet()==this);
 			map.put(EDITOR,getDataEditor().getClass().getName());
 			map.put(REMARK,getDataEditor().getRemark(center));
 			map.put(BUFFER,getDataObject().getProperties());

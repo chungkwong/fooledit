@@ -49,21 +49,21 @@ import javax.activation.*;
  */
 public class Main extends Application{
 	public static Main INSTANCE;
-	private static final File SYSTEM_PATH=computePath();
-	private static final File MODULE_PATH=new File(SYSTEM_PATH,"modules");
-	private static final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
+	private final File SYSTEM_PATH=computePath();
+	private final File MODULE_PATH=new File(SYSTEM_PATH,"modules");
+	private final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
 	private final CommandRegistry globalCommandRegistry=new CommandRegistry();
 	private final BiMap<String,Command> commandRegistry=new BiMap<>(globalCommandRegistry,new HashMap<>());
 	private MenuRegistry menuRegistry;
 	private final KeymapRegistry keymapRegistry;
 	private final Notifier notifier;
-	private static final BorderPane root=new BorderPane();
+	private final BorderPane root=new BorderPane();
 	private MiniBuffer input;
 	private HBox commander;
 	private final ScriptAPI script;
-	private static final Scene scene=new Scene(root);
+	private final Scene scene=new Scene(root);
 	private Stage stage;
-	private static Node currentNode;
+	private Node currentNode;
 	private List<KeyEvent> macro=new ArrayList<>();
 	private boolean recording=false;
 	private HistoryRing<Map<Object,Object>> worksheets=new HistoryRing<>();
@@ -209,32 +209,32 @@ public class Main extends Application{
 			commandRegistry.setLocal(getLocalCommandRegistry());
 		}
 	}
-	public static void addAndShow(DataObject data){
+	public void addAndShow(DataObject data){
 		DataObjectRegistry.addDataObject(data);
 		showDefault(data);
 	}
-	public static void show(DataObject data){
+	public void show(DataObject data){
 		showDefault(data);
 	}
-	private static void showDefault(DataObject data){
+	private void showDefault(DataObject data){
 		getCurrentWorkSheet().keepOnly(data,getDefaultEditor(data),null);
 	}
-	public static DataEditor getDefaultEditor(DataObject data){
+	public DataEditor getDefaultEditor(DataObject data){
 		return DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0);
 	}
-	public static DataObject getCurrentDataObject(){
+	public DataObject getCurrentDataObject(){
 		return getCurrentWorkSheet().getDataObject();
 	}
-	public static DataEditor getCurrentDataEditor(){
+	public DataEditor getCurrentDataEditor(){
 		return getCurrentWorkSheet().getDataEditor();
 	}
-	public static Object getCurrentRemark(){
+	public Object getCurrentRemark(){
 		return getCurrentDataEditor().getRemark(currentNode);
 	}
 	public Node getCurrentNode(){
 		return currentNode;
 	}
-	public static WorkSheet getCurrentWorkSheet(){
+	public WorkSheet getCurrentWorkSheet(){
 		return (WorkSheet)currentNode.getParent();
 	}
 	public void setCurrentWorkSheet(WorkSheet workSheet){
@@ -273,7 +273,7 @@ public class Main extends Application{
 	public MiniBuffer getMiniBuffer(){
 		return input;
 	}
-	public static Scene getScene(){
+	public Scene getScene(){
 		return scene;
 	}
 	public Stage getStage(){
@@ -301,22 +301,22 @@ public class Main extends Application{
 		super.stop();
 		System.exit(0);
 	}
-	public static File getSystemPath(){
+	public File getSystemPath(){
 		return SYSTEM_PATH;
 	}
-	public static File getDataPath(){
+	public File getDataPath(){
 		return MODULE_PATH;
 	}
-	public static File getUserPath(){
+	public File getUserPath(){
 		return USER_PATH;
 	}
-	public static File getFile(String path,String module){
+	public File getFile(String path,String module){
 		return new File(getModulePath(module),path);
 	}
-	public static File getModulePath(String module){
+	public File getModulePath(String module){
 		return new File(MODULE_PATH,module);
 	}
-	private static File computePath(){
+	private File computePath(){
 		URL url=Main.class.getResource("");
 		if(url.getProtocol().equals("file")){
 			File file=new File(url.getFile());
@@ -335,10 +335,10 @@ public class Main extends Application{
 			}
 		}
 	}
-	public static Map<Object,Object> loadJSON(String name){
+	public Map<Object,Object> loadJSON(String name){
 		return loadJSON(new File(getDataPath(),name));
 	}
-	public static Map<Object,Object> loadJSON(File file){
+	public Map<Object,Object> loadJSON(File file){
 		Map<Object,Object> obj;
 		try{
 			obj=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(file),StandardCharsets.UTF_8));

@@ -19,7 +19,6 @@ import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.editor.lex.*;
 import cc.fooledit.editor.parser.*;
-import cc.fooledit.example.text.*;
 import cc.fooledit.setting.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.json.*;
@@ -47,7 +46,7 @@ public class Demo extends Application{
 		String cls="SedLexer";
 		String module="mode.sed";
 		String jar="/home/kwong/NetBeansProjects/jtk/modules/"+module+"/parser.jar";
-		CodeEditor editor=new CodeEditor(null,new AntlrHighlighter(LexerBuilder.wrap((Class<? extends Lexer>)new URLClassLoader(new URL[]{new File(jar).toURL()}).loadClass(cls)),(Map<String,String>)JSONDecoder.decode(Helper.readText(Main.getFile("tokens.json",module)))));
+		CodeEditor editor=new CodeEditor(null,new AntlrHighlighter(LexerBuilder.wrap((Class<? extends Lexer>)new URLClassLoader(new URL[]{new File(jar).toURL()}).loadClass(cls)),(Map<String,String>)JSONDecoder.decode(Helper.readText(Main.INSTANCE.getFile("tokens.json",module)))));
 		//CodeEditor editor=new CodeEditor(new LR1Parser(getExampleGrammar()),getExampleLex());
 		//editor.syntaxTree().addListener((e,o,n)->System.out.println(n));
 		/*editor.setAutoCompleteProvider(AutoCompleteProvider.createSimple(Arrays.asList(
