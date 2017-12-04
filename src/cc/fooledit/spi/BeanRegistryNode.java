@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
+import java.lang.reflect.*;
 import java.util.*;
+import java.util.logging.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -23,7 +26,9 @@ import java.util.*;
 public class BeanRegistryNode implements RegistryNode{
 	private final String name;
 	private final RegistryNode parent;
-	public BeanRegistryNode(String name,RegistryNode parent){
+	private final Object object;
+	public BeanRegistryNode(Object object,String name,RegistryNode parent){
+		this.object=object;
 		this.name=name;
 		this.parent=parent;
 	}
@@ -33,11 +38,26 @@ public class BeanRegistryNode implements RegistryNode{
 	}
 	@Override
 	public Object getChild(String name){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		try{
+			return object.getClass().getMethod("get"+name).invoke(object);
+		}catch(ReflectiveOperationException|SecurityException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			return null;
+		}
 	}
 	@Override
 	public void addChild(String name,Object value){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		String methodName="set"+name;
+		for(Method method:object.getClass().getMethods()){
+			if(method.getName().equals(methodName)&&method.getParameterCount()==1)
+				try{
+					method.invoke(object,value);
+					return;
+				}catch(IllegalAccessException|IllegalArgumentException|InvocationTargetException e){
+
+				}
+		}
+		Logger.getGlobal().log(Level.INFO,"Method {0}is not founded in {1}",new Object[]{methodName,object.getClass()});
 	}
 	@Override
 	public void addChild(RegistryNode child){
@@ -45,11 +65,12 @@ public class BeanRegistryNode implements RegistryNode{
 	}
 	@Override
 	public Collection<String> getChildNames(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return Arrays.stream(object.getClass().getMethods())
+				.filter((m)->m.getParameterCount()==0&&m.getName().startsWith("get"))
+				.map((m)->m.getName().substring(3)).collect(Collectors.toList());
 	}
 	@Override
 	public String getName(){
 		return name;
 	}
-
 }

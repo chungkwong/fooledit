@@ -20,10 +20,10 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SimpleRegistryNode implements RegistryNode{
+public class SimpleRegistryNode<T> implements RegistryNode{
 	private final String name;
 	private final RegistryNode parent;
-	private final Map<String,Object> children;
+	private final Map<String,T> children;
 	public SimpleRegistryNode(String name,RegistryNode parent){
 		this.name=name;
 		this.parent=parent;
@@ -34,7 +34,7 @@ public class SimpleRegistryNode implements RegistryNode{
 		return parent;
 	}
 	@Override
-	public Object getChild(String name){
+	public T getChild(String name){
 		return children.get(name);
 	}
 	@Override
@@ -47,10 +47,10 @@ public class SimpleRegistryNode implements RegistryNode{
 	}
 	@Override
 	public void addChild(String name,Object value){
-		children.put(name,value);
+		children.put(name,(T)value);
 	}
 	@Override
 	public void addChild(RegistryNode child){
-		children.put(child.getName(),child);
+		children.put(child.getName(),(T)child);
 	}
 }

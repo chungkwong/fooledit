@@ -19,10 +19,9 @@ package cc.fooledit.spi;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Registry{
-	private final String module;
-	public Registry(){
-		this.module=null;
+public class Registry extends SimpleRegistryNode{
+	public static final Registry ROOT=new Registry();
+	private Registry(){
+		super("",null);
 	}
-
 }
