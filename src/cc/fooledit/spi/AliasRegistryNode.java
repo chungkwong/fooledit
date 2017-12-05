@@ -20,37 +20,37 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SimpleRegistryNode<T> extends RegistryNode{
+public class AliasRegistryNode extends RegistryNode{
 	private final String name;
 	private final RegistryNode parent;
-	private final Map<String,T> children;
-	public SimpleRegistryNode(String name,RegistryNode parent){
+	private final RegistryNode target;
+	public AliasRegistryNode(String name,RegistryNode parent,RegistryNode target){
 		this.name=name;
 		this.parent=parent;
-		this.children=new HashMap<>();
+		this.target=target;
 	}
 	@Override
 	public RegistryNode getParent(){
 		return parent;
 	}
 	@Override
-	public T getChild(String name){
-		return children.get(name);
+	public Object getChild(String name){
+		return target.getChild(name);
+	}
+	@Override
+	public void addChild(String name,Object value){
+		target.addChild(name,value);
+	}
+	@Override
+	public void addChild(RegistryNode child){
+		target.addChild(child);
 	}
 	@Override
 	public Collection<String> getChildNames(){
-		return children.keySet();
+		return target.getChildNames();
 	}
 	@Override
 	public String getName(){
 		return name;
-	}
-	@Override
-	public void addChild(String name,Object value){
-		children.put(name,(T)value);
-	}
-	@Override
-	public void addChild(RegistryNode child){
-		children.put(child.getName(),(T)child);
 	}
 }

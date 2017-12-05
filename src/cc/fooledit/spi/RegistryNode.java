@@ -20,11 +20,11 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface RegistryNode{
-	RegistryNode getParent();
-	Object getChild(String name);
-	void addChild(String name,Object value);
-	void addChild(RegistryNode child);
-	Collection<String> getChildNames();
-	String getName();
+public abstract class RegistryNode{
+	public abstract RegistryNode getParent();
+	public abstract Object getChild(String name);
+	public abstract void addChild(String name,Object value);
+	public abstract void addChild(RegistryNode child);
+	public abstract Collection<String> getChildNames();
+	public abstract String getName();
 }

@@ -23,7 +23,7 @@ import java.util.stream.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BeanRegistryNode implements RegistryNode{
+public class BeanRegistryNode extends RegistryNode{
 	private final String name;
 	private final RegistryNode parent;
 	private final Object object;
