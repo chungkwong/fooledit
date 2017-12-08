@@ -20,11 +20,36 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class RegistryNode{
+public abstract class RegistryNode<T>{
+	private final LinkedList<RegistryChangeListener<T>>  listeners=new LinkedList<>();
+	public void addListener(RegistryChangeListener<T> listener){
+		listeners.addFirst(listener);
+	}
+	public void removeListener(RegistryChangeListener<T> listener){
+		listeners.remove(listener);
+	}
 	public abstract RegistryNode getParent();
-	public abstract Object getChild(String name);
-	public abstract void addChild(String name,Object value);
-	public abstract void addChild(RegistryNode child);
+	public abstract T getChild(String name);
+	public abstract boolean hasChild(String name);
+	public T addChild(RegistryNode child){
+		return addChild(child.getName(),(T)child);
+	}
+	public T addChild(String name,T value){
+		boolean exist=hasChild(name);
+		T oldValue=addChildReal(name,value);
+		if(exist)
+			listeners.forEach((l)->l.itemChanged(name,oldValue,value,this));
+		else
+			listeners.forEach((l)->l.itemAdded(name,value,this));
+		return oldValue;
+	}
+	protected abstract T addChildReal(String name,T value);
+	public T removeChild(String name){
+		T oldValue=removeChildReal(name);
+		listeners.forEach((l)->l.itemRemoved(name,oldValue,this));
+		return oldValue;
+	}
+	protected abstract T removeChildReal(String name);
 	public abstract Collection<String> getChildNames();
 	public abstract String getName();
 }

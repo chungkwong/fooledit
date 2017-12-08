@@ -23,7 +23,7 @@ import java.util.stream.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BeanRegistryNode extends RegistryNode{
+public class BeanRegistryNode<T> extends RegistryNode<T>{
 	private final String name;
 	private final RegistryNode parent;
 	private final Object object;
@@ -37,33 +37,6 @@ public class BeanRegistryNode extends RegistryNode{
 		return parent;
 	}
 	@Override
-	public Object getChild(String name){
-		try{
-			return object.getClass().getMethod("get"+name).invoke(object);
-		}catch(ReflectiveOperationException|SecurityException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-			return null;
-		}
-	}
-	@Override
-	public void addChild(String name,Object value){
-		String methodName="set"+name;
-		for(Method method:object.getClass().getMethods()){
-			if(method.getName().equals(methodName)&&method.getParameterCount()==1)
-				try{
-					method.invoke(object,value);
-					return;
-				}catch(IllegalAccessException|IllegalArgumentException|InvocationTargetException e){
-
-				}
-		}
-		Logger.getGlobal().log(Level.INFO,"Method {0}is not founded in {1}",new Object[]{methodName,object.getClass()});
-	}
-	@Override
-	public void addChild(RegistryNode child){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
 	public Collection<String> getChildNames(){
 		return Arrays.stream(object.getClass().getMethods())
 				.filter((m)->m.getParameterCount()==0&&m.getName().startsWith("get"))
@@ -72,5 +45,43 @@ public class BeanRegistryNode extends RegistryNode{
 	@Override
 	public String getName(){
 		return name;
+	}
+	@Override
+	public T getChild(String name){
+		try{
+			return (T)object.getClass().getMethod("get"+name).invoke(object);
+		}catch(ReflectiveOperationException|SecurityException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			return null;
+		}
+	}
+	@Override
+	public boolean hasChild(String name){
+		try{
+			object.getClass().getMethod("get"+name);
+			return true;
+		}catch(NoSuchMethodException|SecurityException ex){
+			return false;
+		}
+	}
+	@Override
+	protected T addChildReal(String name,T value){
+		T oldValue=getChild(name);
+		String methodName="set"+name;
+		for(Method method:object.getClass().getMethods()){
+			if(method.getName().equals(methodName)&&method.getParameterCount()==1)
+				try{
+					method.invoke(object,value);
+					return oldValue;
+				}catch(IllegalAccessException|IllegalArgumentException|InvocationTargetException e){
+
+				}
+		}
+		Logger.getGlobal().log(Level.INFO,"Method {0}is not founded in {1}",new Object[]{methodName,object.getClass()});
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+	@Override
+	protected T removeChildReal(String name){
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

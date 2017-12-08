@@ -20,7 +20,7 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SimpleRegistryNode<T> extends RegistryNode{
+public class SimpleRegistryNode<T> extends RegistryNode<T>{
 	private final String name;
 	private final RegistryNode parent;
 	private final Map<String,T> children;
@@ -38,19 +38,23 @@ public class SimpleRegistryNode<T> extends RegistryNode{
 		return children.get(name);
 	}
 	@Override
+	public boolean hasChild(String name){
+		return children.containsKey(name);
+	}
+	@Override
+	protected T addChildReal(String name,T value){
+		return children.put(name,value);
+	}
+	@Override
+	protected T removeChildReal(String name){
+		return children.remove(name);
+	}
+	@Override
 	public Collection<String> getChildNames(){
 		return children.keySet();
 	}
 	@Override
 	public String getName(){
 		return name;
-	}
-	@Override
-	public void addChild(String name,Object value){
-		children.put(name,(T)value);
-	}
-	@Override
-	public void addChild(RegistryNode child){
-		children.put(child.getName(),(T)child);
 	}
 }

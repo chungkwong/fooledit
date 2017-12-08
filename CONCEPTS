@@ -2,6 +2,23 @@
 
 对象采用统一资源定位符（URL）进行定位，除了Java支持的标准协议外，还提供以下特殊协议：
 
+- `application`用于索引小程序
+- `registry`用于索引运行期的各种动态数据，按惯例路径的首个分量为模块名
+	- `registry:core/clip/`
+	- `registry:core/command/`
+	- `registry:core/dataobject/标识`
+	- `registry:core/dataobjecttype/标识`
+	- `registry:core/event/事件`
+	- `registry:core/history/`
+	- `registry:core/keymap/`
+	- `registry:core/locale/语言代码/键`
+	- `registry:core/menu/`
+	- `registry:core/module/`
+	- `registry:editor.binary/locale/语言代码/键`
+	- `registry:editor.code/locale/语言代码/键`
+	- `registry:editor.code/mode/标识`
+	- `registry:editor.filesystem/locale/语言代码/键`
+
 # 编辑器
 
 # 注册表

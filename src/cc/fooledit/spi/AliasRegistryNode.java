@@ -38,19 +38,23 @@ public class AliasRegistryNode extends RegistryNode{
 		return target.getChild(name);
 	}
 	@Override
-	public void addChild(String name,Object value){
-		target.addChild(name,value);
-	}
-	@Override
-	public void addChild(RegistryNode child){
-		target.addChild(child);
-	}
-	@Override
 	public Collection<String> getChildNames(){
 		return target.getChildNames();
 	}
 	@Override
 	public String getName(){
 		return name;
+	}
+	@Override
+	public boolean hasChild(String name){
+		return target.hasChild(name);
+	}
+	@Override
+	protected Object addChildReal(String name,Object value){
+		return target.addChild(name,value);
+	}
+	@Override
+	protected Object removeChildReal(String name){
+		return target.removeChild(name);
 	}
 }
