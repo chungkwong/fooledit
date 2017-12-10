@@ -29,6 +29,11 @@ public class SimpleRegistryNode<T> extends RegistryNode<T>{
 		this.parent=parent;
 		this.children=new HashMap<>();
 	}
+	public SimpleRegistryNode(String name,RegistryNode parent,Map<String,T> children){
+		this.name=name;
+		this.parent=parent;
+		this.children=children;
+	}
 	@Override
 	public RegistryNode getParent(){
 		return parent;

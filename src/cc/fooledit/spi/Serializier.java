@@ -22,5 +22,5 @@ package cc.fooledit.spi;
  */
 public interface Serializier<T>{
 	T decode(String code);
-	String toString();
+	String encode(T obj);
 }

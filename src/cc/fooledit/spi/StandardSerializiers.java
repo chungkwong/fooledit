@@ -20,6 +20,17 @@ package cc.fooledit.spi;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ServiceRegistry{
+public class StandardSerializiers{
 
+	private static class NodeSerializier implements Serializier<RegistryNode>{
+		@Override
+		public RegistryNode decode(String code){
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+		@Override
+		public String encode(RegistryNode obj){
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+	}
 }
