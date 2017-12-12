@@ -16,6 +16,7 @@
  */
 package cc.fooledit;
 
+import cc.fooledit.util.FoolURLStreamHandler;
 import static cc.fooledit.api.KeymapRegistry.encode;
 import cc.fooledit.api.*;
 import cc.fooledit.command.*;
@@ -70,8 +71,8 @@ public class Main extends Application{
 	public Main(){
 		INSTANCE=this;
 		System.setProperty("user.dir",SYSTEM_PATH.toString());
-		URL.setURLStreamHandlerFactory(URLProtocolRegistry.get());
-		URLProtocolRegistry.register("application",()->new ApplicationRegistry());
+		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
+		CoreModule.PROTOCOL_REGISTRY.addChild("application",new ApplicationRegistry());
 		notifier=new Notifier(this);
 		Logger.getGlobal().setLevel(Level.INFO);
 		try{

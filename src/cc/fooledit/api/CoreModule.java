@@ -17,6 +17,7 @@
 package cc.fooledit.api;
 import cc.fooledit.model.*;
 import cc.fooledit.spi.*;
+import java.net.*;
 import java.util.*;
 import java.util.function.*;
 /**
@@ -38,6 +39,7 @@ public class CoreModule{
 	public static final String KEYMAP_REGISTRY_NAME="keymap";
 	public static final String LOCALE_REGISTRY_NAME="locale";
 	public static final String MENU_REGISTRY_NAME="menu";
+	public static final String PROTOCOL_REGISTRY_NAME="protocol";
 	public static final String SERIALIZIER_REGISTRY_NAME="serializier";
 	public static final RegistryNode<Object> REGISTRY=new SimpleRegistryNode<>(NAME,Registry.ROOT);
 	public static final RegistryNode<Module> APPLICATION_REGISTRY=new SimpleRegistryNode<>(APPLICATION_REGISTRY_NAME,REGISTRY);
@@ -53,6 +55,7 @@ public class CoreModule{
 	public static final RegistryNode<String> KEYMAP_REGISTRY=new SimpleRegistryNode<>(KEYMAP_REGISTRY_NAME,REGISTRY);
 	public static final RegistryNode<String> LOCALE_REGISTRY=new SimpleRegistryNode<>(LOCALE_REGISTRY_NAME,REGISTRY);
 	public static final RegistryNode<Object> MENU_REGISTRY=new SimpleRegistryNode<>(MENU_REGISTRY_NAME,REGISTRY);
+	public static final RegistryNode<URLStreamHandler> PROTOCOL_REGISTRY=new SimpleRegistryNode<>(PROTOCOL_REGISTRY_NAME,REGISTRY);
 	public static final RegistryNode<Serializier> SERIALIZIER_REGISTRY=new SimpleRegistryNode<>(SERIALIZIER_REGISTRY_NAME,REGISTRY);
 	public static void onLoad(){
 		Registry.ROOT.addChild(REGISTRY);
@@ -69,6 +72,7 @@ public class CoreModule{
 		REGISTRY.addChild(KEYMAP_REGISTRY);
 		REGISTRY.addChild(LOCALE_REGISTRY);
 		REGISTRY.addChild(MENU_REGISTRY);
+		REGISTRY.addChild(PROTOCOL_REGISTRY);
 		REGISTRY.addChild(SERIALIZIER_REGISTRY);
 	}
 	public static void onUnLoad(){

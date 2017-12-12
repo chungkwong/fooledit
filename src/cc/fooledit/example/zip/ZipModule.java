@@ -59,8 +59,8 @@ public class ZipModule{
 		guesser.registerSuffix("zip","application/x-zip-compressed");
 		guesser.registerSuffix("Z","application/zlib");
 		guesser.registerSuffix("zz","application/zlib");
-		URLProtocolRegistry.register("archive",()->new ArchiveStreamHandler());
-		URLProtocolRegistry.register("compressed",()->new ZipStreamHandler());
+		CoreModule.PROTOCOL_REGISTRY.addChild("archive",new ArchiveStreamHandler());
+		CoreModule.PROTOCOL_REGISTRY.addChild("compressed",new ZipStreamHandler());
 	}
 	public static void onUnLoad(){
 

@@ -15,20 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
-
+import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class StandardSerializiers{
-	private static class NodeSerializier implements Serializier<RegistryNode>{
-		@Override
-		public RegistryNode decode(String code){
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-		@Override
-		public String encode(RegistryNode obj){
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+public class LazyRegistryNode<T> extends SimpleRegistryNode<T>{
+	private final Function<String,T> supplier;
+	public LazyRegistryNode(String name,RegistryNode parent,Function<String,T> supplier){
+		super(name,parent);
+		this.supplier=supplier;
+	}
+	@Override
+	public T getChild(String name){
+		if(hasChild(name)){
+			return super.getChild(name);
+		}else{
+			T value=supplier.apply(name);
+			addChild(name,value);
+			return value;
 		}
 	}
 }

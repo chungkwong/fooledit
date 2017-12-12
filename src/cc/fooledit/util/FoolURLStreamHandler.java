@@ -14,31 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.spi;
+package cc.fooledit.util;
+import cc.fooledit.api.*;
 import java.net.*;
-import java.util.*;
-import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class URLProtocolRegistry implements URLStreamHandlerFactory{
-	private static final URLProtocolRegistry INSTNACE=new URLProtocolRegistry();
-	private static final Map<String,Supplier<URLStreamHandler>> registry=new HashMap<>();
-	private URLProtocolRegistry(){
+public class FoolURLStreamHandler implements URLStreamHandlerFactory{
+	public static final FoolURLStreamHandler INSTNACE=new FoolURLStreamHandler();
+	private FoolURLStreamHandler(){
 
-	}
-	public static void register(String protocol,Supplier<URLStreamHandler> handler){
-		registry.put(protocol,handler);
-	}
-	public static URLProtocolRegistry get(){
-		return INSTNACE;
 	}
 	@Override
 	public URLStreamHandler createURLStreamHandler(String protocol){
-		Supplier<URLStreamHandler> supplier=registry.get(protocol);
-		if(supplier!=null)
-			return supplier.get();
+		URLStreamHandler handler=CoreModule.PROTOCOL_REGISTRY.getChild(protocol);
+		if(handler!=null)
+			return handler;
 		String packagePrefix="sun.net.www.protocol";
 		try{
 			String clsName=packagePrefix+"."+protocol+".Handler";
@@ -52,8 +44,8 @@ public class URLProtocolRegistry implements URLStreamHandlerFactory{
 				}
 			}
 			if(cls!=null){
-				URLStreamHandler handler=(URLStreamHandler)cls.newInstance();
-				registry.put(protocol,()->handler);
+				handler=(URLStreamHandler)cls.newInstance();
+				CoreModule.PROTOCOL_REGISTRY.addChild(clsName,handler);
 				return handler;
 			}
 		}catch(Exception e){
