@@ -16,7 +16,6 @@
  */
 package cc.fooledit;
 
-import cc.fooledit.util.FoolURLStreamHandler;
 import static cc.fooledit.api.KeymapRegistry.encode;
 import cc.fooledit.api.*;
 import cc.fooledit.command.*;
@@ -142,7 +141,7 @@ public class Main extends Application{
 			return null;
 		});
 		addCommand("mime-alias",(o)->{
-			ContentTypeRegistry.registerAlias(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.addChild(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
 		addCommand("ensure-loaded",(o)->{

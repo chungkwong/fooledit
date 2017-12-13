@@ -15,40 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
+import static cc.fooledit.api.CoreModule.CONTENT_TYPE_ALIAS_REGISTRY;
+import static cc.fooledit.api.CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY;
 import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ContentTypeRegistry{
-	private static final ContentTypeRegistry INSTNACE=new ContentTypeRegistry();
-	private static final Map<String,String> SUBCLASSES=new HashMap<>();
-	private static final Map<String,String> ALIASES=new HashMap<>();
-	private ContentTypeRegistry(){
-
-	}
-	public static void registerSubclass(String subclass,String parent){
-		SUBCLASSES.put(subclass,parent);
-	}
 	public static boolean isSubclassOf(String type,String ancestor){
 		type=normalize(type);
 		ancestor=normalize(ancestor);
 		while(type!=null){
 			if(type.equals(ancestor))
 				return true;
-			type=normalize(SUBCLASSES.get(type));
+			type=normalize(CONTENT_TYPE_SUPERCLASS_REGISTRY.getChild(type));
 		}
 		return false;
 	}
-	public static String getParent(String type){
-		return SUBCLASSES.get(type);
-	}
-	public static void registerAlias(String alias,String standard){
-		ALIASES.put(alias,normalize(standard));//TODO: Detect loops and find the closure
-	}
 	public static String normalize(String type){
 		String con;
-		while((con=ALIASES.get(type))!=null){
+		while((con=CONTENT_TYPE_ALIAS_REGISTRY.getChild(type))!=null){
 			type=con;
 		}
 		return type;
@@ -58,7 +45,7 @@ public class ContentTypeRegistry{
 		while(type!=null){
 			type=normalize(type);
 			list.add(type);
-			type=SUBCLASSES.get(type);
+			type=CONTENT_TYPE_SUPERCLASS_REGISTRY.getChild(type);
 		}
 		return list;
 	}

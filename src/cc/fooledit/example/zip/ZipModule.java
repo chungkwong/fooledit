@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.zip;
+import static cc.fooledit.api.CoreModule.CONTENT_TYPE_ALIAS_REGISTRY;
+import static cc.fooledit.api.CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY;
+import static cc.fooledit.api.CoreModule.PROTOCOL_REGISTRY;
+import static cc.fooledit.api.CoreModule.SUFFIX_REGISTRY;
 import cc.fooledit.api.*;
-import cc.fooledit.model.*;
-import cc.fooledit.spi.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -29,38 +31,37 @@ public class ZipModule{
 		DataObjectTypeRegistry.addDataEditor(()->ArchiveEditor.INSTANCE,ArchiveData.class);
 		DataObjectTypeRegistry.addDataObjectType(ZipDataType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->ZipEditor.INSTANCE,ZipData.class);
-		ContentTypeRegistry.registerSubclass("application/vnd.android.package-archive","application/x-java-archive");
-		ContentTypeRegistry.registerSubclass("application/vnd.debian.binary-package","application/x-archive");
-		ContentTypeRegistry.registerAlias("application/java-archive","application/x-java-archive");
-		ContentTypeRegistry.registerAlias("application/x-jar","application/x-java-archive");
-		ContentTypeRegistry.registerAlias("application/x-gtar","application/x-tar");
-		ContentTypeRegistry.registerAlias("application/x-zip-compressed","application/zip");
-		ContentTypeRegistry.registerAlias("application/x-gzip","application/gzip");
-		ContentTypeRegistry.registerAlias("application/x-bzip2","application/x-bzip");
-		ContentTypeRegistry.registerAlias("application/x-deb","application/vnd.debian.binary-package");
-		ContentTypeRegistry.registerAlias("application/x-debian-package","application/vnd.debian.binary-package");
-		ContentTypeDetector.SuffixGuesser guesser=ContentTypeDetectorRegistry.getSUFFIX_GUESSER();
-		guesser.registerSuffix("7z","application/x-7z-compressed");
-		guesser.registerSuffix("ar","application/x-archive");
-		guesser.registerSuffix("arj","application/x-arj");
-		guesser.registerSuffix("apk","application/vnd.android.package-archive");
-		guesser.registerSuffix("bz2","application/x-bzip2");
-		guesser.registerSuffix("cpio","application/x-cpio");
-		guesser.registerSuffix("deb","application/vnd.debian.binary-package");
-		guesser.registerSuffix("ear","application/x-java-archive");
-		guesser.registerSuffix("gz","application/x-gzip");
-		guesser.registerSuffix("jar","application/x-java-archive");
-		guesser.registerSuffix("pack","application/x-java-pack200");
-		guesser.registerSuffix("lz4","application/x-lz4");
-		guesser.registerSuffix("lzma","application/x-lzma");
-		guesser.registerSuffix("tar","application/x-tar");
-		guesser.registerSuffix("war","application/x-java-archive");
-		guesser.registerSuffix("xz","application/x-xz");
-		guesser.registerSuffix("zip","application/x-zip-compressed");
-		guesser.registerSuffix("Z","application/zlib");
-		guesser.registerSuffix("zz","application/zlib");
-		CoreModule.PROTOCOL_REGISTRY.addChild("archive",new ArchiveStreamHandler());
-		CoreModule.PROTOCOL_REGISTRY.addChild("compressed",new ZipStreamHandler());
+		CONTENT_TYPE_SUPERCLASS_REGISTRY.addChild("application/vnd.android.package-archive","application/x-java-archive");
+		CONTENT_TYPE_SUPERCLASS_REGISTRY.addChild("application/vnd.debian.binary-package","application/x-archive");
+		CONTENT_TYPE_ALIAS_REGISTRY.addChild("application/java-archive","application/x-java-archive");
+		CONTENT_TYPE_ALIAS_REGISTRY.addChild("application/x-jar","application/x-java-archive");
+		CONTENT_TYPE_ALIAS_REGISTRY.addChild("application/x-gtar","application/x-tar");
+		CONTENT_TYPE_ALIAS_REGISTRY.addChild("application/x-zip-compressed","application/zip");
+		CONTENT_TYPE_ALIAS_REGISTRY.addChild("application/x-gzip","application/gzip");
+		CONTENT_TYPE_ALIAS_REGISTRY.addChild("application/x-bzip2","application/x-bzip");
+		CONTENT_TYPE_ALIAS_REGISTRY.addChild("application/x-deb","application/vnd.debian.binary-package");
+		CONTENT_TYPE_ALIAS_REGISTRY.addChild("application/x-debian-package","application/vnd.debian.binary-package");
+		SUFFIX_REGISTRY.addChild("7z","application/x-7z-compressed");
+		SUFFIX_REGISTRY.addChild("ar","application/x-archive");
+		SUFFIX_REGISTRY.addChild("arj","application/x-arj");
+		SUFFIX_REGISTRY.addChild("apk","application/vnd.android.package-archive");
+		SUFFIX_REGISTRY.addChild("bz2","application/x-bzip2");
+		SUFFIX_REGISTRY.addChild("cpio","application/x-cpio");
+		SUFFIX_REGISTRY.addChild("deb","application/vnd.debian.binary-package");
+		SUFFIX_REGISTRY.addChild("ear","application/x-java-archive");
+		SUFFIX_REGISTRY.addChild("gz","application/x-gzip");
+		SUFFIX_REGISTRY.addChild("jar","application/x-java-archive");
+		SUFFIX_REGISTRY.addChild("pack","application/x-java-pack200");
+		SUFFIX_REGISTRY.addChild("lz4","application/x-lz4");
+		SUFFIX_REGISTRY.addChild("lzma","application/x-lzma");
+		SUFFIX_REGISTRY.addChild("tar","application/x-tar");
+		SUFFIX_REGISTRY.addChild("war","application/x-java-archive");
+		SUFFIX_REGISTRY.addChild("xz","application/x-xz");
+		SUFFIX_REGISTRY.addChild("zip","application/x-zip-compressed");
+		SUFFIX_REGISTRY.addChild("Z","application/zlib");
+		SUFFIX_REGISTRY.addChild("zz","application/zlib");
+		PROTOCOL_REGISTRY.addChild("archive",new ArchiveStreamHandler());
+		PROTOCOL_REGISTRY.addChild("compressed",new ZipStreamHandler());
 	}
 	public static void onUnLoad(){
 

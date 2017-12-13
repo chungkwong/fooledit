@@ -29,7 +29,10 @@ public class CoreModule{
 	public static final String APPLICATION_REGISTRY_NAME="application";
 	public static final String CLIP_REGISTRY_NAME="clip";
 	public static final String CONTENT_TYPE_REGISTRY_NAME="content_type";
+	public static final String CONTENT_TYPE_ALIAS_REGISTRY_NAME="content_type_alias";
+	public static final String CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME="content_type_superclass";
 	public static final String CONTENT_TYPE_DETECTOR_REGISTRY_NAME="content_type_detector";
+	public static final String SUFFIX_REGISTRY_NAME="suffix";
 	public static final String COMMAND_REGISTRY_NAME="command";
 	public static final String DATA_OBJECT_REGISTRY_NAME="data_object";
 	public static final String DATA_OBJECT_TYPE_REGISTRY_NAME="data_object_type";
@@ -44,8 +47,11 @@ public class CoreModule{
 	public static final RegistryNode<Object> REGISTRY=new SimpleRegistryNode<>(NAME,Registry.ROOT);
 	public static final RegistryNode<Module> APPLICATION_REGISTRY=new SimpleRegistryNode<>(APPLICATION_REGISTRY_NAME,REGISTRY);
 	public static final RegistryNode<Module> CLIP_REGISTRY=new SimpleRegistryNode<>(CLIP_REGISTRY_NAME,REGISTRY);
-	public static final RegistryNode<Module> CONTENT_TYPE_REGISTRY=new SimpleRegistryNode<>(CONTENT_TYPE_REGISTRY_NAME,REGISTRY);
-	public static final RegistryNode<ContentTypeDetector> CONTENT_TYPE_DETECTOR_REGISTRY=new SimpleRegistryNode<>(CONTENT_TYPE_DETECTOR_REGISTRY_NAME,REGISTRY);
+	public static final RegistryNode<RegistryNode> CONTENT_TYPE_REGISTRY=new SimpleRegistryNode<>(CONTENT_TYPE_REGISTRY_NAME,REGISTRY);
+	public static final RegistryNode<ContentTypeDetector> CONTENT_TYPE_DETECTOR_REGISTRY=new SimpleRegistryNode<>(CONTENT_TYPE_DETECTOR_REGISTRY_NAME,CONTENT_TYPE_REGISTRY);
+	public static final RegistryNode<String> CONTENT_TYPE_ALIAS_REGISTRY=new SimpleRegistryNode<>(CONTENT_TYPE_ALIAS_REGISTRY_NAME,CONTENT_TYPE_REGISTRY);
+	public static final RegistryNode<String> CONTENT_TYPE_SUPERCLASS_REGISTRY=new SimpleRegistryNode<>(CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME,CONTENT_TYPE_REGISTRY);
+	public static final RegistryNode<String> SUFFIX_REGISTRY=new SimpleRegistryNode<>(SUFFIX_REGISTRY_NAME,CONTENT_TYPE_REGISTRY);
 	public static final RegistryNode<Command> COMMAND_REGISTRY=new SimpleRegistryNode<>(COMMAND_REGISTRY_NAME,REGISTRY);
 	public static final RegistryNode<DataObject> DATA_OBJECT_REGISTRY=new SimpleRegistryNode<>(DATA_OBJECT_REGISTRY_NAME,REGISTRY);
 	public static final RegistryNode<DataObjectType> DATA_OBJECT_TYPE_REGISTRY=new SimpleRegistryNode<>(DATA_OBJECT_TYPE_REGISTRY_NAME,REGISTRY);
@@ -63,7 +69,10 @@ public class CoreModule{
 		REGISTRY.addChild(CLIP_REGISTRY);
 		REGISTRY.addChild(COMMAND_REGISTRY);
 		REGISTRY.addChild(CONTENT_TYPE_REGISTRY);
-		REGISTRY.addChild(CONTENT_TYPE_DETECTOR_REGISTRY);
+		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_DETECTOR_REGISTRY);
+		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_ALIAS_REGISTRY);
+		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_SUPERCLASS_REGISTRY);
+		CONTENT_TYPE_REGISTRY.addChild(SUFFIX_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_TYPE_REGISTRY);
 		REGISTRY.addChild(EVENT_REGISTRY);

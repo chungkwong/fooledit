@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
-import cc.fooledit.api.*;
 import cc.fooledit.model.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -61,14 +61,8 @@ public class ContentTypeDetectorRegistry{
 					types=possible;
 			}
 		}
-		ArrayList<String> cand=new ArrayList<>(types);
-		for(int i=0;i<cand.size();i++){
-			String parent=ContentTypeRegistry.getParent(cand.get(i));
-			if(parent!=null)
-				cand.add(parent);
-		}
-		Helper.uniq(cand);
-		//System.out.println(cand);
+		List<String> cand=types.stream().map((type)->ContentTypeRegistry.getAllSuperClasses(type)).
+				flatMap((parents)->parents.stream()).distinct().collect(Collectors.toList());
 		return cand.isEmpty()?Collections.singletonList("application/octet-stream"):cand;
 	}
 	public static void main(String[] args) throws IOException{
