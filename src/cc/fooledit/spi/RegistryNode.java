@@ -29,6 +29,11 @@ public abstract class RegistryNode<T>{
 		listeners.remove(listener);
 	}
 	public abstract RegistryNode getParent();
+	public T getOrCreateChild(String name){
+		if(!hasChild(name))
+			addChild(new SimpleRegistryNode(name,this));
+		return getChild(name);
+	}
 	public abstract T getChild(String name);
 	public abstract boolean hasChild(String name);
 	public T addChild(RegistryNode child){

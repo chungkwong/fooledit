@@ -19,9 +19,15 @@ package cc.fooledit.spi;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Registry extends SimpleRegistryNode{
+public class Registry extends SimpleRegistryNode<RegistryNode>{
 	public static final Registry ROOT=new Registry();
 	private Registry(){
 		super("",null);
+	}
+	public <T> RegistryNode<T> resolve(String path){
+		RegistryNode node=Registry.ROOT;
+		for(String name:path.split("/"))
+			node=(RegistryNode)node.getOrCreateChild(name);
+		return (RegistryNode<T>)node;
 	}
 }

@@ -148,6 +148,15 @@ public class Main extends Application{
 			ModuleRegistry.ensureLoaded(SchemeConverter.toString(ScmList.first(o)));
 			return null;
 		});
+		addCommand("get-registry",(o)->{
+			return SchemeConverter.toScheme(Registry.ROOT.resolve(SchemeConverter.toString(ScmList.first(o))));
+		});
+		addCommand("get-entry",(o)->{
+			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).getChild(SchemeConverter.toString(ScmList.second(o))));
+		});
+		addCommand("set-entry!",(o)->{
+			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).addChild(SchemeConverter.toString(ScmList.second(o)),SchemeConverter.toJava(ScmList.third(o))));
+		});
 	}
 	private void addCommand(String name,Runnable action){
 		globalCommandRegistry.put(name,action,CoreModule.NAME);

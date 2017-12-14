@@ -45,7 +45,7 @@ public class CoreModule{
 	public static final String PROTOCOL_REGISTRY_NAME="protocol";
 	public static final String SERIALIZIER_REGISTRY_NAME="serializier";
 	public static final RegistryNode<Object> REGISTRY=new SimpleRegistryNode<>(NAME,Registry.ROOT);
-	public static final RegistryNode<Module> APPLICATION_REGISTRY=new SimpleRegistryNode<>(APPLICATION_REGISTRY_NAME,REGISTRY);
+	public static final RegistryNode<String> APPLICATION_REGISTRY=new SimpleRegistryNode<>(APPLICATION_REGISTRY_NAME,REGISTRY);
 	public static final RegistryNode<Module> CLIP_REGISTRY=new SimpleRegistryNode<>(CLIP_REGISTRY_NAME,REGISTRY);
 	public static final RegistryNode<RegistryNode> CONTENT_TYPE_REGISTRY=new SimpleRegistryNode<>(CONTENT_TYPE_REGISTRY_NAME,REGISTRY);
 	public static final RegistryNode<ContentTypeDetector> CONTENT_TYPE_DETECTOR_REGISTRY=new SimpleRegistryNode<>(CONTENT_TYPE_DETECTOR_REGISTRY_NAME,CONTENT_TYPE_REGISTRY);

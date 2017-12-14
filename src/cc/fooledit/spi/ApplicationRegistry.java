@@ -19,22 +19,14 @@ import cc.fooledit.api.*;
 import cc.fooledit.model.*;
 import java.io.*;
 import java.net.*;
-import java.util.*;
 import java.util.function.*;
-import java.util.logging.*;
-import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ApplicationRegistry extends URLStreamHandler{
-	private static final Map<String,MimeType> registry=new HashMap<>();
 	public static void register(String path,String baseType,DataObjectType factory,Class<? extends DataObject> cls,Supplier<DataEditor> editorSupplier){
-		try{
-			registry.put(path,new MimeType(baseType));
-		}catch(MimeTypeParseException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
+		CoreModule.APPLICATION_REGISTRY.addChild(path,baseType);
 		DataObjectTypeRegistry.addDataObjectType(factory);
 		DataObjectTypeRegistry.addDataEditor(editorSupplier,cls);
 		DataObjectTypeRegistry.registerMime(baseType,factory.getDisplayName());
@@ -53,7 +45,7 @@ public class ApplicationRegistry extends URLStreamHandler{
 		}
 		@Override
 		public String getContentType(){
-			return registry.get(getURL().getPath()).getBaseType();
+			return CoreModule.APPLICATION_REGISTRY.getChild(getURL().getPath());
 		}
 	}
 }

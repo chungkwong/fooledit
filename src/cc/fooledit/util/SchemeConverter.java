@@ -32,4 +32,24 @@ public class SchemeConverter{
 	public static String toString(ScmObject obj){
 		return ((ScmString)obj).getValue();
 	}
+	public static Object toJava(ScmObject obj){
+		if(obj instanceof ScmJavaObject)
+			return ((ScmJavaObject)obj).getJavaObject();
+		else if(obj instanceof ScmString)
+			return ((ScmString)obj).getValue();
+		else if(obj instanceof ScmBoolean)
+			return ((ScmBoolean)obj).isTrue();
+		else
+			return obj;
+	}
+	public static ScmObject toScheme(Object obj){
+		if(obj instanceof ScmObject)
+			return (ScmObject)obj;
+		else if(obj instanceof String)
+			return new ScmString((String)obj);
+		else if(obj instanceof Boolean)
+			return ScmBoolean.valueOf((Boolean)obj);
+		else
+			return new ScmJavaObject(obj);
+	}
 }
