@@ -25,11 +25,11 @@ import cc.fooledit.spi.*;
  */
 public class TextEditorModule{
 	public static final String NAME="editor.code";
-	public static final RegistryNode<Object> REGISTRY=new SimpleRegistryNode<>(NAME,CoreModule.REGISTRY);
-	public static final RegistryNode<Command> COMMAND_REGISTRY=new SimpleRegistryNode<>(CoreModule.COMMAND_REGISTRY_NAME,REGISTRY);
-	public static final RegistryNode<String> KEYMAP_REGISTRY=new SimpleRegistryNode<>(CoreModule.KEYMAP_REGISTRY_NAME,REGISTRY);
-	public static final RegistryNode<String> LOCALE_REGISTRY=new SimpleRegistryNode<>(CoreModule.LOCALE_REGISTRY_NAME,REGISTRY);
-	public static final RegistryNode<Object> MENU_REGISTRY=new SimpleRegistryNode<>(CoreModule.MENU_REGISTRY_NAME,REGISTRY);
+	public static final RegistryNode<String,Object,String> REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,Command,String> COMMAND_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,String,String> KEYMAP_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,String,String> LOCALE_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,Object,String> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(TextObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->new StructuredTextEditor(),TextObject.class);

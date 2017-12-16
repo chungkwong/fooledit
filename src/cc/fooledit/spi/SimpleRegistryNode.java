@@ -20,46 +20,44 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SimpleRegistryNode<T> extends RegistryNode<T>{
-	private final String name;
-	private final RegistryNode parent;
-	private final Map<String,T> children;
-	public SimpleRegistryNode(String name,RegistryNode parent){
-		this.name=name;
-		this.parent=parent;
+public class SimpleRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
+	private final Map<K,V> children;
+	public SimpleRegistryNode(){
 		this.children=new HashMap<>();
 	}
-	public SimpleRegistryNode(String name,RegistryNode parent,Map<String,T> children){
-		this.name=name;
-		this.parent=parent;
+	public SimpleRegistryNode(Map<K,V> children){
 		this.children=children;
 	}
 	@Override
-	public RegistryNode getParent(){
-		return parent;
-	}
-	@Override
-	public T getChild(String name){
+	public V getChild(K name){
 		return children.get(name);
 	}
 	@Override
-	public boolean hasChild(String name){
+	public boolean hasChild(K name){
 		return children.containsKey(name);
 	}
 	@Override
-	protected T addChildReal(String name,T value){
+	protected V addChildReal(K name,V value){
 		return children.put(name,value);
 	}
 	@Override
-	protected T removeChildReal(String name){
+	protected V removeChildReal(K name){
 		return children.remove(name);
 	}
 	@Override
-	public Collection<String> getChildNames(){
+	public Collection<K> getChildNames(){
 		return children.keySet();
 	}
-	@Override
-	public String getName(){
-		return name;
+	public Map.Entry<K,V> getCeilingEntry(K key){
+		return ((NavigableMap<K,V>)children).ceilingEntry(key);
+	}
+	public Map.Entry<K,V> getFloorEntry(K key){
+		return ((NavigableMap<K,V>)children).floorEntry(key);
+	}
+	public Map.Entry<K,V> getHigherEntry(K key){
+		return ((NavigableMap<K,V>)children).higherEntry(key);
+	}
+	public Map.Entry<K,V> getLowerEntry(K key){
+		return ((NavigableMap<K,V>)children).lowerEntry(key);
 	}
 }

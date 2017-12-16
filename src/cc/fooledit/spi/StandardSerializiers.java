@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
-
+import com.github.chungkwong.json.*;
+import java.io.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class StandardSerializiers{
+
 	private static class NodeSerializier implements Serializier<RegistryNode>{
 		@Override
 		public RegistryNode decode(String code){
@@ -29,6 +31,37 @@ public class StandardSerializiers{
 		@Override
 		public String encode(RegistryNode obj){
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+	}
+	private static class JSONSerializier implements Serializier<Object>,JSONWalker<SimpleRegistryNode,ListRegistryNode>{
+		@Override
+		public Object decode(String code){
+			try{
+				Object decode=JSONDecoder.decode(code);
+				return JSONDecoder.walk(code,this);
+			}catch(IOException|SyntaxException ex){
+				throw new RuntimeException(ex);
+			}
+		}
+		@Override
+		public String encode(Object obj){
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+		@Override
+		public SimpleRegistryNode createMap(){
+			return new SimpleRegistryNode();
+		}
+		@Override
+		public ListRegistryNode createList(){
+			return new ListRegistryNode();
+		}
+		@Override
+		public void onEntry(Object value,Object key,SimpleRegistryNode registry){
+			registry.addChild(key.toString(),value);
+		}
+		@Override
+		public void onComponent(Object value,int index,ListRegistryNode registry){
+			registry.addChild(index,value);
 		}
 	}
 }

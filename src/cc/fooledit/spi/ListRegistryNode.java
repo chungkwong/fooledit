@@ -20,29 +20,33 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AliasRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
-	private final RegistryNode<K,V,T> target;
-	public AliasRegistryNode(RegistryNode<K,V,T> target){
-		this.target=target;
+public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
+	private final List<V> children;
+	public ListRegistryNode(){
+		this.children=new ArrayList<>();
 	}
 	@Override
-	public V getChild(K name){
-		return target.getChild(name);
+	public V getChild(Integer index){
+		return children.get(index);
 	}
 	@Override
-	public Collection<K> getChildNames(){
-		return target.getChildNames();
+	public boolean hasChild(Integer index){
+		return index>=0&&index<children.size();
 	}
 	@Override
-	public boolean hasChild(K name){
-		return target.hasChild(name);
+	protected V addChildReal(Integer index,V value){
+		children.add(index,value);
+		return null;
 	}
 	@Override
-	protected V addChildReal(K name,V value){
-		return target.addChild(name,value);
+	protected V removeChildReal(Integer index){
+		return children.remove((int)index);
 	}
 	@Override
-	protected V removeChildReal(K name){
-		return target.removeChild(name);
+	public Collection<Integer> getChildNames(){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	public int size(){
+		return children.size();
 	}
 }

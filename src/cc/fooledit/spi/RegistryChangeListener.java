@@ -20,10 +20,10 @@ package cc.fooledit.spi;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface RegistryChangeListener<T>{
-	void itemRemoved(String key,T oldValue,RegistryNode node);
-	void itemAdded(String key,T newValue,RegistryNode node);
-	default void itemChanged(String key,T oldValue,T newValue,RegistryNode node){
+public interface RegistryChangeListener<K,V>{
+	void itemRemoved(K key,V oldValue,RegistryNode node);
+	void itemAdded(K key,V newValue,RegistryNode node);
+	default void itemChanged(K key,V oldValue,V newValue,RegistryNode node){
 		itemRemoved(key,oldValue,node);
 		itemAdded(key,newValue,node);
 	}

@@ -20,18 +20,17 @@ import java.util.function.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class LazyRegistryNode<T> extends SimpleRegistryNode<T>{
-	private final Function<String,T> supplier;
-	public LazyRegistryNode(String name,RegistryNode parent,Function<String,T> supplier){
-		super(name,parent);
+public class LazyRegistryNode<K,V,T> extends SimpleRegistryNode<K,V,T>{
+	private final Function<K,V> supplier;
+	public LazyRegistryNode(Function<K,V> supplier){
 		this.supplier=supplier;
 	}
 	@Override
-	public T getChild(String name){
+	public V getChild(K name){
 		if(hasChild(name)){
 			return super.getChild(name);
 		}else{
-			T value=supplier.apply(name);
+			V value=supplier.apply(name);
 			addChild(name,value);
 			return value;
 		}

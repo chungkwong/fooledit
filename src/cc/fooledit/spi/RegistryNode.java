@@ -20,41 +20,51 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class RegistryNode<T>{
-	private final LinkedList<RegistryChangeListener<T>>  listeners=new LinkedList<>();
-	public void addListener(RegistryChangeListener<T> listener){
+public abstract class RegistryNode<K,V,T>{
+	private final LinkedList<RegistryChangeListener<K,V>>  listeners=new LinkedList<>();
+	private T name;
+	private RegistryNode<?,?,?> parent;
+	public void addListener(RegistryChangeListener<K,V> listener){
 		listeners.addFirst(listener);
 	}
-	public void removeListener(RegistryChangeListener<T> listener){
+	public void removeListener(RegistryChangeListener<K,V> listener){
 		listeners.remove(listener);
 	}
-	public abstract RegistryNode getParent();
-	public T getOrCreateChild(String name){
+	public RegistryNode<?,?,?> getParent(){
+		return parent;
+	}
+	public V getOrCreateChild(K name){
 		if(!hasChild(name))
-			addChild(new SimpleRegistryNode(name,this));
+			addChild(name,new SimpleRegistryNode());
 		return getChild(name);
 	}
-	public abstract T getChild(String name);
-	public abstract boolean hasChild(String name);
-	public T addChild(RegistryNode child){
-		return addChild(child.getName(),(T)child);
+	public abstract V getChild(K name);
+	public abstract boolean hasChild(K name);
+	public V addChild(K name,RegistryNode<?,?,? super K> child){
+		if(child.name!=null)
+			throw new RuntimeException("Child already added to somewhere");
+		child.parent=this;
+		child.name=name;
+		return addChild(name,(V)child);
 	}
-	public T addChild(String name,T value){
+	public V addChild(K name,V value){
 		boolean exist=hasChild(name);
-		T oldValue=addChildReal(name,value);
+		V oldValue=addChildReal(name,value);
 		if(exist)
 			listeners.forEach((l)->l.itemChanged(name,oldValue,value,this));
 		else
 			listeners.forEach((l)->l.itemAdded(name,value,this));
 		return oldValue;
 	}
-	protected abstract T addChildReal(String name,T value);
-	public T removeChild(String name){
-		T oldValue=removeChildReal(name);
+	protected abstract V addChildReal(K name,V value);
+	public V removeChild(K name){
+		V oldValue=removeChildReal(name);
 		listeners.forEach((l)->l.itemRemoved(name,oldValue,this));
 		return oldValue;
 	}
-	protected abstract T removeChildReal(String name);
-	public abstract Collection<String> getChildNames();
-	public abstract String getName();
+	protected abstract V removeChildReal(K name);
+	public abstract Collection<K> getChildNames();
+	public T getName(){
+		return name;
+	}
 }

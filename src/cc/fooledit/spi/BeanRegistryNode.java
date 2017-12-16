@@ -23,28 +23,16 @@ import java.util.stream.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BeanRegistryNode<T> extends RegistryNode<T>{
-	private final String name;
-	private final RegistryNode parent;
+public class BeanRegistryNode<T> extends RegistryNode<String,Object,T>{
 	private final Object object;
-	public BeanRegistryNode(Object object,String name,RegistryNode parent){
+	public BeanRegistryNode(Object object){
 		this.object=object;
-		this.name=name;
-		this.parent=parent;
-	}
-	@Override
-	public RegistryNode getParent(){
-		return parent;
 	}
 	@Override
 	public Collection<String> getChildNames(){
 		return Arrays.stream(object.getClass().getMethods())
 				.filter((m)->m.getParameterCount()==0&&m.getName().startsWith("get"))
 				.map((m)->m.getName().substring(3)).collect(Collectors.toList());
-	}
-	@Override
-	public String getName(){
-		return name;
 	}
 	@Override
 	public T getChild(String name){
@@ -65,8 +53,8 @@ public class BeanRegistryNode<T> extends RegistryNode<T>{
 		}
 	}
 	@Override
-	protected T addChildReal(String name,T value){
-		T oldValue=getChild(name);
+	protected Object addChildReal(String name,Object value){
+		Object oldValue=getChild(name);
 		String methodName="set"+name;
 		for(Method method:object.getClass().getMethods()){
 			if(method.getName().equals(methodName)&&method.getParameterCount()==1)
@@ -81,7 +69,7 @@ public class BeanRegistryNode<T> extends RegistryNode<T>{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	@Override
-	protected T removeChildReal(String name){
+	protected Object removeChildReal(String name){
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }
