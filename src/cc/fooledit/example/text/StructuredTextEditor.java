@@ -22,6 +22,7 @@ import cc.fooledit.editor.lex.*;
 import cc.fooledit.editor.parser.*;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
+import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.io.*;
@@ -43,7 +44,7 @@ import org.fxmisc.richtext.*;
 public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final MenuRegistry menuRegistry=new MenuRegistry(TextEditorModule.NAME);
 	private final CommandRegistry commandRegistry=new CommandRegistry();
-	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
+	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(TextEditorModule.NAME);
 	private final Map<String,Language> languages=new HashMap<>();
 	private final HistoryRing<String> clips=new HistoryRing<>();
 	public StructuredTextEditor(){
@@ -216,7 +217,6 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				return null;
 //return new ScmJavaObject(area.syntaxTree());
 		});
-		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("keymap-file",null)));
 
 		try{
 			//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
@@ -258,7 +258,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		return remark;
 	}
 	@Override
-	public KeymapRegistry getKeymapRegistry(){
+	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
 		return keymapRegistry;
 	}
 	@Override

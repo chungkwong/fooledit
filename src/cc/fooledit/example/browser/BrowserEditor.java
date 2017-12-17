@@ -18,9 +18,7 @@ package cc.fooledit.example.browser;
 import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
-import cc.fooledit.setting.*;
-import java.io.*;
-import java.util.*;
+import cc.fooledit.spi.*;
 import java.util.function.*;
 import javafx.collections.*;
 import javafx.scene.*;
@@ -34,13 +32,12 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 	public static final BrowserEditor INSTANCE=new BrowserEditor();
 	private final MenuRegistry menuRegistry=new MenuRegistry(BrowserModule.NAME);
 	private final CommandRegistry commandRegistry=new CommandRegistry();
-	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
+	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(BrowserModule.NAME);
 	private BrowserEditor(){
 		addCommand("move-to-previous-page",(viewer)->viewer.backward());
 		addCommand("move-to-next-page",(viewer)->viewer.forward());
 		addCommand("refresh",(viewer)->viewer.refresh());
 		addCommand("set-location",(viewer)->viewer.locate());
-		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(BrowserModule.NAME).get("keymap-file",null)));
 		menuRegistry.registerDynamicMenu("editor.browser.ForwardPages",(items)->{
 			WebHistory history=((BrowserData)Main.INSTANCE.getCurrentDataObject()).getWebView().getEngine().getHistory();
 			ObservableList<WebHistory.Entry> entries=history.getEntries();
@@ -86,7 +83,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 		return commandRegistry;
 	}
 	@Override
-	public KeymapRegistry getKeymapRegistry(){
+	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
 		return keymapRegistry;
 	}
 	@Override

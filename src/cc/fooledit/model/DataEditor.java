@@ -16,6 +16,7 @@
  */
 package cc.fooledit.model;
 import cc.fooledit.api.*;
+import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
  *
@@ -29,8 +30,8 @@ public interface DataEditor<T extends DataObject>{
 	default CommandRegistry getCommandRegistry(){
 		return new CommandRegistry();
 	}
-	default KeymapRegistry getKeymapRegistry(){
-		return new KeymapRegistry();
+	default NavigableRegistryNode<String,String,String> getKeymapRegistry(){
+		return new NavigableRegistryNode<>();
 	}
 	default MenuRegistry getMenuRegistry(){
 		return new MenuRegistry();

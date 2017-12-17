@@ -20,6 +20,7 @@ import cc.fooledit.api.*;
 import cc.fooledit.example.text.*;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
+import cc.fooledit.spi.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
@@ -43,9 +44,9 @@ public class TemplateEditor extends Prompt{
 		return chooser;
 	}
 	@Override
-	public KeymapRegistry getKeymapRegistry(){
-		KeymapRegistry keymap=new KeymapRegistry();
-		keymap.registerKey("Enter","create");
+	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
+		NavigableRegistryNode<String,String,String> keymap=new NavigableRegistryNode<>();
+		keymap.addChild("Enter","create");
 		return keymap;
 	}
 	@Override

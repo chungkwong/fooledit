@@ -16,7 +16,6 @@
  */
 package cc.fooledit;
 
-import static cc.fooledit.api.KeymapRegistry.encode;
 import cc.fooledit.api.*;
 import cc.fooledit.command.*;
 import cc.fooledit.control.*;
@@ -55,7 +54,7 @@ public class Main extends Application{
 	private final CommandRegistry globalCommandRegistry=new CommandRegistry();
 	private final BiMap<String,Command> commandRegistry=new BiMap<>(globalCommandRegistry,new HashMap<>());
 	private MenuRegistry menuRegistry;
-	private final KeymapRegistry keymapRegistry;
+	private final NavigableRegistryNode<String,String,String> keymapRegistry;
 	private final Notifier notifier;
 	private final BorderPane root=new BorderPane();
 	private MiniBuffer input;
@@ -82,8 +81,7 @@ public class Main extends Application{
 		Logger.getGlobal().addHandler(notifier);
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		registerStandardCommand();
-		keymapRegistry=new KeymapRegistry();
-		keymapRegistry.registerKeys((Map<String,String>)(Object)loadJSON((File)SettingManager.getOrCreate("core").get("keymap-file",null)));
+		keymapRegistry=Registry.ROOT.registerKeymap(CoreModule.NAME);
 		new KeymapSupport();
 		initMenuBar();
 		script=new ScriptAPI();
@@ -270,10 +268,10 @@ public class Main extends Application{
 	private CommandRegistry getLocalCommandRegistry(){
 		return getCurrentWorkSheet().getDataEditor().getCommandRegistry();
 	}
-	public KeymapRegistry getGlobalKeymapRegistry(){
+	public NavigableRegistryNode<String,String,String> getGlobalKeymapRegistry(){
 		return keymapRegistry;
 	}
-	private KeymapRegistry getLocalKeymapRegistry(){
+	private NavigableRegistryNode<String,String,String> getLocalKeymapRegistry(){
 		return getCurrentWorkSheet().getDataEditor().getKeymapRegistry();
 	}
 	public MenuRegistry getMenuRegistry(){
@@ -429,6 +427,18 @@ public class Main extends Application{
 					}
 				}
 			});
+		}
+		private final StringBuilder buf=new StringBuilder();
+		private String encode(KeyEvent evt){
+			buf.setLength(0);
+			if(evt.isControlDown()||evt.isShortcutDown())
+				buf.append("C-");
+			if(evt.isAltDown())
+				buf.append("M-");
+			if(evt.isShiftDown())
+				buf.append("S-");
+			buf.append(evt.getCode().getName());
+			return buf.toString();
 		}
 	}
 	private boolean isCurrentNodeFocused(){

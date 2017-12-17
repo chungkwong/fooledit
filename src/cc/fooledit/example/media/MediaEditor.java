@@ -19,9 +19,8 @@ import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.example.text.*;
 import cc.fooledit.model.*;
-import cc.fooledit.setting.*;
+import cc.fooledit.spi.*;
 import java.io.*;
-import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
 import static javafx.application.Application.launch;
@@ -41,7 +40,7 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 	public static final MediaEditor INSTANCE=new MediaEditor();
 	private final MenuRegistry menuRegistry=new MenuRegistry(MediaEditorModule.NAME);
 	private final CommandRegistry commandRegistry=new CommandRegistry();
-	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
+	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(MediaEditorModule.NAME);
 	private MediaEditor(){
 		addCommand("play",(player)->player.play());
 		addCommand("pause",(player)->player.pause());
@@ -57,7 +56,6 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 				items.add(item);
 			});
 		});
-		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(MediaEditorModule.NAME).get("keymap-file",null)));
 	}
 	@Override
 	public Node edit(MediaObject data){
@@ -112,7 +110,7 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 		return commandRegistry;
 	}
 	@Override
-	public KeymapRegistry getKeymapRegistry(){
+	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
 		return keymapRegistry;
 	}
 }

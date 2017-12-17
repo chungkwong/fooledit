@@ -18,11 +18,9 @@ package cc.fooledit.example.zip;
 import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
-import cc.fooledit.setting.*;
+import cc.fooledit.spi.*;
 import com.sun.javafx.scene.control.skin.*;
-import java.io.*;
 import java.net.*;
-import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
 import javafx.collections.*;
@@ -37,7 +35,7 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 	public static final ArchiveEditor INSTANCE=new ArchiveEditor();
 	private final MenuRegistry menuRegistry=new MenuRegistry(ZipModule.NAME);
 	private final CommandRegistry commandRegistry=new CommandRegistry();
-	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
+	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(ZipModule.NAME);
 	private ArchiveEditor(){
 		addCommand("focus-previous",(viewer)->viewer.getTree().getFocusModel().focusPrevious());
 		addCommand("focus-next",(viewer)->viewer.getTree().getFocusModel().focusNext());
@@ -56,7 +54,6 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 		addCommand("toggle-selection",(viewer)->toggleSelection(viewer.getTree()));
 		addCommand("mark",(viewer)->viewer.markPaths());
 		addCommand("submit",(viewer)->viewer.fireAction());
-		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(ZipModule.NAME).get("keymap-file",null)));
 	}
 	private void addCommand(String name,Consumer<ArchiveViewer> action){
 		commandRegistry.put(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),ZipModule.NAME);
@@ -137,7 +134,7 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 		return commandRegistry;
 	}
 	@Override
-	public KeymapRegistry getKeymapRegistry(){
+	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
 		return keymapRegistry;
 	}
 	@Override

@@ -17,20 +17,33 @@
 package cc.fooledit.spi;
 import com.github.chungkwong.json.*;
 import java.io.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class StandardSerializiers{
-
-	private static class NodeSerializier implements Serializier<RegistryNode>{
+	private static class PropertiesSerializier implements Serializier<Object>{
 		@Override
-		public RegistryNode decode(String code){
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		public Object decode(String code){
+			try{
+				Properties properties=new Properties();
+				properties.load(new StringReader(code));
+				return new SimpleRegistryNode<>(properties);
+			}catch(IOException ex){
+				throw new RuntimeException(ex);
+			}
 		}
 		@Override
-		public String encode(RegistryNode obj){
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		public String encode(Object obj){
+			Properties properties=new Properties();
+			StringWriter out=new StringWriter();
+			try{
+				properties.store(out,null);
+				return out.toString();
+			}catch(IOException ex){
+				throw new RuntimeException(ex);
+			}
 		}
 	}
 	private static class JSONSerializier implements Serializier<Object>,JSONWalker<SimpleRegistryNode,ListRegistryNode>{

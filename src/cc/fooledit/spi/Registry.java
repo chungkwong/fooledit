@@ -15,6 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
+import cc.fooledit.*;
+import cc.fooledit.api.*;
+import cc.fooledit.setting.*;
+import java.io.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -29,5 +34,14 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 		for(String name:path.split("/"))
 			node=(RegistryNode)node.getOrCreateChild(name);
 		return node;
+	}
+	public NavigableRegistryNode<String,String,String> registerKeymap(String module){
+		TreeMap<String,String> mapping=new TreeMap<>();
+		File src=(File)SettingManager.getOrCreate(module).get("keymap-file",null);
+		if(src!=null)
+			mapping.putAll((Map<String,String>)(Object)Main.INSTANCE.loadJSON(src));
+		NavigableRegistryNode<String,String,String> registry=new NavigableRegistryNode<>(mapping);
+		((RegistryNode<String,?,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.KEYMAP_REGISTRY_NAME,registry);
+		return registry;
 	}
 }

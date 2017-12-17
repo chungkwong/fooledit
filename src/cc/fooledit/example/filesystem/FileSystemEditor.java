@@ -19,7 +19,7 @@ import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.control.*;
 import cc.fooledit.model.*;
-import cc.fooledit.setting.*;
+import cc.fooledit.spi.*;
 import com.sun.javafx.scene.control.skin.*;
 import java.io.*;
 import java.nio.file.*;
@@ -37,7 +37,7 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 	public static final FileSystemEditor INSTANCE=new FileSystemEditor();
 	private final MenuRegistry menuRegistry=new MenuRegistry(FileSystemModule.NAME);
 	private final CommandRegistry commandRegistry=new CommandRegistry();
-	private final KeymapRegistry keymapRegistry=new KeymapRegistry();
+	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(FileSystemModule.NAME);
 	private FileSystemEditor(){
 		addCommand("focus-previous",(viewer)->viewer.getTree().getFocusModel().focusPrevious());
 		addCommand("focus-next",(viewer)->viewer.getTree().getFocusModel().focusNext());
@@ -66,7 +66,6 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 		addCommand("hard-link",(viewer)->viewer.getMarkedPaths().forEach((from)->viewer.getCurrentDirectories().forEach((dir)->hardLink(from,dir))));
 		addCommand("create-directory",(viewer)->viewer.getCurrentDirectories().forEach((path)->createDirectory(path)));
 		addCommand("create-file",(viewer)->viewer.getCurrentDirectories().forEach((path)->createFile(path)));
-		keymapRegistry.registerKeys((Map<String,String>)(Object)Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(FileSystemModule.NAME).get("keymap-file",null)));
 	}
 	private void addCommand(String name,Consumer<FileSystemViewer> action){
 		commandRegistry.put(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),FileSystemModule.NAME);
@@ -251,7 +250,7 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 		return commandRegistry;
 	}
 	@Override
-	public KeymapRegistry getKeymapRegistry(){
+	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
 		return keymapRegistry;
 	}
 	@Override

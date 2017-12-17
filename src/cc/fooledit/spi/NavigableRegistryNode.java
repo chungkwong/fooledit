@@ -20,12 +20,12 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SimpleRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
-	private final Map<K,V> children;
-	public SimpleRegistryNode(){
-		this.children=new HashMap<>();
+public class NavigableRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
+	private final NavigableMap<K,V> children;
+	public NavigableRegistryNode(){
+		this.children=new TreeMap<>();
 	}
-	public SimpleRegistryNode(Map<K,V> children){
+	public NavigableRegistryNode(NavigableMap<K,V> children){
 		this.children=children;
 	}
 	@Override
@@ -47,5 +47,17 @@ public class SimpleRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
 	@Override
 	public Collection<K> getChildNames(){
 		return children.keySet();
+	}
+	public Map.Entry<K,V> ceilingEntry(K key){
+		return children.ceilingEntry(key);
+	}
+	public Map.Entry<K,V> floorEntry(K key){
+		return children.floorEntry(key);
+	}
+	public Map.Entry<K,V> higherEntry(K key){
+		return children.higherEntry(key);
+	}
+	public Map.Entry<K,V> lowerEntry(K key){
+		return children.lowerEntry(key);
 	}
 }
