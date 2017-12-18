@@ -40,7 +40,7 @@ public class CoreModule{
 	public static final String HISTORY_REGISTRY_NAME="history";
 	public static final String MODULE_REGISTRY_NAME="module";
 	public static final String KEYMAP_REGISTRY_NAME="keymap";
-	public static final String LOCALE_REGISTRY_NAME="locale";
+	public static final String MESSAGE_REGISTRY_NAME="message";
 	public static final String MENU_REGISTRY_NAME="menu";
 	public static final String PROTOCOL_REGISTRY_NAME="protocol";
 	public static final String SERIALIZIER_REGISTRY_NAME="serializier";
@@ -58,8 +58,6 @@ public class CoreModule{
 	public static final RegistryNode<String,List<Consumer>,String> EVENT_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Module,String> HISTORY_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Module,String> MODULE_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,String,String> KEYMAP_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,String,String> LOCALE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,URLStreamHandler,String> PROTOCOL_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Serializier,String> SERIALIZIER_REGISTRY=new SimpleRegistryNode<>();
@@ -78,8 +76,6 @@ public class CoreModule{
 		REGISTRY.addChild(EVENT_REGISTRY_NAME,EVENT_REGISTRY);
 		REGISTRY.addChild(HISTORY_REGISTRY_NAME,HISTORY_REGISTRY);
 		REGISTRY.addChild(MODULE_REGISTRY_NAME,MODULE_REGISTRY);
-		REGISTRY.addChild(KEYMAP_REGISTRY_NAME,KEYMAP_REGISTRY);
-		REGISTRY.addChild(LOCALE_REGISTRY_NAME,LOCALE_REGISTRY);
 		REGISTRY.addChild(MENU_REGISTRY_NAME,MENU_REGISTRY);
 		REGISTRY.addChild(PROTOCOL_REGISTRY_NAME,PROTOCOL_REGISTRY);
 		REGISTRY.addChild(SERIALIZIER_REGISTRY_NAME,SERIALIZIER_REGISTRY);

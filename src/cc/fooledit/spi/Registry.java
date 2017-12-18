@@ -19,7 +19,9 @@ import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.setting.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
+import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -42,6 +44,19 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 			mapping.putAll((Map<String,String>)(Object)Main.INSTANCE.loadJSON(src));
 		NavigableRegistryNode<String,String,String> registry=new NavigableRegistryNode<>(mapping);
 		((RegistryNode<String,?,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.KEYMAP_REGISTRY_NAME,registry);
+		return registry;
+	}
+	public RegistryNode<String,String,String> registerMessage(String module){
+		RegistryNode<String,String,String> registry=new SimpleRegistryNode<>();
+		ResourceBundle bundle;
+		try{
+			bundle=ResourceBundle.getBundle("messages",Locale.getDefault(),
+					new URLClassLoader(new URL[]{new File(new File(Main.INSTANCE.getDataPath(),module),"locales").toURI().toURL()}));
+			bundle.keySet().forEach((key)->registry.addChild(key,bundle.getString(key)));
+		}catch(MalformedURLException|MissingResourceException ex){
+			Logger.getGlobal().log(Level.INFO,null,ex);
+		}
+		((RegistryNode<String,?,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.MESSAGE_REGISTRY_NAME,registry);
 		return registry;
 	}
 }

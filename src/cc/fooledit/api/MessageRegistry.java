@@ -15,39 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
-import cc.fooledit.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.logging.*;
+import cc.fooledit.spi.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MessageRegistry{
-	private static final HashMap<String,ResourceBundle> bundles=new HashMap<>();
-	public static void addBundle(String id,ResourceBundle bundle){
-		bundles.put(id,bundle);
-	}
-	public static String getString(String key,String bundleId){
-		ResourceBundle bundle=bundles.get(bundleId);
-		if(bundle==null){
-			addBundle(bundleId);
-			bundle=bundles.get(bundleId);
-		}
-		if(bundle!=null&&bundle.containsKey(key))
-			return bundle.getString(key);
-		else{
-			Logger.getGlobal().log(Level.INFO,"Missing string: {0}",key);
-			return key;
-		}
+	public static String getString(String key,String module){
+		return ((RegistryNode<String,String,String>)((RegistryNode<String,RegistryNode,String>)Registry.ROOT.getChild(module)).getChild(CoreModule.MESSAGE_REGISTRY_NAME)).getOrCreateChild(key);
 	}
 	public static void addBundle(String module){
-		try{
-			addBundle(module,ResourceBundle.getBundle("messages",Locale.getDefault(),
-					new URLClassLoader(new URL[]{new File(new File(Main.INSTANCE.getDataPath(),module),"locales").toURI().toURL()})));
-		}catch(MalformedURLException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
+		Registry.ROOT.registerMessage(module);
 	}
 }
