@@ -22,7 +22,11 @@ import cc.fooledit.spi.*;
  */
 public class MessageRegistry{
 	public static String getString(String key,String module){
-		return ((RegistryNode<String,String,String>)((RegistryNode<String,RegistryNode,String>)Registry.ROOT.getChild(module)).getChild(CoreModule.MESSAGE_REGISTRY_NAME)).getOrCreateChild(key);
+		RegistryNode<String,RegistryNode,String> mod=(RegistryNode<String,RegistryNode,String>)Registry.ROOT.getOrCreateChild(module);
+		if(!mod.hasChild(CoreModule.MESSAGE_REGISTRY_NAME)){
+			Registry.ROOT.registerMessage(module);
+		}
+		return ((RegistryNode<String,String,String>)mod.getOrCreateChild(CoreModule.MESSAGE_REGISTRY_NAME)).getChildOrDefault(key,key);
 	}
 	public static void addBundle(String module){
 		Registry.ROOT.registerMessage(module);

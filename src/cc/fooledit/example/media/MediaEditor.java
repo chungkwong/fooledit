@@ -39,7 +39,7 @@ import javafx.util.*;
 public class MediaEditor extends Application implements DataEditor<MediaObject>{
 	public static final MediaEditor INSTANCE=new MediaEditor();
 	private final MenuRegistry menuRegistry=new MenuRegistry(MediaEditorModule.NAME);
-	private final CommandRegistry commandRegistry=new CommandRegistry();
+	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(MediaEditorModule.NAME);
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(MediaEditorModule.NAME);
 	private MediaEditor(){
 		addCommand("play",(player)->player.play());
@@ -99,14 +99,14 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 		return MessageRegistry.getString("MEDIA_PLAYER",MediaEditorModule.NAME);
 	}
 	private void addCommand(String name,Consumer<MediaPlayer> action){
-		commandRegistry.put(name,()->action.accept(((MediaObject)Main.INSTANCE.getCurrentDataObject()).getProperty().getValue()),MediaEditorModule.NAME);
+		commandRegistry.addChild(name,new Command(name,()->action.accept(((MediaObject)Main.INSTANCE.getCurrentDataObject()).getProperty().getValue()),MediaEditorModule.NAME));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
 	}
 	@Override
-	public CommandRegistry getCommandRegistry(){
+	public RegistryNode<String,Command,String> getCommandRegistry(){
 		return commandRegistry;
 	}
 	@Override

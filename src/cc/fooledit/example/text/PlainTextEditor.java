@@ -17,7 +17,6 @@
 package cc.fooledit.example.text;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
-import cc.fooledit.util.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 /**
@@ -38,14 +37,6 @@ public class PlainTextEditor implements DataEditor<TextObject>{
 		textArea.textProperty().bindBidirectional(obj.getText());
 		return textArea;
 	}
-	@Override
-	public CommandRegistry getCommandRegistry(){
-		return COMMANDS.get();
-	}
-	private static final Cache<CommandRegistry> COMMANDS=new Cache<>(()->{
-		CommandRegistry registry=new CommandRegistry();
-		return registry;
-	});
 	@Override
 	public String getName(){
 		return MessageRegistry.getString("TEXT_EDITOR",TextEditorModule.NAME);

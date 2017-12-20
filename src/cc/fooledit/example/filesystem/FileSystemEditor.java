@@ -36,7 +36,7 @@ import javafx.scene.control.*;
 public class FileSystemEditor implements DataEditor<FileSystemData>{
 	public static final FileSystemEditor INSTANCE=new FileSystemEditor();
 	private final MenuRegistry menuRegistry=new MenuRegistry(FileSystemModule.NAME);
-	private final CommandRegistry commandRegistry=new CommandRegistry();
+	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(FileSystemModule.NAME);
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(FileSystemModule.NAME);
 	private FileSystemEditor(){
 		addCommand("focus-previous",(viewer)->viewer.getTree().getFocusModel().focusPrevious());
@@ -68,7 +68,7 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 		addCommand("create-file",(viewer)->viewer.getCurrentDirectories().forEach((path)->createFile(path)));
 	}
 	private void addCommand(String name,Consumer<FileSystemViewer> action){
-		commandRegistry.put(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),FileSystemModule.NAME);
+		commandRegistry.addChild(name,new Command(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),FileSystemModule.NAME));
 	}
 	private void moveToPreviousPage(TreeTableView<Path> tree){
 		int newIndex=((TreeTableViewSkin)tree.getSkin()).onScrollPageUp(true);
@@ -246,7 +246,7 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 		return MessageRegistry.getString("FILE_SYSTEM_VIEWER",FileSystemModule.NAME);
 	}
 	@Override
-	public CommandRegistry getCommandRegistry(){
+	public RegistryNode<String,Command,String> getCommandRegistry(){
 		return commandRegistry;
 	}
 	@Override

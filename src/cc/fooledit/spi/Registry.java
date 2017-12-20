@@ -17,6 +17,7 @@
 package cc.fooledit.spi;
 import cc.fooledit.*;
 import cc.fooledit.api.*;
+import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
 import java.io.*;
 import java.net.*;
@@ -57,6 +58,11 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 			Logger.getGlobal().log(Level.INFO,null,ex);
 		}
 		((RegistryNode<String,?,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.MESSAGE_REGISTRY_NAME,registry);
+		return registry;
+	}
+	public RegistryNode<String,Command,String> registerCommand(String module){
+		RegistryNode<String,Command,String> registry=new SimpleRegistryNode<>();
+		((RegistryNode<String,?,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.COMMAND_REGISTRY_NAME,registry);
 		return registry;
 	}
 }

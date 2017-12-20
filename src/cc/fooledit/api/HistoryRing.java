@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
+import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
@@ -82,20 +84,27 @@ public class HistoryRing<T>{
 	public Stream<T> stream(){
 		return list.stream();
 	}
-	public void registerComamnds(String noun,Supplier<T> snapshotAction,Consumer<T> chooseAction,CommandRegistry registry){
-		registry.put("first-"+noun,()->chooseAction.accept(get(0)),CoreModule.NAME);
-		registry.put("last-"+noun,()->chooseAction.accept(get(size()-1)),CoreModule.NAME);
-		registry.put("next-"+noun,()->chooseAction.accept(get(next())),CoreModule.NAME);
-		registry.put("previous-"+noun,()->chooseAction.accept(get(previous())),CoreModule.NAME);
-		registry.put("record-"+noun,()->add(snapshotAction.get()),CoreModule.NAME);
-		registry.put("tag-"+noun,(args)->{
+	public void registerComamnds(String noun,Supplier<T> snapshotAction,Consumer<T> chooseAction,RegistryNode<String,Command,String> registry,String module){
+		addCommand("first-"+noun,()->chooseAction.accept(get(0)),registry,module);
+		addCommand("last-"+noun,()->chooseAction.accept(get(size()-1)),registry,module);
+		addCommand("next-"+noun,()->chooseAction.accept(get(next())),registry,module);
+		addCommand("previous-"+noun,()->chooseAction.accept(get(previous())),registry,module);
+		addCommand("record-"+noun,()->add(snapshotAction.get()),registry,module);
+		addCommand("tag-"+noun,(args)->{
 			tag(SchemeConverter.toString(ScmList.first(args)));
 			return null;
-		},CoreModule.NAME);
-		registry.put(noun+"-limit",(ScmPairOrNil)->ScmInteger.valueOf(getLimit()),CoreModule.NAME);
-		registry.put("set-"+noun+"-limit",(args)->{
+		},registry,module);
+		addCommand(noun+"-limit",(ScmPairOrNil)->ScmInteger.valueOf(getLimit()),registry,module);
+		addCommand("set-"+noun+"-limit",(args)->{
 			setLimit(SchemeConverter.toInteger(ScmList.first(args)));
 			return null;
-		},CoreModule.NAME);
+		},registry,module);
 	}
+	private void addCommand(String name,Runnable action,RegistryNode<String,Command,String> registry,String module){
+		registry.addChild(name,new Command(name,action,module));
+	}
+	private void addCommand(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,RegistryNode<String,Command,String> registry,String module){
+		registry.addChild(name,new Command(name,action,module));
+	}
+
 }

@@ -43,7 +43,7 @@ import org.fxmisc.richtext.*;
  */
 public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final MenuRegistry menuRegistry=new MenuRegistry(TextEditorModule.NAME);
-	private final CommandRegistry commandRegistry=new CommandRegistry();
+	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(TextEditorModule.NAME);
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(TextEditorModule.NAME);
 	private final Map<String,Language> languages=new HashMap<>();
 	private final HistoryRing<String> clips=new HistoryRing<>();
@@ -191,7 +191,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				int end=argc>=2?SchemeConverter.toInteger(ScmList.second(args)):area.getArea().getLength();
 				return new ScmString(area.getArea().getText(start,end));
 		});
-		clips.registerComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry);
+		clips.registerComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry,TextEditorModule.NAME);
 		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
 				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList())),true));
 		addCommand("highlight",(area)->area.selections().add(area.createSelection(area.getArea().getSelection())));
@@ -229,10 +229,10 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		json.stream().map((m)->Language.fromJSON(m)).forEach((l)->Arrays.stream(l.getMimeTypes()).forEach((mime)->languages.put(mime,l)));
 	}
 	private void addCommand(String name,Consumer<CodeEditor> action){
-		commandRegistry.put(name,()->action.accept(getCurrentEditor()),TextEditorModule.NAME);
+		commandRegistry.addChild(name,new Command(name,()->action.accept(getCurrentEditor()),TextEditorModule.NAME));
 	}
 	private void addCommand(String name,List<String> parameters,BiFunction<ScmPairOrNil,CodeEditor,ScmObject> action){
-		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,getCurrentEditor()),TextEditorModule.NAME));
+		commandRegistry.addChild(name,new Command(name,parameters,(args)->action.apply(args,getCurrentEditor()),TextEditorModule.NAME));
 	}
 	private CodeEditor getCurrentEditor(){
 		return (CodeEditor)Main.INSTANCE.getCurrentNode();
@@ -242,7 +242,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		return menuRegistry;
 	}
 	@Override
-	public CommandRegistry getCommandRegistry(){
+	public RegistryNode<String,Command,String> getCommandRegistry(){
 		return commandRegistry;
 	}
 	@Override

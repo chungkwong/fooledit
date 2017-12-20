@@ -27,8 +27,8 @@ public interface DataEditor<T extends DataObject>{
 	default Node edit(T data,Object remark){
 		return edit(data);
 	}
-	default CommandRegistry getCommandRegistry(){
-		return new CommandRegistry();
+	default RegistryNode<String,Command,String> getCommandRegistry(){
+		return new SimpleRegistryNode<>();
 	}
 	default NavigableRegistryNode<String,String,String> getKeymapRegistry(){
 		return new NavigableRegistryNode<>();

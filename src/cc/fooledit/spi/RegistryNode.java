@@ -38,6 +38,9 @@ public abstract class RegistryNode<K,V,T>{
 			addChild(name,new SimpleRegistryNode());
 		return getChild(name);
 	}
+	public V getChildOrDefault(K name,V def){
+		return hasChild(name)?getChild(name):def;
+	}
 	public abstract V getChild(K name);
 	public abstract boolean hasChild(K name);
 	public V addChild(K name,RegistryNode<?,?,? super K> child){
@@ -66,5 +69,113 @@ public abstract class RegistryNode<K,V,T>{
 	public abstract Collection<K> getChildNames();
 	public T getName(){
 		return name;
+	}
+	public Map<K,V> toMap(){
+		return new RegistryNodeMap();
+	}
+	private class RegistryNodeMap implements Map<K,V>{
+		@Override
+		public int size(){
+			return getChildNames().size();
+		}
+		@Override
+		public boolean isEmpty(){
+			return getChildNames().isEmpty();
+		}
+		@Override
+		public boolean containsKey(Object key){
+			return getChildNames().contains(key);
+		}
+		@Override
+		public boolean containsValue(Object value){
+			return values().contains(value);
+		}
+		@Override
+		public V get(Object key){
+			return getChild((K)key);
+		}
+		@Override
+		public V put(K key,V value){
+			return addChild(key,value);
+		}
+		@Override
+		public V remove(Object key){
+			return removeChild((K)key);
+		}
+		@Override
+		public void putAll(Map<? extends K,? extends V> m){
+			m.forEach((k,v)->addChild(k,v));
+		}
+		@Override
+		public void clear(){
+			getChildNames().forEach((k)->removeChild(k));
+		}
+		@Override
+		public Set<K> keySet(){
+			return new AbstractSet<K>(){
+				@Override
+				public Iterator<K> iterator(){
+					return getChildNames().iterator();
+				}
+				@Override
+				public int size(){
+					return getChildNames().size();
+				}
+			};
+		}
+		@Override
+		public Collection<V> values(){
+			return new AbstractList<V>(){
+				@Override
+				public int size(){
+					return getChildNames().size();
+				}
+				@Override
+				public V get(int index){
+					Iterator<K> iter=getChildNames().iterator();
+					while(--index>=0){
+						iter.next();
+					}
+					return getChild(iter.next());
+				}
+			};
+		}
+		@Override
+		public Set<Entry<K,V>> entrySet(){
+			return new AbstractSet<Entry<K,V>>(){
+				@Override
+				public Iterator<Entry<K,V>> iterator(){
+					return new Iterator<Entry<K,V>>(){
+						Iterator<K> base=getChildNames().iterator();
+						@Override
+						public boolean hasNext(){
+							return base.hasNext();
+						}
+						@Override
+						public Entry<K,V> next(){
+							K key=base.next();
+							return new Map.Entry<K,V>(){
+								@Override
+								public K getKey(){
+									return key;
+								}
+								@Override
+								public V getValue(){
+									return getChild(key);
+								}
+								@Override
+								public V setValue(V value){
+									return addChild(key,value);
+								}
+							};
+						}
+					};
+				}
+				@Override
+				public int size(){
+					return getChildNames().size();
+				}
+			};
+		}
 	}
 }

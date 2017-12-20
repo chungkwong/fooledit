@@ -50,9 +50,9 @@ public class TemplateEditor extends Prompt{
 		return keymap;
 	}
 	@Override
-	public CommandRegistry getCommandRegistry(){
-		CommandRegistry commands=new CommandRegistry();
-		commands.put("create",()->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose(),CoreModule.NAME);//FIXME
+	public RegistryNode<String,Command,String> getCommandRegistry(){
+		RegistryNode<String,Command,String> commands=new SimpleRegistryNode<>();
+		commands.addChild("create",new Command("create",()->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose(),CoreModule.NAME));//FIXME
 		return commands;
 	}
 	@Override

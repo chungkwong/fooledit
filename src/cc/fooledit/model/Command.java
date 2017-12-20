@@ -30,6 +30,12 @@ public class Command{
 	private final ThrowableFunction<ScmPairOrNil,ScmObject> action;
 	private final List<String> parameters;
 	private static Pair<Command,ScmPairOrNil> lastCommand=new Pair<>(null,null);
+	public Command(String name,Runnable action,String module){
+		this(name,(t)->{
+			action.run();
+			return null;
+		},module);
+	}
 	public Command(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
 		this(name,Collections.emptyList(),action,module);
 	}

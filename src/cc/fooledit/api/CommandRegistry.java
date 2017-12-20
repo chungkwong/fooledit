@@ -15,32 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
-import cc.fooledit.model.*;
-import com.github.chungkwong.jschememin.type.*;
-import java.util.*;
-import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CommandRegistry extends HashMap<String,Command>{
-	public CommandRegistry(){
+public class CommandRegistry{
+	private CommandRegistry(){
 	}
-	public void put(String name,Runnable action,String module){
-		put(name,(t)->{
-			action.run();
-			return null;
-		},module);
-	}
-	public void put(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
-		put(name,new Command(name,action,module));
-		//System.err.println(new Command(name,action).getDisplayName());
-	}
-	public void putOnDemand(String name,Supplier<Command> supplier,String module){
+/*	public static void putOnDemand(String name,Supplier<Command> supplier,String module){
 		put(name,(t)->{
 			Command command=supplier.get();
 			put(name,command);
 			return command.accept(t);
 		},module);
-	}
+
+	}*/
 }

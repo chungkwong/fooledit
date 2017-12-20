@@ -31,7 +31,7 @@ import javafx.scene.web.*;
 public class BrowserEditor implements DataEditor<BrowserData>{
 	public static final BrowserEditor INSTANCE=new BrowserEditor();
 	private final MenuRegistry menuRegistry=new MenuRegistry(BrowserModule.NAME);
-	private final CommandRegistry commandRegistry=new CommandRegistry();
+	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(BrowserModule.NAME);
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(BrowserModule.NAME);
 	private BrowserEditor(){
 		addCommand("move-to-previous-page",(viewer)->viewer.backward());
@@ -68,7 +68,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 		});
 	}
 	private void addCommand(String name,Consumer<BrowserViewer> action){
-		commandRegistry.put(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()),BrowserModule.NAME);
+		commandRegistry.addChild(name,new Command(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()),BrowserModule.NAME));
 	}
 	@Override
 	public Node edit(BrowserData data){
@@ -79,7 +79,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 		return MessageRegistry.getString("BROWSER",BrowserModule.NAME);
 	}
 	@Override
-	public CommandRegistry getCommandRegistry(){
+	public RegistryNode<String,Command,String> getCommandRegistry(){
 		return commandRegistry;
 	}
 	@Override

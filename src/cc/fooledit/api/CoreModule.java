@@ -52,7 +52,6 @@ public class CoreModule{
 	public static final RegistryNode<String,String,String> CONTENT_TYPE_ALIAS_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> CONTENT_TYPE_SUPERCLASS_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> SUFFIX_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,Command,String> COMMAND_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,DataObject,String> DATA_OBJECT_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,DataObjectType,String> DATA_OBJECT_TYPE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,List<Consumer>,String> EVENT_REGISTRY=new SimpleRegistryNode<>();
@@ -65,7 +64,6 @@ public class CoreModule{
 		Registry.ROOT.addChild(NAME,REGISTRY);
 		REGISTRY.addChild(APPLICATION_REGISTRY_NAME,APPLICATION_REGISTRY);
 		REGISTRY.addChild(CLIP_REGISTRY_NAME,CLIP_REGISTRY);
-		REGISTRY.addChild(COMMAND_REGISTRY_NAME,COMMAND_REGISTRY);
 		REGISTRY.addChild(CONTENT_TYPE_REGISTRY_NAME,CONTENT_TYPE_REGISTRY);
 		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_DETECTOR_REGISTRY_NAME,CONTENT_TYPE_DETECTOR_REGISTRY);
 		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_ALIAS_REGISTRY_NAME,CONTENT_TYPE_ALIAS_REGISTRY);

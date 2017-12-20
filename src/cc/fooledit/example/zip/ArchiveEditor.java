@@ -34,7 +34,7 @@ import org.apache.commons.compress.archivers.*;
 public class ArchiveEditor implements DataEditor<ArchiveData>{
 	public static final ArchiveEditor INSTANCE=new ArchiveEditor();
 	private final MenuRegistry menuRegistry=new MenuRegistry(ZipModule.NAME);
-	private final CommandRegistry commandRegistry=new CommandRegistry();
+	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(ZipModule.NAME);
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(ZipModule.NAME);
 	private ArchiveEditor(){
 		addCommand("focus-previous",(viewer)->viewer.getTree().getFocusModel().focusPrevious());
@@ -56,7 +56,7 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 		addCommand("submit",(viewer)->viewer.fireAction());
 	}
 	private void addCommand(String name,Consumer<ArchiveViewer> action){
-		commandRegistry.put(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),ZipModule.NAME);
+		commandRegistry.addChild(name,new Command(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),ZipModule.NAME));
 	}
 	@Override
 	public Node edit(ArchiveData data){
@@ -130,7 +130,7 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 			tree.getSelectionModel().select(curr);
 	}
 	@Override
-	public CommandRegistry getCommandRegistry(){
+	public RegistryNode<String,Command,String> getCommandRegistry(){
 		return commandRegistry;
 	}
 	@Override

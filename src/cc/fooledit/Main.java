@@ -51,8 +51,8 @@ public class Main extends Application{
 	private final File SYSTEM_PATH=computePath();
 	private final File MODULE_PATH=new File(SYSTEM_PATH,"modules");
 	private final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
-	private final CommandRegistry globalCommandRegistry=new CommandRegistry();
-	private final BiMap<String,Command> commandRegistry=new BiMap<>(globalCommandRegistry,new HashMap<>());
+	private final RegistryNode<String,Command,String> globalCommandRegistry=new SimpleRegistryNode<>();
+	private final BiMap<String,Command> commandRegistry=new BiMap<>(globalCommandRegistry.toMap(),new HashMap<>());
 	private MenuRegistry menuRegistry;
 	private final NavigableRegistryNode<String,String,String> keymapRegistry;
 	private final Notifier notifier;
@@ -157,10 +157,10 @@ public class Main extends Application{
 		});
 	}
 	private void addCommand(String name,Runnable action){
-		globalCommandRegistry.put(name,action,CoreModule.NAME);
+		globalCommandRegistry.addChild(name,new Command(name,action,CoreModule.NAME));
 	}
 	private void addCommand(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
-		globalCommandRegistry.put(name,action,CoreModule.NAME);
+		globalCommandRegistry.addChild(name,new Command(name,action,CoreModule.NAME));
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
@@ -203,7 +203,7 @@ public class Main extends Application{
 	}
 	private MenuItem createCommandMenuItem(String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase(),CoreModule.NAME));
-		item.setOnAction((e)->globalCommandRegistry.get(name).accept(ScmNil.NIL));
+		item.setOnAction((e)->globalCommandRegistry.getChild(name).accept(ScmNil.NIL));
 		return item;
 	}
 	private void updateCurrentNode(Node node){
@@ -213,7 +213,7 @@ public class Main extends Application{
 		if(node!=null){
 			currentNode=((WorkSheet)node).getCenter();
 			commander.getChildren().set(1,((WorkSheet)node).getDataEditor().getMenuRegistry().getMenuBar());
-			commandRegistry.setLocal(getLocalCommandRegistry());
+			commandRegistry.setLocal(getLocalCommandRegistry().toMap());
 		}
 	}
 	public void addAndShow(DataObject data){
@@ -250,7 +250,7 @@ public class Main extends Application{
 	private void loadDefaultWorkSheet(){
 		worksheets.registerComamnds("worksheet",()->((WorkSheet)root.getCenter()).toJSON(),(json)->{
 			root.setCenter(WorkSheet.fromJSON(json));
-		},globalCommandRegistry);
+		},globalCommandRegistry,CoreModule.NAME);
 		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
 		root.setCenter((WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
 			String msg=MessageRegistry.getString("WELCOME",CoreModule.NAME);
@@ -262,10 +262,10 @@ public class Main extends Application{
 			return workSheet;
 		}));
 	}
-	public CommandRegistry getGlobalCommandRegistry(){
+	public RegistryNode<String,Command,String> getGlobalCommandRegistry(){
 		return globalCommandRegistry;
 	}
-	private CommandRegistry getLocalCommandRegistry(){
+	private RegistryNode<String,Command,String> getLocalCommandRegistry(){
 		return getCurrentWorkSheet().getDataEditor().getCommandRegistry();
 	}
 	public NavigableRegistryNode<String,String,String> getGlobalKeymapRegistry(){
