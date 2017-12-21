@@ -16,6 +16,7 @@
  */
 package cc.fooledit.api;
 import cc.fooledit.*;
+import static cc.fooledit.api.CoreModule.MODULE_REGISTRY;
 import cc.fooledit.setting.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
@@ -32,31 +33,27 @@ import java.util.zip.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ModuleRegistry{
-	private static final HashMap<String,Module> loadedModules=new HashMap<>();
 	public static void loadDefault(){
 		String preload=(String)SettingManager.getOrCreate("core").get("preload",null);
 		Arrays.stream(preload.split(":")).forEach((name)->ensureLoaded(name));
 	}
 	public static void ensureLoaded(String module){
-		if(!loadedModules.containsKey(module)){
-			loadedModules.put(module,null);
+		if(!MODULE_REGISTRY.hasChild(module)){
+			MODULE_REGISTRY.addChild(module,(Module)null);
 			ModuleDescriptor moduleDescriptor=getModuleDescriptor(module);
 			moduleDescriptor.getDependency().forEach((s)->ensureLoaded(s));
 			Module mod=new ScriptModule(module);
 			try{
 				mod.onLoad();
-				loadedModules.put(module,mod);
+				MODULE_REGISTRY.addChild(module,mod);
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
 		}
 	}
 	public static void unLoad(String cls) throws Exception{
-		Module module=loadedModules.remove(cls);
+		Module module=MODULE_REGISTRY.removeChild(cls);
 		module.onUnLoad();
-	}
-	public static Map<String,Module> getModules(){
-		return Collections.unmodifiableMap(loadedModules);
 	}
 	public static ModuleDescriptor getModuleDescriptor(String name){
 		return ModuleDescriptor.fromJSON(Main.INSTANCE.loadJSON(new File(Main.INSTANCE.getModulePath(name),"descriptor.json")));

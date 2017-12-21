@@ -46,6 +46,9 @@ public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
 	public Collection<Integer> getChildNames(){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+	public void addChild(V value){
+		addChild(size(),value);
+	}
 	public int size(){
 		return children.size();
 	}

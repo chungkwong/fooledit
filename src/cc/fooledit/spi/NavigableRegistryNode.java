@@ -48,6 +48,12 @@ public class NavigableRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
 	public Collection<K> getChildNames(){
 		return children.keySet();
 	}
+	public Map.Entry<K,V> firstEntry(){
+		return children.firstEntry();
+	}
+	public Map.Entry<K,V> lastEntry(){
+		return children.lastEntry();
+	}
 	public Map.Entry<K,V> ceilingEntry(K key){
 		return children.ceilingEntry(key);
 	}

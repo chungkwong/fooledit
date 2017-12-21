@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
+import static cc.fooledit.api.CoreModule.DATA_OBJECT_REGISTRY;
 import cc.fooledit.model.*;
 import cc.fooledit.setting.*;
 import cc.fooledit.spi.*;
@@ -31,14 +32,13 @@ public class DataObjectRegistry{
 	private static final String KEY="file_history.json";
 	private static final String LIMIT="limit";
 	private static final String ENTRIES="entries";
-	private static final TreeMap<String,DataObject> objects=new TreeMap<>();
 	private static final Map<String,Object> HISTORY=(Map<String,Object>)PersistenceStatusManager.USER.
 			getOrDefault(KEY,()->Helper.hashMap(LIMIT,20,ENTRIES,new LinkedList<>()));
 	public static DataObject getDataObject(String name){
-		return objects.get(name);
+		return DATA_OBJECT_REGISTRY.getChild(name);
 	}
-	public static Set<String> getDataObjectNames(){
-		return objects.keySet();
+	public static Collection<String> getDataObjectNames(){
+		return DATA_OBJECT_REGISTRY.getChildNames();
 	}
 	public static DataObject get(Object json){
 		Map<String,String> prop=(Map<String,String>)json;
@@ -47,7 +47,7 @@ public class DataObjectRegistry{
 		DataObject object;
 		if(prop.containsKey(DataObject.URI)){
 			String uri=prop.get(DataObject.URI);
-			Optional<DataObject> old=objects.values().stream().filter((o)->uri.equals(o.getProperties().get(DataObject.URI))).findAny();
+			Optional<DataObject> old=DATA_OBJECT_REGISTRY.toMap().values().stream().filter((o)->uri.equals(o.getProperties().get(DataObject.URI))).findAny();
 			if(old.isPresent())
 				return old.get();
 			try{
@@ -72,14 +72,14 @@ public class DataObjectRegistry{
 		return object;
 	}
 	public static void addDataObject(DataObject data){
-		if(objects.containsValue(data))
+		if(DATA_OBJECT_REGISTRY.toMap().containsValue(data))
 			return;
 		Map<String,String> prop=data.getProperties();
 		String name=(String)prop.getOrDefault(DataObject.DEFAULT_NAME,UNTITLED);
-		if(objects.containsKey(name)){
+		if(DATA_OBJECT_REGISTRY.hasChild(name)){
 			for(int i=1;;i++){
 				String tmp=name+":"+i;
-				if(!objects.containsKey(tmp)){
+				if(!DATA_OBJECT_REGISTRY.hasChild(tmp)){
 					name=tmp;
 					break;
 				}
@@ -87,11 +87,11 @@ public class DataObjectRegistry{
 		}
 		prop.put(DataObject.BUFFER_NAME,name);
 		prop.put(DataObject.TYPE,data.getDataObjectType().getClass().getName());
-		objects.put(name,data);
+		DATA_OBJECT_REGISTRY.addChild(name,data);
 		addHistoryEntry(prop);
 	}
 	public static void removeDataObject(DataObject data){
-		objects.remove((String)data.getProperties().get(DataObject.BUFFER_NAME));
+		DATA_OBJECT_REGISTRY.removeChild((String)data.getProperties().get(DataObject.BUFFER_NAME));
 	}
 	private static void addHistoryEntry(Map<String,String> prop){
 		if(prop.containsKey(DataObject.URI)){
@@ -113,16 +113,16 @@ public class DataObjectRegistry{
 		return (List)HISTORY.get(ENTRIES);
 	}
 	public static DataObject getNextDataObject(DataObject curr){
-		Map.Entry<String,DataObject> next=objects.higherEntry((String)curr.getProperties().get(DataObject.BUFFER_NAME));
+		Map.Entry<String,DataObject> next=DATA_OBJECT_REGISTRY.higherEntry((String)curr.getProperties().get(DataObject.BUFFER_NAME));
 		if(next==null)
-			return objects.firstEntry().getValue();
+			return DATA_OBJECT_REGISTRY.firstEntry().getValue();
 		else
 			return next.getValue();
 	}
 	public static DataObject getPreviousDataObject(DataObject curr){
-		Map.Entry<String,DataObject> prev=objects.lowerEntry((String)curr.getProperties().get(DataObject.BUFFER_NAME));
+		Map.Entry<String,DataObject> prev=DATA_OBJECT_REGISTRY.lowerEntry((String)curr.getProperties().get(DataObject.BUFFER_NAME));
 		if(prev==null)
-			return objects.lastEntry().getValue();
+			return DATA_OBJECT_REGISTRY.lastEntry().getValue();
 		else
 			return prev.getValue();
 	}
