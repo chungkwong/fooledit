@@ -34,20 +34,20 @@ public class DataObjectRegistry{
 	private static final String ENTRIES="entries";
 	private static final Map<String,Object> HISTORY=(Map<String,Object>)PersistenceStatusManager.USER.
 			getOrDefault(KEY,()->Helper.hashMap(LIMIT,20,ENTRIES,new LinkedList<>()));
-	public static DataObject getDataObject(String name){
+	public static RegistryNode getDataObject(String name){
 		return DATA_OBJECT_REGISTRY.getChild(name);
 	}
 	public static Collection<String> getDataObjectNames(){
 		return DATA_OBJECT_REGISTRY.getChildNames();
 	}
-	public static DataObject get(Object json){
+	public static RegistryNode get(Object json){
 		Map<String,String> prop=(Map<String,String>)json;
 		String type=prop.get(DataObject.TYPE);
 		DataObjectType builder=DataObjectTypeRegistry.getDataObjectTypes().values().stream().filter((t)->t.getClass().getName().equals(type)).findFirst().get();
-		DataObject object;
+		RegistryNode object;
 		if(prop.containsKey(DataObject.URI)){
 			String uri=prop.get(DataObject.URI);
-			Optional<DataObject> old=DATA_OBJECT_REGISTRY.toMap().values().stream().filter((o)->uri.equals(o.getProperties().get(DataObject.URI))).findAny();
+			Optional<RegistryNode> old=DATA_OBJECT_REGISTRY.toMap().values().stream().filter((o)->uri.equals(o.getChild(DataObject.URI))).findAny();
 			if(old.isPresent())
 				return old.get();
 			try{
@@ -71,11 +71,10 @@ public class DataObjectRegistry{
 		addDataObject(object);
 		return object;
 	}
-	public static void addDataObject(DataObject data){
-		if(DATA_OBJECT_REGISTRY.toMap().containsValue(data))
-			return;
-		Map<String,String> prop=data.getProperties();
-		String name=(String)prop.getOrDefault(DataObject.DEFAULT_NAME,UNTITLED);
+	public static void addDataObject(RegistryNode<String,Object,String> object){
+		//if(DATA_OBJECT_REGISTRY.toMap().containsValue(data))
+		//	return;
+		String name=(String)object.getChildOrDefault(DataObject.DEFAULT_NAME,UNTITLED);
 		if(DATA_OBJECT_REGISTRY.hasChild(name)){
 			for(int i=1;;i++){
 				String tmp=name+":"+i;
@@ -85,19 +84,19 @@ public class DataObjectRegistry{
 				}
 			}
 		}
-		prop.put(DataObject.BUFFER_NAME,name);
-		prop.put(DataObject.TYPE,data.getDataObjectType().getClass().getName());
-		DATA_OBJECT_REGISTRY.addChild(name,data);
-		addHistoryEntry(prop);
+		object.addChild(DataObject.BUFFER_NAME,name);
+		object.addChild(DataObject.TYPE,((DataObject)object.getChild(DataObject.DATA)).getDataObjectType().getClass().getName());
+		DATA_OBJECT_REGISTRY.addChild(name,object);
+		addHistoryEntry(object.toMap());
 	}
-	public static void removeDataObject(DataObject data){
-		DATA_OBJECT_REGISTRY.removeChild((String)data.getProperties().get(DataObject.BUFFER_NAME));
+	public static void removeDataObject(RegistryNode<String,Object,String> data){
+		DATA_OBJECT_REGISTRY.removeChild((String)data.getChild(DataObject.BUFFER_NAME));
 	}
-	private static void addHistoryEntry(Map<String,String> prop){
+	private static void addHistoryEntry(Map<String,Object> prop){
 		if(prop.containsKey(DataObject.URI)){
-			String uri=prop.get(DataObject.URI);
-			List<Map<String,String>> list=getHistoryList();
-			Iterator<Map<String,String>> iter=list.iterator();
+			String uri=(String)prop.get(DataObject.URI);
+			List<Map<String,Object>> list=getHistoryList();
+			Iterator<Map<String,Object>> iter=list.iterator();
 			while(iter.hasNext()){
 				if(uri.equals(iter.next().get(DataObject.URI))){
 					iter.remove();
@@ -109,30 +108,31 @@ public class DataObjectRegistry{
 	public static int getHistoryLimit(){
 		return ((Number)HISTORY.get(LIMIT)).intValue();
 	}
-	public static List<Map<String,String>> getHistoryList(){
+	public static List<Map<String,Object>> getHistoryList(){
 		return (List)HISTORY.get(ENTRIES);
 	}
-	public static DataObject getNextDataObject(DataObject curr){
-		Map.Entry<String,DataObject> next=DATA_OBJECT_REGISTRY.higherEntry((String)curr.getProperties().get(DataObject.BUFFER_NAME));
+	public static RegistryNode getNextDataObject(RegistryNode<String,Object,String> curr){
+		Map.Entry<String,RegistryNode> next=DATA_OBJECT_REGISTRY.higherEntry((String)curr.getChild(DataObject.BUFFER_NAME));
 		if(next==null)
 			return DATA_OBJECT_REGISTRY.firstEntry().getValue();
 		else
 			return next.getValue();
 	}
-	public static DataObject getPreviousDataObject(DataObject curr){
-		Map.Entry<String,DataObject> prev=DATA_OBJECT_REGISTRY.lowerEntry((String)curr.getProperties().get(DataObject.BUFFER_NAME));
+	public static RegistryNode getPreviousDataObject(RegistryNode<String,Object,String> curr){
+		Map.Entry<String,RegistryNode> prev=DATA_OBJECT_REGISTRY.lowerEntry((String)curr.getChild(DataObject.BUFFER_NAME));
 		if(prev==null)
 			return DATA_OBJECT_REGISTRY.lastEntry().getValue();
 		else
 			return prev.getValue();
 	}
-	public static <T extends DataObject> T create(DataObjectType<T> type){
-		T object=type.create();
-		object.getProperties().put(DataObject.TYPE,type.getClass().getName());
-		object.getProperties().putIfAbsent(DataObject.DEFAULT_NAME,type.getDisplayName());
+	public static RegistryNode<String,Object,String> create(DataObjectType<?> type){
+		RegistryNode<String,Object,String> object=new SimpleRegistryNode<>();
+		DataObject data=type.create();
+		object.addChild(DataObject.TYPE,type.getClass().getName());
+		object.addChild(DataObject.DEFAULT_NAME,type.getDisplayName());
 		return object;
 	}
-	public static DataObject readFrom(URL url)throws Exception{
+	public static RegistryNode<String,Object,String> readFrom(URL url)throws Exception{
 		FoolURLConnection connection=FoolURLConnection.open(url);
 		for(String mime:ContentTypeDetectorRegistry.guess(connection)){
 			try{
@@ -143,10 +143,10 @@ public class DataObjectRegistry{
 		}
 		throw new Exception();
 	}
-	public static DataObject readFrom(URL url,MimeType mime)throws Exception{
+	public static RegistryNode<String,Object,String> readFrom(URL url,MimeType mime)throws Exception{
 		return readFrom(FoolURLConnection.open(url),mime);
 	}
-	public static DataObject readFrom(URLConnection connection,MimeType mime)throws Exception{
+	public static RegistryNode<String,Object,String> readFrom(URLConnection connection,MimeType mime)throws Exception{
 		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
 			try{
 				return readFrom(connection,type,mime);
@@ -156,27 +156,30 @@ public class DataObjectRegistry{
 		}
 		throw new Exception();
 	}
-	public static DataObject readFrom(URL url,DataObjectType type,MimeType mime)throws Exception{
+	public static RegistryNode<String,Object,String> readFrom(URL url,DataObjectType type,MimeType mime)throws Exception{
 		return readFrom(FoolURLConnection.open(url),type,mime);
 	}
-	public static DataObject readFrom(URLConnection connection,DataObjectType type,MimeType mime)throws Exception{
-		DataObject data=type.readFrom(connection,mime);
-		data.getProperties().put(DataObject.URI,connection.getURL().toString());
-		data.getProperties().put(DataObject.MIME,mime.toString());
-		data.getProperties().put(DataObject.DEFAULT_NAME,getLastComponent(connection.getURL().getPath()));
-		data.getProperties().put(DataObject.TYPE,type.getClass().getName());
-		addDataObject(data);
-		return data;
+	public static RegistryNode<String,Object,String> readFrom(URLConnection connection,DataObjectType type,MimeType mime)throws Exception{
+		RegistryNode<String,Object,String>  object=new SimpleRegistryNode<>();
+		DataObject data=type.readFrom(connection,mime,object);
+		object.addChild(DataObject.URI,connection.getURL().toString());
+		object.addChild(DataObject.MIME,mime.toString());
+		object.addChild(DataObject.DEFAULT_NAME,getLastComponent(connection.getURL().getPath()));
+		object.addChild(DataObject.TYPE,type.getClass().getName());
+		object.addChild(DataObject.DATA,data);
+		addDataObject(object);
+		return object;
 	}
 	private static String getLastComponent(String path){
 		int i=path.lastIndexOf('/');
 		return i==-1?path:path.substring(i+1);
 	}
-	public static void write(DataObject data) throws Exception{
-		writeTo(data,new URL((String)data.getProperties().get(DataObject.URI)));
+	public static void write(RegistryNode<String,Object,String> data) throws Exception{
+		writeTo(data,new URL((String)data.getChild(DataObject.URI)));
 	}
-	public static void writeTo(DataObject data,URL url)throws Exception{
-		data.getDataObjectType().writeTo(data,FoolURLConnection.open(url));
-		data.getProperties().put(DataObject.URI,url.toString());
+	public static void writeTo(RegistryNode<String,Object,String> object,URL url)throws Exception{
+		DataObject data=((DataObject)object.getChild(DataObject.DATA));
+		data.getDataObjectType().writeTo(data,FoolURLConnection.open(url),object);
+		object.addChild(DataObject.URI,url.toString());
 	}
 }

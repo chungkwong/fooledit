@@ -52,7 +52,7 @@ public class CoreModule{
 	public static final RegistryNode<String,String,String> CONTENT_TYPE_ALIAS_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> CONTENT_TYPE_SUPERCLASS_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> SUFFIX_REGISTRY=new SimpleRegistryNode<>();
-	public static final NavigableRegistryNode<String,DataObject,String> DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
+	public static final NavigableRegistryNode<String,RegistryNode,String> DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
 	public static final RegistryNode<String,DataObjectType,String> DATA_OBJECT_TYPE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,List<Consumer>,String> EVENT_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Module,String> HISTORY_REGISTRY=new SimpleRegistryNode<>();

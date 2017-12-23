@@ -45,7 +45,7 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 		addCommand("play",(player)->player.play());
 		addCommand("pause",(player)->player.pause());
 		menuRegistry.registerDynamicMenu("editor.media.Markers",(items)->{
-			MediaPlayer player=((MediaObject)Main.INSTANCE.getCurrentDataObject()).getProperty().getValue();
+			MediaPlayer player=((MediaObject)Main.INSTANCE.getCurrentData()).getProperty().getValue();
 			ObservableMap<String,Duration> entries=player.getMedia().getMarkers();
 			items.clear();
 			entries.forEach((mark,time)->{
@@ -58,7 +58,7 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 		});
 	}
 	@Override
-	public Node edit(MediaObject data){
+	public Node edit(MediaObject data,Object remark,RegistryNode<String,Object,String> meta){
 		MediaView editor=new MediaView();
 		MediaPlayer player=data.getProperty().getValue();
 		player.statusProperty().addListener((e,o,n)->Main.INSTANCE.getNotifier().notify(MessageRegistry.getString(n.toString(),MediaEditorModule.NAME)));
@@ -81,7 +81,7 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 			Logger.getLogger(PlainTextEditor.class.getName()).log(Level.SEVERE,null,ex);
 			throw new RuntimeException();
 		}
-		Node edit=new MediaEditor().edit(data);
+		Node edit=new MediaEditor().edit(data,null,null);
 		Scene scene=new Scene(new BorderPane(edit));
 		primaryStage.setTitle("IDEM");
 		primaryStage.setScene(scene);
@@ -99,7 +99,7 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 		return MessageRegistry.getString("MEDIA_PLAYER",MediaEditorModule.NAME);
 	}
 	private void addCommand(String name,Consumer<MediaPlayer> action){
-		commandRegistry.addChild(name,new Command(name,()->action.accept(((MediaObject)Main.INSTANCE.getCurrentDataObject()).getProperty().getValue()),MediaEditorModule.NAME));
+		commandRegistry.addChild(name,new Command(name,()->action.accept(((MediaObject)Main.INSTANCE.getCurrentData()).getProperty().getValue()),MediaEditorModule.NAME));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

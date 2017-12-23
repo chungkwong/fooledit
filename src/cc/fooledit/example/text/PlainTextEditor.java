@@ -17,6 +17,7 @@
 package cc.fooledit.example.text;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 /**
@@ -32,7 +33,7 @@ public class PlainTextEditor implements DataEditor<TextObject>{
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
 	}
-	public Node edit(TextObject obj){
+	public Node edit(TextObject obj,Object remark,RegistryNode<String,Object,String> meta){
 		TextArea textArea=new TextArea();
 		textArea.textProperty().bindBidirectional(obj.getText());
 		return textArea;

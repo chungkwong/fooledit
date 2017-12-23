@@ -170,10 +170,10 @@ public class Main extends Application{
 				l.add(item);
 			}
 			l.add(new SeparatorMenuItem());
-			DataObject curr=getCurrentDataObject();
+			DataObject curr=getCurrentData();
 			DataObjectTypeRegistry.getDataEditors(curr.getClass()).forEach((editor)->{
 				MenuItem item=new MenuItem(editor.getName());
-				item.setOnAction((e)->getCurrentWorkSheet().keepOnly(curr,editor,null));
+				item.setOnAction((e)->getCurrentWorkSheet().keepOnly(getCurrentDataObject(),editor,null));
 				l.add(item);
 			});
 			l.add(new SeparatorMenuItem());
@@ -183,13 +183,13 @@ public class Main extends Application{
 	}
 	private Consumer<ObservableList<MenuItem>> getHistoryMenu(){
 		return (l)->{
-			for(Map<String,String> prop:DataObjectRegistry.getHistoryList()){
-				MenuItem item=new MenuItem(prop.get(DataObject.BUFFER_NAME));
+			for(Map<String,Object> prop:DataObjectRegistry.getHistoryList()){
+				MenuItem item=new MenuItem((String)prop.get(DataObject.BUFFER_NAME));
 				item.setOnAction((e)->{
 					try{
-						URL file=new URI(prop.get(DataObject.URI)).toURL();
+						URL file=new URI((String)prop.get(DataObject.URI)).toURL();
 						if(prop.containsKey(DataObject.MIME)){
-							show(DataObjectRegistry.readFrom(file,new MimeType(prop.get(DataObject.MIME))));
+							show(DataObjectRegistry.readFrom(file,new MimeType((String)prop.get(DataObject.MIME))));
 						}else{
 							show(DataObjectRegistry.readFrom(file));
 						}
@@ -216,20 +216,23 @@ public class Main extends Application{
 			commandRegistry.setLocal(getLocalCommandRegistry().toMap());
 		}
 	}
-	public void addAndShow(DataObject data){
+	public void addAndShow(RegistryNode<String,Object,String> data){
 		DataObjectRegistry.addDataObject(data);
 		showDefault(data);
 	}
-	public void show(DataObject data){
+	public void show(RegistryNode<String,Object,String> data){
 		showDefault(data);
 	}
-	private void showDefault(DataObject data){
+	private void showDefault(RegistryNode<String,Object,String> data){
 		getCurrentWorkSheet().keepOnly(data,getDefaultEditor(data),null);
 	}
-	public DataEditor getDefaultEditor(DataObject data){
-		return DataObjectTypeRegistry.getDataEditors(data.getClass()).get(0);
+	public DataEditor getDefaultEditor(RegistryNode<String,Object,String> data){
+		return DataObjectTypeRegistry.getDataEditors((Class<? extends DataObject>)data.getChild(DataObject.DATA).getClass()).get(0);
 	}
-	public DataObject getCurrentDataObject(){
+	public DataObject getCurrentData(){
+		return (DataObject)getCurrentDataObject().getChild(DataObject.DATA);
+	}
+	public RegistryNode<String,Object,String> getCurrentDataObject(){
 		return getCurrentWorkSheet().getDataObject();
 	}
 	public DataEditor getCurrentDataEditor(){
@@ -254,8 +257,8 @@ public class Main extends Application{
 		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
 		root.setCenter((WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
 			String msg=MessageRegistry.getString("WELCOME",CoreModule.NAME);
-			TextObject welcome=DataObjectRegistry.create(TextObjectType.INSTANCE);
-			welcome.getText().set(msg);
+			RegistryNode<String,Object,String> welcome=DataObjectRegistry.create(TextObjectType.INSTANCE);
+			welcome.addChild(DataObject.DATA,new TextObject(msg));
 			DataObjectRegistry.addDataObject(welcome);
 			WorkSheet workSheet=new WorkSheet(welcome,getDefaultEditor(welcome),null);
 			setCurrentWorkSheet(workSheet);

@@ -16,6 +16,7 @@
  */
 package cc.fooledit.example.filesystem;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import java.net.*;
 import javax.activation.*;
 /**
@@ -40,15 +41,15 @@ public class FileSystemDataType implements DataObjectType<FileSystemData>{
 		return true;
 	}
 	@Override
-	public void writeTo(FileSystemData data,URLConnection connection) throws Exception{
+	public void writeTo(FileSystemData data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public FileSystemData readFrom(URLConnection connection) throws Exception{
+	public FileSystemData readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		return create();
 	}
 	@Override
-	public FileSystemData readFrom(URLConnection connection,MimeType mime) throws Exception{
+	public FileSystemData readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
 		return create();
 	}
 	@Override

@@ -34,7 +34,7 @@ public class Previewer extends BorderPane{
 		if(editors.isEmpty()){
 			setCenter(sorry);
 		}else{
-			setCenter(editors.get(0).edit(obj));
+			setCenter(editors.get(0).edit(obj,null,null));
 		}
 	}
 }

@@ -16,6 +16,7 @@
  */
 package cc.fooledit.project;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -29,9 +30,9 @@ public class ProjectRegistry{
 	public static void register(Project project){
 		projects.add(project);
 	}
-	public static Project getProject(DataObject obj){
+	public static Project getProject(RegistryNode<String,Object,String> obj){
 		try{
-			Optional<Project> project=ProjectTypeManager.gaussProject(new File(new URI((String)obj.getProperties().get(DataObject.URI))));
+			Optional<Project> project=ProjectTypeManager.gaussProject(new File(new URI((String)obj.getChild(DataObject.URI))));
 			if(project.isPresent()){
 				projects.add(project.get());
 				return project.get();

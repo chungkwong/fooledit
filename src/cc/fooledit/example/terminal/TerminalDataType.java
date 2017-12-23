@@ -16,6 +16,7 @@
  */
 package cc.fooledit.example.terminal;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import java.net.*;
 import javax.activation.*;
 /**
@@ -48,15 +49,15 @@ public class TerminalDataType implements DataObjectType<TerminalData>{
 		return "terminal";
 	}
 	@Override
-	public void writeTo(TerminalData data,URLConnection connection) throws Exception{
+	public void writeTo(TerminalData data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public TerminalData readFrom(URLConnection connection) throws Exception{
+	public TerminalData readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		return create();
 	}
 	@Override
-	public TerminalData readFrom(URLConnection connection,MimeType mime) throws Exception{
+	public TerminalData readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
 		return create();
 	}
 

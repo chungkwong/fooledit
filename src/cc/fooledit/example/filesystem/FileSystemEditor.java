@@ -234,7 +234,7 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 	}
 
 	@Override
-	public Node edit(FileSystemData data){
+	public Node edit(FileSystemData data,Object remark,RegistryNode<String,Object,String> meta){
 		FileSystemViewer viewer=new FileSystemViewer();
 		viewer.setAction(data.getAction());
 		if(data.getInitialPath()!=null)

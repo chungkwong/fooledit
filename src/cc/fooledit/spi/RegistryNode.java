@@ -16,6 +16,7 @@
  */
 package cc.fooledit.spi;
 import java.util.*;
+import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -45,7 +46,7 @@ public abstract class RegistryNode<K,V,T>{
 	public abstract boolean hasChild(K name);
 	public V addChild(K name,RegistryNode<?,?,? super K> child){
 		if(child.name!=null)
-			throw new RuntimeException("Child already added to somewhere");
+			Logger.getGlobal().log(Level.INFO,"Child already added to somewhere");
 		child.parent=this;
 		child.name=name;
 		return addChild(name,(V)child);

@@ -45,7 +45,7 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 		return new ArchiveData(Collections.emptyList(),null);
 	}
 	@Override
-	public ArchiveData readFrom(URLConnection connection) throws Exception{
+	public ArchiveData readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		URL url=connection.getURL();
 		String mime=ContentTypeDetectorRegistry.guess(connection).get(0);
 		try(ArchiveInputStream archive=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(mime),connection.getInputStream())){
@@ -79,7 +79,7 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 		mime2archive.put("application/x-zip-compressed","ZIP");
 	}
 	@Override
-	public void writeTo(ArchiveData data,URLConnection connection) throws Exception{
+	public void writeTo(ArchiveData data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

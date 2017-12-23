@@ -17,6 +17,7 @@
 package cc.fooledit.example.terminal;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import javafx.embed.swing.*;
 import javafx.scene.*;
 /**
@@ -29,7 +30,7 @@ public class TerminalEditor implements DataEditor<TerminalData>{
 
 	}
 	@Override
-	public Node edit(TerminalData data){
+	public Node edit(TerminalData data,Object remark,RegistryNode<String,Object,String> meta){
 		SwingNode node=new SwingNode();
 		node.setContent(data.getTerminal());
 		return node;

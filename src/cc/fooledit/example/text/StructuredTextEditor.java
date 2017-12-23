@@ -49,14 +49,14 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final HistoryRing<String> clips=new HistoryRing<>();
 	public StructuredTextEditor(){
 		menuRegistry.registerDynamicMenu("reload",(items)->{
-			DataObject curr=Main.INSTANCE.getCurrentDataObject();
-			String url=(String)curr.getProperties().get(DataObject.URI);
-			String currCharset=(String)curr.getProperties().getOrDefault("CHARSET","UTF-8");
+			RegistryNode<String,Object,String> curr=Main.INSTANCE.getCurrentDataObject();
+			String url=(String)curr.getChild(DataObject.URI);
+			String currCharset=(String)curr.getChildOrDefault("CHARSET","UTF-8");
 			if(url!=null){
 				ToggleGroup group=new ToggleGroup();
 				Consumer<Charset> reload=(set)->{
 					try{
-						MimeType mime=new MimeType((String)curr.getProperties().get(DataObject.MIME));
+						MimeType mime=new MimeType((String)curr.getChild(DataObject.MIME));
 						mime.setParameter("charset",set.name());
 						Main.INSTANCE.show(DataObjectRegistry.readFrom(new URL(url),TextObjectType.INSTANCE,mime));
 					}catch(Exception ex){
@@ -74,12 +74,12 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			}
 		});
 		menuRegistry.registerDynamicMenu("charset",(items)->{
-			TextObject curr=(TextObject)Main.INSTANCE.getCurrentDataObject();
-			String currCharset=(String)curr.getProperties().getOrDefault("CHARSET","UTF-8");
+			RegistryNode<String,Object,String> curr=Main.INSTANCE.getCurrentDataObject();
+			String currCharset=(String)curr.getChildOrDefault("CHARSET","UTF-8");
 			ToggleGroup group=new ToggleGroup();
 			items.setAll(Charset.availableCharsets().values().stream()
 					.map((set)->createCharsetItem(set,(s)->{
-						curr.getProperties().put("CHARSET",s.name());
+						curr.addChild("CHARSET",s.name());
 					},group,currCharset)).collect(Collectors.toList()));
 		});
 
@@ -262,22 +262,11 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		return keymapRegistry;
 	}
 	@Override
-	public Node edit(TextObject data,Object remark){
-		CodeEditor editor=(CodeEditor)edit(data);
-		if(remark instanceof List){
-			List<Number> pair=(List<Number>)remark;
-			editor.getArea().selectRange(pair.get(0).intValue(),pair.get(1).intValue());
-			for(int i=2;i<pair.size();i+=2)
-				editor.selections().add(editor.createSelection(pair.get(i).intValue(),pair.get(i+1).intValue()));
-		}
-		return editor;
-	}
-	@Override
-	public Node edit(TextObject data){
+	public Node edit(TextObject data,Object remark,RegistryNode<String,Object,String> meta){
 		MetaLexer lex=null;
 		Language language;
 		try{
-			language=languages.get(new MimeType(data.getProperties().getOrDefault(DataObject.MIME,"text/plain")).getBaseType());
+			language=languages.get(new MimeType((String)meta.getChildOrDefault(DataObject.MIME,"text/plain")).getBaseType());
 		}catch(MimeTypeParseException ex){
 			language=null;
 		}
@@ -285,6 +274,12 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		ParserBuilder parserBuilder=language!=null?language.getParserBuilder():null;
 		CodeEditor codeEditor=new CodeEditor(parserBuilder,highlighter);
 		codeEditor.textProperty().bindBidirectional(data.getText());
+		if(remark instanceof List){
+			List<Number> pair=(List<Number>)remark;
+			codeEditor.getArea().selectRange(pair.get(0).intValue(),pair.get(1).intValue());
+			for(int i=2;i<pair.size();i+=2)
+				codeEditor.selections().add(codeEditor.createSelection(pair.get(i).intValue(),pair.get(i+1).intValue()));
+		}
 		return codeEditor;
 	}
 	@Override

@@ -16,6 +16,7 @@
  */
 package cc.fooledit.example.media;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
 import javafx.scene.media.*;
@@ -36,7 +37,7 @@ public class MediaObjectType implements DataObjectType<MediaObject>{
 		return false;
 	}
 	@Override
-	public MediaObject readFrom(URLConnection connection) throws Exception{
+	public MediaObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		try(InputStream in=connection.getInputStream()){
 			return readFrom(in);
 		}
@@ -67,7 +68,7 @@ public class MediaObjectType implements DataObjectType<MediaObject>{
 		return "media";
 	}
 	@Override
-	public void writeTo(MediaObject data,URLConnection connection) throws Exception{
+	public void writeTo(MediaObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

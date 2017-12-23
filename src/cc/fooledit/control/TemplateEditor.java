@@ -40,7 +40,7 @@ public class TemplateEditor extends Prompt{
 
 	}
 	@Override
-	public javafx.scene.Node edit(Prompt data){
+	public javafx.scene.Node edit(Prompt data,Object remark,RegistryNode<String,Object,String> meta){
 		return chooser;
 	}
 	@Override
@@ -110,11 +110,13 @@ public class TemplateEditor extends Prompt{
 				props.put("date","2017-6-29");
 				props.put("user","kwong");
 				DataObject obj=template.apply(props);
-				obj.getProperties().put(DataObject.TYPE,obj.getDataObjectType().getClass().getName());
-				obj.getProperties().put(DataObject.MIME,template.getMimeType());
-				obj.getProperties().put(DataObject.DEFAULT_NAME,((Template)item).getName());
-				Main.INSTANCE.show(obj);
-				DataObjectRegistry.removeDataObject(TemplateEditor.this);
+				SimpleRegistryNode<String,Object,String> registry=new SimpleRegistryNode<>();
+				registry.addChild(DataObject.TYPE,obj.getDataObjectType().getClass().getName());
+				registry.addChild(DataObject.MIME,template.getMimeType());
+				registry.addChild(DataObject.DEFAULT_NAME,((Template)item).getName());
+				registry.addChild(DataObject.DATA,obj);
+				Main.INSTANCE.show(registry);
+				DataObjectRegistry.removeDataObject(Main.INSTANCE.getCurrentDataObject());
 			}
 		}
 	}

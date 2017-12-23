@@ -19,6 +19,7 @@ import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.control.*;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -41,7 +42,7 @@ import javafx.stage.*;
  */
 public class ImageEditor  extends Application implements DataEditor<ImageObject>{
 	@Override
-	public Node edit(ImageObject data){
+	public Node edit(ImageObject data,Object remark,RegistryNode<String,Object,String> meta){
 		Canvas canvas=data.getCanvas();
 		canvas.setCursor(Cursor.CROSSHAIR);
 		return new ImageViewer(canvas);
@@ -52,7 +53,7 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 	}
 	@Override
 	public void start(Stage stage) throws Exception{
-		stage.setScene(new Scene(new BorderPane(new ImageEditor().edit(new ImageObject(new WritableImage(200,200))))));
+		stage.setScene(new Scene(new BorderPane(new ImageEditor().edit(new ImageObject(new WritableImage(200,200)),null,null))));
 		stage.show();
 	}
 	public static void main(String[] args){

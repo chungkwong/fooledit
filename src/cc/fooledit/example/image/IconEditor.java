@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.image;
-import cc.fooledit.model.DataEditor;
+import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
  *
@@ -23,7 +24,7 @@ import javafx.scene.*;
  */
 public class IconEditor implements DataEditor<ImageObject>{
 	@Override
-	public Node edit(ImageObject data){
+	public Node edit(ImageObject data,Object remark,RegistryNode<String,Object,String> meta){
 		return data.getCanvas();
 	}
 	@Override

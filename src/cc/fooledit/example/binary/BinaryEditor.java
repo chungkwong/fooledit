@@ -17,6 +17,7 @@
 package cc.fooledit.example.binary;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.util.*;
@@ -27,7 +28,7 @@ import javafx.util.*;
 public class BinaryEditor implements DataEditor<BinaryObject>{
 	private static final HexConvertor CONVERTOR=new HexConvertor();
 	@Override
-	public Node edit(BinaryObject data){
+	public Node edit(BinaryObject data,Object remark,RegistryNode<String,Object,String> meta){
 		TextArea node=new TextArea();
 		node.setWrapText(true);
 		node.textProperty().bindBidirectional(data.dataProperty(),CONVERTOR);

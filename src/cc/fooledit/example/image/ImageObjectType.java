@@ -16,6 +16,7 @@
  */
 package cc.fooledit.example.image;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
 import javafx.embed.swing.*;
@@ -38,7 +39,7 @@ public class ImageObjectType implements DataObjectType<ImageObject>{
 		return false;
 	}
 	@Override
-	public void writeTo(ImageObject data,URLConnection connection) throws Exception{
+	public void writeTo(ImageObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		try(OutputStream out=connection.getOutputStream()){
 			writeTo(data,out);
 		}
@@ -49,7 +50,7 @@ public class ImageObjectType implements DataObjectType<ImageObject>{
 		ImageIO.write(SwingFXUtils.fromFXImage(image,null),"png",out);
 	}
 	@Override
-	public ImageObject readFrom(URLConnection connection) throws Exception{
+	public ImageObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		try(InputStream in=connection.getInputStream()){
 			return readFrom(in);
 		}

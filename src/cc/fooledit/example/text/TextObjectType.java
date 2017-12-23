@@ -16,6 +16,7 @@
  */
 package cc.fooledit.example.text;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
@@ -41,14 +42,14 @@ public class TextObjectType implements DataObjectType<TextObject>{
 		return true;
 	}
 	@Override
-	public void writeTo(TextObject data,URLConnection connection) throws Exception{
+	public void writeTo(TextObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		try(OutputStream out=connection.getOutputStream()){
-			writeTo(data,out);
+			writeTo(data,out,meta);
 		}
 	}
-	public void writeTo(TextObject data,OutputStream out) throws Exception{
+	public void writeTo(TextObject data,OutputStream out,RegistryNode<String,Object,String> meta) throws Exception{
 		Charset charset;
-		String charsetName=data.getProperties().get(CHARSET);
+		String charsetName=(String)meta.getChild(CHARSET);
 		try{
 			charset=Charset.forName(charsetName);
 		}catch(IllegalArgumentException ex){
@@ -60,7 +61,7 @@ public class TextObjectType implements DataObjectType<TextObject>{
 		writer.flush();
 	}
 	@Override
-	public TextObject readFrom(URLConnection connection) throws Exception{
+	public TextObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		MimeType mime=null;
 		try{
 			mime=new MimeType(connection.getContentType());
@@ -68,13 +69,14 @@ public class TextObjectType implements DataObjectType<TextObject>{
 			Logger.getGlobal().log(Level.INFO,null,ex);
 			mime=new MimeType("text/plain");
 		}
-		return readFrom(connection,mime);
+		return readFrom(connection,mime,meta);
 	}
 	@Override
-	public TextObject readFrom(URLConnection connection,MimeType mime) throws Exception{
+	public TextObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
 		try(InputStream in=connection.getInputStream()){
-			Charset charset=null;
-			charset=checkForCharset(in,mime.getParameter("charset"));
+			Charset charset=checkForCharset(in,(String)meta.getChild(CHARSET));
+			if(charset==null)
+				charset=checkForCharset(in,mime.getParameter("charset"));
 			if(charset==null)
 				charset=checkForCharset(in,connection.getContentEncoding());
 			if(charset==null)
@@ -83,6 +85,7 @@ public class TextObjectType implements DataObjectType<TextObject>{
 				}catch(IOException ex){
 					charset=StandardCharsets.UTF_8;
 				}
+			meta.addChild(CHARSET,charset.name());
 			return readFrom(in,charset);
 		}
 	}
@@ -101,9 +104,7 @@ public class TextObjectType implements DataObjectType<TextObject>{
 	public TextObject readFrom(InputStream in,Charset charset) throws Exception{
 		StringBuilder buf=new StringBuilder();
 		BufferedReader reader=new BufferedReader(new InputStreamReader(in,charset));
-		TextObject object=new TextObject(reader.lines().collect(Collectors.joining("\n")));
-		object.getProperties().put(CHARSET,charset.name());
-		return object;
+		return new TextObject(reader.lines().collect(Collectors.joining("\n")));
 	}
 	@Override
 	public boolean canCreate(){

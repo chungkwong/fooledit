@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.model;
+import cc.fooledit.spi.*;
 import java.net.*;
 import javax.activation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class Prompt  extends AbstractDataObject<Prompt> implements DataObjectType<Prompt>,DataEditor<Prompt>{
+public abstract class Prompt implements DataObject<Prompt>,DataObjectType<Prompt>,DataEditor<Prompt>{
 	@Override
 	public DataObjectType<Prompt> getDataObjectType(){
 		return this;
@@ -43,15 +44,15 @@ public abstract class Prompt  extends AbstractDataObject<Prompt> implements Data
 		return this;
 	}
 	@Override
-	public void writeTo(Prompt data,URLConnection connection) throws Exception{
+	public void writeTo(Prompt data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public Prompt readFrom(URLConnection connection) throws Exception{
+	public Prompt readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		return this;
 	}
 	@Override
-	public Prompt readFrom(URLConnection connection,MimeType mime) throws Exception{
+	public Prompt readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
 		return this;
 	}
 }

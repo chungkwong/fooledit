@@ -17,6 +17,7 @@
 package cc.fooledit.example.zip;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import java.net.*;
 /**
  *
@@ -43,12 +44,15 @@ public class ZipDataType implements DataObjectType<ZipData>{
 		return new ZipData(null);
 	}
 	@Override
-	public ZipData readFrom(URLConnection connection) throws Exception{
-		return new ZipData(DataObjectRegistry.readFrom(new URL("compressed","",connection.getURL().toString())));
+	public ZipData readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+		return new ZipData((DataObject)DataObjectRegistry.readFrom(toURL(connection)).getChild(DataObject.DATA));
 	}
 	@Override
-	public void writeTo(ZipData data,URLConnection connection) throws Exception{
-		data.getContent().getDataObjectType().writeTo(data,FoolURLConnection.open(new URL("compressed","",connection.getURL().toString())));
+	public void writeTo(ZipData data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+		data.getContent().getDataObjectType().writeTo(data,FoolURLConnection.open(toURL(connection)),meta);
+	}
+	private URL toURL(URLConnection connection) throws MalformedURLException{
+		return new URL("compressed","",connection.getURL().toString());
 	}
 	@Override
 	public String getDisplayName(){

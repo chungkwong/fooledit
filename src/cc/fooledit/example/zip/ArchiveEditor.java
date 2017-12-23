@@ -59,7 +59,7 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 		commandRegistry.addChild(name,new Command(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),ZipModule.NAME));
 	}
 	@Override
-	public Node edit(ArchiveData data){
+	public Node edit(ArchiveData data,Object remark,RegistryNode<String,Object,String> meta){
 		ArchiveViewer viewer=new ArchiveViewer(data.getEntries());
 		viewer.setAction((entries)->{
 			entries.forEach((entry)->{

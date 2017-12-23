@@ -23,7 +23,7 @@ import java.util.function.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FileSystemData extends AbstractDataObject<FileSystemData>{
+public class FileSystemData implements DataObject<FileSystemData>{
 	private Consumer<Collection<Path>> action;
 	private Path initialPath;
 	public FileSystemData(){

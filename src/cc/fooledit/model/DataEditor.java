@@ -23,10 +23,7 @@ import javafx.scene.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface DataEditor<T extends DataObject>{
-	Node edit(T data);
-	default Node edit(T data,Object remark){
-		return edit(data);
-	}
+	Node edit(T data,Object remark,RegistryNode<String,Object,String> meta);
 	default RegistryNode<String,Command,String> getCommandRegistry(){
 		return new SimpleRegistryNode<>();
 	}

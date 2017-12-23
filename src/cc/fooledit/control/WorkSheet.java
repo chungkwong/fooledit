@@ -18,6 +18,7 @@ package cc.fooledit.control;
 import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
@@ -39,7 +40,7 @@ public class WorkSheet extends BorderPane{
 	private WorkSheet(Node node){
 		super(node);
 	}
-	public WorkSheet(DataObject data,DataEditor editor,Object remark){
+	public WorkSheet(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
 		super(pack(data,editor,remark));
 	}
 	@Override
@@ -47,10 +48,10 @@ public class WorkSheet extends BorderPane{
 		super.requestFocus();
 		getCenter().requestFocus();
 	}
-	public void splitVertically(DataObject data,DataEditor editor,Object remark){
+	public void splitVertically(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
 		split(pack(data,editor,remark),Orientation.VERTICAL);
 	}
-	public void splitHorizontally(DataObject data,DataEditor editor,Object remark){
+	public void splitHorizontally(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
 		split(pack(data,editor,remark),Orientation.HORIZONTAL);
 	}
 	private void split(Node second,Orientation orientation){
@@ -71,12 +72,12 @@ public class WorkSheet extends BorderPane{
 		first.sceneProperty().addListener(listener);
 		first.requestFocus();
 	}
-	private static Node pack(DataObject data,DataEditor editor,Object remark){
-		Node node=editor.edit(data,remark);
+	private static Node pack(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
+		Node node=editor.edit((DataObject)data.getChild(DataObject.DATA),remark,data);
 		node.setUserData(new Pair<>(data,editor));
 		return node;
 	}
-	public void keepOnly(DataObject data,DataEditor editor,Object remark){
+	public void keepOnly(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
 		Node node=pack(data,editor,remark);
 		setCenter(node);
 		node.requestFocus();
@@ -99,7 +100,7 @@ public class WorkSheet extends BorderPane{
 			map.put(CURRENT,Main.INSTANCE.getCurrentWorkSheet()==this);
 			map.put(EDITOR,getDataEditor().getClass().getName());
 			map.put(REMARK,getDataEditor().getRemark(center));
-			map.put(BUFFER,getDataObject().getProperties());
+			map.put(BUFFER,getDataObject().toMap());
 		}
 		return map;
 	}
@@ -111,9 +112,9 @@ public class WorkSheet extends BorderPane{
 			pane.setDividerPositions(((List<Number>)json.get(DIVIDERS)).stream().mapToDouble((o)->o.doubleValue()).toArray());
 			return new WorkSheet(pane);
 		}else{
-			DataObject buffer=DataObjectRegistry.get(json.get(BUFFER));
+			RegistryNode<String,Object,String> buffer=DataObjectRegistry.get(json.get(BUFFER));
 			String editorName=(String)json.get(EDITOR);
-			DataEditor editor=DataObjectTypeRegistry.getDataEditors(buffer.getClass()).stream().
+			DataEditor editor=DataObjectTypeRegistry.getDataEditors((Class<? extends DataObject>)buffer.getChild(DataObject.DATA).getClass()).stream().
 					filter((e)->e.getClass().getName().equals(editorName)).findFirst().get();
 			WorkSheet workSheet=new WorkSheet(buffer,editor,json.get(REMARK));
 			if((Boolean)json.get(CURRENT)){
@@ -129,11 +130,11 @@ public class WorkSheet extends BorderPane{
 	public Orientation getOrientation(){
 		return ((SplitPane)getCenter()).getOrientation();
 	}
-	public DataObject getDataObject(){
-		return ((Pair<DataObject,DataEditor>)getCenter().getUserData()).getKey();
+	public RegistryNode<String,Object,String> getDataObject(){
+		return ((Pair<RegistryNode<String,Object,String>,DataEditor>)getCenter().getUserData()).getKey();
 	}
 	public DataEditor getDataEditor(){
-		return ((Pair<DataObject,DataEditor>)getCenter().getUserData()).getValue();
+		return ((Pair<RegistryNode<String,Object,String>,DataEditor>)getCenter().getUserData()).getValue();
 	}
 	public static final javafx.util.StringConverter<WorkSheet> CONVERTOR=new javafx.util.StringConverter<WorkSheet>(){
 		@Override

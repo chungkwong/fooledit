@@ -20,7 +20,7 @@ import cc.fooledit.model.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ZipData extends AbstractDataObject<ZipData>{
+public class ZipData implements DataObject<ZipData>{
 	private final DataObject content;
 	public ZipData(DataObject content){
 		this.content=content;

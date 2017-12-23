@@ -17,6 +17,7 @@
 package cc.fooledit.example.zip;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import java.util.*;
 import javafx.scene.*;
 /**
@@ -28,17 +29,10 @@ public class ZipEditor implements DataEditor<ZipData>{
 	private ZipEditor(){
 	}
 	@Override
-	public Node edit(ZipData data){
+	public Node edit(ZipData data,Object remark,RegistryNode<String,Object,String> meta){
 		List<DataEditor> editors=DataObjectTypeRegistry.getDataEditors(data.getContent().getClass());
 		if(!editors.isEmpty())
-			return editors.get(0).edit(data.getContent());
-		return null;
-	}
-	@Override
-	public Node edit(ZipData data,Object remark){
-		List<DataEditor> editors=DataObjectTypeRegistry.getDataEditors(data.getContent().getClass());
-		if(!editors.isEmpty())
-			return editors.get(0).edit(data.getContent(),remark);
+			return editors.get(0).edit(data.getContent(),remark,meta);
 		return null;
 	}
 	@Override

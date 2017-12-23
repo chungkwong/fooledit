@@ -22,7 +22,7 @@ import javafx.scene.media.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class MediaObject extends AbstractDataObject<MediaObject>{
+public class MediaObject implements DataObject<MediaObject>{
 	private final Property<MediaPlayer> property;
 	public MediaObject(MediaPlayer audio){
 		this.property=new SimpleObjectProperty<>(audio);

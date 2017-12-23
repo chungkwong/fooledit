@@ -16,6 +16,7 @@
  */
 package cc.fooledit.example.browser;
 import cc.fooledit.model.*;
+import cc.fooledit.spi.*;
 import java.net.*;
 import javax.activation.*;
 /**
@@ -36,7 +37,7 @@ public class BrowserDataType implements DataObjectType<BrowserData>{
 		return false;
 	}
 	@Override
-	public void writeTo(BrowserData data,URLConnection connection) throws Exception{
+	public void writeTo(BrowserData data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
@@ -48,11 +49,11 @@ public class BrowserDataType implements DataObjectType<BrowserData>{
 		return true;
 	}
 	@Override
-	public BrowserData readFrom(URLConnection connection) throws Exception{
+	public BrowserData readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		return create();
 	}
 	@Override
-	public BrowserData readFrom(URLConnection connection,MimeType mime) throws Exception{
+	public BrowserData readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
 		return create();
 	}
 	@Override

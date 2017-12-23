@@ -21,7 +21,7 @@ import javafx.beans.property.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BinaryObject extends AbstractDataObject<BinaryObject>{
+public class BinaryObject implements DataObject<BinaryObject>{
 	private final Property<byte[]> property;
 	public BinaryObject(byte[] data){
 		this.property=new SimpleObjectProperty<>(this,"data",data);

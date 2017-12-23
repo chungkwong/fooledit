@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.model;
+import cc.fooledit.spi.*;
 import java.net.*;
 import javax.activation.*;
 /**
@@ -27,9 +28,9 @@ public interface DataObjectType<T extends DataObject>{
 	boolean canCreate();
 	T create();
 	String getDisplayName();
-	void writeTo(T data,URLConnection connection)throws Exception;
-	T readFrom(URLConnection connection) throws Exception;
-	default T readFrom(URLConnection connection,MimeType mime) throws Exception{
-		return readFrom(connection);
+	void writeTo(T data,URLConnection connection,RegistryNode<String,Object,String> meta)throws Exception;
+	T readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception;
+	default T readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
+		return readFrom(connection,meta);
 	}
 }

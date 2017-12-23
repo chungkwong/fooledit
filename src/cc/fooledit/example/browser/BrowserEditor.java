@@ -39,7 +39,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 		addCommand("refresh",(viewer)->viewer.refresh());
 		addCommand("set-location",(viewer)->viewer.locate());
 		menuRegistry.registerDynamicMenu("editor.browser.ForwardPages",(items)->{
-			WebHistory history=((BrowserData)Main.INSTANCE.getCurrentDataObject()).getWebView().getEngine().getHistory();
+			WebHistory history=((BrowserData)Main.INSTANCE.getCurrentData()).getWebView().getEngine().getHistory();
 			ObservableList<WebHistory.Entry> entries=history.getEntries();
 			items.clear();
 			int curr=history.getCurrentIndex();
@@ -53,7 +53,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 			}
 		});
 		menuRegistry.registerDynamicMenu("editor.browser.BackwardPages",(items)->{
-			WebHistory history=((BrowserData)Main.INSTANCE.getCurrentDataObject()).getWebView().getEngine().getHistory();
+			WebHistory history=((BrowserData)Main.INSTANCE.getCurrentData()).getWebView().getEngine().getHistory();
 			ObservableList<WebHistory.Entry> entries=history.getEntries();
 			items.clear();
 			int curr=history.getCurrentIndex();
@@ -71,7 +71,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 		commandRegistry.addChild(name,new Command(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()),BrowserModule.NAME));
 	}
 	@Override
-	public Node edit(BrowserData data){
+	public Node edit(BrowserData data,Object remark,RegistryNode<String,Object,String> meta){
 		return data.getEditor();
 	}
 	@Override
