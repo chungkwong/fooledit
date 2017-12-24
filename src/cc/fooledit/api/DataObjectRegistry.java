@@ -127,9 +127,9 @@ public class DataObjectRegistry{
 	}
 	public static RegistryNode<String,Object,String> create(DataObjectType<?> type){
 		RegistryNode<String,Object,String> object=new SimpleRegistryNode<>();
-		DataObject data=type.create();
 		object.addChild(DataObject.TYPE,type.getClass().getName());
 		object.addChild(DataObject.DEFAULT_NAME,type.getDisplayName());
+		object.addChild(DataObject.DATA,type.create());
 		return object;
 	}
 	public static RegistryNode<String,Object,String> readFrom(URL url)throws Exception{

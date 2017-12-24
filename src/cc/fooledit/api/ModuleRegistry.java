@@ -17,7 +17,6 @@
 package cc.fooledit.api;
 import cc.fooledit.*;
 import static cc.fooledit.api.CoreModule.MODULE_REGISTRY;
-import cc.fooledit.setting.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
@@ -33,8 +32,10 @@ import java.util.zip.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ModuleRegistry{
+	public static final String REPOSITORY="repository";
+	public static final String PRELOAD="preload";
 	public static void loadDefault(){
-		String preload=(String)SettingManager.getOrCreate("core").get("preload",null);
+		String preload="editor.code:editor.media:editor.image:editor.binary:editor.filesystem:editor.browser:editor.terminal:editor.zip";//FIXME
 		Arrays.stream(preload.split(":")).forEach((name)->ensureLoaded(name));
 	}
 	public static void ensureLoaded(String module){
@@ -63,7 +64,7 @@ public class ModuleRegistry{
 				map((f)->f.getName()).collect(Collectors.toSet());
 	}
 	public static List<ModuleDescriptor> listDownloadable(){
-		String url=(String)SettingManager.getOrCreate("core").get("repository",null);
+		String url=(String)CoreModule.REGISTRY.getChild(REPOSITORY);
 		try(BufferedReader in=new BufferedReader(new InputStreamReader(new URL(url).openStream(),StandardCharsets.UTF_8))){
 			return ((List<Map<Object,Object>>)JSONDecoder.decode(in)).stream().
 					map((e)->ModuleDescriptor.fromJSON(e)).collect(Collectors.toList());

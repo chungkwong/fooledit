@@ -17,9 +17,7 @@
 package cc.fooledit.api;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
-import cc.fooledit.setting.*;
 import com.github.chungkwong.jschememin.type.*;
-import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.collections.*;
@@ -38,7 +36,7 @@ public class MenuRegistry{
 	}
 	public MenuRegistry(String module){
 		this.module=module;
-		setMenus(Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(module).get("menubar-file",null)));
+		setMenus(Main.INSTANCE.loadJSON(Main.INSTANCE.getFile("menus/default.json",module)));
 		HBox.setHgrow(bar,Priority.NEVER);
 	}
 	private void setMenus(Map<Object,Object> json){

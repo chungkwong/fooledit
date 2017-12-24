@@ -19,9 +19,7 @@ import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.example.text.*;
 import cc.fooledit.model.*;
-import cc.fooledit.setting.*;
 import cc.fooledit.spi.*;
-import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -66,11 +64,14 @@ public class TemplateEditor extends Prompt{
 	public static void registerTemplateType(String key,Function<Map<Object,Object>,Template> type){
 		templateTypes.put(key,type);
 	}
+	static{
+		registerTemplateType("text",(map)->new TextTemplate((String)map.get("name"),(String)map.get("description"),(String)map.get("file"),(String)map.get("mime")));
+	}
 	private class TemplateChooser extends BorderPane{
 		private final TreeView templates;
 		private final TextField filename=new TextField();
 		public TemplateChooser(){
-			templates=new TreeView(buildTree(Main.INSTANCE.loadJSON((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("template-index",null))));
+			templates=new TreeView(buildTree(Main.INSTANCE.loadJSON(Main.INSTANCE.getFile("templates.json",TextEditorModule.NAME))));
 			templates.setOnMouseClicked((e)->{
 				if(e.getClickCount()==2){
 					choose();
@@ -83,7 +84,7 @@ public class TemplateEditor extends Prompt{
 		private TreeItem buildTree(Map<Object,Object> obj){
 			TreeItem item;
 			if(obj.containsKey("children")){
-				item=new TreeItem(MessageRegistry.getString((String)obj.get("name"),CoreModule.NAME));//FIXME
+				item=new TreeItem(MessageRegistry.getString((String)obj.get("name"),TextEditorModule.NAME));//FIXME
 				List<Map<Object,Object>> children=(List<Map<Object,Object>>)obj.get("children");
 				item.getChildren().setAll(children.stream().map(this::buildTree).collect(Collectors.toList()));
 			}else if(templateTypes.containsKey((String)obj.get("type"))){
@@ -115,7 +116,7 @@ public class TemplateEditor extends Prompt{
 				registry.addChild(DataObject.MIME,template.getMimeType());
 				registry.addChild(DataObject.DEFAULT_NAME,((Template)item).getName());
 				registry.addChild(DataObject.DATA,obj);
-				Main.INSTANCE.show(registry);
+				Main.INSTANCE.addAndShow(registry);
 				DataObjectRegistry.removeDataObject(Main.INSTANCE.getCurrentDataObject());
 			}
 		}

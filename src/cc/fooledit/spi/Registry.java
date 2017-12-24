@@ -18,7 +18,6 @@ package cc.fooledit.spi;
 import cc.fooledit.*;
 import cc.fooledit.api.*;
 import cc.fooledit.model.*;
-import cc.fooledit.setting.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -40,7 +39,7 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 	}
 	public NavigableRegistryNode<String,String,String> registerKeymap(String module){
 		TreeMap<String,String> mapping=new TreeMap<>();
-		File src=(File)SettingManager.getOrCreate(module).get("keymap-file",null);
+		File src=Main.INSTANCE.getFile("keymaps/default.json",module);
 		if(src!=null)
 			mapping.putAll((Map<String,String>)(Object)Main.INSTANCE.loadJSON(src));
 		NavigableRegistryNode<String,String,String> registry=new NavigableRegistryNode<>(mapping);

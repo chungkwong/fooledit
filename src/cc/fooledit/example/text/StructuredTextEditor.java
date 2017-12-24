@@ -21,7 +21,6 @@ import cc.fooledit.control.*;
 import cc.fooledit.editor.lex.*;
 import cc.fooledit.editor.parser.*;
 import cc.fooledit.model.*;
-import cc.fooledit.setting.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
@@ -220,7 +219,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 
 		try{
 			//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
-			Main.INSTANCE.getScene().getStylesheets().add(((File)SettingManager.getOrCreate(TextEditorModule.NAME).get("stylesheet-file",null)).toURI().toURL().toString());
+			Main.INSTANCE.getScene().getStylesheets().add(Main.INSTANCE.getFile("stylesheets/default.css",TextEditorModule.NAME).toURI().toURL().toString());
 		}catch(MalformedURLException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
