@@ -47,6 +47,10 @@ public class ImageTemplate implements Template<ImageObject>{
 		return mime;
 	}
 	@Override
+	public String getModule(){
+		return ImageEditorModule.NAME;
+	}
+	@Override
 	public Collection<String> getParameters(){
 		return Collections.emptySet();
 	}

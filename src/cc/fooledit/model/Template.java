@@ -23,6 +23,7 @@ import java.util.*;
 public interface Template<T extends DataObject>{
 	String getName();
 	String getDescription();
+	String getModule();
 	Collection<String> getParameters();
 	T apply(Properties properties);
 	String getMimeType();

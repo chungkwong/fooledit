@@ -32,14 +32,13 @@ import javafx.scene.layout.*;
 public class TemplateEditor extends Prompt{
 	private static final Map<String,Function<Map<Object,Object>,Template>> templateTypes=new HashMap<>();
 	//private static final List<Map<Object,Object>> recent=(List<Map<Object,Object>>)PersistenceStatusManager.getOrDefault("template",()->Collections.emptyList());
-	private final TemplateChooser chooser=new TemplateChooser();
 	public static final TemplateEditor INSTANCE=new TemplateEditor();
 	public TemplateEditor(){
 
 	}
 	@Override
 	public javafx.scene.Node edit(Prompt data,Object remark,RegistryNode<String,Object,String> meta){
-		return chooser;
+		return new TemplateChooser();
 	}
 	@Override
 	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
@@ -64,10 +63,16 @@ public class TemplateEditor extends Prompt{
 	public static void registerTemplateType(String key,Function<Map<Object,Object>,Template> type){
 		templateTypes.put(key,type);
 	}
-	static{
-		registerTemplateType("text",(map)->new TextTemplate((String)map.get("name"),(String)map.get("description"),(String)map.get("file"),(String)map.get("mime")));
+	public static boolean hasTemplateType(String key){
+		return templateTypes.containsKey(key);
 	}
-	private class TemplateChooser extends BorderPane{
+	public static Function<Map<Object,Object>,Template> getTemplateType(String key){
+		return templateTypes.get(key);
+	}
+	static{
+
+	}
+	private static class TemplateChooser extends BorderPane{
 		private final TreeView templates;
 		private final TextField filename=new TextField();
 		public TemplateChooser(){
@@ -84,13 +89,13 @@ public class TemplateEditor extends Prompt{
 		private TreeItem buildTree(Map<Object,Object> obj){
 			TreeItem item;
 			if(obj.containsKey("children")){
-				item=new TreeItem(MessageRegistry.getString((String)obj.get("name"),TextEditorModule.NAME));//FIXME
+				item=new TreeItem(MessageRegistry.getString((String)obj.get("name"),(String)obj.get("module")));
 				List<Map<Object,Object>> children=(List<Map<Object,Object>>)obj.get("children");
 				item.getChildren().setAll(children.stream().map(this::buildTree).collect(Collectors.toList()));
-			}else if(templateTypes.containsKey((String)obj.get("type"))){
-				item=new TreeItem(templateTypes.get((String)obj.get("type")).apply(obj));
+			}else if(hasTemplateType((String)obj.get("type"))){
+				item=new TreeItem(getTemplateType((String)obj.get("type")).apply(obj));
 			}else{
-				item=new TreeItem();
+				item=new TreeItem("");
 			}
 			return item;
 		}
@@ -125,13 +130,13 @@ public class TemplateEditor extends Prompt{
 		public TemplateCell(){
 		}
 		@Override
-			protected void updateItem(Object item,boolean empty){
+		protected void updateItem(Object item,boolean empty){
 			super.updateItem(item,empty);
 			if(empty||item==null){
 				setText(null);
 				setGraphic(null);
 			}else if(item instanceof Template){
-				setText(MessageRegistry.getString(((Template)item).getName(),CoreModule.NAME));//FIXME
+				setText(MessageRegistry.getString(((Template)item).getName(),((Template)item).getModule()));
 			}else if(item instanceof String){
 				setText((String)item);
 			}

@@ -33,7 +33,7 @@ public class TextEditorModule{
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(TextObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->new StructuredTextEditor(),TextObject.class);
-		TemplateEditor.registerTemplateType("text",(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
+		TemplateEditor.registerTemplateType("text",(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime"),(String)obj.get("module")));
 	}
 	public static void onUnLoad(){
 

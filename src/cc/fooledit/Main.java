@@ -55,7 +55,7 @@ public class Main extends Application{
 	private final BiMap<String,Command> commandRegistry=new BiMap<>(globalCommandRegistry.toMap(),new HashMap<>());
 	private MenuRegistry menuRegistry;
 	private final NavigableRegistryNode<String,String,String> keymapRegistry;
-	private final Notifier notifier;
+	private final Notifier notifier=new Notifier();
 	private final BorderPane root=new BorderPane();
 	private MiniBuffer input;
 	private HBox commander;
@@ -71,7 +71,6 @@ public class Main extends Application{
 		System.setProperty("user.dir",SYSTEM_PATH.toString());
 		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		CoreModule.PROTOCOL_REGISTRY.addChild("application",new ApplicationRegistry());
-		notifier=new Notifier(this);
 		Logger.getGlobal().setLevel(Level.INFO);
 		try{
 			Logger.getGlobal().addHandler(new StreamHandler(new FileOutputStream(new File(USER_PATH,"LOG")),new Notifier.SystemLogFormatter()));

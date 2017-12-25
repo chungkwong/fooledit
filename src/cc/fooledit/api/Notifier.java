@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
-import cc.fooledit.*;
 import java.text.*;
 import java.util.*;
 import java.util.logging.Formatter;
@@ -31,12 +30,10 @@ import javafx.scene.layout.*;
  */
 public class Notifier extends Handler{
 	private static final Formatter USER_FORMATTER=new UserLogFormatter();
-	private final Main app;
 	private final Node bar;
 	private final Label label;
 	private final HBox other;
-	public Notifier(Main app){
-		this.app=app;
+	public Notifier(){
 		label=new Label();
 		label.setAlignment(Pos.BASELINE_LEFT);
 		other=new HBox();

@@ -32,11 +32,13 @@ public class TextTemplate implements Template<TextObject>{
 	private final String description;
 	private final String file;
 	private final String mime;
-	public TextTemplate(String name,String description,String file,String mime){
+	private final String module;
+	public TextTemplate(String name,String description,String file,String mime,String module){
 		this.name=name;
 		this.description=description;
 		this.file=file;
 		this.mime=mime;
+		this.module=module;
 	}
 	@Override
 	public String getName(){
@@ -48,6 +50,10 @@ public class TextTemplate implements Template<TextObject>{
 	}
 	public String getMimeType(){
 		return mime;
+	}
+	@Override
+	public String getModule(){
+		return module;
 	}
 	@Override
 	public Collection<String> getParameters(){
