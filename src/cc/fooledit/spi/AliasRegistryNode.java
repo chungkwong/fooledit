@@ -23,7 +23,7 @@ import java.util.*;
 public class AliasRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
 	private final RegistryNode<K,V,T> target;
 	public AliasRegistryNode(RegistryNode<K,V,T> target){
-		this.target=target;
+		this.target=target instanceof AliasRegistryNode?((AliasRegistryNode<K,V,T>)target).target:target;
 	}
 	@Override
 	public V getChild(K name){

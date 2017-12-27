@@ -25,6 +25,9 @@ public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
 	public ListRegistryNode(){
 		this.children=new ArrayList<>();
 	}
+	public ListRegistryNode(List<V> base){
+		this.children=base;
+	}
 	@Override
 	public V getChild(Integer index){
 		return children.get(index);
@@ -44,7 +47,11 @@ public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
 	}
 	@Override
 	public Collection<Integer> getChildNames(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		ArrayList<Integer> names=new ArrayList<>();
+		int len=size();
+		for(int i=0;i<len;i++)
+			names.add(i);
+		return names;
 	}
 	public void addChild(V value){
 		addChild(size(),value);

@@ -20,10 +20,7 @@ import cc.fooledit.api.*;
 import cc.fooledit.model.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
-import com.github.chungkwong.json.*;
-import java.io.*;
 import java.util.*;
-import java.util.logging.*;
 import java.util.stream.*;
 import javafx.application.*;
 import javafx.beans.value.*;
@@ -37,11 +34,22 @@ import javafx.scene.layout.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class WorkSheet extends BorderPane{
+	private final RegistryNode<String,Object,String> registry=new SimpleRegistryNode<>();
 	private WorkSheet(Node node){
 		super(node);
 	}
 	public WorkSheet(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
 		super(pack(data,editor,remark));
+		restoreRegistry(data,editor,remark);
+	}
+	private void restoreRegistry(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
+		registry.removeChild(DIRECTION);
+		registry.removeChild(DIVIDERS);
+		registry.removeChild(CHILDREN);
+		registry.addChild(EDITOR,getDataEditor().getClass().getName());
+		registry.addChild(BUFFER,new AliasRegistryNode<>(data));
+		registry.addChild(CURRENT,true);
+		registry.addChild(REMARK,remark);
 	}
 	@Override
 	public void requestFocus(){
@@ -71,6 +79,16 @@ public class WorkSheet extends BorderPane{
 		};
 		first.sceneProperty().addListener(listener);
 		first.requestFocus();
+		registry.removeChild(BUFFER);
+		registry.removeChild(EDITOR);
+		registry.removeChild(REMARK);
+		registry.removeChild(CURRENT);
+		registry.addChild(DIRECTION,orientation.name());
+		registry.addChild(DIVIDERS,Arrays.stream(splitPane.getDividerPositions()).boxed().collect(Collectors.toList()));
+		ListRegistryNode<Object,String> listRegistryNode=new ListRegistryNode<>();
+		listRegistryNode.addChild(0,new AliasRegistryNode<>(getDataObject()));
+		listRegistryNode.addChild(1,new AliasRegistryNode<>(getDataObject()));
+		registry.addChild(CHILDREN,listRegistryNode);
 	}
 	private static Node pack(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
 		Node node=editor.edit((DataObject)data.getChild(DataObject.DATA),remark,data);
@@ -81,6 +99,7 @@ public class WorkSheet extends BorderPane{
 		Node node=pack(data,editor,remark);
 		setCenter(node);
 		node.requestFocus();
+		restoreRegistry(data,editor,remark);
 	}
 	private static final String DIRECTION="direction";
 	private static final String DIVIDERS="dividers";
@@ -136,19 +155,7 @@ public class WorkSheet extends BorderPane{
 	public DataEditor getDataEditor(){
 		return ((Pair<RegistryNode<String,Object,String>,DataEditor>)getCenter().getUserData()).getValue();
 	}
-	public static final javafx.util.StringConverter<WorkSheet> CONVERTOR=new javafx.util.StringConverter<WorkSheet>(){
-		@Override
-		public String toString(WorkSheet t){
-			return JSONEncoder.encode(t.toJSON());
-		}
-		@Override
-		public WorkSheet fromString(String string){
-			try{
-				return fromJSON((Map<Object,Object>)JSONDecoder.decode(string));
-			}catch(IOException|SyntaxException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				return new WorkSheet(null);
-			}
-		}
-	};
+	public RegistryNode<String,Object,String> getRegistry(){
+		return registry;
+	}
 }

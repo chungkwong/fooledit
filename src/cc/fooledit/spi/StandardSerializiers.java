@@ -23,7 +23,9 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class StandardSerializiers{
-	private static class PropertiesSerializier implements Serializier<Object>{
+	public static String PROPERTIES="properties";
+	public static String JSON="json";
+	public static class PropertiesSerializier implements Serializier<Object>{
 		@Override
 		public Object decode(String code){
 			try{
@@ -46,7 +48,7 @@ public class StandardSerializiers{
 			}
 		}
 	}
-	private static class JSONSerializier implements Serializier<Object>,JSONWalker<SimpleRegistryNode,ListRegistryNode>{
+	public static class JSONSerializier implements Serializier<Object>,JSONWalker<SimpleRegistryNode,ListRegistryNode>{
 		@Override
 		public Object decode(String code){
 			try{
@@ -58,7 +60,7 @@ public class StandardSerializiers{
 		}
 		@Override
 		public String encode(Object obj){
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			return JSONEncoder.encode(obj);
 		}
 		@Override
 		public SimpleRegistryNode createMap(){

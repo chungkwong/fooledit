@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
+import java.util.*;
 import java.util.function.*;
 /**
  *
@@ -22,8 +23,12 @@ import java.util.function.*;
  */
 public class LazyRegistryNode<K,V,T> extends SimpleRegistryNode<K,V,T>{
 	private final Function<K,V> supplier;
-	public LazyRegistryNode(Function<K,V> supplier){
+	private final Collection<K> keys;
+	private final boolean cache;
+	public LazyRegistryNode(Function<K,V> supplier,Collection<K> keys,boolean cache){
 		this.supplier=supplier;
+		this.keys=keys;
+		this.cache=cache;
 	}
 	@Override
 	public V getChild(K name){
@@ -31,8 +36,13 @@ public class LazyRegistryNode<K,V,T> extends SimpleRegistryNode<K,V,T>{
 			return super.getChild(name);
 		}else{
 			V value=supplier.apply(name);
-			addChild(name,value);
+			if(cache)
+				addChild(name,value);
 			return value;
 		}
+	}
+	@Override
+	public Collection<K> getChildNames(){
+		return keys;
 	}
 }

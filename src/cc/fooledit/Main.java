@@ -22,7 +22,6 @@ import cc.fooledit.control.*;
 import cc.fooledit.example.filesystem.*;
 import cc.fooledit.example.text.*;
 import cc.fooledit.model.*;
-import cc.fooledit.setting.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
@@ -182,13 +181,15 @@ public class Main extends Application{
 	}
 	private Consumer<ObservableList<MenuItem>> getHistoryMenu(){
 		return (l)->{
-			for(Map<String,Object> prop:DataObjectRegistry.getHistoryList()){
-				MenuItem item=new MenuItem((String)prop.get(DataObject.BUFFER_NAME));
+			HistoryRegistryNode<RegistryNode<String,Object,String>,String> history=CoreModule.HISTORY_REGISTRY;
+			for(int i=0;i<history.size();i++){
+				RegistryNode<String,Object,String> prop=history.getChild(i);
+				MenuItem item=new MenuItem((String)prop.getChild(DataObject.BUFFER_NAME));
 				item.setOnAction((e)->{
 					try{
-						URL file=new URI((String)prop.get(DataObject.URI)).toURL();
-						if(prop.containsKey(DataObject.MIME)){
-							show(DataObjectRegistry.readFrom(file,new MimeType((String)prop.get(DataObject.MIME))));
+						URL file=new URI((String)prop.getChild(DataObject.URI)).toURL();
+						if(prop.hasChild(DataObject.MIME)){
+							show(DataObjectRegistry.readFrom(file,new MimeType((String)prop.getChild(DataObject.MIME))));
 						}else{
 							show(DataObjectRegistry.readFrom(file));
 						}

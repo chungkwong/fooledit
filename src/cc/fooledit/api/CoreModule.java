@@ -15,11 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.api;
+import cc.fooledit.*;
 import cc.fooledit.model.*;
 import cc.fooledit.spi.*;
+import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -44,6 +47,7 @@ public class CoreModule{
 	public static final String MENU_REGISTRY_NAME="menu";
 	public static final String PROTOCOL_REGISTRY_NAME="protocol";
 	public static final String SERIALIZIER_REGISTRY_NAME="serializier";
+	public static final String WINDOW_REGISTRY_NAME="window";
 	public static final RegistryNode<String,Object,String> REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> APPLICATION_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Module,String> CLIP_REGISTRY=new SimpleRegistryNode<>();
@@ -55,11 +59,13 @@ public class CoreModule{
 	public static final NavigableRegistryNode<String,RegistryNode,String> DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
 	public static final RegistryNode<String,DataObjectType,String> DATA_OBJECT_TYPE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,List<Consumer>,String> EVENT_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,Module,String> HISTORY_REGISTRY=new SimpleRegistryNode<>();
+	public static final HistoryRegistryNode<RegistryNode<String,Object,String>,String> HISTORY_REGISTRY=
+			new HistoryRegistryNode<>(fromJSON("file_history.json",()->new ListRegistryNode<>()),20);
 	public static final RegistryNode<String,Module,String> MODULE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,URLStreamHandler,String> PROTOCOL_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Serializier,String> SERIALIZIER_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,RegistryNode<String,Object,String>,String> WINDOW_REGISTRY=new SimpleRegistryNode<>();
 	public static void onLoad(){
 		Registry.ROOT.addChild(NAME,REGISTRY);
 		REGISTRY.addChild(APPLICATION_REGISTRY_NAME,APPLICATION_REGISTRY);
@@ -77,9 +83,25 @@ public class CoreModule{
 		REGISTRY.addChild(MENU_REGISTRY_NAME,MENU_REGISTRY);
 		REGISTRY.addChild(PROTOCOL_REGISTRY_NAME,PROTOCOL_REGISTRY);
 		REGISTRY.addChild(SERIALIZIER_REGISTRY_NAME,SERIALIZIER_REGISTRY);
+		REGISTRY.addChild(WINDOW_REGISTRY_NAME,WINDOW_REGISTRY);
 		REGISTRY.addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/jtk/master/MODULES");
+		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
+			try{
+				Helper.writeText(NAME,new File(Main.INSTANCE.getUserPath(),"file_history.json"));
+			}catch(IOException ex){
+				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
+			}
+		});
 	}
 	public static void onUnLoad(){
 
+	}
+	private static <T> T fromJSON(String file,Supplier<T> def){
+		try{
+			return (T)new StandardSerializiers.JSONSerializier().decode(Helper.readText(new File(Main.INSTANCE.getUserPath(),file)));
+		}catch(Exception ex){
+			Logger.getLogger(CoreModule.class.getName()).log(Level.INFO,null,ex);
+			return def.get();
+		}
 	}
 }

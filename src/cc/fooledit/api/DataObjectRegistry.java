@@ -17,7 +17,6 @@
 package cc.fooledit.api;
 import static cc.fooledit.api.CoreModule.DATA_OBJECT_REGISTRY;
 import cc.fooledit.model.*;
-import cc.fooledit.setting.*;
 import cc.fooledit.spi.*;
 import java.net.*;
 import java.util.*;
@@ -30,10 +29,6 @@ import javax.activation.*;
 public class DataObjectRegistry{
 	private static final String UNTITLED=MessageRegistry.getString("UNTITLED",CoreModule.NAME);
 	private static final String KEY="file_history.json";
-	private static final String LIMIT="limit";
-	private static final String ENTRIES="entries";
-	private static final Map<String,Object> HISTORY=(Map<String,Object>)PersistenceStatusManager.USER.
-			getOrDefault(KEY,()->Helper.hashMap(LIMIT,20,ENTRIES,new LinkedList<>()));
 	public static RegistryNode getDataObject(String name){
 		return DATA_OBJECT_REGISTRY.getChild(name);
 	}
@@ -95,21 +90,14 @@ public class DataObjectRegistry{
 	private static void addHistoryEntry(Map<String,Object> prop){
 		if(prop.containsKey(DataObject.URI)){
 			String uri=(String)prop.get(DataObject.URI);
-			List<Map<String,Object>> list=getHistoryList();
-			Iterator<Map<String,Object>> iter=list.iterator();
-			while(iter.hasNext()){
-				if(uri.equals(iter.next().get(DataObject.URI))){
-					iter.remove();
-				}
+			HistoryRegistryNode<RegistryNode<String,Object,String>,String> history=CoreModule.HISTORY_REGISTRY;
+			for(int i=0;i<history.size();i++){
+				RegistryNode<String,Object,String> entry=history.getChild(i);
+				if(uri.equals(entry.getChild(DataObject.URI)))
+					history.removeChild(i);
 			}
-			Helper.addEntry(prop,getHistoryList(),getHistoryLimit());
+			history.addChild(0,new SimpleRegistryNode<String,Object,String>(prop));
 		}
-	}
-	public static int getHistoryLimit(){
-		return ((Number)HISTORY.get(LIMIT)).intValue();
-	}
-	public static List<Map<String,Object>> getHistoryList(){
-		return (List)HISTORY.get(ENTRIES);
 	}
 	public static RegistryNode getNextDataObject(RegistryNode<String,Object,String> curr){
 		Map.Entry<String,RegistryNode> next=DATA_OBJECT_REGISTRY.higherEntry((String)curr.getChild(DataObject.BUFFER_NAME));
