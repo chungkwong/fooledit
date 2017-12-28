@@ -21,6 +21,6 @@ package cc.fooledit.spi;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface Serializier<T>{
-	T decode(String code);
-	String encode(T obj);
+	T decode(String code)throws Exception;
+	String encode(T obj)throws Exception;
 }

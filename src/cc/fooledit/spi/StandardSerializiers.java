@@ -27,36 +27,24 @@ public class StandardSerializiers{
 	public static String JSON="json";
 	public static class PropertiesSerializier implements Serializier<Object>{
 		@Override
-		public Object decode(String code){
-			try{
-				Properties properties=new Properties();
-				properties.load(new StringReader(code));
-				return new SimpleRegistryNode<>(properties);
-			}catch(IOException ex){
-				throw new RuntimeException(ex);
-			}
+		public Object decode(String code) throws Exception{
+			Properties properties=new Properties();
+			properties.load(new StringReader(code));
+			return new SimpleRegistryNode<>(properties);
 		}
 		@Override
-		public String encode(Object obj){
+		public String encode(Object obj) throws Exception{
 			Properties properties=new Properties();
 			StringWriter out=new StringWriter();
-			try{
-				properties.store(out,null);
-				return out.toString();
-			}catch(IOException ex){
-				throw new RuntimeException(ex);
-			}
+			properties.store(out,null);
+			return out.toString();
 		}
 	}
 	public static class JSONSerializier implements Serializier<Object>,JSONWalker<SimpleRegistryNode,ListRegistryNode>{
 		@Override
-		public Object decode(String code){
-			try{
-				Object decode=JSONDecoder.decode(code);
-				return JSONDecoder.walk(code,this);
-			}catch(IOException|SyntaxException ex){
-				throw new RuntimeException(ex);
-			}
+		public Object decode(String code) throws Exception{
+			Object decode=JSONDecoder.decode(code);
+			return JSONDecoder.walk(code,this);
 		}
 		@Override
 		public String encode(Object obj){

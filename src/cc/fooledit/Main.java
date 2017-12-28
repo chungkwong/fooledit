@@ -84,8 +84,8 @@ public class Main extends Application{
 		initMenuBar();
 		script=new ScriptAPI();
 		ModuleRegistry.loadDefault();
-		loadDefaultWorkSheet();
 		root.setBottom(notifier.getStatusBar());
+		loadDefaultWorkSheet();
 		runScript();
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
@@ -251,10 +251,10 @@ public class Main extends Application{
 		updateCurrentNode(workSheet.getCenter());
 	}
 	private void loadDefaultWorkSheet(){
-		worksheets.registerComamnds("worksheet",()->((WorkSheet)root.getCenter()).toJSON(),(json)->{
-			root.setCenter(WorkSheet.fromJSON(json));
-		},globalCommandRegistry,CoreModule.NAME);
-		PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
+		//worksheets.registerComamnds("worksheet",()->((WorkSheet)root.getCenter()).toJSON(),(json)->{
+		//	root.setCenter(WorkSheet.fromJSON(json));
+		//},globalCommandRegistry,CoreModule.NAME);
+		/*PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
 		root.setCenter((WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
 			String msg=MessageRegistry.getString("WELCOME",CoreModule.NAME);
 			RegistryNode<String,Object,String> welcome=DataObjectRegistry.create(TextObjectType.INSTANCE);
@@ -263,7 +263,14 @@ public class Main extends Application{
 			WorkSheet workSheet=new WorkSheet(welcome,getDefaultEditor(welcome),null);
 			setCurrentWorkSheet(workSheet);
 			return workSheet;
-		}));
+		}));*/
+		if(CoreModule.WINDOW_REGISTRY.getChildNames().isEmpty()){
+			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.BUFFER,DataObjectRegistry.create(TextObjectType.INSTANCE));
+			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.EDITOR,CodeEditor.class.getName());
+			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.CURRENT,true);
+			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.REMARK,null);
+		}
+		root.setCenter(WorkSheet.fromJSON(CoreModule.WINDOW_REGISTRY));
 	}
 	public RegistryNode<String,Command,String> getGlobalCommandRegistry(){
 		return globalCommandRegistry;

@@ -65,7 +65,7 @@ public class CoreModule{
 	public static final RegistryNode<String,Object,String> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,URLStreamHandler,String> PROTOCOL_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Serializier,String> SERIALIZIER_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,RegistryNode<String,Object,String>,String> WINDOW_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,Object,String> WINDOW_REGISTRY=fromJSON("layout.json",()->new SimpleRegistryNode<>());
 	public static void onLoad(){
 		Registry.ROOT.addChild(NAME,REGISTRY);
 		REGISTRY.addChild(APPLICATION_REGISTRY_NAME,APPLICATION_REGISTRY);
@@ -87,8 +87,15 @@ public class CoreModule{
 		REGISTRY.addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/jtk/master/MODULES");
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
 			try{
-				Helper.writeText(NAME,new File(Main.INSTANCE.getUserPath(),"file_history.json"));
-			}catch(IOException ex){
+				Helper.writeText(serializier.encode(HISTORY_REGISTRY),new File(Main.INSTANCE.getUserPath(),"file_history.json"));
+			}catch(Exception ex){
+				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
+			}
+		});
+		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
+			try{
+				Helper.writeText(serializier.encode(WINDOW_REGISTRY),new File(Main.INSTANCE.getUserPath(),"layout.json"));
+			}catch(Exception ex){
 				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
 			}
 		});
@@ -98,10 +105,11 @@ public class CoreModule{
 	}
 	private static <T> T fromJSON(String file,Supplier<T> def){
 		try{
-			return (T)new StandardSerializiers.JSONSerializier().decode(Helper.readText(new File(Main.INSTANCE.getUserPath(),file)));
+			return (T)serializier.decode(Helper.readText(new File(Main.INSTANCE.getUserPath(),file)));
 		}catch(Exception ex){
 			Logger.getLogger(CoreModule.class.getName()).log(Level.INFO,null,ex);
 			return def.get();
 		}
 	}
+	private static final Serializier serializier= new StandardSerializiers.JSONSerializier();
 }

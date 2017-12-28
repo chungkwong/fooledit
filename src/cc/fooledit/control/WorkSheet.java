@@ -20,12 +20,9 @@ import cc.fooledit.api.*;
 import cc.fooledit.model.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
-import java.util.*;
-import java.util.stream.*;
 import javafx.application.*;
 import javafx.beans.value.*;
 import javafx.geometry.*;
-import javafx.scene.Node;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -34,22 +31,50 @@ import javafx.scene.layout.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class WorkSheet extends BorderPane{
-	private final RegistryNode<String,Object,String> registry=new SimpleRegistryNode<>();
-	private WorkSheet(Node node){
-		super(node);
-	}
+	private final RegistryNode<String,Object,String> registry;
 	public WorkSheet(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
-		super(pack(data,editor,remark));
-		restoreRegistry(data,editor,remark);
+		registry=new SimpleRegistryNode<>();
+		setData(data,editor,remark);
+		restoreRegistry();
 	}
-	private void restoreRegistry(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
-		registry.removeChild(DIRECTION);
-		registry.removeChild(DIVIDERS);
-		registry.removeChild(CHILDREN);
-		registry.addChild(EDITOR,getDataEditor().getClass().getName());
-		registry.addChild(BUFFER,new AliasRegistryNode<>(data));
-		registry.addChild(CURRENT,true);
-		registry.addChild(REMARK,remark);
+	private WorkSheet(Node node){
+		registry=new SimpleRegistryNode<>();
+		setCenter(node);
+		restoreRegistry();
+	}
+	private WorkSheet(Node node,RegistryNode<String,Object,String> registry){
+		this.registry=registry;
+		setCenter(node);
+	}
+	private WorkSheet(RegistryNode<String,Object,String> data,DataEditor editor,Object remark,RegistryNode<String,Object,String> registry){
+		this.registry=registry;
+		setData(data,editor,remark);
+	}
+	private void setData(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
+		Node node=editor.edit((DataObject)data.getChild(DataObject.DATA),remark,data);
+		node.setUserData(new Pair<>(data,editor));
+		setCenter(node);
+	}
+	private void restoreRegistry(){
+		if(getCenter()instanceof SplitPane){
+			registry.removeChild(BUFFER);
+			registry.removeChild(EDITOR);
+			registry.removeChild(REMARK);
+			registry.removeChild(CURRENT);
+			registry.addChild(DIRECTION,getOrientation().name());
+			registry.addChild(DIVIDER,getDivider());
+			registry.addChild(FIRST,getFirst().getRegistry());
+			registry.addChild(FIRST,getLast().getRegistry());
+		}else{
+			registry.removeChild(DIRECTION);
+			registry.removeChild(DIVIDER);
+			registry.removeChild(FIRST);
+			registry.removeChild(LAST);
+			registry.addChild(BUFFER,new AliasRegistryNode<>(getDataObject()));
+			registry.addChild(EDITOR,getDataEditor().getClass().getName());
+			registry.addChild(CURRENT,true);
+			registry.addChild(REMARK,getDataEditor().getRemark(getCenter()));
+		}
 	}
 	@Override
 	public void requestFocus(){
@@ -57,14 +82,14 @@ public class WorkSheet extends BorderPane{
 		getCenter().requestFocus();
 	}
 	public void splitVertically(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
-		split(pack(data,editor,remark),Orientation.VERTICAL);
+		split(data,editor,remark,Orientation.VERTICAL);
 	}
 	public void splitHorizontally(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
-		split(pack(data,editor,remark),Orientation.HORIZONTAL);
+		split(data,editor,remark,Orientation.HORIZONTAL);
 	}
-	private void split(Node second,Orientation orientation){
+	private void split(RegistryNode<String,Object,String> data,DataEditor editor,Object remark,Orientation orientation){
 		Node first=getCenter();
-		SplitPane splitPane=new SplitPane(new WorkSheet(first),new WorkSheet(second));
+		SplitPane splitPane=new SplitPane(new WorkSheet(first),new WorkSheet(data,editor,remark));
 		splitPane.setOrientation(orientation);
 		splitPane.setDividerPositions(0.5,0.5);
 		setCenter(splitPane);
@@ -79,64 +104,35 @@ public class WorkSheet extends BorderPane{
 		};
 		first.sceneProperty().addListener(listener);
 		first.requestFocus();
-		registry.removeChild(BUFFER);
-		registry.removeChild(EDITOR);
-		registry.removeChild(REMARK);
-		registry.removeChild(CURRENT);
-		registry.addChild(DIRECTION,orientation.name());
-		registry.addChild(DIVIDERS,Arrays.stream(splitPane.getDividerPositions()).boxed().collect(Collectors.toList()));
-		ListRegistryNode<Object,String> listRegistryNode=new ListRegistryNode<>();
-		listRegistryNode.addChild(0,new AliasRegistryNode<>(getDataObject()));
-		listRegistryNode.addChild(1,new AliasRegistryNode<>(getDataObject()));
-		registry.addChild(CHILDREN,listRegistryNode);
-	}
-	private static Node pack(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
-		Node node=editor.edit((DataObject)data.getChild(DataObject.DATA),remark,data);
-		node.setUserData(new Pair<>(data,editor));
-		return node;
+		restoreRegistry();
+		splitPane.getDividers().get(0).positionProperty().addListener((e,o,n)->registry.addChild(DIVIDER,n));
 	}
 	public void keepOnly(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
-		Node node=pack(data,editor,remark);
-		setCenter(node);
-		node.requestFocus();
-		restoreRegistry(data,editor,remark);
+		setData(data,editor,remark);
+		getCenter().requestFocus();
 	}
-	private static final String DIRECTION="direction";
-	private static final String DIVIDERS="dividers";
-	private static final String CHILDREN="children";
-	private static final String EDITOR="editor";
-	private static final String BUFFER="buffer";
-	private static final String CURRENT="current";
-	private static final String REMARK="remark";
-	public Map<Object,Object> toJSON(){
-		Node center=getCenter();
-		HashMap<Object,Object> map=new HashMap<>();
-		if(isSplit()){
-			map.put(DIRECTION,((SplitPane)center).getOrientation().name());
-			map.put(DIVIDERS,Arrays.stream(((SplitPane)center).getDividerPositions()).boxed().collect(Collectors.toList()));
-			map.put(CHILDREN,((SplitPane)center).getItems().stream().map((c)->((WorkSheet)c).toJSON()).collect(Collectors.toList()));
-		}else{
-			map.put(CURRENT,Main.INSTANCE.getCurrentWorkSheet()==this);
-			map.put(EDITOR,getDataEditor().getClass().getName());
-			map.put(REMARK,getDataEditor().getRemark(center));
-			map.put(BUFFER,getDataObject().toMap());
-		}
-		return map;
-	}
-	public static WorkSheet fromJSON(Map<Object,Object> json){
-		if(json.containsKey(DIRECTION)){
+	public static final String DIRECTION="direction";
+	public static final String DIVIDER="divider";
+	public static final String FIRST="first";
+	public static final String LAST="last";
+	public static final String EDITOR="editor";
+	public static final String BUFFER="buffer";
+	public static final String CURRENT="current";
+	public static final String REMARK="remark";
+	public static Node fromJSON(RegistryNode<String,Object,String> json){
+		if(json.hasChild(DIRECTION)){
 			SplitPane pane=new SplitPane();
-			pane.setOrientation(Orientation.valueOf((String)json.get(DIRECTION)));
-			pane.getItems().setAll(((List<Map<Object,Object>>)json.get(CHILDREN)).stream().map((o)->fromJSON(o)).toArray(Node[]::new));
-			pane.setDividerPositions(((List<Number>)json.get(DIVIDERS)).stream().mapToDouble((o)->o.doubleValue()).toArray());
-			return new WorkSheet(pane);
+			pane.setOrientation(Orientation.valueOf((String)json.getChild(DIRECTION)));
+			pane.getItems().setAll(fromJSON((RegistryNode<String,Object,String>)json.getChild(FIRST)),fromJSON((RegistryNode<String,Object,String>)json.getChild(LAST)));
+			pane.setDividerPositions(((Number)json.getChild(DIVIDER)).doubleValue());
+			return new WorkSheet(pane,json);
 		}else{
-			RegistryNode<String,Object,String> buffer=DataObjectRegistry.get(json.get(BUFFER));
-			String editorName=(String)json.get(EDITOR);
+			RegistryNode<String,Object,String> buffer=DataObjectRegistry.get(json.getChild(BUFFER));
+			String editorName=(String)json.getChild(EDITOR);
 			DataEditor editor=DataObjectTypeRegistry.getDataEditors((Class<? extends DataObject>)buffer.getChild(DataObject.DATA).getClass()).stream().
 					filter((e)->e.getClass().getName().equals(editorName)).findFirst().get();
-			WorkSheet workSheet=new WorkSheet(buffer,editor,json.get(REMARK));
-			if((Boolean)json.get(CURRENT)){
+			WorkSheet workSheet=new WorkSheet(buffer,editor,json.getChild(REMARK),json);
+			if((Boolean)json.getChild(CURRENT)){
 				Main.INSTANCE.setCurrentWorkSheet(workSheet);
 				Platform.runLater(()->workSheet.requestFocus());
 			}
@@ -148,6 +144,15 @@ public class WorkSheet extends BorderPane{
 	}
 	public Orientation getOrientation(){
 		return ((SplitPane)getCenter()).getOrientation();
+	}
+	public WorkSheet getFirst(){
+		return (WorkSheet)((SplitPane)getCenter()).getItems().get(0);
+	}
+	public WorkSheet getLast(){
+		return (WorkSheet)((SplitPane)getCenter()).getItems().get(1);
+	}
+	public double getDivider(){
+		return ((SplitPane)getCenter()).getDividerPositions()[0];
 	}
 	public RegistryNode<String,Object,String> getDataObject(){
 		return ((Pair<RegistryNode<String,Object,String>,DataEditor>)getCenter().getUserData()).getKey();
