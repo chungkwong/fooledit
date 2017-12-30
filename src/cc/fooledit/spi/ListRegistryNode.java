@@ -59,4 +59,27 @@ public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
 	public int size(){
 		return children.size();
 	}
+	public void limit(int limit){
+		addListener(new CountListener(limit));
+	}
+	List<V> getChildren(){
+		return children;
+	}
+	private class CountListener implements RegistryChangeListener<Integer,V,T>{
+		private int limit=Integer.MAX_VALUE;
+		public CountListener(int limit){
+			this.limit=limit;
+			if(limit<0)
+				throw new IllegalArgumentException();
+		}
+		@Override
+		public void itemRemoved(Integer key,V oldValue,RegistryNode<Integer,V,T> node){
+
+		}
+		@Override
+		public void itemAdded(Integer key,V newValue,RegistryNode<Integer,V,T> node){
+			while(children.size()>limit)
+				removeChild(0);
+		}
+	}
 }

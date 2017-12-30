@@ -28,6 +28,7 @@ import java.util.logging.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CoreModule{
+	private static final Serializier serializier= new StandardSerializiers.JSONSerializier();
 	public static final String NAME="core";
 	public static final String APPLICATION_REGISTRY_NAME="application";
 	public static final String CLIP_REGISTRY_NAME="clip";
@@ -59,8 +60,8 @@ public class CoreModule{
 	public static final NavigableRegistryNode<String,RegistryNode,String> DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
 	public static final RegistryNode<String,DataObjectType,String> DATA_OBJECT_TYPE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,List<Consumer>,String> EVENT_REGISTRY=new SimpleRegistryNode<>();
-	public static final HistoryRegistryNode<RegistryNode<String,Object,String>,String> HISTORY_REGISTRY=
-			new HistoryRegistryNode<>(fromJSON("file_history.json",()->new ListRegistryNode<>()),20);
+	public static final ListRegistryNode<RegistryNode<String,Object,String>,String> HISTORY_REGISTRY
+			=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
 	public static final RegistryNode<String,Module,String> MODULE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,URLStreamHandler,String> PROTOCOL_REGISTRY=new SimpleRegistryNode<>();
@@ -78,6 +79,7 @@ public class CoreModule{
 		REGISTRY.addChild(DATA_OBJECT_REGISTRY_NAME,DATA_OBJECT_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_TYPE_REGISTRY_NAME,DATA_OBJECT_TYPE_REGISTRY);
 		REGISTRY.addChild(EVENT_REGISTRY_NAME,EVENT_REGISTRY);
+		HISTORY_REGISTRY.limit(20);
 		REGISTRY.addChild(HISTORY_REGISTRY_NAME,HISTORY_REGISTRY);
 		REGISTRY.addChild(MODULE_REGISTRY_NAME,MODULE_REGISTRY);
 		REGISTRY.addChild(MENU_REGISTRY_NAME,MENU_REGISTRY);
@@ -111,5 +113,4 @@ public class CoreModule{
 			return def.get();
 		}
 	}
-	private static final Serializier serializier= new StandardSerializiers.JSONSerializier();
 }

@@ -22,13 +22,13 @@ import java.util.logging.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public abstract class RegistryNode<K,V,T>{
-	private final LinkedList<RegistryChangeListener<K,V>>  listeners=new LinkedList<>();
+	private final LinkedList<RegistryChangeListener<K,V,T>>  listeners=new LinkedList<>();
 	private T name;
 	private RegistryNode<?,?,?> parent;
-	public void addListener(RegistryChangeListener<K,V> listener){
+	public void addListener(RegistryChangeListener<K,V,T> listener){
 		listeners.addFirst(listener);
 	}
-	public void removeListener(RegistryChangeListener<K,V> listener){
+	public void removeListener(RegistryChangeListener<K,V,T> listener){
 		listeners.remove(listener);
 	}
 	public RegistryNode<?,?,?> getParent(){
@@ -36,7 +36,7 @@ public abstract class RegistryNode<K,V,T>{
 	}
 	public V getOrCreateChild(K name){
 		if(!hasChild(name))
-			addChild(name,new SimpleRegistryNode());
+			addChild(name,(V)new SimpleRegistryNode());
 		return getChild(name);
 	}
 	public V getChildOrDefault(K name,V def){
@@ -44,14 +44,14 @@ public abstract class RegistryNode<K,V,T>{
 	}
 	public abstract V getChild(K name);
 	public abstract boolean hasChild(K name);
-	public V addChild(K name,RegistryNode<?,?,? super K> child){
-		if(child.name!=null)
-			Logger.getGlobal().log(Level.INFO,"Child already added to somewhere");
-		child.parent=this;
-		child.name=name;
-		return addChild(name,(V)child);
-	}
 	public V addChild(K name,V value){
+		if(value instanceof RegistryNode){
+			RegistryNode child=(RegistryNode)value;
+			if(child.name!=null)
+				Logger.getGlobal().log(Level.INFO,"Child already added to somewhere");
+			child.parent=this;
+			child.name=name;
+		}
 		boolean exist=hasChild(name);
 		V oldValue=addChildReal(name,value);
 		if(exist)

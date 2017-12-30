@@ -69,7 +69,6 @@ public class Main extends Application{
 		INSTANCE=this;
 		System.setProperty("user.dir",SYSTEM_PATH.toString());
 		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
-		CoreModule.PROTOCOL_REGISTRY.addChild("application",new ApplicationRegistry());
 		Logger.getGlobal().setLevel(Level.INFO);
 		try{
 			Logger.getGlobal().addHandler(new StreamHandler(new FileOutputStream(new File(USER_PATH,"LOG")),new Notifier.SystemLogFormatter()));
@@ -78,12 +77,13 @@ public class Main extends Application{
 		}
 		Logger.getGlobal().addHandler(notifier);
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
+		script=new ScriptAPI();
 		registerStandardCommand();
+		ModuleRegistry.loadDefault();
+		CoreModule.PROTOCOL_REGISTRY.addChild("application",new ApplicationRegistry());
 		keymapRegistry=Registry.ROOT.registerKeymap(CoreModule.NAME);
 		new KeymapSupport();
 		initMenuBar();
-		script=new ScriptAPI();
-		ModuleRegistry.loadDefault();
 		root.setBottom(notifier.getStatusBar());
 		loadDefaultWorkSheet();
 		runScript();
@@ -181,7 +181,7 @@ public class Main extends Application{
 	}
 	private Consumer<ObservableList<MenuItem>> getHistoryMenu(){
 		return (l)->{
-			HistoryRegistryNode<RegistryNode<String,Object,String>,String> history=CoreModule.HISTORY_REGISTRY;
+			ListRegistryNode<RegistryNode<String,Object,String>,String> history=CoreModule.HISTORY_REGISTRY;
 			for(int i=0;i<history.size();i++){
 				RegistryNode<String,Object,String> prop=history.getChild(i);
 				MenuItem item=new MenuItem((String)prop.getChild(DataObject.BUFFER_NAME));
@@ -266,7 +266,7 @@ public class Main extends Application{
 		}));*/
 		if(CoreModule.WINDOW_REGISTRY.getChildNames().isEmpty()){
 			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.BUFFER,DataObjectRegistry.create(TextObjectType.INSTANCE));
-			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.EDITOR,CodeEditor.class.getName());
+			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.EDITOR,StructuredTextEditor.class.getName());
 			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.CURRENT,true);
 			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.REMARK,null);
 		}

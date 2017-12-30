@@ -40,7 +40,7 @@ public class StandardSerializiers{
 			return out.toString();
 		}
 	}
-	public static class JSONSerializier implements Serializier<Object>,JSONWalker<SimpleRegistryNode,ListRegistryNode>{
+	public static class JSONSerializier implements Serializier<Object>,JSONWalker<SimpleRegistryNode,ListRegistryNode>,POJOWalker{
 		@Override
 		public Object decode(String code) throws Exception{
 			Object decode=JSONDecoder.decode(code);
@@ -48,7 +48,7 @@ public class StandardSerializiers{
 		}
 		@Override
 		public String encode(Object obj){
-			return JSONEncoder.encode(obj);
+			return JSONEncoder.encode(obj,this);
 		}
 		@Override
 		public SimpleRegistryNode createMap(){
@@ -65,6 +65,22 @@ public class StandardSerializiers{
 		@Override
 		public void onComponent(Object value,int index,ListRegistryNode registry){
 			registry.addChild(index,value);
+		}
+		@Override
+		public boolean isMap(Object o){
+			return (o instanceof RegistryNode)&&!(o instanceof ListRegistryNode);
+		}
+		@Override
+		public boolean isList(Object o){
+			return o instanceof RegistryNode;
+		}
+		@Override
+		public Iterator<Map.Entry<?,?>> getEntryIterator(Object o){
+			return ((RegistryNode)o).toMap().entrySet().iterator();
+		}
+		@Override
+		public Iterator<?> getComponentIterator(Object o){
+			return ((ListRegistryNode)o).getChildren().iterator();
 		}
 	}
 }

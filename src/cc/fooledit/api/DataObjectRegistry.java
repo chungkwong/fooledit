@@ -35,18 +35,17 @@ public class DataObjectRegistry{
 	public static Collection<String> getDataObjectNames(){
 		return DATA_OBJECT_REGISTRY.getChildNames();
 	}
-	public static RegistryNode get(Object json){
-		Map<String,String> prop=(Map<String,String>)json;
-		String type=prop.get(DataObject.TYPE);
+	public static RegistryNode get(RegistryNode<String,Object,String> prop){
+		String type=(String)prop.getChild(DataObject.TYPE);
 		DataObjectType builder=DataObjectTypeRegistry.getDataObjectTypes().values().stream().filter((t)->t.getClass().getName().equals(type)).findFirst().get();
 		RegistryNode object;
-		if(prop.containsKey(DataObject.URI)){
-			String uri=prop.get(DataObject.URI);
+		if(prop.hasChild(DataObject.URI)){
+			String uri=(String)prop.getChild(DataObject.URI);
 			Optional<RegistryNode> old=DATA_OBJECT_REGISTRY.toMap().values().stream().filter((o)->uri.equals(o.getChild(DataObject.URI))).findAny();
 			if(old.isPresent())
 				return old.get();
 			try{
-				String mime=prop.get(DataObject.MIME);
+				String mime=(String)prop.getChild(DataObject.MIME);
 				if(mime!=null){
 					try{
 						object=readFrom(new URL(uri),new MimeType(mime));
@@ -90,7 +89,7 @@ public class DataObjectRegistry{
 	private static void addHistoryEntry(Map<String,Object> prop){
 		if(prop.containsKey(DataObject.URI)){
 			String uri=(String)prop.get(DataObject.URI);
-			HistoryRegistryNode<RegistryNode<String,Object,String>,String> history=CoreModule.HISTORY_REGISTRY;
+			ListRegistryNode<RegistryNode<String,Object,String>,String> history=CoreModule.HISTORY_REGISTRY;
 			for(int i=0;i<history.size();i++){
 				RegistryNode<String,Object,String> entry=history.getChild(i);
 				if(uri.equals(entry.getChild(DataObject.URI)))

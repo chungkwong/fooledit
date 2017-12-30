@@ -64,7 +64,7 @@ public class WorkSheet extends BorderPane{
 			registry.addChild(DIRECTION,getOrientation().name());
 			registry.addChild(DIVIDER,getDivider());
 			registry.addChild(FIRST,getFirst().getRegistry());
-			registry.addChild(FIRST,getLast().getRegistry());
+			registry.addChild(LAST,getLast().getRegistry());
 		}else{
 			registry.removeChild(DIRECTION);
 			registry.removeChild(DIVIDER);
@@ -73,7 +73,7 @@ public class WorkSheet extends BorderPane{
 			registry.addChild(BUFFER,new AliasRegistryNode<>(getDataObject()));
 			registry.addChild(EDITOR,getDataEditor().getClass().getName());
 			registry.addChild(CURRENT,true);
-			registry.addChild(REMARK,getDataEditor().getRemark(getCenter()));
+			registry.addChild(REMARK,getDataEditor().getRemark(getCenter()));//FIXME
 		}
 	}
 	@Override
@@ -109,6 +109,7 @@ public class WorkSheet extends BorderPane{
 	}
 	public void keepOnly(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
 		setData(data,editor,remark);
+		restoreRegistry();
 		getCenter().requestFocus();
 	}
 	public static final String DIRECTION="direction";
@@ -127,7 +128,7 @@ public class WorkSheet extends BorderPane{
 			pane.setDividerPositions(((Number)json.getChild(DIVIDER)).doubleValue());
 			return new WorkSheet(pane,json);
 		}else{
-			RegistryNode<String,Object,String> buffer=DataObjectRegistry.get(json.getChild(BUFFER));
+			RegistryNode<String,Object,String> buffer=DataObjectRegistry.get((RegistryNode<String,Object,String>)json.getChild(BUFFER));
 			String editorName=(String)json.getChild(EDITOR);
 			DataEditor editor=DataObjectTypeRegistry.getDataEditors((Class<? extends DataObject>)buffer.getChild(DataObject.DATA).getClass()).stream().
 					filter((e)->e.getClass().getName().equals(editorName)).findFirst().get();

@@ -43,7 +43,7 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 		if(src!=null)
 			mapping.putAll((Map<String,String>)(Object)Main.INSTANCE.loadJSON(src));
 		NavigableRegistryNode<String,String,String> registry=new NavigableRegistryNode<>(mapping);
-		((RegistryNode<String,?,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.KEYMAP_REGISTRY_NAME,registry);
+		((RegistryNode<String,RegistryNode<String,String,String>,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.KEYMAP_REGISTRY_NAME,registry);
 		return registry;
 	}
 	public RegistryNode<String,String,String> registerMessage(String module){
@@ -56,12 +56,12 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 		}catch(MalformedURLException|MissingResourceException ex){
 			Logger.getGlobal().log(Level.INFO,null,ex);
 		}
-		((RegistryNode<String,?,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.MESSAGE_REGISTRY_NAME,registry);
+		((RegistryNode<String,RegistryNode<String,String,String>,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.MESSAGE_REGISTRY_NAME,registry);
 		return registry;
 	}
 	public RegistryNode<String,Command,String> registerCommand(String module){
 		RegistryNode<String,Command,String> registry=new SimpleRegistryNode<>();
-		((RegistryNode<String,?,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.COMMAND_REGISTRY_NAME,registry);
+		((RegistryNode<String,RegistryNode<String,Command,String>,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.COMMAND_REGISTRY_NAME,registry);
 		return registry;
 	}
 }
