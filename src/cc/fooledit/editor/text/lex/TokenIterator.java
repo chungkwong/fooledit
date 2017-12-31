@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,26 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.parser;
+package cc.fooledit.editor.text.lex;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SymbolInstance<T>{
-	private final String symbol;
-	private final T semanticValue;
-	public SymbolInstance(String symbol,T semanticValue){
-		this.symbol=symbol;
-		this.semanticValue=semanticValue;
-	}
-	public String getSymbol(){
-		return symbol;
-	}
-	public T getSemanticValue(){
-		return semanticValue;
-	}
-	@Override
-	public String toString(){
-		return semanticValue+"("+symbol+")";
-	}
+public interface TokenIterator extends Iterator<Token>{
+	int getState();
 }

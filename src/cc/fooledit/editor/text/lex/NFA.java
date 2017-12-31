@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.lex;
+package cc.fooledit.editor.text.lex;
 import cc.fooledit.util.IntCheckPointIterator;
 import cc.fooledit.util.Pair;
 import java.util.*;

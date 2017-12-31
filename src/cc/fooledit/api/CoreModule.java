@@ -18,6 +18,7 @@ package cc.fooledit.api;
 import cc.fooledit.*;
 import cc.fooledit.model.*;
 import cc.fooledit.spi.*;
+import cc.fooledit.util.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -36,10 +37,12 @@ public class CoreModule{
 	public static final String CONTENT_TYPE_ALIAS_REGISTRY_NAME="content_type_alias";
 	public static final String CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME="content_type_superclass";
 	public static final String CONTENT_TYPE_DETECTOR_REGISTRY_NAME="content_type_detector";
+	public static final String CONTENT_TYPE_LOADER_REGISTRY_NAME="content_type_loader";
 	public static final String SUFFIX_REGISTRY_NAME="suffix";
 	public static final String COMMAND_REGISTRY_NAME="command";
 	public static final String DATA_OBJECT_REGISTRY_NAME="data_object";
 	public static final String DATA_OBJECT_TYPE_REGISTRY_NAME="data_object_type";
+	public static final String DATA_OBJECT_EDITOR_REGISTRY_NAME="data_object_editor";
 	public static final String EVENT_REGISTRY_NAME="event";
 	public static final String HISTORY_REGISTRY_NAME="history";
 	public static final String MODULE_REGISTRY_NAME="module";
@@ -56,9 +59,11 @@ public class CoreModule{
 	public static final RegistryNode<String,ContentTypeDetector,String> CONTENT_TYPE_DETECTOR_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> CONTENT_TYPE_ALIAS_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> CONTENT_TYPE_SUPERCLASS_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,String,String> CONTENT_TYPE_LOADER_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> SUFFIX_REGISTRY=new SimpleRegistryNode<>();
 	public static final NavigableRegistryNode<String,RegistryNode,String> DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
 	public static final RegistryNode<String,DataObjectType,String> DATA_OBJECT_TYPE_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<Class<? extends DataObject>,ListRegistryNode<Cache<DataEditor>,Class<? extends DataObject>>,String> DATA_OBJECT_EDITOR_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,List<Consumer>,String> EVENT_REGISTRY=new SimpleRegistryNode<>();
 	public static final ListRegistryNode<RegistryNode<String,Object,String>,String> HISTORY_REGISTRY
 			=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
@@ -72,12 +77,14 @@ public class CoreModule{
 		REGISTRY.addChild(APPLICATION_REGISTRY_NAME,APPLICATION_REGISTRY);
 		REGISTRY.addChild(CLIP_REGISTRY_NAME,CLIP_REGISTRY);
 		REGISTRY.addChild(CONTENT_TYPE_REGISTRY_NAME,CONTENT_TYPE_REGISTRY);
+		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_LOADER_REGISTRY_NAME,CONTENT_TYPE_LOADER_REGISTRY);
 		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_DETECTOR_REGISTRY_NAME,CONTENT_TYPE_DETECTOR_REGISTRY);
 		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_ALIAS_REGISTRY_NAME,CONTENT_TYPE_ALIAS_REGISTRY);
 		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME,CONTENT_TYPE_SUPERCLASS_REGISTRY);
 		CONTENT_TYPE_REGISTRY.addChild(SUFFIX_REGISTRY_NAME,SUFFIX_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_REGISTRY_NAME,DATA_OBJECT_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_TYPE_REGISTRY_NAME,DATA_OBJECT_TYPE_REGISTRY);
+		REGISTRY.addChild(DATA_OBJECT_EDITOR_REGISTRY_NAME,DATA_OBJECT_EDITOR_REGISTRY);
 		REGISTRY.addChild(EVENT_REGISTRY_NAME,EVENT_REGISTRY);
 		HISTORY_REGISTRY.limit(20);
 		REGISTRY.addChild(HISTORY_REGISTRY_NAME,HISTORY_REGISTRY);

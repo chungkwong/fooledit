@@ -14,39 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.lex;
-import cc.fooledit.util.IteratorHelper;
+package cc.fooledit.editor.text.parser;
+import cc.fooledit.editor.text.lex.Token;
 import java.util.*;
-import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface CharacterSet{
-	boolean contains(int codePoint);
-	default IntStream stream(){
-		return IteratorHelper.toStream(new PrimitiveIterator.OfInt() {
-			int peek=Character.MIN_CODE_POINT-1,curr=peek;
-			@Override
-			public int nextInt(){
-				if(hasNext()){
-					curr=peek;
-					return curr;
-				}else
-					throw new NoSuchElementException();
-			}
-			@Override
-			public boolean hasNext(){
-				if(peek!=curr)
-					return true;
-				while(++peek<=Character.MAX_CODE_POINT){
-					if(contains(peek)){
-						return true;
-					}
-				}
-				curr=peek;
-				return false;
-			}
-		},false);
-	}
+public interface Parser{
+	public Object parse(Iterator<Token> iter);
 }

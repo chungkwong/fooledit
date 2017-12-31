@@ -32,29 +32,28 @@ import javax.activation.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class DataObjectTypeRegistry{
-	private static final HashMap<Class<? extends DataObject>,List<Cache<DataEditor>>> editors=new HashMap<>();
-	private static final Map<String,DataObjectType> types=new HashMap<>();
-	private static final Map<String,String> mimes=new HashMap<>();
 	public static void addDataObjectType(DataObjectType type){
-		types.put(type.getDisplayName(),type);
+		CoreModule.DATA_OBJECT_TYPE_REGISTRY.addChild(type.getDisplayName(),type);
 	}
 	public static void addDataEditor(Supplier<DataEditor> editor,Class<? extends DataObject> objectClass){
-		if(!editors.containsKey(objectClass))
-			editors.put(objectClass,new LinkedList<>());
-		editors.get(objectClass).add(0,new Cache<>(editor));
+		if(!CoreModule.DATA_OBJECT_EDITOR_REGISTRY.hasChild(objectClass))
+			CoreModule.DATA_OBJECT_EDITOR_REGISTRY.addChild(objectClass,new ListRegistryNode<>());
+		CoreModule.DATA_OBJECT_EDITOR_REGISTRY.getChild(objectClass).addChild(0,new Cache<>(editor));
 	}
 	public static List<DataEditor> getDataEditors(Class<? extends DataObject> cls){
-		return ((List<Cache<DataEditor>>)editors.getOrDefault(cls,Collections.EMPTY_LIST)).stream().map((c)->c.get()).collect(Collectors.toList());
+		if(CoreModule.DATA_OBJECT_EDITOR_REGISTRY.hasChild(cls))
+			return ((ListRegistryNode<Cache<DataEditor>,Class<? extends DataObject>>)CoreModule.DATA_OBJECT_EDITOR_REGISTRY.getChild(cls)).toMap().values().stream().map((c)->c.get()).collect(Collectors.toList());
+		return Collections.emptyList();
 	}
 	public static void registerMime(String mime,String type){
-		mimes.put(mime,type);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.addChild(mime,type);
 	}
 	public static List<DataObjectType> getPreferedDataObjectType(MimeType mime){
 		LinkedList<DataObjectType> cand=new LinkedList<DataObjectType>();
-		String t=mimes.get(mime.getBaseType());
+		String t=CoreModule.CONTENT_TYPE_LOADER_REGISTRY.getChild(mime.getBaseType());
 		//System.err.println(mime.toString());
 		if(t!=null)
-			cand.add(types.get(t));
+			cand.add(CoreModule.DATA_OBJECT_TYPE_REGISTRY.getChild(t));
 		String type=mime.getPrimaryType();
 		if(type.equals("video")||type.equals("audio"))
 			cand.add(MediaObjectType.INSTANCE);
@@ -64,9 +63,6 @@ public class DataObjectTypeRegistry{
 			cand.add(TextObjectType.INSTANCE);
 		cand.add(BinaryObjectType.INSTANCE);
 		return cand;
-	}
-	public static Map<String,DataObjectType> getDataObjectTypes(){
-		return types;
 	}
 	static{
 		//ModuleRegistry.ensureLoaded("editor.code");

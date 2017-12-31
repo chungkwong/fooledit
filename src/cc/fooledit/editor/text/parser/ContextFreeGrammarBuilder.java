@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.lex;
-import java.util.*;
+package cc.fooledit.editor.text.parser;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface TokenIterator extends Iterator<Token>{
-	int getState();
+public class ContextFreeGrammarBuilder{
+
 }

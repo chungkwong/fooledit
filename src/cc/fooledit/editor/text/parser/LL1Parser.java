@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.parser;
+package cc.fooledit.editor.text.parser;
 import cc.fooledit.util.MultiMap;
 import cc.fooledit.util.Pair;
-import cc.fooledit.editor.lex.Token;
+import cc.fooledit.editor.text.lex.Token;
 import java.util.*;
 import java.util.function.*;
 /**

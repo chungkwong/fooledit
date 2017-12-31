@@ -37,7 +37,7 @@ public class DataObjectRegistry{
 	}
 	public static RegistryNode get(RegistryNode<String,Object,String> prop){
 		String type=(String)prop.getChild(DataObject.TYPE);
-		DataObjectType builder=DataObjectTypeRegistry.getDataObjectTypes().values().stream().filter((t)->t.getClass().getName().equals(type)).findFirst().get();
+		DataObjectType builder=CoreModule.DATA_OBJECT_TYPE_REGISTRY.toMap().values().stream().filter((t)->t.getClass().getName().equals(type)).findFirst().get();
 		RegistryNode object;
 		if(prop.hasChild(DataObject.URI)){
 			String uri=(String)prop.getChild(DataObject.URI);

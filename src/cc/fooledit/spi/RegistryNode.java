@@ -25,6 +25,9 @@ public abstract class RegistryNode<K,V,T>{
 	private final LinkedList<RegistryChangeListener<K,V,T>>  listeners=new LinkedList<>();
 	private T name;
 	private RegistryNode<?,?,?> parent;
+	protected RegistryNode(){
+
+	}
 	public void addListener(RegistryChangeListener<K,V,T> listener){
 		listeners.addFirst(listener);
 	}

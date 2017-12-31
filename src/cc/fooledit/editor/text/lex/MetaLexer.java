@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,11 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.parser;
+package cc.fooledit.editor.text.lex;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface ParserFactory{
-	Parser createParser(ContextFreeGrammar grammar);
+public interface MetaLexer{
+	static final int INIT=0;
+	static final String UNKNOWN="unknown";
+	void addType(int status,String regex,String type,int newStatus);
+	TokenIterator split(String text,int state,int begin);
+	default Iterator<Token> split(String text){
+		return split(text,INIT,0);
+	}
 }

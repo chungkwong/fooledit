@@ -15,6 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.lex;
+import cc.fooledit.editor.text.lex.RegularExpressionLexer;
+import cc.fooledit.editor.text.lex.NaiveLexer;
+import cc.fooledit.editor.text.lex.MetaLexer;
+import cc.fooledit.editor.text.lex.LexBuilders;
 import cc.fooledit.api.*;
 import com.github.chungkwong.json.*;
 import java.io.*;

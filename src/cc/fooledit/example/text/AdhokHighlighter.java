@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.text;
-import cc.fooledit.editor.lex.*;
+import cc.fooledit.editor.text.lex.MetaLexer;
+import cc.fooledit.editor.text.lex.Token;
 import java.util.*;
 import java.util.logging.*;
 import javafx.application.*;

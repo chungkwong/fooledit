@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.example.text;
+import cc.fooledit.editor.text.parser.ParserBuilder;
 import cc.fooledit.control.*;
-import cc.fooledit.editor.parser.*;
 import cc.fooledit.example.text.LineNumberFactory;
 import cc.fooledit.util.Pair;
 import cc.fooledit.util.*;

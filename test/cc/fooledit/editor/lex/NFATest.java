@@ -16,6 +16,8 @@
  */
 package cc.fooledit.editor.lex;
 
+import cc.fooledit.editor.text.lex.NFA;
+import cc.fooledit.editor.text.lex.RegularExpression;
 import cc.fooledit.util.IntCheckPointIterator;
 import org.junit.*;
 

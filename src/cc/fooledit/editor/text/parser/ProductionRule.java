@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.parser;
+package cc.fooledit.editor.text.parser;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;

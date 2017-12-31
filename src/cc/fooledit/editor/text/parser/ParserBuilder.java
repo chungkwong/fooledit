@@ -14,20 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.example.text;
-import cc.fooledit.editor.text.parser.ParserBuilder;
+package cc.fooledit.editor.text.parser;
 import java.util.*;
+import java.util.logging.*;
+import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.tool.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AntlrSyntaxSupport{
-	private final ParserBuilder builder;
-	public AntlrSyntaxSupport(ParserBuilder builder){
-		this.builder=builder;
+public interface ParserBuilder{
+	Object parse(List<? extends Token> tokens);
+	static ParserBuilder wrap(Class<? extends Parser> cls,String rule){
+		return (tokens)->{
+			try{
+				Parser parser=cls.getConstructor(TokenStream.class).newInstance(new CommonTokenStream(new ListTokenSource(tokens)));
+				return cls.getMethod(rule).invoke(parser);
+			}catch(ReflectiveOperationException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+				return null;
+			}
+		};
 	}
-	public Object parse(List<Token> tokens){
-		return builder.parse(tokens);
+	static ParserBuilder wrap(Grammar grammar,String rule){
+		return (tokens)->grammar.createParserInterpreter(new CommonTokenStream(new ListTokenSource(tokens)))
+				.parse(grammar.getRule(rule).index);
 	}
 }

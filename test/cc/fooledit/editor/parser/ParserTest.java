@@ -15,8 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.parser;
+import cc.fooledit.editor.text.parser.LR1Parser;
+import cc.fooledit.editor.text.parser.LL1Parser;
+import cc.fooledit.editor.text.parser.NaiveParser;
+import cc.fooledit.editor.text.parser.Parser;
+import cc.fooledit.editor.text.parser.ProductionRule;
+import cc.fooledit.editor.text.parser.ParserFactory;
+import cc.fooledit.editor.text.parser.ContextFreeGrammar;
+import cc.fooledit.editor.text.lex.RegularExpressionLexer;
+import cc.fooledit.editor.text.lex.NaiveLexer;
+import cc.fooledit.editor.text.lex.MetaLexer;
+import cc.fooledit.editor.text.lex.LexBuilders;
 import cc.fooledit.api.*;
-import cc.fooledit.editor.lex.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.json.*;
 import java.io.*;

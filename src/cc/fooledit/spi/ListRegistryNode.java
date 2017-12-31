@@ -23,7 +23,7 @@ import java.util.*;
 public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
 	private final List<V> children;
 	public ListRegistryNode(){
-		this.children=new ArrayList<>();
+		this.children=new LinkedList<>();
 	}
 	public ListRegistryNode(List<V> base){
 		this.children=base;
