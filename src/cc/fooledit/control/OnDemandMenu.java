@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.api.*;
+import cc.fooledit.core.CoreModule;
+import cc.fooledit.core.MessageRegistry;
 import java.util.function.*;
 import javafx.collections.*;
 import javafx.scene.control.*;

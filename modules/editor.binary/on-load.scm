@@ -1,2 +1,2 @@
 (import (java))
-(invoke-static 'cc.fooledit.example.binary.BinaryEditorModule 'onLoad)
+(invoke-static 'cc.fooledit.editor.binary.BinaryEditorModule 'onLoad)

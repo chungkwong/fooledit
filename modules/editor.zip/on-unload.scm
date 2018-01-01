@@ -1,2 +1,2 @@
 (import (java))
-(invoke-static 'cc.fooledit.example.zip.ZipModule 'onUnLoad)
+(invoke-static 'cc.fooledit.editor.zip.ZipModule 'onUnLoad)

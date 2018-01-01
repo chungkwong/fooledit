@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
-import static cc.fooledit.api.CoreModule.CONTENT_TYPE_ALIAS_REGISTRY;
-import static cc.fooledit.api.CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY;
+import static cc.fooledit.core.CoreModule.CONTENT_TYPE_ALIAS_REGISTRY;
+import static cc.fooledit.core.CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY;
 import java.util.*;
 /**
  *

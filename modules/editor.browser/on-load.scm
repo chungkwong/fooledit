@@ -1,2 +1,2 @@
 (import (java))
-(invoke-static 'cc.fooledit.example.browser.BrowserModule 'onLoad)
+(invoke-static 'cc.fooledit.editor.browser.BrowserModule 'onLoad)

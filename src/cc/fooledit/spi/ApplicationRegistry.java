@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
-import cc.fooledit.api.*;
-import cc.fooledit.model.*;
+import cc.fooledit.core.DataObjectTypeRegistry;
+import cc.fooledit.core.CoreModule;
+import cc.fooledit.core.DataObject;
+import cc.fooledit.core.DataObjectType;
+import cc.fooledit.core.DataEditor;
 import java.io.*;
 import java.net.*;
 import java.util.function.*;

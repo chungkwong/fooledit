@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.api.*;
-import cc.fooledit.example.image.*;
+import cc.fooledit.core.MessageRegistry;
+import cc.fooledit.editor.image.ImageEditorModule;
 import java.io.*;
 import java.util.*;
 import java.util.stream.*;

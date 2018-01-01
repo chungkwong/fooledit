@@ -1,2 +1,2 @@
 (import (java))
-(invoke-static 'cc.fooledit.example.filesystem.FileSystemModule 'onUnLoad)
+(invoke-static 'cc.fooledit.editor.filesystem.FileSystemModule 'onUnLoad)

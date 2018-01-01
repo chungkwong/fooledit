@@ -1,2 +1,2 @@
 (import (java))
-(invoke-static 'cc.fooledit.example.media.MediaEditorModule 'onUnLoad)
+(invoke-static 'cc.fooledit.editor.media.MediaEditorModule 'onUnLoad)

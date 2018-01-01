@@ -1,2 +1,2 @@
 (import (java))
-(invoke-static 'cc.fooledit.example.image.ImageEditorModule 'onUnLoad)
+(invoke-static 'cc.fooledit.editor.image.ImageEditorModule 'onUnLoad)

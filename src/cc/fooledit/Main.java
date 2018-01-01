@@ -16,12 +16,25 @@
  */
 package cc.fooledit;
 
-import cc.fooledit.api.*;
-import cc.fooledit.command.*;
+import cc.fooledit.core.DataObjectTypeRegistry;
+import cc.fooledit.core.CoreModule;
+import cc.fooledit.core.MenuRegistry;
+import cc.fooledit.core.MessageRegistry;
+import cc.fooledit.core.ScriptAPI;
+import cc.fooledit.core.Notifier;
+import cc.fooledit.core.MiniBuffer;
+import cc.fooledit.core.HistoryRing;
+import cc.fooledit.core.ModuleRegistry;
+import cc.fooledit.core.DataObjectRegistry;
+import cc.fooledit.core.FileCommands;
+import cc.fooledit.core.ThrowableFunction;
+import cc.fooledit.core.DataObject;
+import cc.fooledit.core.Command;
+import cc.fooledit.core.DataEditor;
+import cc.fooledit.editor.text.TextObjectType;
+import cc.fooledit.editor.text.StructuredTextEditor;
+import cc.fooledit.editor.filesystem.FileSystemDataType;
 import cc.fooledit.control.*;
-import cc.fooledit.example.filesystem.*;
-import cc.fooledit.example.text.*;
-import cc.fooledit.model.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;

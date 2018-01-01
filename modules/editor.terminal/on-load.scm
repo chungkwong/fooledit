@@ -1,2 +1,2 @@
 (import (java))
-(invoke-static 'cc.fooledit.example.terminal.TerminalModule 'onLoad)
+(invoke-static 'cc.fooledit.editor.terminal.TerminalModule 'onLoad)

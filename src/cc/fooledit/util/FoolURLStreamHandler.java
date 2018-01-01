@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.util;
-import cc.fooledit.api.*;
+import cc.fooledit.core.CoreModule;
 import java.net.*;
 /**
  *

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
-import cc.fooledit.model.*;
+import cc.fooledit.core.ContentTypeDetector;
 import java.io.*;
 import java.net.*;
 import java.util.*;

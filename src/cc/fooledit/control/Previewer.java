@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.api.*;
-import cc.fooledit.model.*;
+import cc.fooledit.core.DataObjectTypeRegistry;
+import cc.fooledit.core.DataObject;
+import cc.fooledit.core.DataEditor;
 import java.util.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
