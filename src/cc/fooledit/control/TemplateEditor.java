@@ -15,16 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.core.Helper;
-import cc.fooledit.core.CoreModule;
-import cc.fooledit.core.MessageRegistry;
-import cc.fooledit.core.DataObjectRegistry;
-import cc.fooledit.core.Template;
-import cc.fooledit.core.DataObject;
-import cc.fooledit.core.Command;
-import cc.fooledit.core.Prompt;
-import cc.fooledit.editor.text.TextEditorModule;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
+import cc.fooledit.editor.text.*;
 import cc.fooledit.spi.*;
 import java.util.*;
 import java.util.function.*;
@@ -64,7 +57,7 @@ public class TemplateEditor extends Prompt{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("TEMPLATES",CoreModule.NAME);
+		return "template";
 	}
 	public static void registerTemplateType(String key,Function<Map<Object,Object>,Template> type){
 		templateTypes.put(key,type);

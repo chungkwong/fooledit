@@ -1,2 +1,2 @@
 (import (java))
-(invoke-static 'cc.fooledit.api.CoreModule 'onUnLoad)
+(invoke-static 'cc.fooledit.core.CoreModule 'onUnLoad)

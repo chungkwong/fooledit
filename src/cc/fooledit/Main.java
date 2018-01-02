@@ -16,25 +16,10 @@
  */
 package cc.fooledit;
 
-import cc.fooledit.core.DataObjectTypeRegistry;
-import cc.fooledit.core.CoreModule;
-import cc.fooledit.core.MenuRegistry;
-import cc.fooledit.core.MessageRegistry;
-import cc.fooledit.core.ScriptAPI;
-import cc.fooledit.core.Notifier;
-import cc.fooledit.core.MiniBuffer;
-import cc.fooledit.core.HistoryRing;
-import cc.fooledit.core.ModuleRegistry;
-import cc.fooledit.core.DataObjectRegistry;
-import cc.fooledit.core.FileCommands;
-import cc.fooledit.core.ThrowableFunction;
-import cc.fooledit.core.DataObject;
-import cc.fooledit.core.Command;
-import cc.fooledit.core.DataEditor;
-import cc.fooledit.editor.text.TextObjectType;
-import cc.fooledit.editor.text.StructuredTextEditor;
-import cc.fooledit.editor.filesystem.FileSystemDataType;
 import cc.fooledit.control.*;
+import cc.fooledit.core.*;
+import cc.fooledit.editor.filesystem.*;
+import cc.fooledit.editor.text.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
@@ -128,6 +113,7 @@ public class Main extends Application{
 		addCommand("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		addCommand("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		addCommand("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemDataType.INSTANCE)));
+		addCommand("registry",()->addAndShow(DataObjectRegistry.create(RegistryEditor.INSTANCE)));
 		addCommand("command",()->input.requestFocus());
 		addCommand("cancel",()->getCurrentNode().requestFocus());
 		addCommand("next-buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));

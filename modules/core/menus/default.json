@@ -28,7 +28,8 @@
 			"name":"TOOL",
 			"children":[
 				{"name":"BROWSER","command":"browser"},
-				{"name":"TERMINAL","command":"terminal"}
+				{"name":"TERMINAL","command":"terminal"},
+				{"name":"REGISTRY","command":"registry"}
 			]
 		},
 		{
