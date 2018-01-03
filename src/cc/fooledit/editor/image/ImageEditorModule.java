@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
+import cc.fooledit.*;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataEditor;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataObjectType;
-import static cc.fooledit.control.TemplateEditor.registerTemplateType;
+import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
+import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -28,7 +31,13 @@ public class ImageEditorModule{
 		addDataObjectType(ImageObjectType.INSTANCE);
 		addDataEditor(()->new IconEditor(),ImageObject.class);
 		addDataEditor(()->new ImageEditor(),ImageObject.class);
-		registerTemplateType("image",(obj)->new ImageTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
+		CoreModule.TEMPLATE_TYPE_REGISTRY.addChild("image",(obj)->new ImageTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
+		try{
+			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getChild("children")).addChild(
+					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Main.INSTANCE.getFile("templates.json",NAME))));
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.INFO,null,ex);
+		}
 	}
 	public static void onUnLoad(){
 

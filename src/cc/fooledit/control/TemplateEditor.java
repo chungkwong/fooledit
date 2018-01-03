@@ -17,10 +17,8 @@
 package cc.fooledit.control;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.text.*;
 import cc.fooledit.spi.*;
 import java.util.*;
-import java.util.function.*;
 import java.util.stream.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -29,7 +27,6 @@ import javafx.scene.layout.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class TemplateEditor extends Prompt{
-	private static final Map<String,Function<Map<Object,Object>,Template>> templateTypes=new HashMap<>();
 	//private static final List<Map<Object,Object>> recent=(List<Map<Object,Object>>)PersistenceStatusManager.getOrDefault("template",()->Collections.emptyList());
 	public static final TemplateEditor INSTANCE=new TemplateEditor();
 	public TemplateEditor(){
@@ -59,23 +56,11 @@ public class TemplateEditor extends Prompt{
 	public String getName(){
 		return "template";
 	}
-	public static void registerTemplateType(String key,Function<Map<Object,Object>,Template> type){
-		templateTypes.put(key,type);
-	}
-	public static boolean hasTemplateType(String key){
-		return templateTypes.containsKey(key);
-	}
-	public static Function<Map<Object,Object>,Template> getTemplateType(String key){
-		return templateTypes.get(key);
-	}
-	static{
-
-	}
 	private static class TemplateChooser extends BorderPane{
 		private final TreeView templates;
 		private final TextField filename=new TextField();
 		public TemplateChooser(){
-			templates=new TreeView(buildTree(Main.INSTANCE.loadJSON(Main.INSTANCE.getFile("templates.json",TextEditorModule.NAME))));
+			templates=new TreeView(buildTree(CoreModule.TEMPLATE_REGISTRY));
 			templates.setOnMouseClicked((e)->{
 				if(e.getClickCount()==2){
 					choose();
@@ -85,14 +70,14 @@ public class TemplateEditor extends Prompt{
 			templates.setCellFactory((p)->new TemplateCell());
 			setCenter(templates);
 		}
-		private TreeItem buildTree(Map<Object,Object> obj){
+		private TreeItem buildTree(RegistryNode obj){
 			TreeItem item;
-			if(obj.containsKey("children")){
-				item=new TreeItem(MessageRegistry.getString((String)obj.get("name"),(String)obj.get("module")));
-				List<Map<Object,Object>> children=(List<Map<Object,Object>>)obj.get("children");
-				item.getChildren().setAll(children.stream().map(this::buildTree).collect(Collectors.toList()));
-			}else if(hasTemplateType((String)obj.get("type"))){
-				item=new TreeItem(getTemplateType((String)obj.get("type")).apply(obj));
+			if(obj.hasChild("children")){
+				item=new TreeItem(MessageRegistry.getString((String)obj.getChild("name"),(String)obj.getChild("module")));
+				ListRegistryNode<RegistryNode,Object> children=(ListRegistryNode<RegistryNode,Object>)obj.getChild("children");
+				item.getChildren().setAll(children.toMap().values().stream().map(this::buildTree).collect(Collectors.toList()));
+			}else if(CoreModule.TEMPLATE_TYPE_REGISTRY.hasChild((String)obj.getChild("type"))){
+				item=new TreeItem(CoreModule.TEMPLATE_TYPE_REGISTRY.getChild((String)obj.getChild("type")).apply(obj.toMap()));
 			}else{
 				item=new TreeItem("");
 			}

@@ -17,14 +17,7 @@
 package cc.fooledit.control;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import java.util.*;
-import java.util.stream.*;
-import javafx.beans.property.*;
-import javafx.beans.value.*;
-import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.util.*;
+import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -40,53 +33,10 @@ public class RegistryEditor extends Prompt{
 	}
 	@Override
 	public Node edit(Prompt data,Object remark,RegistryNode<String,Object,String> meta){
-		return new RegistryViewer();
+		return new RegistryViewer(Registry.ROOT);
 	}
 	@Override
 	public String getName(){
 		return "registry";
-	}
-}
-class RegistryViewer extends BorderPane{
-	public RegistryViewer(){
-		TreeTableView<Object> tree=new TreeTableView<>(createTreeNode(Registry.ROOT));
-		tree.setEditable(true);
-		tree.setShowRoot(false);
-		TreeTableColumn<Object,String> key=new TreeTableColumn<>(MessageRegistry.getString("KEY",CoreModule.NAME));
-		key.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
-		key.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
-			@Override
-			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
-				if(p.getValue().getValue() instanceof RegistryNode)
-					return new ReadOnlyStringWrapper(Objects.toString(((RegistryNode)p.getValue().getValue()).getName()));
-				else
-					return new ReadOnlyStringWrapper(Objects.toString(((Pair<?,?>)p.getValue().getValue()).getKey()));
-			}
-		});
-		TreeTableColumn<Object,String> value=new TreeTableColumn<>(MessageRegistry.getString("KEY",CoreModule.NAME));
-		value.setEditable(true);
-		value.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
-
-		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
-			@Override
-			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
-				if(p.getValue().getValue() instanceof RegistryNode)
-					return new ReadOnlyStringWrapper("");
-				else
-					return new ReadOnlyStringWrapper(Objects.toString(((Pair<?,?>)p.getValue().getValue()).getValue()));
-					//return new SimpleStringProperty(p.getValue().getValue(),"Value",((BasicPreferenceEditor.PreferenceBean)p.getValue().getValue()).getValue());
-			}
-		});
-		tree.getColumns().addAll(key,value);
-		setCenter(tree);
-	}
-	private static TreeItem<Object> createTreeNode(RegistryNode pref){
-		return new LazyTreeItem(()->{
-			return pref.getChildNames().stream().map((child)->{
-				return pref.getChild(child)instanceof RegistryNode?
-						createTreeNode((RegistryNode)pref.getChild(child)):
-						new TreeItem<Object>(new Pair<>(child,pref.getChild(child)));
-			}).collect(Collectors.<Object>toList());
-		},pref);
 	}
 }

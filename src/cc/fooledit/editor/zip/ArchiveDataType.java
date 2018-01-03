@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.zip;
+import cc.fooledit.core.ContentTypeHelper;
 import cc.fooledit.core.DataObjectType;
 import cc.fooledit.spi.*;
 import java.net.*;
@@ -47,7 +48,7 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 	@Override
 	public ArchiveData readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		URL url=connection.getURL();
-		String mime=ContentTypeDetectorRegistry.guess(connection).get(0);
+		String mime=ContentTypeHelper.guess(connection).get(0);
 		try(ArchiveInputStream archive=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(mime),connection.getInputStream())){
 			ArchiveEntry entry;
 			List<ArchiveEntry> entries=new ArrayList<>();

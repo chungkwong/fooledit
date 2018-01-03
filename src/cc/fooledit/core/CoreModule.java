@@ -28,7 +28,7 @@ import java.util.logging.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CoreModule{
-	private static final Serializier serializier= new StandardSerializiers.JSONSerializier();
+	private static final Serializier serializier= StandardSerializiers.JSON_SERIALIZIER;
 	public static final String NAME="core";
 	public static final String APPLICATION_REGISTRY_NAME="application";
 	public static final String CLIP_REGISTRY_NAME="clip";
@@ -50,6 +50,8 @@ public class CoreModule{
 	public static final String MENU_REGISTRY_NAME="menu";
 	public static final String PROTOCOL_REGISTRY_NAME="protocol";
 	public static final String SERIALIZIER_REGISTRY_NAME="serializier";
+	public static final String TEMPLATE_REGISTRY_NAME="template";
+	public static final String TEMPLATE_TYPE_REGISTRY_NAME="template_type";
 	public static final String WINDOW_REGISTRY_NAME="window";
 	public static final RegistryNode<String,Object,String> REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> APPLICATION_REGISTRY=new SimpleRegistryNode<>();
@@ -70,6 +72,8 @@ public class CoreModule{
 	public static final RegistryNode<String,Object,String> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,URLStreamHandler,String> PROTOCOL_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Serializier,String> SERIALIZIER_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,Object,String> TEMPLATE_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,Function<Map<Object,Object>,Template>,String> TEMPLATE_TYPE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> WINDOW_REGISTRY=fromJSON("layout.json",()->new SimpleRegistryNode<>());
 	public static void onLoad(){
 		Registry.ROOT.addChild(NAME,REGISTRY);
@@ -91,6 +95,11 @@ public class CoreModule{
 		REGISTRY.addChild(MENU_REGISTRY_NAME,MENU_REGISTRY);
 		REGISTRY.addChild(PROTOCOL_REGISTRY_NAME,PROTOCOL_REGISTRY);
 		REGISTRY.addChild(SERIALIZIER_REGISTRY_NAME,SERIALIZIER_REGISTRY);
+		TEMPLATE_REGISTRY.addChild("name","");
+		TEMPLATE_REGISTRY.addChild("module","core");
+		TEMPLATE_REGISTRY.addChild("children",new ListRegistryNode<>());
+		REGISTRY.addChild(TEMPLATE_REGISTRY_NAME,TEMPLATE_REGISTRY);
+		REGISTRY.addChild(TEMPLATE_TYPE_REGISTRY_NAME,TEMPLATE_TYPE_REGISTRY);
 		REGISTRY.addChild(WINDOW_REGISTRY_NAME,WINDOW_REGISTRY);
 		REGISTRY.addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/jtk/master/MODULES");
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{

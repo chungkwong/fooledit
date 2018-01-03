@@ -25,6 +25,7 @@ import java.util.*;
 public class StandardSerializiers{
 	public static String PROPERTIES="properties";
 	public static String JSON="json";
+	public static Serializier JSON_SERIALIZIER=new JSONSerializier();
 	public static class PropertiesSerializier implements Serializier<Object>{
 		@Override
 		public Object decode(String code) throws Exception{
@@ -40,7 +41,7 @@ public class StandardSerializiers{
 			return out.toString();
 		}
 	}
-	public static class JSONSerializier implements Serializier<Object>,JSONWalker<SimpleRegistryNode,ListRegistryNode>,POJOWalker{
+	private static class JSONSerializier implements Serializier<Object>,JSONWalker<SimpleRegistryNode,ListRegistryNode>,POJOWalker{
 		@Override
 		public Object decode(String code) throws Exception{
 			Object decode=JSONDecoder.decode(code);

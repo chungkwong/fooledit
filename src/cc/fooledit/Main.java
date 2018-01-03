@@ -16,6 +16,8 @@
  */
 package cc.fooledit;
 
+import cc.fooledit.core.ContentTypeHelper;
+import cc.fooledit.core.ApplicationRegistry;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
@@ -128,11 +130,11 @@ public class Main extends Application{
 			return null;
 		});
 		addCommand("map-suffix-to-mime",(o)->{
-			ContentTypeDetectorRegistry.getSUFFIX_GUESSER().registerSuffix(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			ContentTypeHelper.getSUFFIX_GUESSER().registerSuffix(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
 		addCommand("map-glob-to-mime",(o)->{
-			ContentTypeDetectorRegistry.getURL_GUESSER().registerPathPattern(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			ContentTypeHelper.getURL_GUESSER().registerPathPattern(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
 		addCommand("mime-alias",(o)->{

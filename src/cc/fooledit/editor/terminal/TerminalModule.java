@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.terminal;
+import cc.fooledit.core.ApplicationRegistry;
 import cc.fooledit.core.DataObjectRegistry;
 import cc.fooledit.core.Command;
 import cc.fooledit.*;

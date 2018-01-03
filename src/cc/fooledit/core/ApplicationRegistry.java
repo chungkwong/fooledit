@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.spi;
+package cc.fooledit.core;
 import cc.fooledit.core.DataObjectTypeRegistry;
 import cc.fooledit.core.CoreModule;
 import cc.fooledit.core.DataObject;

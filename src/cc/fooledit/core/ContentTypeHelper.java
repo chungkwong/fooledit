@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.spi;
-import cc.fooledit.core.ContentTypeDetector;
+package cc.fooledit.core;
+import cc.fooledit.core.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -24,7 +24,7 @@ import java.util.stream.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ContentTypeDetectorRegistry{
+public class ContentTypeHelper{
 	private static final List<ContentTypeDetector> GUESSERS=new ArrayList<>();
 	private static final ContentTypeDetector.URLPatternGuesser URL_GUESSER=new ContentTypeDetector.URLPatternGuesser();
 	private static final ContentTypeDetector.SuffixGuesser SUFFIX_GUESSER=new ContentTypeDetector.SuffixGuesser();
@@ -40,7 +40,7 @@ public class ContentTypeDetectorRegistry{
 	}
 	public static List<String> guess(URLConnection connection){
 		List<String> types=Collections.emptyList();
-		for(ContentTypeDetector detector:ContentTypeDetectorRegistry.getGUESSERS()){
+		for(ContentTypeDetector detector:ContentTypeHelper.getGUESSERS()){
 			if(types.isEmpty())
 				types=detector.listAllPossible(connection);
 			else{
@@ -61,7 +61,7 @@ public class ContentTypeDetectorRegistry{
 					types=possible;
 			}
 		}
-		List<String> cand=types.stream().map((type)->ContentTypeRegistry.getAllSuperClasses(type)).
+		List<String> cand=types.stream().map((type)->getAllSuperClasses(type)).
 				flatMap((parents)->parents.stream()).distinct().collect(Collectors.toList());
 		return cand.isEmpty()?Collections.singletonList("application/octet-stream"):cand;
 	}
@@ -74,5 +74,32 @@ public class ContentTypeDetectorRegistry{
 		GUESSERS.add(URL_GUESSER);
 		GUESSERS.add(SUFFIX_GUESSER);
 		GUESSERS.add(SYSTEM_GUESSERS);
+	}
+	public static String normalize(String type){
+		String con;
+		while((con=CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.getChild(type))!=null){
+			type=con;
+		}
+		return type;
+	}
+	public static boolean isSubclassOf(String type,String ancestor){
+		type=normalize(type);
+		ancestor=normalize(ancestor);
+		while(type!=null){
+			if(type.equals(ancestor)){
+				return true;
+			}
+			type=normalize(CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.getChild(type));
+		}
+		return false;
+	}
+	public static List<String> getAllSuperClasses(String type){
+		ArrayList<String> list=new ArrayList<>();
+		while(type!=null){
+			type=normalize(type);
+			list.add(type);
+			type=CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.getChild(type);
+		}
+		return list;
 	}
 }

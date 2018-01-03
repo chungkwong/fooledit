@@ -120,7 +120,7 @@ public class DataObjectRegistry{
 	}
 	public static RegistryNode<String,Object,String> readFrom(URL url)throws Exception{
 		FoolURLConnection connection=FoolURLConnection.open(url);
-		for(String mime:ContentTypeDetectorRegistry.guess(connection)){
+		for(String mime:ContentTypeHelper.guess(connection)){
 			try{
 				return readFrom(url,new MimeType(mime));
 			}catch(Exception ex){

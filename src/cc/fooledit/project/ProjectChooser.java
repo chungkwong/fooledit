@@ -15,10 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.project;
+import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
+import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ProjectChooser{
+public class ProjectChooser extends Prompt{
+	@Override
+	public String getDisplayName(){
+		return MessageRegistry.getString("PROJECT",CoreModule.NAME);
+	}
+	@Override
+	public String getName(){
+		return "project";
+	}
+	@Override
+	public Node edit(Prompt data,Object remark,RegistryNode<String,Object,String> meta){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 
 }
