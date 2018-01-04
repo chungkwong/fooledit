@@ -14,13 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.spi;
-import cc.fooledit.core.CoreModule;
-import cc.fooledit.core.Command;
+package cc.fooledit.core;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
+import cc.fooledit.spi.NavigableRegistryNode;
+import cc.fooledit.spi.RegistryNode;
+import cc.fooledit.spi.SimpleRegistryNode;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.logging.*;
 /**
  *
@@ -64,4 +67,11 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 		((RegistryNode<String,RegistryNode<String,Command,String>,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.COMMAND_REGISTRY_NAME,registry);
 		return registry;
 	}
+	public static void registerApplication(String path,String baseType,DataObjectType factory,Class<? extends DataObject> cls,Supplier<DataEditor> editorSupplier){
+		CoreModule.APPLICATION_REGISTRY.addChild(path,baseType);
+		DataObjectTypeRegistry.addDataObjectType(factory);
+		DataObjectTypeRegistry.addDataEditor(editorSupplier,cls);
+		DataObjectTypeRegistry.registerMime(baseType,factory.getDisplayName());
+	}
+
 }

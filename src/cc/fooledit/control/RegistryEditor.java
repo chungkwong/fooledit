@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
+import cc.fooledit.core.Registry;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;

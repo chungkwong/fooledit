@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.browser;
-import cc.fooledit.core.ApplicationRegistry;
-import cc.fooledit.core.DataObjectRegistry;
-import cc.fooledit.core.Command;
+import cc.fooledit.core.Registry;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 /**
  *
@@ -27,7 +26,7 @@ import cc.fooledit.spi.*;
 public class BrowserModule{
 	public static final String NAME="editor.browser";
 	public static void onLoad(){
-		ApplicationRegistry.register("browser","fooledit/browser",BrowserDataType.INSTANCE,BrowserData.class,()->BrowserEditor.INSTANCE);
+		Registry.registerApplication("browser","fooledit/browser",BrowserDataType.INSTANCE,BrowserData.class,()->BrowserEditor.INSTANCE);
 		Main.INSTANCE.getGlobalCommandRegistry().addChild("browser",new Command("browser",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(BrowserDataType.INSTANCE)),NAME));
 	}
 	public static void onUnLoad(){

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.filesystem;
+import cc.fooledit.core.Registry;
 import cc.fooledit.core.MenuRegistry;
 import cc.fooledit.core.MessageRegistry;
 import cc.fooledit.core.Command;

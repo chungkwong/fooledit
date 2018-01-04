@@ -64,7 +64,7 @@ public class DataObjectTypeRegistry{
 		return cand;
 	}
 	static{
-		ApplicationRegistry.register("template","fooledit/template",TemplateEditor.INSTANCE,TemplateEditor.class,()->TemplateEditor.INSTANCE);addDataObjectType(TemplateEditor.INSTANCE);//TODO
-		ApplicationRegistry.register("registry","fooledit/registry",RegistryEditor.INSTANCE,RegistryEditor.class,()->RegistryEditor.INSTANCE);addDataObjectType(RegistryEditor.INSTANCE);//TODO
+		Registry.registerApplication("template","fooledit/template",TemplateEditor.INSTANCE,TemplateEditor.class,()->TemplateEditor.INSTANCE);addDataObjectType(TemplateEditor.INSTANCE);//TODO
+		Registry.registerApplication("registry","fooledit/registry",RegistryEditor.INSTANCE,RegistryEditor.class,()->RegistryEditor.INSTANCE);addDataObjectType(RegistryEditor.INSTANCE);//TODO
 	}
 }

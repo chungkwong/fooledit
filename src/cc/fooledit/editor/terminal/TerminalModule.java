@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.terminal;
-import cc.fooledit.core.ApplicationRegistry;
-import cc.fooledit.core.DataObjectRegistry;
-import cc.fooledit.core.Command;
+import cc.fooledit.core.Registry;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 /**
  *
@@ -27,7 +26,7 @@ import cc.fooledit.spi.*;
 public class TerminalModule{
 	public static final String NAME="editor.terminal";
 	public static void onLoad(){
-		ApplicationRegistry.register("terminal","fooledit/terminal",TerminalDataType.INSTANCE,TerminalData.class,()->TerminalEditor.INSTANCE);
+		Registry.registerApplication("terminal","fooledit/terminal",TerminalDataType.INSTANCE,TerminalData.class,()->TerminalEditor.INSTANCE);
 		Main.INSTANCE.getGlobalCommandRegistry().addChild("terminal",new Command("terminal",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(TerminalDataType.INSTANCE)),NAME));
 	}
 	public static void onUnLoad(){

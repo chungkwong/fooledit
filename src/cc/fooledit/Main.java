@@ -16,8 +16,7 @@
  */
 package cc.fooledit;
 
-import cc.fooledit.core.ContentTypeHelper;
-import cc.fooledit.core.ApplicationRegistry;
+import cc.fooledit.core.Registry;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
@@ -384,6 +383,25 @@ public class Main extends Application{
 	}
 	public BiMap<String,Command> getCommandRegistry(){
 		return commandRegistry;
+	}
+	class ApplicationRegistry extends URLStreamHandler{
+		@Override
+		protected URLConnection openConnection(URL u) throws IOException{
+			return new ApplicationURLConnection(u);
+		}
+		private class ApplicationURLConnection extends URLConnection{
+			public ApplicationURLConnection(URL url){
+				super(url);
+			}
+			@Override
+			public void connect() throws IOException{
+
+			}
+			@Override
+			public String getContentType(){
+				return CoreModule.APPLICATION_REGISTRY.getChild(getURL().getPath());
+			}
+		}
 	}
 	class KeymapSupport{
 		private String curr=null;

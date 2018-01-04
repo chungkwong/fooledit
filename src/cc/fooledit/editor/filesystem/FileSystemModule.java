@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.filesystem;
-import cc.fooledit.core.ApplicationRegistry;
+import cc.fooledit.core.Registry;
 import cc.fooledit.spi.*;
 /**
  *
@@ -24,7 +24,7 @@ import cc.fooledit.spi.*;
 public class FileSystemModule{
 	public static final String NAME="editor.filesystem";
 	public static void onLoad(){
-		ApplicationRegistry.register("filesystem","fooledit/directory",FileSystemDataType.INSTANCE,FileSystemData.class,()->FileSystemEditor.INSTANCE);
+		Registry.registerApplication("filesystem","fooledit/directory",FileSystemDataType.INSTANCE,FileSystemData.class,()->FileSystemEditor.INSTANCE);
 	}
 	public static void onUnLoad(){
 
