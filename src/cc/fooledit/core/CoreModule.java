@@ -49,6 +49,7 @@ public class CoreModule{
 	public static final String MESSAGE_REGISTRY_NAME="message";
 	public static final String MENU_REGISTRY_NAME="menu";
 	public static final String PROTOCOL_REGISTRY_NAME="protocol";
+	public static final String PROVIDER_REGISTRY_NAME="provider";
 	public static final String SERIALIZIER_REGISTRY_NAME="serializier";
 	public static final String TEMPLATE_REGISTRY_NAME="template";
 	public static final String TEMPLATE_TYPE_REGISTRY_NAME="template_type";
@@ -68,9 +69,10 @@ public class CoreModule{
 	public static final RegistryNode<String,List<Consumer>,String> EVENT_REGISTRY=new SimpleRegistryNode<>();
 	public static final ListRegistryNode<RegistryNode<String,Object,String>,String> HISTORY_REGISTRY
 			=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
-	public static final RegistryNode<String,Module,String> MODULE_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,RegistryNode<String,Object,String>,String> MODULE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,URLStreamHandler,String> PROTOCOL_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,Object,String> PROVIDER_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Serializier,String> SERIALIZIER_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> TEMPLATE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Function<Map<Object,Object>,Template>,String> TEMPLATE_TYPE_REGISTRY=new SimpleRegistryNode<>();
@@ -94,6 +96,7 @@ public class CoreModule{
 		REGISTRY.addChild(MODULE_REGISTRY_NAME,MODULE_REGISTRY);
 		REGISTRY.addChild(MENU_REGISTRY_NAME,MENU_REGISTRY);
 		REGISTRY.addChild(PROTOCOL_REGISTRY_NAME,PROTOCOL_REGISTRY);
+		REGISTRY.addChild(PROVIDER_REGISTRY_NAME,PROVIDER_REGISTRY);
 		REGISTRY.addChild(SERIALIZIER_REGISTRY_NAME,SERIALIZIER_REGISTRY);
 		TEMPLATE_REGISTRY.addChild("name","");
 		TEMPLATE_REGISTRY.addChild("module","core");
@@ -101,7 +104,7 @@ public class CoreModule{
 		REGISTRY.addChild(TEMPLATE_REGISTRY_NAME,TEMPLATE_REGISTRY);
 		REGISTRY.addChild(TEMPLATE_TYPE_REGISTRY_NAME,TEMPLATE_TYPE_REGISTRY);
 		REGISTRY.addChild(WINDOW_REGISTRY_NAME,WINDOW_REGISTRY);
-		REGISTRY.addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/jtk/master/MODULES");
+		REGISTRY.addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
 			try{
 				Helper.writeText(serializier.encode(HISTORY_REGISTRY),new File(Main.INSTANCE.getUserPath(),"file_history.json"));

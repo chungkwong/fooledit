@@ -17,6 +17,7 @@
 package cc.fooledit.core;
 import cc.fooledit.*;
 import static cc.fooledit.core.CoreModule.MODULE_REGISTRY;
+import cc.fooledit.spi.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
@@ -40,42 +41,45 @@ public class ModuleRegistry{
 	}
 	public static void ensureLoaded(String module){
 		if(!MODULE_REGISTRY.hasChild(module)){
-			MODULE_REGISTRY.addChild(module,(Module)null);
-			ModuleDescriptor moduleDescriptor=getModuleDescriptor(module);
-			moduleDescriptor.getDependency().forEach((s)->ensureLoaded(s));
-			Module mod=new ScriptModule(module);
 			try{
+				RegistryNode<String,Object,String> moduleDescriptor=getModuleDescriptor(module);
+				MODULE_REGISTRY.addChild(module,moduleDescriptor);
+				((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureLoaded(s));
+				Module mod=new ScriptModule(module);
 				mod.onLoad();
-				MODULE_REGISTRY.addChild(module,mod);
+				moduleDescriptor.addChild(MODULE,mod);
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
 		}
 	}
 	public static void unLoad(String cls) throws Exception{
-		Module module=MODULE_REGISTRY.removeChild(cls);
-		module.onUnLoad();
+		RegistryNode<String,Object,String> moduleDescriptor=MODULE_REGISTRY.removeChild(cls);
+		((Module)moduleDescriptor.getChild(MODULE)).onUnLoad();
 	}
-	public static ModuleDescriptor getModuleDescriptor(String name){
-		return ModuleDescriptor.fromJSON(Main.INSTANCE.loadJSON(new File(Main.INSTANCE.getModulePath(name),"descriptor.json")));
+	public static RegistryNode<String,Object,String> getModuleDescriptor(String name){
+		try{
+			return (RegistryNode<String,Object,String>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getModulePath(name),"descriptor.json")));
+		}catch(Exception ex){
+			throw new RuntimeException(ex);
+		}
 	}
 	public static Collection<String> getInstalledModules(){
 		return Arrays.stream(Main.INSTANCE.getDataPath().listFiles((File file)->file.isDirectory())).
 				map((f)->f.getName()).collect(Collectors.toSet());
 	}
-	public static List<ModuleDescriptor> listDownloadable(){
+	public static ListRegistryNode<RegistryNode<String,Object,String>,String> listDownloadable(){
 		String url=(String)CoreModule.REGISTRY.getChild(REPOSITORY);
 		try(BufferedReader in=new BufferedReader(new InputStreamReader(new URL(url).openStream(),StandardCharsets.UTF_8))){
-			return ((List<Map<Object,Object>>)JSONDecoder.decode(in)).stream().
-					map((e)->ModuleDescriptor.fromJSON(e)).collect(Collectors.toList());
-		}catch(IOException|SyntaxException ex){
+			return (ListRegistryNode<RegistryNode<String,Object,String>,String>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(in));
+		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
-			return Collections.emptyList();
+			return new ListRegistryNode<>();
 		}
 	}
-	public File download(ModuleDescriptor module) throws IOException{
-		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL(module.getURL()).openStream()),StandardCharsets.UTF_8)){
-			File base=Main.INSTANCE.getModulePath(module.getName());
+	public File download(RegistryNode<String,Object,String> module) throws IOException{
+		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL((String)module.getChild(URL)).openStream()),StandardCharsets.UTF_8)){
+			File base=Main.INSTANCE.getModulePath((String)module.getChild(NAME));
 			base.mkdirs();
 			ZipEntry entry;
 			byte[] buf=new byte[4096];
@@ -95,9 +99,19 @@ public class ModuleRegistry{
 		}
 	}
 	public void install(File dir) throws BackingStoreException, IOException, SyntaxException{
-		String manifest=new String(Files.readAllBytes(new File(dir,"manifest.json").toPath()),StandardCharsets.UTF_8);
+		String manifest=new String(Files.readAllBytes(new File(dir,"descriptor.json").toPath()),StandardCharsets.UTF_8);
 		Map<Object,Object> object=(Map<Object,Object>)JSONDecoder.decode(manifest);
 		String cls=(String)object.get("class");
 		String path=new URL(dir.toURI().toURL(),(String)object.get("classpath")).toString();
 	}
+	public static final String MODULE="module";
+	public static final String NAME="name";
+	public static final String DESCRIPTION="description";
+	public static final String LICENSE="license";
+	public static final String AUTHOR="author";
+	public static final String URL="url";
+	public static final String MAJOR_VERSION="version_major";
+	public static final String MINOR_VERSION="version_minor";
+	public static final String REVISE_VERSION="version_revise";
+	public static final String DEPENDENCY="dependency";
 }

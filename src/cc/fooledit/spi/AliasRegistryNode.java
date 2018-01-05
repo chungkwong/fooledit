@@ -26,7 +26,7 @@ public class AliasRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
 		this.target=target instanceof AliasRegistryNode?((AliasRegistryNode<K,V,T>)target).target:target;
 	}
 	@Override
-	public V getChild(K name){
+	public V getChildReal(K name){
 		return target.getChild(name);
 	}
 	@Override
@@ -34,7 +34,7 @@ public class AliasRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
 		return target.getChildNames();
 	}
 	@Override
-	public boolean hasChild(K name){
+	public boolean hasChildReal(K name){
 		return target.hasChild(name);
 	}
 	@Override

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
+import cc.fooledit.spi.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -24,7 +25,7 @@ public abstract class Module{
 	protected Module(String name){
 		this.name=name;
 	}
-	public ModuleDescriptor getModuleDescriptor(){
+	public RegistryNode<String,Object,String> getModuleDescriptor(){
 		return ModuleRegistry.getModuleDescriptor(name);
 	}
 	public abstract void onLoad()throws Exception;

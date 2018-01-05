@@ -35,7 +35,7 @@ public class BeanRegistryNode<T> extends RegistryNode<String,Object,T>{
 				.map((m)->m.getName().substring(3)).collect(Collectors.toList());
 	}
 	@Override
-	public T getChild(String name){
+	public T getChildReal(String name){
 		try{
 			return (T)object.getClass().getMethod("get"+name).invoke(object);
 		}catch(ReflectiveOperationException|SecurityException ex){
@@ -44,7 +44,7 @@ public class BeanRegistryNode<T> extends RegistryNode<String,Object,T>{
 		}
 	}
 	@Override
-	public boolean hasChild(String name){
+	public boolean hasChildReal(String name){
 		try{
 			object.getClass().getMethod("get"+name);
 			return true;

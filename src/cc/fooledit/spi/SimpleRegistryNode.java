@@ -29,11 +29,11 @@ public class SimpleRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
 		this.children=children;
 	}
 	@Override
-	public V getChild(K name){
+	public V getChildReal(K name){
 		return children.get(name);
 	}
 	@Override
-	public boolean hasChild(K name){
+	public boolean hasChildReal(K name){
 		return children.containsKey(name);
 	}
 	@Override

@@ -29,11 +29,11 @@ public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
 		this.children=base;
 	}
 	@Override
-	public V getChild(Integer index){
+	public V getChildReal(Integer index){
 		return children.get(index);
 	}
 	@Override
-	public boolean hasChild(Integer index){
+	public boolean hasChildReal(Integer index){
 		return index>=0&&index<children.size();
 	}
 	@Override

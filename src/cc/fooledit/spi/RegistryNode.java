@@ -45,8 +45,21 @@ public abstract class RegistryNode<K,V,T>{
 	public V getChildOrDefault(K name,V def){
 		return hasChild(name)?getChild(name):def;
 	}
-	public abstract V getChild(K name);
-	public abstract boolean hasChild(K name);
+	public V getChild(K name){
+		return getChildReal(name);
+	}
+	public boolean hasChild(K name){
+		return hasChildReal(name)||hasChildVirtual(name);
+	}
+	private boolean hasChildVirtual(K name){
+		return false;
+	}
+	private String getProviderModule(K name){
+		//CoreModule.PROVIDER_REGISTRY;
+		return null;
+	}
+	protected abstract V getChildReal(K name);
+	protected abstract boolean hasChildReal(K name);
 	public V addChild(K name,V value){
 		if(value instanceof RegistryNode){
 			RegistryNode child=(RegistryNode)value;
