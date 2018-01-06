@@ -21,16 +21,16 @@ import cc.fooledit.core.DataObjectType;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ZipData implements DataObject<ZipData>{
+public class ZipObject implements DataObject<ZipObject>{
 	private final DataObject content;
-	public ZipData(DataObject content){
+	public ZipObject(DataObject content){
 		this.content=content;
 	}
 	public DataObject getContent(){
 		return content;
 	}
 	@Override
-	public DataObjectType<ZipData> getDataObjectType(){
-		return ZipDataType.INSTANCE;
+	public DataObjectType<ZipObject> getDataObjectType(){
+		return ZipObjectType.INSTANCE;
 	}
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.terminal;
+package cc.fooledit.editor.filesystem;
 import cc.fooledit.core.DataObjectType;
 import cc.fooledit.spi.*;
 import java.net.*;
@@ -23,9 +23,9 @@ import javax.activation.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TerminalDataType implements DataObjectType<TerminalData>{
-	public static final TerminalDataType INSTANCE=new TerminalDataType();
-	private TerminalDataType(){
+public class FileSystemObjectType implements DataObjectType<FileSystemObject>{
+	public static final FileSystemObjectType INSTANCE=new FileSystemObjectType();
+	private FileSystemObjectType(){
 
 	}
 	@Override
@@ -41,24 +41,23 @@ public class TerminalDataType implements DataObjectType<TerminalData>{
 		return true;
 	}
 	@Override
-	public TerminalData create(){
-		return new TerminalData();
-	}
-	@Override
-	public String getDisplayName(){
-		return "terminal";
-	}
-	@Override
-	public void writeTo(TerminalData data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(FileSystemObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public TerminalData readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public FileSystemObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		return create();
 	}
 	@Override
-	public TerminalData readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
+	public FileSystemObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
 		return create();
 	}
-
+	@Override
+	public FileSystemObject create(){
+		return new FileSystemObject(null);
+	}
+	@Override
+	public String getDisplayName(){
+		return "filesystem";
+	}
 }

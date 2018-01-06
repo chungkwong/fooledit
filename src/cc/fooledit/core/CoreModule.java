@@ -32,7 +32,6 @@ public class CoreModule{
 	public static final String NAME="core";
 	public static final String APPLICATION_REGISTRY_NAME="application";
 	public static final String CLIP_REGISTRY_NAME="clip";
-	public static final String CONTENT_TYPE_REGISTRY_NAME="content_type";
 	public static final String CONTENT_TYPE_ALIAS_REGISTRY_NAME="content_type_alias";
 	public static final String CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME="content_type_superclass";
 	public static final String CONTENT_TYPE_DETECTOR_REGISTRY_NAME="content_type_detector";
@@ -57,7 +56,6 @@ public class CoreModule{
 	public static final RegistryNode<String,Object,String> REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> APPLICATION_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Module,String> CLIP_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,RegistryNode,String> CONTENT_TYPE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,ContentTypeDetector,String> CONTENT_TYPE_DETECTOR_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> CONTENT_TYPE_ALIAS_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> CONTENT_TYPE_SUPERCLASS_REGISTRY=new SimpleRegistryNode<>();
@@ -81,12 +79,11 @@ public class CoreModule{
 		Registry.ROOT.addChild(NAME,REGISTRY);
 		REGISTRY.addChild(APPLICATION_REGISTRY_NAME,APPLICATION_REGISTRY);
 		REGISTRY.addChild(CLIP_REGISTRY_NAME,CLIP_REGISTRY);
-		REGISTRY.addChild(CONTENT_TYPE_REGISTRY_NAME,CONTENT_TYPE_REGISTRY);
-		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_LOADER_REGISTRY_NAME,CONTENT_TYPE_LOADER_REGISTRY);
-		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_DETECTOR_REGISTRY_NAME,CONTENT_TYPE_DETECTOR_REGISTRY);
-		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_ALIAS_REGISTRY_NAME,CONTENT_TYPE_ALIAS_REGISTRY);
-		CONTENT_TYPE_REGISTRY.addChild(CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME,CONTENT_TYPE_SUPERCLASS_REGISTRY);
-		CONTENT_TYPE_REGISTRY.addChild(SUFFIX_REGISTRY_NAME,SUFFIX_REGISTRY);
+		REGISTRY.addChild(CONTENT_TYPE_LOADER_REGISTRY_NAME,CONTENT_TYPE_LOADER_REGISTRY);
+		REGISTRY.addChild(CONTENT_TYPE_DETECTOR_REGISTRY_NAME,CONTENT_TYPE_DETECTOR_REGISTRY);
+		REGISTRY.addChild(CONTENT_TYPE_ALIAS_REGISTRY_NAME,CONTENT_TYPE_ALIAS_REGISTRY);
+		REGISTRY.addChild(CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME,CONTENT_TYPE_SUPERCLASS_REGISTRY);
+		REGISTRY.addChild(SUFFIX_REGISTRY_NAME,SUFFIX_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_REGISTRY_NAME,DATA_OBJECT_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_TYPE_REGISTRY_NAME,DATA_OBJECT_TYPE_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_EDITOR_REGISTRY_NAME,DATA_OBJECT_EDITOR_REGISTRY);

@@ -24,13 +24,13 @@ import javafx.scene.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TerminalEditor implements DataEditor<TerminalData>{
+public class TerminalEditor implements DataEditor<TerminalObject>{
 	public static final TerminalEditor INSTANCE=new TerminalEditor();
 	private TerminalEditor(){
 
 	}
 	@Override
-	public Node edit(TerminalData data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(TerminalObject data,Object remark,RegistryNode<String,Object,String> meta){
 		SwingNode node=new SwingNode();
 		node.setContent(data.getTerminal());
 		return node;

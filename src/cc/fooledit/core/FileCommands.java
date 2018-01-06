@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.editor.filesystem.FileSystemDataType;
-import cc.fooledit.editor.filesystem.FileSystemData;
+import cc.fooledit.editor.filesystem.FileSystemObjectType;
+import cc.fooledit.editor.filesystem.FileSystemObject;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.spi.*;
@@ -34,8 +34,8 @@ public class FileCommands{
 
 	}
 	public static void open(){
-		RegistryNode<String,Object,String> files=DataObjectRegistry.create(FileSystemDataType.INSTANCE);
-		FileSystemData data=(FileSystemData)files.getChild(DataObject.DATA);
+		RegistryNode<String,Object,String> files=DataObjectRegistry.create(FileSystemObjectType.INSTANCE);
+		FileSystemObject data=(FileSystemObject)files.getChild(DataObject.DATA);
 		data.setInitialPath(guessDefaultPath());
 		data.setAction((paths)->{
 			paths.forEach((p)->{
@@ -73,8 +73,8 @@ public class FileCommands{
 			}
 	}
 	public static void saveAs(){
-		RegistryNode<String,Object,String> files=DataObjectRegistry.create(FileSystemDataType.INSTANCE);
-		FileSystemData data=(FileSystemData)files.getChild(DataObject.DATA);
+		RegistryNode<String,Object,String> files=DataObjectRegistry.create(FileSystemObjectType.INSTANCE);
+		FileSystemObject data=(FileSystemObject)files.getChild(DataObject.DATA);
 		data.setInitialPath(guessDefaultPath());
 		data.setAction((paths)->{
 			paths.forEach((p)->saveAs(p));

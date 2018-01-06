@@ -26,8 +26,8 @@ import cc.fooledit.spi.*;
 public class TerminalModule{
 	public static final String NAME="editor.terminal";
 	public static void onLoad(){
-		Registry.registerApplication("terminal","fooledit/terminal",TerminalDataType.INSTANCE,TerminalData.class,()->TerminalEditor.INSTANCE);
-		Main.INSTANCE.getGlobalCommandRegistry().addChild("terminal",new Command("terminal",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(TerminalDataType.INSTANCE)),NAME));
+		Registry.registerApplication("terminal","fooledit/terminal",TerminalObjectType.INSTANCE,TerminalObject.class,()->TerminalEditor.INSTANCE);
+		Main.INSTANCE.getGlobalCommandRegistry().addChild("terminal",new Command("terminal",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(TerminalObjectType.INSTANCE)),NAME));
 	}
 	public static void onUnLoad(){
 

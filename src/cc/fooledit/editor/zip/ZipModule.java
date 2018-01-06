@@ -27,10 +27,10 @@ import static cc.fooledit.core.CoreModule.SUFFIX_REGISTRY;
 public class ZipModule{
 	public static final String NAME="editor.zip";
 	public static void onLoad(){
-		DataObjectTypeRegistry.addDataObjectType(ArchiveDataType.INSTANCE);
-		DataObjectTypeRegistry.addDataEditor(()->ArchiveEditor.INSTANCE,ArchiveData.class);
-		DataObjectTypeRegistry.addDataObjectType(ZipDataType.INSTANCE);
-		DataObjectTypeRegistry.addDataEditor(()->ZipEditor.INSTANCE,ZipData.class);
+		DataObjectTypeRegistry.addDataObjectType(ArchiveObjectType.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(()->ArchiveEditor.INSTANCE,ArchiveObject.class);
+		DataObjectTypeRegistry.addDataObjectType(ZipObjectType.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(()->ZipEditor.INSTANCE,ZipObject.class);
 		CONTENT_TYPE_SUPERCLASS_REGISTRY.addChild("application/vnd.android.package-archive","application/x-java-archive");
 		CONTENT_TYPE_SUPERCLASS_REGISTRY.addChild("application/vnd.debian.binary-package","application/x-archive");
 		CONTENT_TYPE_ALIAS_REGISTRY.addChild("application/java-archive","application/x-java-archive");

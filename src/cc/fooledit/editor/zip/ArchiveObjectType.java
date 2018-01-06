@@ -25,9 +25,9 @@ import org.apache.commons.compress.archivers.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ArchiveDataType implements DataObjectType<ArchiveData>{
-	public static final ArchiveDataType INSTANCE=new ArchiveDataType();
-	private ArchiveDataType(){
+public class ArchiveObjectType implements DataObjectType<ArchiveObject>{
+	public static final ArchiveObjectType INSTANCE=new ArchiveObjectType();
+	private ArchiveObjectType(){
 	}
 	@Override
 	public boolean canRead(){
@@ -42,11 +42,11 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 		return true;
 	}
 	@Override
-	public ArchiveData create(){
-		return new ArchiveData(Collections.emptyList(),null);
+	public ArchiveObject create(){
+		return new ArchiveObject(Collections.emptyList(),null);
 	}
 	@Override
-	public ArchiveData readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public ArchiveObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		URL url=connection.getURL();
 		String mime=ContentTypeHelper.guess(connection).get(0);
 		try(ArchiveInputStream archive=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(mime),connection.getInputStream())){
@@ -55,7 +55,7 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 			while((entry=archive.getNextEntry())!=null){
 				entries.add(entry);
 			}
-			return new ArchiveData(entries,url);
+			return new ArchiveObject(entries,url);
 		}
 	}
 	@Override
@@ -80,7 +80,7 @@ public class ArchiveDataType implements DataObjectType<ArchiveData>{
 		mime2archive.put("application/x-zip-compressed","ZIP");
 	}
 	@Override
-	public void writeTo(ArchiveData data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(ArchiveObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

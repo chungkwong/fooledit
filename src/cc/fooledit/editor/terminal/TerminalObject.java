@@ -27,9 +27,9 @@ import javax.swing.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TerminalData implements DataObject<TerminalData>{
+public class TerminalObject implements DataObject<TerminalObject>{
 	private final JComponent terminal;
-	public TerminalData(){
+	public TerminalObject(){
 		JComponent comp=null;
 		try{
 			File root=Main.INSTANCE.getModulePath("editor.terminal");
@@ -49,8 +49,8 @@ public class TerminalData implements DataObject<TerminalData>{
 		return terminal;
 	}
 	@Override
-	public DataObjectType<TerminalData> getDataObjectType(){
-		return TerminalDataType.INSTANCE;
+	public DataObjectType<TerminalObject> getDataObjectType(){
+		return TerminalObjectType.INSTANCE;
 	}
 
 }

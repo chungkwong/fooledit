@@ -25,9 +25,9 @@ import java.net.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ZipDataType implements DataObjectType<ZipData>{
-	public static final ZipDataType INSTANCE=new ZipDataType();
-	private ZipDataType(){
+public class ZipObjectType implements DataObjectType<ZipObject>{
+	public static final ZipObjectType INSTANCE=new ZipObjectType();
+	private ZipObjectType(){
 	}
 	@Override
 	public boolean canRead(){
@@ -42,15 +42,15 @@ public class ZipDataType implements DataObjectType<ZipData>{
 		return true;
 	}
 	@Override
-	public ZipData create(){
-		return new ZipData(null);
+	public ZipObject create(){
+		return new ZipObject(null);
 	}
 	@Override
-	public ZipData readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
-		return new ZipData((DataObject)DataObjectRegistry.readFrom(toURL(connection)).getChild(DataObject.DATA));
+	public ZipObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+		return new ZipObject((DataObject)DataObjectRegistry.readFrom(toURL(connection)).getChild(DataObject.DATA));
 	}
 	@Override
-	public void writeTo(ZipData data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(ZipObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		data.getContent().getDataObjectType().writeTo(data,FoolURLConnection.open(toURL(connection)),meta);
 	}
 	private URL toURL(URLConnection connection) throws MalformedURLException{

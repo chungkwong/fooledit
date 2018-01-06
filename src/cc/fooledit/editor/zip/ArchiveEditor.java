@@ -35,7 +35,7 @@ import org.apache.commons.compress.archivers.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ArchiveEditor implements DataEditor<ArchiveData>{
+public class ArchiveEditor implements DataEditor<ArchiveObject>{
 	public static final ArchiveEditor INSTANCE=new ArchiveEditor();
 	private final MenuRegistry menuRegistry=new MenuRegistry(ZipModule.NAME);
 	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(ZipModule.NAME);
@@ -63,7 +63,7 @@ public class ArchiveEditor implements DataEditor<ArchiveData>{
 		commandRegistry.addChild(name,new Command(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),ZipModule.NAME));
 	}
 	@Override
-	public Node edit(ArchiveData data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(ArchiveObject data,Object remark,RegistryNode<String,Object,String> meta){
 		ArchiveViewer viewer=new ArchiveViewer(data.getEntries());
 		viewer.setAction((entries)->{
 			entries.forEach((entry)->{

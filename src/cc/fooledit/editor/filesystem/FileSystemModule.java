@@ -24,7 +24,7 @@ import cc.fooledit.spi.*;
 public class FileSystemModule{
 	public static final String NAME="editor.filesystem";
 	public static void onLoad(){
-		Registry.registerApplication("filesystem","fooledit/directory",FileSystemDataType.INSTANCE,FileSystemData.class,()->FileSystemEditor.INSTANCE);
+		Registry.registerApplication("filesystem","fooledit/directory",FileSystemObjectType.INSTANCE,FileSystemObject.class,()->FileSystemEditor.INSTANCE);
 	}
 	public static void onUnLoad(){
 

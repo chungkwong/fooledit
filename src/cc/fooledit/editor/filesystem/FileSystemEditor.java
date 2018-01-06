@@ -36,7 +36,7 @@ import javafx.scene.control.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FileSystemEditor implements DataEditor<FileSystemData>{
+public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	public static final FileSystemEditor INSTANCE=new FileSystemEditor();
 	private final MenuRegistry menuRegistry=new MenuRegistry(FileSystemModule.NAME);
 	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(FileSystemModule.NAME);
@@ -237,7 +237,7 @@ public class FileSystemEditor implements DataEditor<FileSystemData>{
 	}
 
 	@Override
-	public Node edit(FileSystemData data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(FileSystemObject data,Object remark,RegistryNode<String,Object,String> meta){
 		FileSystemViewer viewer=new FileSystemViewer();
 		viewer.setAction(data.getAction());
 		if(data.getInitialPath()!=null)

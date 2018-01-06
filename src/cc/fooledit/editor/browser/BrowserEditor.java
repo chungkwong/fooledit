@@ -31,7 +31,7 @@ import javafx.scene.web.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BrowserEditor implements DataEditor<BrowserData>{
+public class BrowserEditor implements DataEditor<BrowserObject>{
 	public static final BrowserEditor INSTANCE=new BrowserEditor();
 	private final MenuRegistry menuRegistry=new MenuRegistry(BrowserModule.NAME);
 	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(BrowserModule.NAME);
@@ -42,7 +42,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 		addCommand("refresh",(viewer)->viewer.refresh());
 		addCommand("set-location",(viewer)->viewer.locate());
 		menuRegistry.registerDynamicMenu("editor.browser.ForwardPages",(items)->{
-			WebHistory history=((BrowserData)Main.INSTANCE.getCurrentData()).getWebView().getEngine().getHistory();
+			WebHistory history=((BrowserObject)Main.INSTANCE.getCurrentData()).getWebView().getEngine().getHistory();
 			ObservableList<WebHistory.Entry> entries=history.getEntries();
 			items.clear();
 			int curr=history.getCurrentIndex();
@@ -56,7 +56,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 			}
 		});
 		menuRegistry.registerDynamicMenu("editor.browser.BackwardPages",(items)->{
-			WebHistory history=((BrowserData)Main.INSTANCE.getCurrentData()).getWebView().getEngine().getHistory();
+			WebHistory history=((BrowserObject)Main.INSTANCE.getCurrentData()).getWebView().getEngine().getHistory();
 			ObservableList<WebHistory.Entry> entries=history.getEntries();
 			items.clear();
 			int curr=history.getCurrentIndex();
@@ -74,7 +74,7 @@ public class BrowserEditor implements DataEditor<BrowserData>{
 		commandRegistry.addChild(name,new Command(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()),BrowserModule.NAME));
 	}
 	@Override
-	public Node edit(BrowserData data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(BrowserObject data,Object remark,RegistryNode<String,Object,String> meta){
 		return data.getEditor();
 	}
 	@Override

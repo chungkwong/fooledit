@@ -24,12 +24,12 @@ import java.util.function.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FileSystemData implements DataObject<FileSystemData>{
+public class FileSystemObject implements DataObject<FileSystemObject>{
 	private Consumer<Collection<Path>> action;
 	private Path initialPath;
-	public FileSystemData(){
+	public FileSystemObject(){
 	}
-	public FileSystemData(Consumer<Collection<Path>> action){
+	public FileSystemObject(Consumer<Collection<Path>> action){
 		this.action=action;
 	}
 	public void setAction(Consumer<Collection<Path>> action){
@@ -45,7 +45,7 @@ public class FileSystemData implements DataObject<FileSystemData>{
 		return action;
 	}
 	@Override
-	public DataObjectType<FileSystemData> getDataObjectType(){
-		return FileSystemDataType.INSTANCE;
+	public DataObjectType<FileSystemObject> getDataObjectType(){
+		return FileSystemObjectType.INSTANCE;
 	}
 }

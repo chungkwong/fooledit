@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
+import cc.fooledit.core.*;
 import java.util.*;
 import java.util.logging.*;
 /**
@@ -24,7 +25,9 @@ import java.util.logging.*;
 public abstract class RegistryNode<K,V,T>{
 	private final LinkedList<RegistryChangeListener<K,V,T>>  listeners=new LinkedList<>();
 	private T name;
-	private RegistryNode<?,?,?> parent;
+	private RegistryNode<T,?,?> parent;
+	private RegistryNode<K,?,T> provider;
+	private boolean isProvider=false;
 	protected RegistryNode(){
 
 	}
@@ -46,17 +49,34 @@ public abstract class RegistryNode<K,V,T>{
 		return hasChild(name)?getChild(name):def;
 	}
 	public V getChild(K name){
+		if(!hasChildReal(name)){
+			String module=getProviderModule(name);
+			if(module!=null)
+				ModuleRegistry.ensureLoaded(module);
+		}
 		return getChildReal(name);
 	}
 	public boolean hasChild(K name){
 		return hasChildReal(name)||hasChildVirtual(name);
 	}
 	private boolean hasChildVirtual(K name){
-		return false;
+		ensureProviderLoaded();
+		return provider.hasChild(name);
 	}
 	private String getProviderModule(K name){
-		//CoreModule.PROVIDER_REGISTRY;
-		return null;
+		ensureProviderLoaded();
+		return (String)provider.getChild(name);
+	}
+	private void ensureProviderLoaded(){
+		if(provider==null&&!isProvider){
+			if(parent==null){
+				provider=(RegistryNode)CoreModule.PROVIDER_REGISTRY;
+			}else{
+				parent.ensureProviderLoaded();
+				provider=(RegistryNode<K,?,T>)parent.provider.getOrCreateChild(getName());
+			}
+			provider.isProvider=true;
+		}
 	}
 	protected abstract V getChildReal(K name);
 	protected abstract boolean hasChildReal(K name);
@@ -84,6 +104,10 @@ public abstract class RegistryNode<K,V,T>{
 	}
 	protected abstract V removeChildReal(K name);
 	public abstract Collection<K> getChildNames();
+	public Collection<K> getChildNamesVirtual(){
+		ensureProviderLoaded();
+		return provider.getChildNames();
+	}
 	public T getName(){
 		return name;
 	}

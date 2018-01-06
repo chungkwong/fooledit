@@ -25,12 +25,12 @@ import javafx.scene.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ZipEditor implements DataEditor<ZipData>{
+public class ZipEditor implements DataEditor<ZipObject>{
 	public static final ZipEditor INSTANCE=new ZipEditor();
 	private ZipEditor(){
 	}
 	@Override
-	public Node edit(ZipData data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(ZipObject data,Object remark,RegistryNode<String,Object,String> meta){
 		List<DataEditor> editors=DataObjectTypeRegistry.getDataEditors(data.getContent().getClass());
 		if(!editors.isEmpty())
 			return editors.get(0).edit(data.getContent(),remark,meta);

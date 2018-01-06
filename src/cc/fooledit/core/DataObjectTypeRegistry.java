@@ -32,7 +32,7 @@ import javax.activation.*;
  */
 public class DataObjectTypeRegistry{
 	public static void addDataObjectType(DataObjectType type){
-		CoreModule.DATA_OBJECT_TYPE_REGISTRY.addChild(type.getDisplayName(),type);
+		CoreModule.DATA_OBJECT_TYPE_REGISTRY.addChild(type.getClass().getName(),type);
 	}
 	public static void addDataEditor(Supplier<DataEditor> editor,Class<? extends DataObject> objectClass){
 		if(!CoreModule.DATA_OBJECT_EDITOR_REGISTRY.hasChild(objectClass.getName()))

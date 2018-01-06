@@ -14,35 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.browser;
+package cc.fooledit.editor.zip;
 import cc.fooledit.core.DataObject;
 import cc.fooledit.core.DataObjectType;
-import javafx.scene.*;
-import javafx.scene.web.*;
+import java.net.*;
+import java.util.*;
+import org.apache.commons.compress.archivers.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BrowserData implements DataObject<BrowserData>{
-	private final WebView webView;
-	private final Node editor;
-	public BrowserData(){
-		this.webView=new WebView();
-		this.editor=new BrowserViewer(webView);
+public class ArchiveObject implements DataObject<ArchiveObject>{
+	private final List<ArchiveEntry> entries;
+	private final URL url;
+	public ArchiveObject(List<ArchiveEntry> entries,URL url){
+		this.entries=entries;
+		this.url=url;
 	}
-	public BrowserData(String url){
-		this.webView=new WebView();
-		webView.getEngine().load(url);
-		this.editor=new BrowserViewer(webView);
+	public List<ArchiveEntry> getEntries(){
+		return entries;
 	}
-	public WebView getWebView(){
-		return webView;
-	}
-	public Node getEditor(){
-		return editor;
+	public URL getUrl(){
+		return url;
 	}
 	@Override
-	public DataObjectType<BrowserData> getDataObjectType(){
-		return BrowserDataType.INSTANCE;
+	public DataObjectType<ArchiveObject> getDataObjectType(){
+		return ArchiveObjectType.INSTANCE;
 	}
 }

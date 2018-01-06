@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.filesystem;
+package cc.fooledit.editor.terminal;
 import cc.fooledit.core.DataObjectType;
 import cc.fooledit.spi.*;
 import java.net.*;
@@ -23,9 +23,9 @@ import javax.activation.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FileSystemDataType implements DataObjectType<FileSystemData>{
-	public static final FileSystemDataType INSTANCE=new FileSystemDataType();
-	private FileSystemDataType(){
+public class TerminalObjectType implements DataObjectType<TerminalObject>{
+	public static final TerminalObjectType INSTANCE=new TerminalObjectType();
+	private TerminalObjectType(){
 
 	}
 	@Override
@@ -41,23 +41,24 @@ public class FileSystemDataType implements DataObjectType<FileSystemData>{
 		return true;
 	}
 	@Override
-	public void writeTo(FileSystemData data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public FileSystemData readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
-		return create();
-	}
-	@Override
-	public FileSystemData readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
-		return create();
-	}
-	@Override
-	public FileSystemData create(){
-		return new FileSystemData(null);
+	public TerminalObject create(){
+		return new TerminalObject();
 	}
 	@Override
 	public String getDisplayName(){
-		return "filesystem";
+		return "terminal";
 	}
+	@Override
+	public void writeTo(TerminalObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public TerminalObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+		return create();
+	}
+	@Override
+	public TerminalObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
+		return create();
+	}
+
 }

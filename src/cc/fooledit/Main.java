@@ -16,7 +16,6 @@
  */
 package cc.fooledit;
 
-import cc.fooledit.core.Registry;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
@@ -113,7 +112,7 @@ public class Main extends Application{
 		addCommand("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		addCommand("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		addCommand("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
-		addCommand("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemDataType.INSTANCE)));
+		addCommand("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemObjectType.INSTANCE)));
 		addCommand("registry",()->addAndShow(DataObjectRegistry.create(RegistryEditor.INSTANCE)));
 		addCommand("command",()->input.requestFocus());
 		addCommand("cancel",()->getCurrentNode().requestFocus());
@@ -152,6 +151,9 @@ public class Main extends Application{
 		});
 		addCommand("set-entry!",(o)->{
 			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).addChild(SchemeConverter.toString(ScmList.second(o)),SchemeConverter.toJava(ScmList.third(o))));
+		});
+		addCommand("get-or-create-registry",(o)->{
+			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).getOrCreateChild(SchemeConverter.toString(ScmList.second(o))));
 		});
 	}
 	private void addCommand(String name,Runnable action){

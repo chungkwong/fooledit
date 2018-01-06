@@ -16,10 +16,7 @@
  */
 package cc.fooledit.core;
 import cc.fooledit.*;
-import cc.fooledit.core.*;
-import cc.fooledit.spi.NavigableRegistryNode;
-import cc.fooledit.spi.RegistryNode;
-import cc.fooledit.spi.SimpleRegistryNode;
+import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -71,7 +68,7 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 		CoreModule.APPLICATION_REGISTRY.addChild(path,baseType);
 		DataObjectTypeRegistry.addDataObjectType(factory);
 		DataObjectTypeRegistry.addDataEditor(editorSupplier,cls);
-		DataObjectTypeRegistry.registerMime(baseType,factory.getDisplayName());
+		DataObjectTypeRegistry.registerMime(baseType,factory.getClass().getName());
 	}
 
 }

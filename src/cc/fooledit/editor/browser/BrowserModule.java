@@ -26,8 +26,8 @@ import cc.fooledit.spi.*;
 public class BrowserModule{
 	public static final String NAME="editor.browser";
 	public static void onLoad(){
-		Registry.registerApplication("browser","fooledit/browser",BrowserDataType.INSTANCE,BrowserData.class,()->BrowserEditor.INSTANCE);
-		Main.INSTANCE.getGlobalCommandRegistry().addChild("browser",new Command("browser",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(BrowserDataType.INSTANCE)),NAME));
+		Registry.registerApplication("browser","fooledit/browser",BrowserObjectType.INSTANCE,BrowserObject.class,()->BrowserEditor.INSTANCE);
+		Main.INSTANCE.getGlobalCommandRegistry().addChild("browser",new Command("browser",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(BrowserObjectType.INSTANCE)),NAME));
 	}
 	public static void onUnLoad(){
 
