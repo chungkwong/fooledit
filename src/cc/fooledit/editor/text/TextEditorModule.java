@@ -34,6 +34,9 @@ public class TextEditorModule{
 		DataObjectTypeRegistry.addDataObjectType(TextObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->new StructuredTextEditor(),TextObject.class);
 		CoreModule.TEMPLATE_TYPE_REGISTRY.addChild("text",(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime"),(String)obj.get("module")));
+	}
+	public static void onInstall(){
+		//CoreModule.PROVIDER_REGISTRY.getOrCreateChild(CoreModule.NAME).getOrCreateChild(CoreModule.DATA_OBJECT_TYPE_REGISTRY);
 		try{
 			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getChild("children")).addChild(
 					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Main.INSTANCE.getFile("templates.json",NAME))));

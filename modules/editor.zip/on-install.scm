@@ -1,0 +1,3 @@
+(import (java))
+(invoke-static 'cc.fooledit.editor.zip.ZipModule 'onInstall)
+

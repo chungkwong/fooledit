@@ -49,6 +49,7 @@ public class CoreModule{
 	public static final String MENU_REGISTRY_NAME="menu";
 	public static final String PROTOCOL_REGISTRY_NAME="protocol";
 	public static final String PROVIDER_REGISTRY_NAME="provider";
+	public static final String PERSISTENT_REGISTRY_NAME="persistent";
 	public static final String SERIALIZIER_REGISTRY_NAME="serializier";
 	public static final String TEMPLATE_REGISTRY_NAME="template";
 	public static final String TEMPLATE_TYPE_REGISTRY_NAME="template_type";
@@ -70,7 +71,8 @@ public class CoreModule{
 	public static final RegistryNode<String,RegistryNode<String,Object,String>,String> MODULE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,URLStreamHandler,String> PROTOCOL_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,Object,String> PROVIDER_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,RegistryNode<Object,Object,String>,String> PROVIDER_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,String,String> PERSISTENT_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Serializier,String> SERIALIZIER_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> TEMPLATE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Function<Map<Object,Object>,Template>,String> TEMPLATE_TYPE_REGISTRY=new SimpleRegistryNode<>();
@@ -94,6 +96,7 @@ public class CoreModule{
 		REGISTRY.addChild(MENU_REGISTRY_NAME,MENU_REGISTRY);
 		REGISTRY.addChild(PROTOCOL_REGISTRY_NAME,PROTOCOL_REGISTRY);
 		REGISTRY.addChild(PROVIDER_REGISTRY_NAME,PROVIDER_REGISTRY);
+		REGISTRY.addChild(PERSISTENT_REGISTRY_NAME,PERSISTENT_REGISTRY);
 		REGISTRY.addChild(SERIALIZIER_REGISTRY_NAME,SERIALIZIER_REGISTRY);
 		TEMPLATE_REGISTRY.addChild("name","");
 		TEMPLATE_REGISTRY.addChild("module","core");

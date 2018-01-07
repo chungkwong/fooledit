@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.zip;
-import cc.fooledit.core.DataObjectTypeRegistry;
 import static cc.fooledit.core.CoreModule.CONTENT_TYPE_ALIAS_REGISTRY;
 import static cc.fooledit.core.CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY;
 import static cc.fooledit.core.CoreModule.PROTOCOL_REGISTRY;
 import static cc.fooledit.core.CoreModule.SUFFIX_REGISTRY;
+import cc.fooledit.core.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -31,6 +31,13 @@ public class ZipModule{
 		DataObjectTypeRegistry.addDataEditor(()->ArchiveEditor.INSTANCE,ArchiveObject.class);
 		DataObjectTypeRegistry.addDataObjectType(ZipObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->ZipEditor.INSTANCE,ZipObject.class);
+		PROTOCOL_REGISTRY.addChild("archive",new ArchiveStreamHandler());
+		PROTOCOL_REGISTRY.addChild("compressed",new ZipStreamHandler());
+	}
+	public static void onUnLoad(){
+
+	}
+	public static void onInstall(){
 		CONTENT_TYPE_SUPERCLASS_REGISTRY.addChild("application/vnd.android.package-archive","application/x-java-archive");
 		CONTENT_TYPE_SUPERCLASS_REGISTRY.addChild("application/vnd.debian.binary-package","application/x-archive");
 		CONTENT_TYPE_ALIAS_REGISTRY.addChild("application/java-archive","application/x-java-archive");
@@ -60,10 +67,5 @@ public class ZipModule{
 		SUFFIX_REGISTRY.addChild("zip","application/x-zip-compressed");
 		SUFFIX_REGISTRY.addChild("Z","application/zlib");
 		SUFFIX_REGISTRY.addChild("zz","application/zlib");
-		PROTOCOL_REGISTRY.addChild("archive",new ArchiveStreamHandler());
-		PROTOCOL_REGISTRY.addChild("compressed",new ZipStreamHandler());
-	}
-	public static void onUnLoad(){
-
 	}
 }

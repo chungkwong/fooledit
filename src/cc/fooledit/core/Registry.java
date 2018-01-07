@@ -17,8 +17,11 @@
 package cc.fooledit.core;
 import cc.fooledit.*;
 import cc.fooledit.spi.*;
+import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
+import java.nio.charset.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
@@ -29,13 +32,46 @@ import java.util.logging.*;
 public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>,String>{
 	public static final Registry ROOT=new Registry();
 	private Registry(){
-		super();
+		try{
+			RegistryNode<String,RegistryNode<Object,Object,Object>,Object> toLoad=(RegistryNode<String,RegistryNode<Object,Object,Object>,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(getPersistentFile()));
+			for(String path:toLoad.getChildNames()){
+				RegistryNode<Object,Object,String> registry=resolve(path);
+				for(Object key:toLoad.getChild(path).getChildNames())
+					registry.addChild(key,toLoad.getChild(path).getChild(key));
+			}
+			EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
 	}
 	public <K,V> RegistryNode<K,V,String> resolve(String path){
 		RegistryNode node=Registry.ROOT;
 		for(String name:path.split("/"))
 			node=(RegistryNode)node.getOrCreateChild(name);
 		return node;
+	}
+	public void syncPersistent(){
+		try{
+			File tmp=new File(Main.INSTANCE.getUserPath(),".registry.json");
+			OutputStreamWriter out=new OutputStreamWriter(new FileOutputStream(tmp),StandardCharsets.UTF_8);
+			out.append('{');
+			Iterator<String> toSave=CoreModule.PERSISTENT_REGISTRY.getChildNames().iterator();
+			while(toSave.hasNext()){
+				String path=toSave.next();
+				out.write(JSONEncoder.encode(path));
+				out.write(':');
+				out.write(StandardSerializiers.JSON_SERIALIZIER.encode(resolve(path)));
+				if(toSave.hasNext())
+					out.write(',');
+			}
+			out.append('}');
+			Files.move(tmp.toPath(),getPersistentFile().toPath(),StandardCopyOption.REPLACE_EXISTING);
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+	}
+	private File getPersistentFile(){
+		return new File(Main.INSTANCE.getUserPath(),"registry.json");
 	}
 	public NavigableRegistryNode<String,String,String> registerKeymap(String module){
 		TreeMap<String,String> mapping=new TreeMap<>();
