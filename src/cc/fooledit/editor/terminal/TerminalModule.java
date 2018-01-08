@@ -15,21 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.terminal;
-import cc.fooledit.core.Registry;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
-import cc.fooledit.spi.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class TerminalModule{
 	public static final String NAME="editor.terminal";
+	public static final String APPLICATION_NAME="terminal";
+	public static final String CONTENT_TYPE_NAME="fooledit/terminal";
 	public static void onLoad(){
 		Registry.registerApplication("terminal","fooledit/terminal",TerminalObjectType.INSTANCE,TerminalObject.class,()->TerminalEditor.INSTANCE);
 		Main.INSTANCE.getGlobalCommandRegistry().addChild("terminal",new Command("terminal",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(TerminalObjectType.INSTANCE)),NAME));
 	}
 	public static void onUnLoad(){
 
+	}
+	public static void onInstall(){
+		Registry.providesDataObjectType(TerminalObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(TerminalObject.class.getName(),NAME);
+		Registry.providesApplication(APPLICATION_NAME,NAME);
+		Registry.providesContentTypeLoader(CONTENT_TYPE_NAME,NAME);
+		Registry.providesCommand(APPLICATION_NAME,NAME);
 	}
 }

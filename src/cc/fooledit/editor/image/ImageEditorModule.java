@@ -31,15 +31,20 @@ public class ImageEditorModule{
 		addDataObjectType(ImageObjectType.INSTANCE);
 		addDataEditor(()->new IconEditor(),ImageObject.class);
 		addDataEditor(()->new ImageEditor(),ImageObject.class);
-		CoreModule.TEMPLATE_TYPE_REGISTRY.addChild("image",(obj)->new ImageTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
+		CoreModule.TEMPLATE_TYPE_REGISTRY.addChild(ImageTemplate.class.getName(),(obj)->new ImageTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
+	}
+	public static void onUnLoad(){
+
+	}
+	public static void onInstall(){
+		Registry.providesDataObjectType(ImageObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(ImageObject.class.getName(),NAME);
+		Registry.providesTemplateType(ImageTemplate.class.getName(),NAME);
 		try{
 			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getChild("children")).addChild(
 					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Main.INSTANCE.getFile("templates.json",NAME))));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.INFO,null,ex);
 		}
-	}
-	public static void onUnLoad(){
-
 	}
 }

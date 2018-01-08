@@ -46,6 +46,10 @@ public class ModuleRegistry{
 				MODULE_REGISTRY.addChild(module,moduleDescriptor);
 				((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureLoaded(s));
 				Module mod=new ScriptModule(module);
+				if(!CoreModule.INSTALLED_MODULE_REGISTRY.hasChild(module)){
+					mod.onInstall();
+					CoreModule.INSTALLED_MODULE_REGISTRY.addChild(module,null);
+				}
 				mod.onLoad();
 				moduleDescriptor.addChild(MODULE,mod);
 			}catch(Exception ex){

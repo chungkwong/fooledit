@@ -1,17 +1,17 @@
 {
 	"name":"PLAIN_TEXT","module":"editor.text",
 	"children":[
-		{"type":"text","mime":"text/plain","name":"EMPTY_PLAIN_TEXT","description":"","file":"plain/EMPTY","module":"editor.text"},
-		{"type":"text","mime":"text/plain","name":"Apache-2.0","description":"","file":"plain/Apache-2.0","module":"editor.text"},
-		{"type":"text","mime":"text/plain","name":"BSD","description":"","file":"plain/BSD","module":"editor.text"},
-		{"type":"text","mime":"text/plain","name":"GFDL-1.2","description":"","file":"plain/GFDL-1.2","module":"editor.text"},
-		{"type":"text","mime":"text/plain","name":"GFDL-1.3","description":"","file":"plain/GFDL-1.3","module":"editor.text"},
-		{"type":"text","mime":"text/plain","name":"GPL-2","description":"","file":"plain/GPL-2","module":"editor.text"},
-		{"type":"text","mime":"text/plain","name":"GPL-3","description":"","file":"plain/GPL-3","module":"editor.text"},
-		{"type":"text","mime":"text/plain","name":"LGPL-2","description":"","file":"plain/LGPL-2","module":"editor.text"},
-		{"type":"text","mime":"text/plain","name":"LGPL-3","description":"","file":"plain/LGPL-3","module":"editor.text"},
-		{"type":"text","mime":"text/plain","name":"MIT","description":"","file":"plain/MIT","module":"editor.text"},
-		{"type":"text","mime":"text/x-java","name":"Main class","description":"","file":"java/Main.java","module":"editor.text"},
-		{"type":"text","mime":"text/x-java","name":"Package","description":"","file":"java/package-info.java","module":"editor.text"}
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/plain","name":"EMPTY_PLAIN_TEXT","description":"","file":"plain/EMPTY","module":"editor.text"},
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/plain","name":"Apache-2.0","description":"","file":"plain/Apache-2.0","module":"editor.text"},
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/plain","name":"BSD","description":"","file":"plain/BSD","module":"editor.text"},
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/plain","name":"GFDL-1.2","description":"","file":"plain/GFDL-1.2","module":"editor.text"},
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/plain","name":"GFDL-1.3","description":"","file":"plain/GFDL-1.3","module":"editor.text"},
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/plain","name":"GPL-2","description":"","file":"plain/GPL-2","module":"editor.text"},
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/plain","name":"GPL-3","description":"","file":"plain/GPL-3","module":"editor.text"},
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/plain","name":"LGPL-2","description":"","file":"plain/LGPL-2","module":"editor.text"},
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/plain","name":"LGPL-3","description":"","file":"plain/LGPL-3","module":"editor.text"},
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/plain","name":"MIT","description":"","file":"plain/MIT","module":"editor.text"},
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/x-java","name":"Main class","description":"","file":"java/Main.java","module":"editor.text"},
+		{"type":"cc.fooledit.editor.text.TextTemplate","mime":"text/x-java","name":"Package","description":"","file":"java/package-info.java","module":"editor.text"}
 	]
 }

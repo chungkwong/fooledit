@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.browser;
-import cc.fooledit.core.Registry;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
-import cc.fooledit.spi.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class BrowserModule{
 	public static final String NAME="editor.browser";
+	public static final String APPLICATION_NAME="browser";
+	public static final String CONTENT_TYPE_NAME="fooledit/browser";
 	public static void onLoad(){
 		Registry.registerApplication("browser","fooledit/browser",BrowserObjectType.INSTANCE,BrowserObject.class,()->BrowserEditor.INSTANCE);
 		Main.INSTANCE.getGlobalCommandRegistry().addChild("browser",new Command("browser",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(BrowserObjectType.INSTANCE)),NAME));

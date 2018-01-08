@@ -17,6 +17,7 @@
 package cc.fooledit.editor.binary;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataEditor;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataObjectType;
+import cc.fooledit.core.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -29,5 +30,9 @@ public class BinaryEditorModule{
 	}
 	public static void onUnLoad(){
 
+	}
+	public static void onInstall(){
+		Registry.providesDataObjectType(BinaryObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(BinaryObject.class.getName(),NAME);
 	}
 }

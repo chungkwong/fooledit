@@ -33,10 +33,12 @@ public class TextEditorModule{
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(TextObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->new StructuredTextEditor(),TextObject.class);
-		CoreModule.TEMPLATE_TYPE_REGISTRY.addChild("text",(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime"),(String)obj.get("module")));
+		CoreModule.TEMPLATE_TYPE_REGISTRY.addChild(TextTemplate.class.getName(),(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime"),(String)obj.get("module")));
 	}
 	public static void onInstall(){
-		//CoreModule.PROVIDER_REGISTRY.getOrCreateChild(CoreModule.NAME).getOrCreateChild(CoreModule.DATA_OBJECT_TYPE_REGISTRY);
+		Registry.providesDataObjectType(TextObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(TextObject.class.getName(),NAME);
+		Registry.providesTemplateType(TextTemplate.class.getName(),NAME);
 		try{
 			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getChild("children")).addChild(
 					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Main.INSTANCE.getFile("templates.json",NAME))));
@@ -46,5 +48,8 @@ public class TextEditorModule{
 	}
 	public static void onUnLoad(){
 
+	}
+	public static void main(String[] args){
+		System.out.println(TextEditorModule.class.getName());
 	}
 }

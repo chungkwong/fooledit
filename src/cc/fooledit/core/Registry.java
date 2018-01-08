@@ -55,7 +55,7 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 			File tmp=new File(Main.INSTANCE.getUserPath(),".registry.json");
 			OutputStreamWriter out=new OutputStreamWriter(new FileOutputStream(tmp),StandardCharsets.UTF_8);
 			out.append('{');
-			Iterator<String> toSave=CoreModule.PERSISTENT_REGISTRY.getChildNames().iterator();
+			Iterator<String> toSave=CoreModule.PERSISTENT_REGISTRY.toMap().values().iterator();
 			while(toSave.hasNext()){
 				String path=toSave.next();
 				out.write(JSONEncoder.encode(path));
@@ -106,5 +106,30 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 		DataObjectTypeRegistry.addDataEditor(editorSupplier,cls);
 		DataObjectTypeRegistry.registerMime(baseType,factory.getClass().getName());
 	}
-
+	public static void providesProtocol(String scheme,String module){
+		RegistryNode<Object,Object,String> core=CoreModule.PROVIDER_REGISTRY.getOrCreateChild(CoreModule.NAME);
+		((RegistryNode)core.getOrCreateChild(CoreModule.PROTOCOL_REGISTRY_NAME)).addChild(scheme,module);
+	}
+	public static void providesDataObjectType(String type,String module){
+		providesCore(CoreModule.DATA_OBJECT_TYPE_REGISTRY_NAME,type,module);
+	}
+	public static void providesDataObjectEditor(String type,String module){
+		providesCore(CoreModule.DATA_OBJECT_EDITOR_REGISTRY_NAME,type,module);
+	}
+	public static void providesTemplateType(String type,String module){
+		providesCore(CoreModule.TEMPLATE_TYPE_REGISTRY_NAME,type,module);
+	}
+	public static void providesApplication(String type,String module){
+		providesCore(CoreModule.APPLICATION_REGISTRY_NAME,type,module);
+	}
+	public static void providesCommand(String type,String module){
+		providesCore(CoreModule.COMMAND_REGISTRY_NAME,type,module);
+	}
+	public static void providesContentTypeLoader(String type,String module){
+		providesCore(CoreModule.CONTENT_TYPE_LOADER_REGISTRY_NAME,type,module);
+	}
+	public static void providesCore(String registry,String type,String module){
+		RegistryNode<Object,Object,String> core=CoreModule.PROVIDER_REGISTRY.getOrCreateChild(CoreModule.NAME);
+		((RegistryNode)core.getOrCreateChild(registry)).addChild(type,module);
+	}
 }

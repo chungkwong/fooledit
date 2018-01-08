@@ -44,6 +44,7 @@ public class CoreModule{
 	public static final String EVENT_REGISTRY_NAME="event";
 	public static final String HISTORY_REGISTRY_NAME="history";
 	public static final String MODULE_REGISTRY_NAME="module";
+	public static final String INSTALLED_MODULE_REGISTRY_NAME="installed_module";
 	public static final String KEYMAP_REGISTRY_NAME="keymap";
 	public static final String MESSAGE_REGISTRY_NAME="message";
 	public static final String MENU_REGISTRY_NAME="menu";
@@ -69,10 +70,11 @@ public class CoreModule{
 	public static final ListRegistryNode<RegistryNode<String,Object,String>,String> HISTORY_REGISTRY
 			=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
 	public static final RegistryNode<String,RegistryNode<String,Object,String>,String> MODULE_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,Object,String> INSTALLED_MODULE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,URLStreamHandler,String> PROTOCOL_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,RegistryNode<Object,Object,String>,String> PROVIDER_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,String,String> PERSISTENT_REGISTRY=new SimpleRegistryNode<>();
+	public static final ListRegistryNode<String,String> PERSISTENT_REGISTRY=new ListRegistryNode<>();
 	public static final RegistryNode<String,Serializier,String> SERIALIZIER_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> TEMPLATE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Function<Map<Object,Object>,Template>,String> TEMPLATE_TYPE_REGISTRY=new SimpleRegistryNode<>();
@@ -93,6 +95,7 @@ public class CoreModule{
 		HISTORY_REGISTRY.limit(20);
 		REGISTRY.addChild(HISTORY_REGISTRY_NAME,HISTORY_REGISTRY);
 		REGISTRY.addChild(MODULE_REGISTRY_NAME,MODULE_REGISTRY);
+		REGISTRY.addChild(INSTALLED_MODULE_REGISTRY_NAME,INSTALLED_MODULE_REGISTRY);
 		REGISTRY.addChild(MENU_REGISTRY_NAME,MENU_REGISTRY);
 		REGISTRY.addChild(PROTOCOL_REGISTRY_NAME,PROTOCOL_REGISTRY);
 		REGISTRY.addChild(PROVIDER_REGISTRY_NAME,PROVIDER_REGISTRY);
@@ -122,6 +125,15 @@ public class CoreModule{
 	}
 	public static void onUnLoad(){
 
+	}
+	public static void onInstall(){
+		PERSISTENT_REGISTRY.addChild("core/"+PROTOCOL_REGISTRY_NAME);
+		PERSISTENT_REGISTRY.addChild("core/"+PERSISTENT_REGISTRY_NAME);
+		PERSISTENT_REGISTRY.addChild("core/"+INSTALLED_MODULE_REGISTRY_NAME);
+		PERSISTENT_REGISTRY.addChild("core/"+TEMPLATE_REGISTRY_NAME);
+		PERSISTENT_REGISTRY.addChild("core/"+CONTENT_TYPE_ALIAS_REGISTRY_NAME);
+		PERSISTENT_REGISTRY.addChild("core/"+CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME);
+		PERSISTENT_REGISTRY.addChild("core/"+SUFFIX_REGISTRY_NAME);
 	}
 	private static <T> T fromJSON(String file,Supplier<T> def){
 		try{

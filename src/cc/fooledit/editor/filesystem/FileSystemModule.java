@@ -15,18 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.filesystem;
-import cc.fooledit.core.Registry;
-import cc.fooledit.spi.*;
+import cc.fooledit.core.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class FileSystemModule{
 	public static final String NAME="editor.filesystem";
+	public static final String APPLICATION_NAME="filesystem";
+	public static final String CONTENT_TYPE_NAME="fooledit/filesystem";
 	public static void onLoad(){
 		Registry.registerApplication("filesystem","fooledit/directory",FileSystemObjectType.INSTANCE,FileSystemObject.class,()->FileSystemEditor.INSTANCE);
 	}
 	public static void onUnLoad(){
 
+	}
+	public static void onInstall(){
+		Registry.providesDataObjectType(FileSystemObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(FileSystemObject.class.getName(),NAME);
+		Registry.providesApplication(APPLICATION_NAME,NAME);
+		Registry.providesContentTypeLoader(CONTENT_TYPE_NAME,NAME);
+		Registry.providesCommand(APPLICATION_NAME,NAME);
 	}
 }

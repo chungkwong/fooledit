@@ -49,7 +49,7 @@ public abstract class RegistryNode<K,V,T>{
 		return hasChild(name)?getChild(name):def;
 	}
 	public V getChild(K name){
-		if(!hasChildReal(name)){
+		if(!hasChildReal(name)&&!isProvider){
 			String module=getProviderModule(name);
 			if(module!=null)
 				ModuleRegistry.ensureLoaded(module);
@@ -57,13 +57,15 @@ public abstract class RegistryNode<K,V,T>{
 		return getChildReal(name);
 	}
 	public boolean hasChild(K name){
-		return hasChildReal(name)||hasChildVirtual(name);
+		return hasChildReal(name)||(!isProvider&&hasChildVirtual(name));
 	}
 	private boolean hasChildVirtual(K name){
 		ensureProviderLoaded();
 		return provider.hasChild(name);
 	}
 	private String getProviderModule(K name){
+		if(isProvider)
+			return null;
 		ensureProviderLoaded();
 		return (String)provider.getChild(name);
 	}

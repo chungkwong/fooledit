@@ -26,6 +26,8 @@ import cc.fooledit.core.*;
  */
 public class ZipModule{
 	public static final String NAME="editor.zip";
+	public static final String ARCHIVE_PROTOCOL_NAME="archive";
+	public static final String COMPRESSED_PROTOCOL_NAME="compressed";
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(ArchiveObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(()->ArchiveEditor.INSTANCE,ArchiveObject.class);
@@ -67,5 +69,11 @@ public class ZipModule{
 		SUFFIX_REGISTRY.addChild("zip","application/x-zip-compressed");
 		SUFFIX_REGISTRY.addChild("Z","application/zlib");
 		SUFFIX_REGISTRY.addChild("zz","application/zlib");
+		Registry.providesDataObjectType(ZipObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(ZipObject.class.getName(),NAME);
+		Registry.providesProtocol(COMPRESSED_PROTOCOL_NAME,NAME);
+		Registry.providesDataObjectType(ArchiveObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(ArchiveObject.class.getName(),NAME);
+		Registry.providesProtocol(ARCHIVE_PROTOCOL_NAME,NAME);
 	}
 }
