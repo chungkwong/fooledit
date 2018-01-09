@@ -27,7 +27,7 @@ public abstract class RegistryNode<K,V,T>{
 	private T name;
 	private RegistryNode<T,?,?> parent;
 	private RegistryNode<K,?,T> provider;
-	private boolean isProvider=false;
+	public boolean isProvider=true;//FIXME
 	protected RegistryNode(){
 
 	}
@@ -59,6 +59,9 @@ public abstract class RegistryNode<K,V,T>{
 	public boolean hasChild(K name){
 		return hasChildReal(name)||(!isProvider&&hasChildVirtual(name));
 	}
+	public boolean hasChildLoaded(K name){
+		return hasChildReal(name);//FIXME:Bad hack
+	}
 	private boolean hasChildVirtual(K name){
 		ensureProviderLoaded();
 		return provider.hasChild(name);
@@ -89,6 +92,7 @@ public abstract class RegistryNode<K,V,T>{
 				Logger.getGlobal().log(Level.INFO,"Child already added to somewhere");
 			child.parent=this;
 			child.name=name;
+			child.isProvider=isProvider;
 		}
 		boolean exist=hasChild(name);
 		V oldValue=addChildReal(name,value);

@@ -32,6 +32,7 @@ import java.util.logging.*;
 public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>,String>{
 	public static final Registry ROOT=new Registry();
 	private Registry(){
+		isProvider=false;
 		try{
 			RegistryNode<String,RegistryNode<Object,Object,Object>,Object> toLoad=(RegistryNode<String,RegistryNode<Object,Object,Object>,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(getPersistentFile()));
 			for(String path:toLoad.getChildNames()){

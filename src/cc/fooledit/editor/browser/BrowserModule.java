@@ -32,4 +32,11 @@ public class BrowserModule{
 	public static void onUnLoad(){
 
 	}
+	public static void onInstall(){
+		Registry.providesDataObjectType(BrowserEditor.class.getName(),NAME);
+		Registry.providesDataObjectEditor(BrowserObject.class.getName(),NAME);
+		Registry.providesApplication(APPLICATION_NAME,NAME);
+		Registry.providesContentTypeLoader(CONTENT_TYPE_NAME,NAME);
+		Registry.providesCommand(APPLICATION_NAME,NAME);
+	}
 }
