@@ -26,8 +26,7 @@ public abstract class RegistryNode<K,V,T>{
 	private final LinkedList<RegistryChangeListener<K,V,T>>  listeners=new LinkedList<>();
 	private T name;
 	private RegistryNode<T,?,?> parent;
-	private RegistryNode<K,?,T> provider;
-	public boolean isProvider=true;//FIXME
+	protected RegistryNode<K,?,T> provider;
 	protected RegistryNode(){
 
 	}
@@ -49,7 +48,7 @@ public abstract class RegistryNode<K,V,T>{
 		return hasChild(name)?getChild(name):def;
 	}
 	public V getChild(K name){
-		if(!hasChildReal(name)&&!isProvider){
+		if(!hasChildReal(name)){
 			String module=getProviderModule(name);
 			if(module!=null)
 				ModuleRegistry.ensureLoaded(module);
@@ -57,30 +56,31 @@ public abstract class RegistryNode<K,V,T>{
 		return getChildReal(name);
 	}
 	public boolean hasChild(K name){
-		return hasChildReal(name)||(!isProvider&&hasChildVirtual(name));
+		return hasChildReal(name)||hasChildVirtual(name);
 	}
 	public boolean hasChildLoaded(K name){
 		return hasChildReal(name);//FIXME:Bad hack
 	}
 	private boolean hasChildVirtual(K name){
 		ensureProviderLoaded();
-		return provider.hasChild(name);
+		return (provider!=null&&provider.hasChildReal(name))||hasChildReal(name);
 	}
 	private String getProviderModule(K name){
-		if(isProvider)
-			return null;
 		ensureProviderLoaded();
-		return (String)provider.getChild(name);
+		return provider!=null?(String)provider.getChildReal(name):null;
 	}
 	private void ensureProviderLoaded(){
-		if(provider==null&&!isProvider){
-			if(parent==null){
-				provider=(RegistryNode)CoreModule.PROVIDER_REGISTRY;
-			}else{
+		if(provider==null){
+			if(parent!=null&&this!=CoreModule.PROVIDER_REGISTRY){
 				parent.ensureProviderLoaded();
-				provider=(RegistryNode<K,?,T>)parent.provider.getOrCreateChild(getName());
+				if(parent.provider!=null){
+					Object providers=parent.provider.getChildReal(getName());
+					if(providers instanceof RegistryNode)
+						provider=(RegistryNode<K,?,T>)providers;
+					else if(providers instanceof String)
+						ModuleRegistry.ensureLoaded((String)providers);
+				}
 			}
-			provider.isProvider=true;
 		}
 	}
 	protected abstract V getChildReal(K name);
@@ -92,7 +92,6 @@ public abstract class RegistryNode<K,V,T>{
 				Logger.getGlobal().log(Level.INFO,"Child already added to somewhere");
 			child.parent=this;
 			child.name=name;
-			child.isProvider=isProvider;
 		}
 		boolean exist=hasChild(name);
 		V oldValue=addChildReal(name,value);

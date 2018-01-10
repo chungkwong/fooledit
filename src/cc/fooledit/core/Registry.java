@@ -32,18 +32,8 @@ import java.util.logging.*;
 public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>,String>{
 	public static final Registry ROOT=new Registry();
 	private Registry(){
-		isProvider=false;
-		try{
-			RegistryNode<String,RegistryNode<Object,Object,Object>,Object> toLoad=(RegistryNode<String,RegistryNode<Object,Object,Object>,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(getPersistentFile()));
-			for(String path:toLoad.getChildNames()){
-				RegistryNode<Object,Object,String> registry=resolve(path);
-				for(Object key:toLoad.getChild(path).getChildNames())
-					registry.addChild(key,toLoad.getChild(path).getChild(key));
-			}
-			EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
+		provider=CoreModule.PROVIDER_REGISTRY;
+		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());
 	}
 	public <K,V> RegistryNode<K,V,String> resolve(String path){
 		RegistryNode node=Registry.ROOT;
@@ -51,10 +41,22 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 			node=(RegistryNode)node.getOrCreateChild(name);
 		return node;
 	}
-	public void syncPersistent(){
+	public void loadPreference(){
 		try{
-			File tmp=new File(Main.INSTANCE.getUserPath(),".registry.json");
-			OutputStreamWriter out=new OutputStreamWriter(new FileOutputStream(tmp),StandardCharsets.UTF_8);
+			RegistryNode<String,RegistryNode<Object,Object,Object>,Object> toLoad=(RegistryNode<String,RegistryNode<Object,Object,Object>,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(getPersistentFile()));
+			for(String path:toLoad.getChildNames()){
+				System.err.println(path);
+				RegistryNode<Object,Object,String> registry=resolve(path);
+				for(Object key:toLoad.getChild(path).getChildNames())
+					registry.addChild(key,toLoad.getChild(path).getChild(key));
+			}
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+	}
+	public void syncPersistent(){
+		File tmp=new File(Main.INSTANCE.getUserPath(),".registry.json");
+		try(OutputStreamWriter out=new OutputStreamWriter(new FileOutputStream(tmp),StandardCharsets.UTF_8)){
 			out.append('{');
 			Iterator<String> toSave=CoreModule.PERSISTENT_REGISTRY.toMap().values().iterator();
 			while(toSave.hasNext()){
@@ -66,6 +68,7 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 					out.write(',');
 			}
 			out.append('}');
+			out.flush();
 			Files.move(tmp.toPath(),getPersistentFile().toPath(),StandardCopyOption.REPLACE_EXISTING);
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);

@@ -35,8 +35,7 @@ public class DataObjectTypeRegistry{
 		CoreModule.DATA_OBJECT_TYPE_REGISTRY.addChild(type.getClass().getName(),type);
 	}
 	public static void addDataEditor(Supplier<DataEditor> editor,Class<? extends DataObject> objectClass){
-		if(!CoreModule.DATA_OBJECT_EDITOR_REGISTRY.hasChildLoaded(objectClass.getName()))
-			CoreModule.DATA_OBJECT_EDITOR_REGISTRY.addChild(objectClass.getName(),new ListRegistryNode<>());
+		CoreModule.DATA_OBJECT_EDITOR_REGISTRY.addChild(objectClass.getName(),new ListRegistryNode<>());
 		CoreModule.DATA_OBJECT_EDITOR_REGISTRY.getChild(objectClass.getName()).addChild(0,new Cache<>(editor));
 	}
 	public static List<DataEditor> getDataEditors(Class<? extends DataObject> cls){

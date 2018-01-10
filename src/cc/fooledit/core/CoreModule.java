@@ -99,7 +99,6 @@ public class CoreModule{
 		REGISTRY.addChild(MENU_REGISTRY_NAME,MENU_REGISTRY);
 		REGISTRY.addChild(PROTOCOL_REGISTRY_NAME,PROTOCOL_REGISTRY);
 		REGISTRY.addChild(PROVIDER_REGISTRY_NAME,PROVIDER_REGISTRY);
-		PROTOCOL_REGISTRY.isProvider=true;
 		REGISTRY.addChild(PERSISTENT_REGISTRY_NAME,PERSISTENT_REGISTRY);
 		REGISTRY.addChild(SERIALIZIER_REGISTRY_NAME,SERIALIZIER_REGISTRY);
 		TEMPLATE_REGISTRY.addChild("name","");
@@ -109,6 +108,7 @@ public class CoreModule{
 		REGISTRY.addChild(TEMPLATE_TYPE_REGISTRY_NAME,TEMPLATE_TYPE_REGISTRY);
 		REGISTRY.addChild(WINDOW_REGISTRY_NAME,WINDOW_REGISTRY);
 		REGISTRY.addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
+		Registry.ROOT.loadPreference();
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
 			try{
 				Helper.writeText(serializier.encode(HISTORY_REGISTRY),new File(Main.INSTANCE.getUserPath(),"file_history.json"));
