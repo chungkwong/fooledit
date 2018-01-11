@@ -16,8 +16,8 @@
  */
 package cc.fooledit.core;
 import cc.fooledit.*;
+import cc.fooledit.control.*;
 import cc.fooledit.spi.*;
-import cc.fooledit.util.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -41,6 +41,7 @@ public class CoreModule{
 	public static final String DATA_OBJECT_REGISTRY_NAME="data_object";
 	public static final String DATA_OBJECT_TYPE_REGISTRY_NAME="data_object_type";
 	public static final String DATA_OBJECT_EDITOR_REGISTRY_NAME="data_object_editor";
+	public static final String TYPE_TO_EDITOR_REGISTRY_NAME="type_to_editor";
 	public static final String EVENT_REGISTRY_NAME="event";
 	public static final String HISTORY_REGISTRY_NAME="history";
 	public static final String MODULE_REGISTRY_NAME="module";
@@ -65,7 +66,8 @@ public class CoreModule{
 	public static final RegistryNode<String,String,String> SUFFIX_REGISTRY=new SimpleRegistryNode<>();
 	public static final NavigableRegistryNode<String,RegistryNode,String> DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
 	public static final RegistryNode<String,DataObjectType,String> DATA_OBJECT_TYPE_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,ListRegistryNode<Cache<DataEditor>,String>,String> DATA_OBJECT_EDITOR_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,DataEditor,String> DATA_OBJECT_EDITOR_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,ListRegistryNode<String,String>,String> TYPE_TO_EDITOR_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,List<Consumer>,String> EVENT_REGISTRY=new SimpleRegistryNode<>();
 	public static final ListRegistryNode<RegistryNode<String,Object,String>,String> HISTORY_REGISTRY
 			=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
@@ -91,6 +93,7 @@ public class CoreModule{
 		REGISTRY.addChild(DATA_OBJECT_REGISTRY_NAME,DATA_OBJECT_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_TYPE_REGISTRY_NAME,DATA_OBJECT_TYPE_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_EDITOR_REGISTRY_NAME,DATA_OBJECT_EDITOR_REGISTRY);
+		REGISTRY.addChild(TYPE_TO_EDITOR_REGISTRY_NAME,TYPE_TO_EDITOR_REGISTRY);
 		REGISTRY.addChild(EVENT_REGISTRY_NAME,EVENT_REGISTRY);
 		HISTORY_REGISTRY.limit(20);
 		REGISTRY.addChild(HISTORY_REGISTRY_NAME,HISTORY_REGISTRY);
@@ -108,6 +111,8 @@ public class CoreModule{
 		REGISTRY.addChild(TEMPLATE_TYPE_REGISTRY_NAME,TEMPLATE_TYPE_REGISTRY);
 		REGISTRY.addChild(WINDOW_REGISTRY_NAME,WINDOW_REGISTRY);
 		REGISTRY.addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
+		Registry.registerApplication("template","fooledit/template",TemplateEditor.INSTANCE,TemplateEditor.class,TemplateEditor.INSTANCE);
+		Registry.registerApplication("registry","fooledit/registry",RegistryEditor.INSTANCE,RegistryEditor.class,RegistryEditor.INSTANCE);
 		Registry.ROOT.loadPreference();
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
 			try{
@@ -128,6 +133,7 @@ public class CoreModule{
 
 	}
 	public static void onInstall(){
+		PERSISTENT_REGISTRY.addChild("core/"+PROVIDER_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+PROTOCOL_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+PERSISTENT_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+INSTALLED_MODULE_REGISTRY_NAME);

@@ -29,8 +29,8 @@ public class ImageEditorModule{
 	public static final String NAME="editor.image";
 	public static void onLoad(){
 		addDataObjectType(ImageObjectType.INSTANCE);
-		addDataEditor(()->new IconEditor(),ImageObject.class);
-		addDataEditor(()->new ImageEditor(),ImageObject.class);
+		addDataEditor(new IconEditor(),ImageObject.class);
+		addDataEditor(new ImageEditor(),ImageObject.class);
 		CoreModule.TEMPLATE_TYPE_REGISTRY.addChild(ImageTemplate.class.getName(),(obj)->new ImageTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
 	}
 	public static void onUnLoad(){
@@ -38,7 +38,9 @@ public class ImageEditorModule{
 	}
 	public static void onInstall(){
 		Registry.providesDataObjectType(ImageObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(ImageObject.class.getName(),NAME);
+		Registry.providesDataObjectEditor(ImageEditor.class.getName(),NAME);
+		Registry.providesDataObjectEditor(IconEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(ImageObject.class.getName(),NAME);
 		Registry.providesTemplateType(ImageTemplate.class.getName(),NAME);
 		try{
 			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getChild("children")).addChild(

@@ -25,14 +25,15 @@ public class FileSystemModule{
 	public static final String APPLICATION_NAME="filesystem";
 	public static final String CONTENT_TYPE_NAME="fooledit/filesystem";
 	public static void onLoad(){
-		Registry.registerApplication("filesystem","fooledit/directory",FileSystemObjectType.INSTANCE,FileSystemObject.class,()->FileSystemEditor.INSTANCE);
+		Registry.registerApplication("filesystem","fooledit/directory",FileSystemObjectType.INSTANCE,FileSystemObject.class,FileSystemEditor.INSTANCE);
 	}
 	public static void onUnLoad(){
 
 	}
 	public static void onInstall(){
 		Registry.providesDataObjectType(FileSystemObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(FileSystemObject.class.getName(),NAME);
+		Registry.providesDataObjectEditor(FileSystemEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(FileSystemObject.class.getName(),NAME);
 		Registry.providesApplication(APPLICATION_NAME,NAME);
 		Registry.providesContentTypeLoader(CONTENT_TYPE_NAME,NAME);
 		Registry.providesCommand(APPLICATION_NAME,NAME);

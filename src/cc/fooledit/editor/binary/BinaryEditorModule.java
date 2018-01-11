@@ -26,13 +26,14 @@ public class BinaryEditorModule{
 	public static final String NAME="editor.binary";
 	public static void onLoad(){
 		addDataObjectType(BinaryObjectType.INSTANCE);
-		addDataEditor(()->new BinaryEditor(),BinaryObject.class);
+		addDataEditor(new BinaryEditor(),BinaryObject.class);
 	}
 	public static void onUnLoad(){
 
 	}
 	public static void onInstall(){
 		Registry.providesDataObjectType(BinaryObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(BinaryObject.class.getName(),NAME);
+		Registry.providesDataObjectEditor(BinaryEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(BinaryObject.class.getName(),NAME);
 	}
 }

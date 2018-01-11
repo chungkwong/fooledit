@@ -30,9 +30,9 @@ public class ZipModule{
 	public static final String COMPRESSED_PROTOCOL_NAME="compressed";
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(ArchiveObjectType.INSTANCE);
-		DataObjectTypeRegistry.addDataEditor(()->ArchiveEditor.INSTANCE,ArchiveObject.class);
+		DataObjectTypeRegistry.addDataEditor(ArchiveEditor.INSTANCE,ArchiveObject.class);
 		DataObjectTypeRegistry.addDataObjectType(ZipObjectType.INSTANCE);
-		DataObjectTypeRegistry.addDataEditor(()->ZipEditor.INSTANCE,ZipObject.class);
+		DataObjectTypeRegistry.addDataEditor(ZipEditor.INSTANCE,ZipObject.class);
 		PROTOCOL_REGISTRY.addChild("archive",new ArchiveStreamHandler());
 		PROTOCOL_REGISTRY.addChild("compressed",new ZipStreamHandler());
 	}
@@ -70,10 +70,12 @@ public class ZipModule{
 		SUFFIX_REGISTRY.addChild("Z","application/zlib");
 		SUFFIX_REGISTRY.addChild("zz","application/zlib");
 		Registry.providesDataObjectType(ZipObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(ZipObject.class.getName(),NAME);
+		Registry.providesDataObjectEditor(ZipEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(ZipObject.class.getName(),NAME);
 		Registry.providesProtocol(COMPRESSED_PROTOCOL_NAME,NAME);
 		Registry.providesDataObjectType(ArchiveObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(ArchiveObject.class.getName(),NAME);
+		Registry.providesDataObjectEditor(ArchiveEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(ArchiveObject.class.getName(),NAME);
 		Registry.providesProtocol(ARCHIVE_PROTOCOL_NAME,NAME);
 	}
 }

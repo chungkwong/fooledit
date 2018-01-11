@@ -26,15 +26,16 @@ public class BrowserModule{
 	public static final String APPLICATION_NAME="browser";
 	public static final String CONTENT_TYPE_NAME="fooledit/browser";
 	public static void onLoad(){
-		Registry.registerApplication("browser","fooledit/browser",BrowserObjectType.INSTANCE,BrowserObject.class,()->BrowserEditor.INSTANCE);
+		Registry.registerApplication("browser","fooledit/browser",BrowserObjectType.INSTANCE,BrowserObject.class,BrowserEditor.INSTANCE);
 		Main.INSTANCE.getGlobalCommandRegistry().addChild("browser",new Command("browser",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(BrowserObjectType.INSTANCE)),NAME));
 	}
 	public static void onUnLoad(){
 
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(BrowserEditor.class.getName(),NAME);
-		Registry.providesDataObjectEditor(BrowserObject.class.getName(),NAME);
+		Registry.providesDataObjectType(BrowserObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(BrowserEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(BrowserObject.class.getName(),NAME);
 		Registry.providesApplication(APPLICATION_NAME,NAME);
 		Registry.providesContentTypeLoader(CONTENT_TYPE_NAME,NAME);
 		Registry.providesCommand(APPLICATION_NAME,NAME);

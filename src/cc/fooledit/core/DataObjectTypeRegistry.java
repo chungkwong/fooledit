@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.control.*;
 import cc.fooledit.editor.binary.*;
 import cc.fooledit.editor.image.*;
 import cc.fooledit.editor.media.*;
 import cc.fooledit.editor.text.*;
 import cc.fooledit.spi.*;
-import cc.fooledit.util.*;
 import java.util.*;
-import java.util.function.*;
 import java.util.stream.*;
 import javax.activation.*;
 /**
@@ -34,13 +31,16 @@ public class DataObjectTypeRegistry{
 	public static void addDataObjectType(DataObjectType type){
 		CoreModule.DATA_OBJECT_TYPE_REGISTRY.addChild(type.getClass().getName(),type);
 	}
-	public static void addDataEditor(Supplier<DataEditor> editor,Class<? extends DataObject> objectClass){
-		CoreModule.DATA_OBJECT_EDITOR_REGISTRY.addChild(objectClass.getName(),new ListRegistryNode<>());
-		CoreModule.DATA_OBJECT_EDITOR_REGISTRY.getChild(objectClass.getName()).addChild(0,new Cache<>(editor));
+	public static void addDataEditor(DataEditor editor,Class<? extends DataObject> objectClass){
+		CoreModule.DATA_OBJECT_EDITOR_REGISTRY.addChild(editor.getClass().getName(),editor);
+		if(!CoreModule.TYPE_TO_EDITOR_REGISTRY.hasChildLoaded(objectClass.getName())){
+			CoreModule.TYPE_TO_EDITOR_REGISTRY.addChild(objectClass.getName(),new ListRegistryNode<>());
+		}
+		CoreModule.TYPE_TO_EDITOR_REGISTRY.getChild(objectClass.getName()).addChild(0,editor.getClass().getName());
 	}
 	public static List<DataEditor> getDataEditors(Class<? extends DataObject> cls){
 		if(CoreModule.DATA_OBJECT_EDITOR_REGISTRY.hasChild(cls.getName()))
-			return ((ListRegistryNode<Cache<DataEditor>,String>)CoreModule.DATA_OBJECT_EDITOR_REGISTRY.getChild(cls.getName())).toMap().values().stream().map((c)->c.get()).collect(Collectors.toList());
+			return CoreModule.TYPE_TO_EDITOR_REGISTRY.getChild(cls.getName()).toMap().values().stream().map((c)->CoreModule.DATA_OBJECT_EDITOR_REGISTRY.getChild(c)).collect(Collectors.toList());
 		return Collections.emptyList();
 	}
 	public static void registerMime(String mime,String type){
@@ -61,9 +61,5 @@ public class DataObjectTypeRegistry{
 			cand.add(TextObjectType.INSTANCE);
 		cand.add(BinaryObjectType.INSTANCE);
 		return cand;
-	}
-	static{
-		Registry.registerApplication("template","fooledit/template",TemplateEditor.INSTANCE,TemplateEditor.class,()->TemplateEditor.INSTANCE);addDataObjectType(TemplateEditor.INSTANCE);//TODO
-		Registry.registerApplication("registry","fooledit/registry",RegistryEditor.INSTANCE,RegistryEditor.class,()->RegistryEditor.INSTANCE);addDataObjectType(RegistryEditor.INSTANCE);//TODO
 	}
 }

@@ -15,11 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.core.DataObjectTypeRegistry;
-import cc.fooledit.core.DataObjectRegistry;
-import cc.fooledit.core.DataObject;
-import cc.fooledit.core.DataEditor;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import javafx.application.*;
@@ -132,8 +129,7 @@ public class WorkSheet extends BorderPane{
 		}else{
 			RegistryNode<String,Object,String> buffer=DataObjectRegistry.get((RegistryNode<String,Object,String>)json.getChild(BUFFER));
 			String editorName=(String)json.getChild(EDITOR);
-			DataEditor editor=DataObjectTypeRegistry.getDataEditors((Class<? extends DataObject>)buffer.getChild(DataObject.DATA).getClass()).stream().
-					filter((e)->e.getClass().getName().equals(editorName)).findFirst().get();
+			DataEditor editor=CoreModule.DATA_OBJECT_EDITOR_REGISTRY.getChild(editorName);
 			WorkSheet workSheet=new WorkSheet(buffer,editor,json.getChild(REMARK),json);
 			if((Boolean)json.getChild(CURRENT)){
 				Main.INSTANCE.setCurrentWorkSheet(workSheet);

@@ -23,7 +23,6 @@ import java.net.*;
 import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.*;
-import java.util.function.*;
 import java.util.logging.*;
 /**
  *
@@ -45,7 +44,6 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 		try{
 			RegistryNode<String,RegistryNode<Object,Object,Object>,Object> toLoad=(RegistryNode<String,RegistryNode<Object,Object,Object>,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(getPersistentFile()));
 			for(String path:toLoad.getChildNames()){
-				System.err.println(path);
 				RegistryNode<Object,Object,String> registry=resolve(path);
 				for(Object key:toLoad.getChild(path).getChildNames())
 					registry.addChild(key,toLoad.getChild(path).getChild(key));
@@ -104,10 +102,10 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 		((RegistryNode<String,RegistryNode<String,Command,String>,String>)ROOT.getOrCreateChild(module)).addChild(CoreModule.COMMAND_REGISTRY_NAME,registry);
 		return registry;
 	}
-	public static void registerApplication(String path,String baseType,DataObjectType factory,Class<? extends DataObject> cls,Supplier<DataEditor> editorSupplier){
+	public static void registerApplication(String path,String baseType,DataObjectType factory,Class<? extends DataObject> cls,DataEditor editor){
 		CoreModule.APPLICATION_REGISTRY.addChild(path,baseType);
 		DataObjectTypeRegistry.addDataObjectType(factory);
-		DataObjectTypeRegistry.addDataEditor(editorSupplier,cls);
+		DataObjectTypeRegistry.addDataEditor(editor,cls);
 		DataObjectTypeRegistry.registerMime(baseType,factory.getClass().getName());
 	}
 	public static void providesProtocol(String scheme,String module){
@@ -119,6 +117,9 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 	}
 	public static void providesDataObjectEditor(String type,String module){
 		providesCore(CoreModule.DATA_OBJECT_EDITOR_REGISTRY_NAME,type,module);
+	}
+	public static void providesTypeToEditor(String type,String module){
+		providesCore(CoreModule.TYPE_TO_EDITOR_REGISTRY_NAME,type,module);
 	}
 	public static void providesTemplateType(String type,String module){
 		providesCore(CoreModule.TEMPLATE_TYPE_REGISTRY_NAME,type,module);

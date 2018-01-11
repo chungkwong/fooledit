@@ -26,7 +26,7 @@ public class TerminalModule{
 	public static final String APPLICATION_NAME="terminal";
 	public static final String CONTENT_TYPE_NAME="fooledit/terminal";
 	public static void onLoad(){
-		Registry.registerApplication("terminal","fooledit/terminal",TerminalObjectType.INSTANCE,TerminalObject.class,()->TerminalEditor.INSTANCE);
+		Registry.registerApplication("terminal","fooledit/terminal",TerminalObjectType.INSTANCE,TerminalObject.class,TerminalEditor.INSTANCE);
 		Main.INSTANCE.getGlobalCommandRegistry().addChild("terminal",new Command("terminal",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(TerminalObjectType.INSTANCE)),NAME));
 	}
 	public static void onUnLoad(){
@@ -34,7 +34,8 @@ public class TerminalModule{
 	}
 	public static void onInstall(){
 		Registry.providesDataObjectType(TerminalObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(TerminalObject.class.getName(),NAME);
+		Registry.providesDataObjectEditor(TerminalEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(TerminalObject.class.getName(),NAME);
 		Registry.providesApplication(APPLICATION_NAME,NAME);
 		Registry.providesContentTypeLoader(CONTENT_TYPE_NAME,NAME);
 		Registry.providesCommand(APPLICATION_NAME,NAME);

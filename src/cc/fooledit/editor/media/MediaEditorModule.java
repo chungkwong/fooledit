@@ -26,13 +26,14 @@ public class MediaEditorModule{
 	public static final String NAME="editor.media";
 	public static void onLoad(){
 		addDataObjectType(MediaObjectType.INSTANCE);
-		addDataEditor(()->MediaEditor.INSTANCE,MediaObject.class);
+		addDataEditor(MediaEditor.INSTANCE,MediaObject.class);
 	}
 	public static void onUnLoad(){
 
 	}
 	public static void onInstall(){
 		Registry.providesDataObjectType(MediaObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(MediaObject.class.getName(),NAME);
+		Registry.providesDataObjectEditor(MediaEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(MediaObject.class.getName(),NAME);
 	}
 }
