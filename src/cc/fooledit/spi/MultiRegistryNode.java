@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,29 +20,18 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AliasRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
-	private final RegistryNode<K,V,T> target;
-	public AliasRegistryNode(RegistryNode<K,V,T> target){
-		this.target=target instanceof AliasRegistryNode?((AliasRegistryNode<K,V,T>)target).target:target;
+public class MultiRegistryNode<K,V,T> extends SimpleRegistryNode<K,ListRegistryNode<V,K>,T>{
+	public MultiRegistryNode(){
+
 	}
-	@Override
-	public V getChildReal(K name){
-		return target.getChild(name);
+	public void addChildElement(K name,V value){
+		if(!hasChildReal(name)){
+			addChild(name,new ListRegistryNode<>());
+		}
+		((ListRegistryNode<V,T>)getChild(name)).addChild(0,value);
 	}
-	@Override
-	public Collection<K> getChildNamesReal(){
-		return target.getChildNames();
-	}
-	@Override
-	public boolean hasChildReal(K name){
-		return target.hasChild(name);
-	}
-	@Override
-	protected V addChildReal(K name,V value){
-		return target.addChild(name,value);
-	}
-	@Override
-	protected V removeChildReal(K name){
-		return target.removeChild(name);
+	public List<V> getChildElements(K name){
+		ListRegistryNode<V,K> child=getChild(name);
+		return child!=null?child.getChildren():Collections.emptyList();
 	}
 }

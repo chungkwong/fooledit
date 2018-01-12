@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-import cc.fooledit.core.Template;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -57,7 +57,7 @@ public class ImageTemplate implements Template<ImageObject>{
 	@Override
 	public ImageObject apply(Properties properties){
 		try{
-			return ImageObjectType.INSTANCE.readFrom(new FileInputStream(Main.INSTANCE.getFile(file,"image-editor")));
+			return ImageObjectType.INSTANCE.readFrom(new FileInputStream(Main.INSTANCE.getFile(file,ImageEditorModule.NAME)));
 		}catch(Exception ex){
 			Logger.getLogger(ImageTemplate.class.getName()).log(Level.SEVERE,null,ex);
 			return ImageObjectType.INSTANCE.create();

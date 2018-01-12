@@ -46,7 +46,7 @@ public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
 		return children.remove((int)index);
 	}
 	@Override
-	public Collection<Integer> getChildNames(){
+	public Collection<Integer> getChildNamesReal(){
 		ArrayList<Integer> names=new ArrayList<>();
 		int len=size();
 		for(int i=0;i<len;i++)

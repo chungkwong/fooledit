@@ -45,7 +45,7 @@ public class NavigableRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
 		return children.remove(name);
 	}
 	@Override
-	public Collection<K> getChildNames(){
+	public Collection<K> getChildNamesReal(){
 		return children.keySet();
 	}
 	public Map.Entry<K,V> firstEntry(){

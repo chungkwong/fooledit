@@ -17,7 +17,6 @@
 package cc.fooledit.spi;
 import cc.fooledit.core.*;
 import java.util.*;
-import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -67,7 +66,15 @@ public abstract class RegistryNode<K,V,T>{
 	}
 	private String getProviderModule(K name){
 		ensureProviderLoaded();
-		return provider!=null?(String)provider.getChildReal(name):null;
+		if(provider!=null){
+			Object child=provider.getChildReal(name);
+			if(child instanceof String){
+				return (String)child;
+			}else if(child instanceof RegistryNode){
+				addChild(name,(V)new SimpleRegistryNode());
+			}
+		}
+		return null;
 	}
 	private void ensureProviderLoaded(){
 		if(provider==null){
@@ -88,8 +95,8 @@ public abstract class RegistryNode<K,V,T>{
 	public V addChild(K name,V value){
 		if(value instanceof RegistryNode){
 			RegistryNode child=(RegistryNode)value;
-			if(child.name!=null)
-				Logger.getGlobal().log(Level.INFO,"Child already added to somewhere");
+			//if(child.name!=null)
+			//	Logger.getGlobal().log(Level.INFO,"Child {0} already added to {1}",new Object[]{name,child.name});
 			child.parent=this;
 			child.name=name;
 		}
@@ -108,10 +115,15 @@ public abstract class RegistryNode<K,V,T>{
 		return oldValue;
 	}
 	protected abstract V removeChildReal(K name);
-	public abstract Collection<K> getChildNames();
+	public Collection<K> getChildNames(){
+		HashSet<K> keys=new HashSet<>(getChildNamesReal());
+		keys.addAll(getChildNamesVirtual());
+		return keys;
+	}
+	protected abstract Collection<K> getChildNamesReal();
 	public Collection<K> getChildNamesVirtual(){
 		ensureProviderLoaded();
-		return provider.getChildNames();
+		return provider!=null?provider.getChildNames():Collections.EMPTY_LIST;
 	}
 	public T getName(){
 		return name;

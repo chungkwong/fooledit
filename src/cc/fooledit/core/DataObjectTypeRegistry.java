@@ -39,7 +39,7 @@ public class DataObjectTypeRegistry{
 		CoreModule.TYPE_TO_EDITOR_REGISTRY.getChild(objectClass.getName()).addChild(0,editor.getClass().getName());
 	}
 	public static List<DataEditor> getDataEditors(Class<? extends DataObject> cls){
-		if(CoreModule.DATA_OBJECT_EDITOR_REGISTRY.hasChild(cls.getName()))
+		if(CoreModule.TYPE_TO_EDITOR_REGISTRY.hasChild(cls.getName()))
 			return CoreModule.TYPE_TO_EDITOR_REGISTRY.getChild(cls.getName()).toMap().values().stream().map((c)->CoreModule.DATA_OBJECT_EDITOR_REGISTRY.getChild(c)).collect(Collectors.toList());
 		return Collections.emptyList();
 	}

@@ -36,8 +36,9 @@ public class ModuleRegistry{
 	public static final String REPOSITORY="repository";
 	public static final String PRELOAD="preload";
 	public static void loadDefault(){
-		String preload="core:editor.text:editor.media:editor.image:editor.binary:editor.filesystem:editor.browser:editor.terminal:editor.zip";//FIXME
-		Arrays.stream(preload.split(":")).forEach((name)->ensureLoaded(name));
+		ensureLoaded(CoreModule.NAME);
+		//String preload="core:editor.text:editor.media:editor.image:editor.binary:editor.filesystem:editor.browser:editor.terminal:editor.zip";//FIXME
+		//Arrays.stream(preload.split(":")).forEach((name)->ensureLoaded(name));
 	}
 	public static void ensureLoaded(String module){
 		if(!MODULE_REGISTRY.hasChild(module)){

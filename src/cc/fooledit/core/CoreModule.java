@@ -63,7 +63,7 @@ public class CoreModule{
 	public static final RegistryNode<String,String,String> CONTENT_TYPE_ALIAS_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> CONTENT_TYPE_SUPERCLASS_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,String,String> CONTENT_TYPE_LOADER_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,String,String> SUFFIX_REGISTRY=new SimpleRegistryNode<>();
+	public static final MultiRegistryNode<String,String,String> SUFFIX_REGISTRY=new MultiRegistryNode<>();
 	public static final NavigableRegistryNode<String,RegistryNode,String> DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
 	public static final RegistryNode<String,DataObjectType,String> DATA_OBJECT_TYPE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,DataEditor,String> DATA_OBJECT_EDITOR_REGISTRY=new SimpleRegistryNode<>();
@@ -110,6 +110,7 @@ public class CoreModule{
 		REGISTRY.addChild(TEMPLATE_REGISTRY_NAME,TEMPLATE_REGISTRY);
 		REGISTRY.addChild(TEMPLATE_TYPE_REGISTRY_NAME,TEMPLATE_TYPE_REGISTRY);
 		REGISTRY.addChild(WINDOW_REGISTRY_NAME,WINDOW_REGISTRY);
+		REGISTRY.addChild(COMMAND_REGISTRY_NAME,Main.INSTANCE.getGlobalCommandRegistry());
 		REGISTRY.addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
 		Registry.registerApplication("template","fooledit/template",TemplateEditor.INSTANCE,TemplateEditor.class,TemplateEditor.INSTANCE);
 		Registry.registerApplication("registry","fooledit/registry",RegistryEditor.INSTANCE,RegistryEditor.class,RegistryEditor.INSTANCE);
