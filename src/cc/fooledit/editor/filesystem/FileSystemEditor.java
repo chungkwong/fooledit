@@ -15,13 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.filesystem;
-import cc.fooledit.core.Registry;
-import cc.fooledit.core.MenuRegistry;
-import cc.fooledit.core.MessageRegistry;
-import cc.fooledit.core.Command;
-import cc.fooledit.core.DataEditor;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
+import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import com.sun.javafx.scene.control.skin.*;
 import java.io.*;
@@ -29,8 +25,9 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
+import java.util.stream.*;
 import javafx.collections.*;
-import javafx.scene.*;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 /**
  *
@@ -235,18 +232,24 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 		Main.INSTANCE.getMiniBuffer().restore();
 		Main.INSTANCE.getCurrentNode().requestFocus();
 	}
-
 	@Override
 	public Node edit(FileSystemObject data,Object remark,RegistryNode<String,Object,String> meta){
-		FileSystemViewer viewer=new FileSystemViewer();
-		viewer.setAction(data.getAction());
-		if(data.getInitialPath()!=null)
-			viewer.focusPath(data.getInitialPath());
+		if(remark!=null&&remark instanceof List){
+			((List<String>)remark).forEach((path)->{
+				if(path!=null)
+					data.getPaths().add(new File(path).toPath());
+			});
+		}
+		FileSystemViewer viewer=new FileSystemViewer(data);
 		return viewer;
 	}
 	@Override
 	public String getName(){
 		return MessageRegistry.getString("FILE_SYSTEM_VIEWER",FileSystemModule.NAME);
+	}
+	@Override
+	public Object getRemark(Node node){
+		return ((FileSystemViewer)node).getSelectedPaths().stream().map((path)->path.toAbsolutePath().toString()).collect(Collectors.toList());
 	}
 	@Override
 	public RegistryNode<String,Command,String> getCommandRegistry(){

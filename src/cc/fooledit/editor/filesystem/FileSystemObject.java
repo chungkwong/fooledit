@@ -15,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.filesystem;
-import cc.fooledit.core.DataObject;
-import cc.fooledit.core.DataObjectType;
+import cc.fooledit.core.*;
+import com.sun.javafx.collections.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
+import javafx.collections.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class FileSystemObject implements DataObject<FileSystemObject>{
 	private Consumer<Collection<Path>> action;
-	private Path initialPath;
+	private ObservableList<Path> paths=new ObservableListWrapper<>(new ArrayList<>());
 	public FileSystemObject(){
 	}
 	public FileSystemObject(Consumer<Collection<Path>> action){
@@ -35,11 +36,8 @@ public class FileSystemObject implements DataObject<FileSystemObject>{
 	public void setAction(Consumer<Collection<Path>> action){
 		this.action=action;
 	}
-	public void setInitialPath(Path initialPath){
-		this.initialPath=initialPath;
-	}
-	public Path getInitialPath(){
-		return initialPath;
+	public ObservableList<Path> getPaths(){
+		return paths;
 	}
 	public Consumer<Collection<Path>> getAction(){
 		return action;

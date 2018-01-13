@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.filesystem;
-import cc.fooledit.core.MessageRegistry;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
+import cc.fooledit.core.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -26,6 +26,7 @@ import java.util.logging.*;
 import java.util.stream.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
+import javafx.collections.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.input.*;
@@ -38,11 +39,12 @@ import javafx.util.*;
 public class FileSystemViewer extends BorderPane{
 	private final TreeTableView<Path> tree=new TreeTableView<>();
 	private WatchService watchService;
-	private Consumer<Collection<Path>> action;
 	private final Thread updateThread=new Thread(()->refresh());
 	private boolean active=true;
 	private Collection<Path> marked=Collections.emptySet();
-	public FileSystemViewer(){
+	private FileSystemObject data;
+	public FileSystemViewer(FileSystemObject data){
+		this.data=data;
 		try{
 			watchService=FileSystems.getDefault().newWatchService();
 			updateThread.setDaemon(true);
@@ -80,6 +82,12 @@ public class FileSystemViewer extends BorderPane{
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).prefWidthProperty().bind(tree.widthProperty().multiply(0.4));
 		tree.setEditable(true);
 		tree.getFocusModel().focusedIndexProperty().addListener(((e,o,n)->tree.scrollTo(n.intValue())));
+		data.getPaths().forEach((path)->selectPath(path));
+		tree.getSelectionModel().getSelectedItems().addListener(
+				(ListChangeListener.Change<? extends TreeItem<Path>> c)->{
+					data.getPaths().setAll(c.getList().stream().map((item)->item.getValue()).collect(Collectors.toSet()));
+				}
+		);
 	}
 	private static String getFileName(Path path){
 		Path name=path.getFileName();
@@ -158,7 +166,14 @@ public class FileSystemViewer extends BorderPane{
 		}
 	}
 	public void focusPath(Path path){
-		tree.getFocusModel().focus(tree.getRow(getTreeItem(path,true)));
+		TreeItem<Path> treeItem=getTreeItem(path,true);
+		if(tree!=null)
+			tree.getFocusModel().focus(tree.getRow(treeItem));
+	}
+	public void selectPath(Path path){
+		TreeItem<Path> treeItem=getTreeItem(path,true);
+		if(tree!=null)
+			tree.getSelectionModel().select(tree.getRow(treeItem));
 	}
 	private TreeItem<Path> getTreeItem(Path path,boolean expand){
 		Optional<TreeItem<Path>> cand=tree.getRoot().getChildren().stream().filter((p)->path.startsWith(p.getValue())).findAny();
@@ -212,13 +227,8 @@ public class FileSystemViewer extends BorderPane{
 		tree.getColumns().add(column);
 		column.setVisible(visible);
 	}
-	public void setAction(Consumer<Collection<Path>> action){
-		this.action=action;
-	}
-	public Consumer<Collection<Path>> getAction(){
-		return action;
-	}
 	public void fireAction(){
+		Consumer<Collection<Path>> action=data.getAction();
 		if(action!=null)
 			action.accept(getSelectedPaths());
 	}
@@ -237,7 +247,7 @@ public class FileSystemViewer extends BorderPane{
 		tree.requestFocus();
 	}
 	public final Collection<Path> getSelectedPaths(){
-		return tree.getSelectionModel().getSelectedItems().stream().map((item)->item.getValue()).collect(Collectors.toSet());
+		return data.getPaths();
 	}
 	TreeTableView<Path> getTree(){
 		return tree;

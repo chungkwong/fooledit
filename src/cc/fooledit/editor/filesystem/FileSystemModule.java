@@ -25,7 +25,7 @@ public class FileSystemModule{
 	public static final String APPLICATION_NAME="filesystem";
 	public static final String CONTENT_TYPE_NAME="fooledit/filesystem";
 	public static void onLoad(){
-		Registry.registerApplication("filesystem","fooledit/directory",FileSystemObjectType.INSTANCE,FileSystemObject.class,FileSystemEditor.INSTANCE);
+		Registry.registerApplication(APPLICATION_NAME,CONTENT_TYPE_NAME,FileSystemObjectType.INSTANCE,FileSystemObject.class,FileSystemEditor.INSTANCE);
 	}
 	public static void onUnLoad(){
 

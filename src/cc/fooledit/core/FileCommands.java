@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.editor.filesystem.FileSystemObjectType;
-import cc.fooledit.editor.filesystem.FileSystemObject;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
+import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
+import java.util.*;
 import java.util.logging.*;
 import javafx.scene.control.*;
 /**
@@ -36,7 +36,7 @@ public class FileCommands{
 	public static void open(){
 		RegistryNode<String,Object,String> files=DataObjectRegistry.create(FileSystemObjectType.INSTANCE);
 		FileSystemObject data=(FileSystemObject)files.getChild(DataObject.DATA);
-		data.setInitialPath(guessDefaultPath());
+		data.getPaths().setAll(guessDefaultPath());
 		data.setAction((paths)->{
 			paths.forEach((p)->{
 				try{
@@ -75,7 +75,7 @@ public class FileCommands{
 	public static void saveAs(){
 		RegistryNode<String,Object,String> files=DataObjectRegistry.create(FileSystemObjectType.INSTANCE);
 		FileSystemObject data=(FileSystemObject)files.getChild(DataObject.DATA);
-		data.setInitialPath(guessDefaultPath());
+		data.getPaths().setAll(guessDefaultPath());
 		data.setAction((paths)->{
 			paths.forEach((p)->saveAs(p));
 			DataObjectRegistry.removeDataObject(files);
@@ -94,11 +94,11 @@ public class FileCommands{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
-	private static Path guessDefaultPath(){
+	private static Collection<Path> guessDefaultPath(){
 		try{
-			return new File(new URI((String)Main.INSTANCE.getCurrentDataObject().getChild(DataObject.URI))).toPath();
+			return Collections.singletonList(new File(new URI((String)Main.INSTANCE.getCurrentDataObject().getChild(DataObject.URI))).toPath());
 		}catch(Exception ex){
-			return null;
+			return Collections.emptyList();
 		}
 	}
 	private static String extractFilename(URL url){
