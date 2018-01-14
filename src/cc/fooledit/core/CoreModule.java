@@ -23,6 +23,8 @@ import java.net.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
+import javafx.collections.*;
+import javafx.scene.control.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -41,6 +43,7 @@ public class CoreModule{
 	public static final String DATA_OBJECT_REGISTRY_NAME="data_object";
 	public static final String DATA_OBJECT_TYPE_REGISTRY_NAME="data_object_type";
 	public static final String DATA_OBJECT_EDITOR_REGISTRY_NAME="data_object_editor";
+	public static final String DYNAMIC_MENU_REGISTRY_NAME="dynamic_menu";
 	public static final String TYPE_TO_EDITOR_REGISTRY_NAME="type_to_editor";
 	public static final String EVENT_REGISTRY_NAME="event";
 	public static final String HISTORY_REGISTRY_NAME="history";
@@ -67,13 +70,13 @@ public class CoreModule{
 	public static final NavigableRegistryNode<String,RegistryNode,String> DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
 	public static final RegistryNode<String,DataObjectType,String> DATA_OBJECT_TYPE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,DataEditor,String> DATA_OBJECT_EDITOR_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,Consumer<ObservableList<MenuItem>>,String> DYNAMIC_MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,ListRegistryNode<String,String>,String> TYPE_TO_EDITOR_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,List<Consumer>,String> EVENT_REGISTRY=new SimpleRegistryNode<>();
 	public static final ListRegistryNode<RegistryNode<String,Object,String>,String> HISTORY_REGISTRY
 			=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
 	public static final RegistryNode<String,RegistryNode<String,Object,String>,String> MODULE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> INSTALLED_MODULE_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,Object,String> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,URLStreamHandler,String> PROTOCOL_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,RegistryNode<Object,Object,String>,String> PROVIDER_REGISTRY=new SimpleRegistryNode<>();
 	public static final ListRegistryNode<String,String> PERSISTENT_REGISTRY=new ListRegistryNode<>();
@@ -93,13 +96,13 @@ public class CoreModule{
 		REGISTRY.addChild(DATA_OBJECT_REGISTRY_NAME,DATA_OBJECT_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_TYPE_REGISTRY_NAME,DATA_OBJECT_TYPE_REGISTRY);
 		REGISTRY.addChild(DATA_OBJECT_EDITOR_REGISTRY_NAME,DATA_OBJECT_EDITOR_REGISTRY);
+		REGISTRY.addChild(DYNAMIC_MENU_REGISTRY_NAME,DYNAMIC_MENU_REGISTRY);
 		REGISTRY.addChild(TYPE_TO_EDITOR_REGISTRY_NAME,TYPE_TO_EDITOR_REGISTRY);
 		REGISTRY.addChild(EVENT_REGISTRY_NAME,EVENT_REGISTRY);
 		HISTORY_REGISTRY.limit(20);
 		REGISTRY.addChild(HISTORY_REGISTRY_NAME,HISTORY_REGISTRY);
 		REGISTRY.addChild(MODULE_REGISTRY_NAME,MODULE_REGISTRY);
 		REGISTRY.addChild(INSTALLED_MODULE_REGISTRY_NAME,INSTALLED_MODULE_REGISTRY);
-		REGISTRY.addChild(MENU_REGISTRY_NAME,MENU_REGISTRY);
 		REGISTRY.addChild(PROTOCOL_REGISTRY_NAME,PROTOCOL_REGISTRY);
 		REGISTRY.addChild(PROVIDER_REGISTRY_NAME,PROVIDER_REGISTRY);
 		REGISTRY.addChild(PERSISTENT_REGISTRY_NAME,PERSISTENT_REGISTRY);

@@ -75,6 +75,32 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 	private File getPersistentFile(){
 		return new File(Main.INSTANCE.getUserPath(),"registry.json");
 	}
+	public MenuRegistry registerMenu(String module){
+		try{
+			File src=Main.INSTANCE.getFile("menus/default.json",module);
+			RegistryNode<String,List<ListRegistryNode<Object,String>>,String> json=(RegistryNode<String,List<ListRegistryNode<Object,String>>,String>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(src));
+			RegistryNode<String,ListRegistryNode<Object,String>,String> mod=((RegistryNode<String,ListRegistryNode<Object,String>,String>)Registry.ROOT.getOrCreateChild(module));
+			mod.addChildIfNotPresent(CoreModule.MENU_REGISTRY_NAME,new ListRegistryNode<>());
+			mergeTo((ListRegistryNode<Object,String>)json.getChild("children"),mod.getChild(CoreModule.MENU_REGISTRY_NAME));
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.INFO,null,ex);
+		}
+		return new MenuRegistry(module);
+	}
+	private <K,V,T> void mergeTo(RegistryNode<K,V,T> a,RegistryNode<K,V,T> b){
+		for(K key:a.getChildNames()){
+			if(b.hasChild(key)){
+				V childa=a.getChild(key);
+				V childb=b.getChild(key);
+				if(childa instanceof RegistryNode&&childb instanceof RegistryNode)
+					mergeTo((RegistryNode)childa,(RegistryNode)childb);
+				else
+					Logger.getGlobal().log(Level.INFO,"Failed to merge {0} in {1}",new Object[]{key,b.getName()});
+			}else{
+				b.addChild(key,a.getChild(key));
+			}
+		}
+	}
 	public NavigableRegistryNode<String,String,String> registerKeymap(String module){
 		TreeMap<String,String> mapping=new TreeMap<>();
 		File src=Main.INSTANCE.getFile("keymaps/default.json",module);

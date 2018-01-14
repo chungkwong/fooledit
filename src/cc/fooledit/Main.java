@@ -88,7 +88,7 @@ public class Main extends Application{
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
 	private void initMenuBar(){
-		menuRegistry=new MenuRegistry(CoreModule.NAME);
+		menuRegistry=Registry.ROOT.registerMenu(CoreModule.NAME);
 		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
 		menuRegistry.registerDynamicMenu("file_history",getHistoryMenu());
 		input=new MiniBuffer(this);

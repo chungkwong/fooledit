@@ -35,7 +35,7 @@ import javafx.scene.control.*;
  */
 public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	public static final FileSystemEditor INSTANCE=new FileSystemEditor();
-	private final MenuRegistry menuRegistry=new MenuRegistry(FileSystemModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(FileSystemModule.NAME);
 	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(FileSystemModule.NAME);
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(FileSystemModule.NAME);
 	private FileSystemEditor(){
@@ -66,6 +66,13 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 		addCommand("hard-link",(viewer)->viewer.getMarkedPaths().forEach((from)->viewer.getCurrentDirectories().forEach((dir)->hardLink(from,dir))));
 		addCommand("create-directory",(viewer)->viewer.getCurrentDirectories().forEach((path)->createDirectory(path)));
 		addCommand("create-file",(viewer)->viewer.getCurrentDirectories().forEach((path)->createFile(path)));
+		addCommand("open",(viewer)->viewer.getSelectedPaths().forEach((p)->{
+				try{
+					Main.INSTANCE.show(DataObjectRegistry.readFrom(p.toUri().toURL()));
+				}catch(Exception ex){
+					Logger.getGlobal().log(Level.SEVERE,null,ex);
+				}
+		}));
 	}
 	private void addCommand(String name,Consumer<FileSystemViewer> action){
 		commandRegistry.addChild(name,new Command(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),FileSystemModule.NAME));

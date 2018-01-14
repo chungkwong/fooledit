@@ -15,13 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.media;
-import cc.fooledit.core.Registry;
-import cc.fooledit.core.MenuRegistry;
-import cc.fooledit.core.MessageRegistry;
-import cc.fooledit.core.Command;
-import cc.fooledit.core.DataEditor;
-import cc.fooledit.editor.text.PlainTextEditor;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
+import cc.fooledit.editor.text.*;
 import cc.fooledit.spi.*;
 import java.io.*;
 import java.util.function.*;
@@ -41,7 +37,7 @@ import javafx.util.*;
  */
 public class MediaEditor extends Application implements DataEditor<MediaObject>{
 	public static final MediaEditor INSTANCE=new MediaEditor();
-	private final MenuRegistry menuRegistry=new MenuRegistry(MediaEditorModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(MediaEditorModule.NAME);
 	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(MediaEditorModule.NAME);
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(MediaEditorModule.NAME);
 	private MediaEditor(){

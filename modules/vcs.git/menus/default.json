@@ -1,0 +1,11 @@
+{
+	"children":[
+		{"name":"INIT","command":"init-git"},
+		{"name":"CLONE","command":"clone-git"},
+		{},
+		{"name":"COMMIT","command":"commit-git"},
+		{},
+		{"name":"PULL","command":"pull-git"},
+		{"name":"PUSH","command":"push-git"}
+	]
+}

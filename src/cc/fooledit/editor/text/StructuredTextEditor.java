@@ -15,19 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.text;
-import cc.fooledit.core.Registry;
-import cc.fooledit.core.MenuRegistry;
-import cc.fooledit.core.MessageRegistry;
-import cc.fooledit.core.HistoryRing;
-import cc.fooledit.core.DataObjectRegistry;
-import cc.fooledit.core.DataObject;
-import cc.fooledit.core.Command;
-import cc.fooledit.core.FoolURLConnection;
-import cc.fooledit.core.DataEditor;
-import cc.fooledit.editor.text.parser.ParserBuilder;
-import cc.fooledit.editor.text.lex.MetaLexer;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
+import cc.fooledit.core.*;
+import cc.fooledit.editor.text.lex.*;
+import cc.fooledit.editor.text.parser.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
@@ -48,7 +40,7 @@ import org.fxmisc.richtext.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class StructuredTextEditor implements DataEditor<TextObject>{
-	private final MenuRegistry menuRegistry=new MenuRegistry(TextEditorModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(TextEditorModule.NAME);
 	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(TextEditorModule.NAME);
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(TextEditorModule.NAME);
 	private final Map<String,Language> languages=new HashMap<>();

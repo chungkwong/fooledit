@@ -15,13 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.zip;
-import cc.fooledit.core.Registry;
-import cc.fooledit.core.MenuRegistry;
-import cc.fooledit.core.MessageRegistry;
-import cc.fooledit.core.DataObjectRegistry;
-import cc.fooledit.core.Command;
-import cc.fooledit.core.DataEditor;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import com.sun.javafx.scene.control.skin.*;
 import java.net.*;
@@ -37,7 +32,7 @@ import org.apache.commons.compress.archivers.*;
  */
 public class ArchiveEditor implements DataEditor<ArchiveObject>{
 	public static final ArchiveEditor INSTANCE=new ArchiveEditor();
-	private final MenuRegistry menuRegistry=new MenuRegistry(ZipModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(ZipModule.NAME);
 	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(ZipModule.NAME);
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(ZipModule.NAME);
 	private ArchiveEditor(){

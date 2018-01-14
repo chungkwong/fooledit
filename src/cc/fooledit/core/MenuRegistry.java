@@ -17,8 +17,8 @@
 package cc.fooledit.core;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
+import cc.fooledit.spi.*;
 import com.github.chungkwong.jschememin.type.*;
-import java.util.*;
 import java.util.function.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
@@ -30,47 +30,43 @@ import javafx.scene.layout.*;
 public class MenuRegistry{
 	private final String module;
 	private final MenuBar bar=new MenuBar();
-	private final Map<String,Consumer<ObservableList<MenuItem>>> dynamic=new HashMap<>();
 	public MenuRegistry(){
 		this.module=null;
 	}
 	public MenuRegistry(String module){
 		this.module=module;
-		setMenus(Main.INSTANCE.loadJSON(Main.INSTANCE.getFile("menus/default.json",module)));
+		setMenus(((RegistryNode<String,ListRegistryNode<RegistryNode<String,Object,String>,String>,String>)Registry.ROOT.getOrCreateChild(module)).getChild(CoreModule.MENU_REGISTRY_NAME));
 		HBox.setHgrow(bar,Priority.NEVER);
 	}
-	private void setMenus(Map<Object,Object> json){
-		List<Map<Object,Object>> menus=(List<Map<Object,Object>>)json.get(CHILDREN);
-		bar.getMenus().setAll(menus.stream().map((e)->addMenu(e)).toArray(Menu[]::new));
+	private void setMenus(ListRegistryNode<RegistryNode<String,Object,String>,String> json){
+		bar.getMenus().setAll(json.toMap().values().stream().map((e)->addMenu(e)).toArray(Menu[]::new));
 	}
-	public Menu addMenu(Map<Object,Object> json){
-		if(json.containsKey(CHILDREN)){
-			Menu menu=new Menu(getName(json));
-			List<Map<Object,Object>> children=(List<Map<Object,Object>>)json.get(CHILDREN);
-			ObservableList<MenuItem> items=menu.getItems();
-			for(Map<Object,Object> props:children){
-				if(!props.containsKey(NAME)){
-					items.add(new SeparatorMenuItem());
-				}else if(props.containsKey(COMMAND)){
-					String commandName=(String)props.get(COMMAND);
-					MenuItem mi=new MenuItem(getName(props));
-					mi.setOnAction((e)->Main.INSTANCE.getCommandRegistry().get(commandName).accept(ScmNil.NIL));
-					items.add(mi);
-				}else{
-					items.add(addMenu(props));
+	public Menu addMenu(RegistryNode<String,Object,String> json){
+		return new OnDemandMenu(getName(json),(items)->{
+			if(json.hasChild(CHILDREN)){
+				ListRegistryNode<RegistryNode<String,Object,String>,String> children=(ListRegistryNode<RegistryNode<String,Object,String>,String>)json.getChild(CHILDREN);
+				for(RegistryNode<String,Object,String> props:children.toMap().values()){
+					if(!props.hasChild(NAME)){
+						items.add(new SeparatorMenuItem());
+					}else if(props.hasChild(COMMAND)){
+						String commandName=(String)props.getChild(COMMAND);
+						MenuItem mi=new MenuItem(getName(props));
+						mi.setOnAction((e)->Main.INSTANCE.getCommandRegistry().get(commandName).accept(ScmNil.NIL));
+						items.add(mi);
+					}else{
+						items.add(addMenu(props));
+					}
 				}
+			}else{
+				CoreModule.DYNAMIC_MENU_REGISTRY.getChild((String)json.getChild(PROVIDER)).accept(items);
 			}
-			return menu;
-		}else{
-			String id=(String)json.get(PROVIDER);
-			return new OnDemandMenu(getName(json),(items)->dynamic.get(id).accept(items));
-		}
+		});
 	}
-	private String getName(Map<Object,Object> json){
-		return MessageRegistry.getString((String)json.get(NAME),module);
+	private String getName(RegistryNode<String,Object,String> json){
+		return MessageRegistry.getString((String)json.getChild(NAME),module);
 	}
 	public void registerDynamicMenu(String id,Consumer<ObservableList<MenuItem>> provider){
-		dynamic.put(id,provider);
+		CoreModule.DYNAMIC_MENU_REGISTRY.addChild(id,provider);
 	}
 	public MenuBar getMenuBar(){
 		return bar;

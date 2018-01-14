@@ -34,7 +34,10 @@
 				{"name":"HARD_LINK","command":"hard-link"},
 				{"name":"SYMBOLIC_LINK","command":"symbolic-link"},
 				{},
-				{"name":"SUBMIT","command":"submit"}
+				{"name":"SUBMIT","command":"submit"},
+				{"name":"OTHER","children":[
+						{"name":"OPEN","command":"open"}
+				]}
 			]
 		}
 	]

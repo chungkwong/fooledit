@@ -92,6 +92,10 @@ public abstract class RegistryNode<K,V,T>{
 	}
 	protected abstract V getChildReal(K name);
 	protected abstract boolean hasChildReal(K name);
+	public void addChildIfNotPresent(K name,V value){
+		if(!hasChild(name))
+			addChild(name,value);
+	}
 	public V addChild(K name,V value){
 		if(value instanceof RegistryNode){
 			RegistryNode child=(RegistryNode)value;

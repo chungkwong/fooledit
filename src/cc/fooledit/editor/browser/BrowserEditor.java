@@ -15,12 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.browser;
-import cc.fooledit.core.Registry;
-import cc.fooledit.core.MenuRegistry;
-import cc.fooledit.core.MessageRegistry;
-import cc.fooledit.core.Command;
-import cc.fooledit.core.DataEditor;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.util.function.*;
 import javafx.collections.*;
@@ -33,7 +29,7 @@ import javafx.scene.web.*;
  */
 public class BrowserEditor implements DataEditor<BrowserObject>{
 	public static final BrowserEditor INSTANCE=new BrowserEditor();
-	private final MenuRegistry menuRegistry=new MenuRegistry(BrowserModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(BrowserModule.NAME);
 	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(BrowserModule.NAME);
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(BrowserModule.NAME);
 	private BrowserEditor(){
