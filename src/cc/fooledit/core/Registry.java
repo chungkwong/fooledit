@@ -159,6 +159,9 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 	public static void providesContentTypeLoader(String type,String module){
 		providesCore(CoreModule.CONTENT_TYPE_LOADER_REGISTRY_NAME,type,module);
 	}
+	public static void providesDynamicMenu(String type,String module){
+		providesCore(CoreModule.DYNAMIC_MENU_REGISTRY_NAME,type,module);
+	}
 	public static void providesCore(String registry,String type,String module){
 		RegistryNode<Object,Object,String> core=CoreModule.PROVIDER_REGISTRY.getOrCreateChild(CoreModule.NAME);
 		((RegistryNode)core.getOrCreateChild(registry)).addChild(type,module);

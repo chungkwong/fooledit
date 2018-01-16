@@ -30,7 +30,7 @@ public class AliasRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
 		return target.getChild(name);
 	}
 	@Override
-	public Collection<K> getChildNamesReal(){
+	protected Collection<K> getChildNamesReal(){
 		return target.getChildNames();
 	}
 	@Override

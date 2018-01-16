@@ -45,7 +45,7 @@ public class SimpleRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
 		return children.remove(name);
 	}
 	@Override
-	public Collection<K> getChildNamesReal(){
+	protected Collection<K> getChildNamesReal(){
 		return children.keySet();
 	}
 }

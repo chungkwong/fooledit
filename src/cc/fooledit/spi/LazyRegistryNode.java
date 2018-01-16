@@ -22,8 +22,8 @@ import java.util.function.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class LazyRegistryNode<K,V,T> extends SimpleRegistryNode<K,V,T>{
-	private final Function<K,V> supplier;
-	private final Collection<K> keys;
+	private Function<K,V> supplier;
+	private Collection<K> keys;
 	private final boolean cache;
 	public LazyRegistryNode(Function<K,V> supplier,Collection<K> keys,boolean cache){
 		this.supplier=supplier;
@@ -31,9 +31,9 @@ public class LazyRegistryNode<K,V,T> extends SimpleRegistryNode<K,V,T>{
 		this.cache=cache;
 	}
 	@Override
-	public V getChild(K name){
-		if(hasChild(name)){
-			return super.getChild(name);
+	public V getChildReal(K name){
+		if(super.hasChildReal(name)){
+			return super.getChildReal(name);
 		}else{
 			V value=supplier.apply(name);
 			if(cache)
@@ -42,7 +42,19 @@ public class LazyRegistryNode<K,V,T> extends SimpleRegistryNode<K,V,T>{
 		}
 	}
 	@Override
-	public Collection<K> getChildNames(){
-		return keys;
+	public boolean hasChildReal(K name){
+		return  super.hasChildReal(name)||keys.contains(name);
+	}
+	public void setKeys(Collection<K> keys){
+		this.keys=keys;
+	}
+	public void setSupplier(Function<K,V> supplier){
+		this.supplier=supplier;
+	}
+	@Override
+	protected Collection<K> getChildNamesReal(){
+		Set<K> childs=new HashSet<>(super.getChildNamesReal());
+		childs.addAll(keys);
+		return childs;
 	}
 }

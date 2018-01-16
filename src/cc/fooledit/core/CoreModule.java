@@ -83,7 +83,6 @@ public class CoreModule{
 	public static final RegistryNode<String,Serializier,String> SERIALIZIER_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Object,String> TEMPLATE_REGISTRY=new SimpleRegistryNode<>();
 	public static final RegistryNode<String,Function<Map<Object,Object>,Template>,String> TEMPLATE_TYPE_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,Object,String> WINDOW_REGISTRY=fromJSON("layout.json",()->new SimpleRegistryNode<>());
 	public static void onLoad(){
 		Registry.ROOT.addChild(NAME,REGISTRY);
 		REGISTRY.addChild(APPLICATION_REGISTRY_NAME,APPLICATION_REGISTRY);
@@ -112,7 +111,6 @@ public class CoreModule{
 		TEMPLATE_REGISTRY.addChild("children",new ListRegistryNode<>());
 		REGISTRY.addChild(TEMPLATE_REGISTRY_NAME,TEMPLATE_REGISTRY);
 		REGISTRY.addChild(TEMPLATE_TYPE_REGISTRY_NAME,TEMPLATE_TYPE_REGISTRY);
-		REGISTRY.addChild(WINDOW_REGISTRY_NAME,WINDOW_REGISTRY);
 		REGISTRY.addChild(COMMAND_REGISTRY_NAME,Main.INSTANCE.getGlobalCommandRegistry());
 		REGISTRY.addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
 		Registry.registerApplication("template","fooledit/template",TemplateEditor.INSTANCE,TemplateEditor.class,TemplateEditor.INSTANCE);
@@ -121,13 +119,6 @@ public class CoreModule{
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
 			try{
 				Helper.writeText(serializier.encode(HISTORY_REGISTRY),new File(Main.INSTANCE.getUserPath(),"file_history.json"));
-			}catch(Exception ex){
-				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
-			}
-		});
-		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
-			try{
-				Helper.writeText(serializier.encode(WINDOW_REGISTRY),new File(Main.INSTANCE.getUserPath(),"layout.json"));
 			}catch(Exception ex){
 				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
 			}

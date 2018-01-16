@@ -253,7 +253,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			remark.add(range.getKey().getOffset());
 			remark.add(range.getValue().getOffset());
 		});
-		return remark;
+		return new ListRegistryNode<>(remark);
 	}
 	@Override
 	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
@@ -272,8 +272,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		ParserBuilder parserBuilder=language!=null?language.getParserBuilder():null;
 		CodeEditor codeEditor=new CodeEditor(parserBuilder,highlighter);
 		codeEditor.textProperty().bindBidirectional(data.getText());
-		if(remark instanceof List){
-			List<Number> pair=(List<Number>)remark;
+		if(remark instanceof ListRegistryNode){
+			List<Number> pair=((ListRegistryNode<Number,String>)remark).getChildren();
 			codeEditor.getArea().selectRange(pair.get(0).intValue(),pair.get(1).intValue());
 			for(int i=2;i<pair.size();i+=2)
 				codeEditor.selections().add(codeEditor.createSelection(pair.get(i).intValue(),pair.get(i+1).intValue()));

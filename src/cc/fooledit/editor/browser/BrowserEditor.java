@@ -71,7 +71,13 @@ public class BrowserEditor implements DataEditor<BrowserObject>{
 	}
 	@Override
 	public Node edit(BrowserObject data,Object remark,RegistryNode<String,Object,String> meta){
+		if(remark!=null)
+			data.getWebView().getEngine().load((String)remark);
 		return data.getEditor();
+	}
+	@Override
+	public Object getRemark(Node node){
+		return ((BrowserViewer)node).getEngine().getLocation();
 	}
 	@Override
 	public String getName(){

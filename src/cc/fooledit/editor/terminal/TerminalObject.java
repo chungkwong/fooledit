@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.terminal;
-import cc.fooledit.core.DataObject;
-import cc.fooledit.core.DataObjectType;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -32,7 +31,7 @@ public class TerminalObject implements DataObject<TerminalObject>{
 	public TerminalObject(){
 		JComponent comp=null;
 		try{
-			File root=Main.INSTANCE.getModulePath("editor.terminal");
+			File root=Main.INSTANCE.getModulePath(TerminalModule.NAME);
 			List<URL> paths=new ArrayList<>();
 			for(File f:new File(root,"lib").listFiles())
 				paths.add(f.toURI().toURL());

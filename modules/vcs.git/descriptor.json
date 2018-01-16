@@ -7,5 +7,5 @@
 	"version_major":0,
 	"version_minor":0,
 	"version_revise":1,
-	"dependency":[]
+	"dependency":["editor.filesystem"]
 }

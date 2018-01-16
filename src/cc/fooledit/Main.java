@@ -17,6 +17,7 @@
 package cc.fooledit;
 
 import cc.fooledit.control.*;
+import static cc.fooledit.core.CoreModule.REGISTRY;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.editor.text.*;
@@ -258,21 +259,34 @@ public class Main extends Application{
 		//},globalCommandRegistry,CoreModule.NAME);
 		/*PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
 		root.setCenter((WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
-			String msg=MessageRegistry.getString("WELCOME",CoreModule.NAME);
-			RegistryNode<String,Object,String> welcome=DataObjectRegistry.create(TextObjectType.INSTANCE);
-			welcome.addChild(DataObject.DATA,new TextObject(msg));
-			DataObjectRegistry.addDataObject(welcome);
-			WorkSheet workSheet=new WorkSheet(welcome,getDefaultEditor(welcome),null);
-			setCurrentWorkSheet(workSheet);
-			return workSheet;
+		String msg=MessageRegistry.getString("WELCOME",CoreModule.NAME);
+		RegistryNode<String,Object,String> welcome=DataObjectRegistry.create(TextObjectType.INSTANCE);
+		welcome.addChild(DataObject.DATA,new TextObject(msg));
+		DataObjectRegistry.addDataObject(welcome);
+		WorkSheet workSheet=new WorkSheet(welcome,getDefaultEditor(welcome),null);
+		setCurrentWorkSheet(workSheet);
+		return workSheet;
 		}));*/
-		if(CoreModule.WINDOW_REGISTRY.getChildNames().isEmpty()){
-			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.BUFFER,DataObjectRegistry.create(TextObjectType.INSTANCE));
-			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.EDITOR,StructuredTextEditor.class.getName());
-			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.CURRENT,true);
-			CoreModule.WINDOW_REGISTRY.addChild(WorkSheet.REMARK,null);
+		SimpleRegistryNode<String,Object,String> last;
+		try{
+			last=(SimpleRegistryNode<String,Object,String>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getUserPath(),"layout.json")));
+		}catch(Exception ex){
+			last=new SimpleRegistryNode<>();
+			last.addChild(WorkSheet.BUFFER,DataObjectRegistry.create(TextObjectType.INSTANCE));
+			last.addChild(WorkSheet.EDITOR,StructuredTextEditor.class.getName());
+			last.addChild(WorkSheet.CURRENT,true);
+			last.addChild(WorkSheet.REMARK,null);
 		}
-		root.setCenter(WorkSheet.fromJSON(CoreModule.WINDOW_REGISTRY));
+		WorkSheet worksheet=WorkSheet.fromJSON(last);
+		root.setCenter(worksheet);
+		CoreModule.REGISTRY.addChild(CoreModule.WINDOW_REGISTRY_NAME,worksheet.getRegistry());
+		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
+			try{
+				Helper.writeText(StandardSerializiers.JSON_SERIALIZIER.encode(REGISTRY.getChild(CoreModule.WINDOW_REGISTRY_NAME)),new File(Main.INSTANCE.getUserPath(),"layout.json"));
+			}catch(Exception ex){
+				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
+			}
+		});
 	}
 	public RegistryNode<String,Command,String> getGlobalCommandRegistry(){
 		return globalCommandRegistry;

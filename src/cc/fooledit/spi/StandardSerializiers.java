@@ -73,7 +73,7 @@ public class StandardSerializiers{
 		}
 		@Override
 		public boolean isList(Object o){
-			return o instanceof RegistryNode;
+			return o instanceof ListRegistryNode;
 		}
 		@Override
 		public Iterator<Map.Entry<?,?>> getEntryIterator(Object o){

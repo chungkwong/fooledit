@@ -29,7 +29,7 @@ public class BeanRegistryNode<T> extends RegistryNode<String,Object,T>{
 		this.object=object;
 	}
 	@Override
-	public Collection<String> getChildNamesReal(){
+	protected Collection<String> getChildNamesReal(){
 		return Arrays.stream(object.getClass().getMethods())
 				.filter((m)->m.getParameterCount()==0&&m.getName().startsWith("get"))
 				.map((m)->m.getName().substring(3)).collect(Collectors.toList());

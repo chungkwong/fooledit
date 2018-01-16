@@ -46,7 +46,7 @@ public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
 		return children.remove((int)index);
 	}
 	@Override
-	public Collection<Integer> getChildNamesReal(){
+	protected Collection<Integer> getChildNamesReal(){
 		ArrayList<Integer> names=new ArrayList<>();
 		int len=size();
 		for(int i=0;i<len;i++)
@@ -62,7 +62,7 @@ public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
 	public void limit(int limit){
 		addListener(new CountListener(limit));
 	}
-	List<V> getChildren(){
+	public List<V> getChildren(){
 		return children;
 	}
 	private class CountListener implements RegistryChangeListener<Integer,V,T>{

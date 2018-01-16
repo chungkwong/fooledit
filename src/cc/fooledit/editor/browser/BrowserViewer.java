@@ -68,6 +68,7 @@ public class BrowserViewer extends BorderPane{
 	void refresh(){
 		engine.reload();
 	}
-	static{
+	public WebEngine getEngine(){
+		return engine;
 	}
 }

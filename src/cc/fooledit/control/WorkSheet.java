@@ -19,6 +19,8 @@ import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
+import java.util.*;
+import java.util.function.*;
 import javafx.application.*;
 import javafx.beans.value.*;
 import javafx.geometry.*;
@@ -30,28 +32,32 @@ import javafx.scene.layout.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class WorkSheet extends BorderPane{
-	private final RegistryNode<String,Object,String> registry;
+	private final LazyRegistryNode<String,Object,String> registry;
+	private final Function<String,Object> remarkSupplier=(key)->getDataEditor().getRemark(getCenter());
 	public WorkSheet(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
-		registry=new SimpleRegistryNode<>();
+		registry=new LazyRegistryNode<>(remarkSupplier,Collections.emptySet(),false);
 		setData(data,editor,remark);
 		restoreRegistry();
 	}
 	private WorkSheet(Node node){
-		registry=new SimpleRegistryNode<>();
+		registry=new LazyRegistryNode<>(remarkSupplier,Collections.emptySet(),false);
 		setCenter(node);
 		restoreRegistry();
 	}
-	private WorkSheet(Node node,RegistryNode<String,Object,String> registry){
+	private WorkSheet(Node node,LazyRegistryNode<String,Object,String> registry){
 		this.registry=registry;
+		registry.setSupplier(remarkSupplier);
 		setCenter(node);
 	}
-	private WorkSheet(RegistryNode<String,Object,String> data,DataEditor editor,Object remark,RegistryNode<String,Object,String> registry){
+	private WorkSheet(RegistryNode<String,Object,String> data,DataEditor editor,Object remark,LazyRegistryNode<String,Object,String> registry){
 		this.registry=registry;
+		registry.setSupplier(remarkSupplier);
 		setData(data,editor,remark);
 	}
 	private void setData(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
 		Node node=editor.edit((DataObject)data.getChild(DataObject.DATA),remark,data);
 		node.setUserData(new Pair<>(data,editor));
+		registry.setKeys(Collections.singleton(REMARK));
 		setCenter(node);
 	}
 	private void restoreRegistry(){
@@ -69,10 +75,10 @@ public class WorkSheet extends BorderPane{
 			registry.removeChild(DIVIDER);
 			registry.removeChild(FIRST);
 			registry.removeChild(LAST);
+			registry.removeChild(REMARK);
 			registry.addChild(BUFFER,new AliasRegistryNode<>(getDataObject()));
 			registry.addChild(EDITOR,getDataEditor().getClass().getName());
 			registry.addChild(CURRENT,true);
-			registry.addChild(REMARK,getDataEditor().getRemark(getCenter()));//FIXME
 		}
 	}
 	@Override
@@ -104,6 +110,7 @@ public class WorkSheet extends BorderPane{
 		first.sceneProperty().addListener(listener);
 		first.requestFocus();
 		restoreRegistry();
+		registry.setKeys(Collections.emptySet());
 		splitPane.getDividers().get(0).positionProperty().addListener((e,o,n)->registry.addChild(DIVIDER,n));
 	}
 	public void keepOnly(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
@@ -119,11 +126,25 @@ public class WorkSheet extends BorderPane{
 	public static final String BUFFER="buffer";
 	public static final String CURRENT="current";
 	public static final String REMARK="remark";
-	public static Node fromJSON(RegistryNode<String,Object,String> json){
+	public static WorkSheet fromJSON(SimpleRegistryNode<String,Object,String> json){
+		return fromJSON(toLazy(json));
+	}
+	private static LazyRegistryNode<String,Object,String> toLazy(SimpleRegistryNode<String,Object,String> json){
+		LazyRegistryNode<String,Object,String> reg=new LazyRegistryNode<>(null,Collections.emptySet(),false);
+		json.getChildNames().forEach((key)->{
+			Object child=json.getChild(key);
+			if(child instanceof SimpleRegistryNode)
+				reg.addChild(key,toLazy((SimpleRegistryNode<String,Object,String>)child));
+			else
+				reg.addChild(key,child);
+		});
+		return reg;
+	}
+	private static WorkSheet fromJSON(LazyRegistryNode<String,Object,String> json){
 		if(json.hasChild(DIRECTION)){
 			SplitPane pane=new SplitPane();
 			pane.setOrientation(Orientation.valueOf((String)json.getChild(DIRECTION)));
-			pane.getItems().setAll(fromJSON((RegistryNode<String,Object,String>)json.getChild(FIRST)),fromJSON((RegistryNode<String,Object,String>)json.getChild(LAST)));
+			pane.getItems().setAll(fromJSON((LazyRegistryNode<String,Object,String>)(RegistryNode<String,Object,String>)json.getChild(FIRST)),fromJSON((LazyRegistryNode<String,Object,String>)(RegistryNode<String,Object,String>)json.getChild(LAST)));
 			pane.setDividerPositions(((Number)json.getChild(DIVIDER)).doubleValue());
 			return new WorkSheet(pane,json);
 		}else{
@@ -131,6 +152,7 @@ public class WorkSheet extends BorderPane{
 			String editorName=(String)json.getChild(EDITOR);
 			DataEditor editor=CoreModule.DATA_OBJECT_EDITOR_REGISTRY.getChild(editorName);
 			WorkSheet workSheet=new WorkSheet(buffer,editor,json.getChild(REMARK),json);
+			json.removeChild(REMARK);
 			if((Boolean)json.getChild(CURRENT)){
 				Main.INSTANCE.setCurrentWorkSheet(workSheet);
 				Platform.runLater(()->workSheet.requestFocus());
@@ -159,7 +181,7 @@ public class WorkSheet extends BorderPane{
 	public DataEditor getDataEditor(){
 		return ((Pair<RegistryNode<String,Object,String>,DataEditor>)getCenter().getUserData()).getValue();
 	}
-	public RegistryNode<String,Object,String> getRegistry(){
+	public SimpleRegistryNode<String,Object,String> getRegistry(){
 		return registry;
 	}
 }
