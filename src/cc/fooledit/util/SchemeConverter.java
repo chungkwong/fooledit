@@ -30,7 +30,7 @@ public class SchemeConverter{
 			throw new NumberFormatException();
 	}
 	public static String toString(ScmObject obj){
-		return ((ScmString)obj).getValue();
+		return obj instanceof ScmString?((ScmString)obj).getValue():((ScmSymbol)obj).getValue();
 	}
 	public static Object toJava(ScmObject obj){
 		if(obj instanceof ScmJavaObject)

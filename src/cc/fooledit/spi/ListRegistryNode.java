@@ -54,7 +54,8 @@ public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
 		return names;
 	}
 	public void addChild(V value){
-		addChild(size(),value);
+		if(!children.contains(value))
+			addChild(size(),value);
 	}
 	public int size(){
 		return children.size();

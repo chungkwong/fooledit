@@ -42,6 +42,7 @@ public class ModuleRegistry{
 	}
 	public static void ensureLoaded(String module){
 		if(!MODULE_REGISTRY.hasChild(module)){
+			Logger.getGlobal().log(Level.INFO,"Trying to load {0}",new Object[]{module});
 			try{
 				RegistryNode<String,Object,String> moduleDescriptor=getModuleDescriptor(module);
 				MODULE_REGISTRY.addChild(module,moduleDescriptor);

@@ -142,7 +142,7 @@ public class Main extends Application{
 		});
 		addCommand("ensure-loaded",(o)->{
 			ModuleRegistry.ensureLoaded(SchemeConverter.toString(ScmList.first(o)));
-			return null;
+			return ScmNil.NIL;
 		});
 		addCommand("get-registry",(o)->{
 			return SchemeConverter.toScheme(Registry.ROOT.resolve(SchemeConverter.toString(ScmList.first(o))));

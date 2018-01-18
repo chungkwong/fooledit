@@ -3,3 +3,7 @@
 *.tokens
 /nbproject/private/
 /build/
+/modules/vcs.svn/nbproject/private/
+/modules/vcs.git/nbproject/private/
+/modules/vcs.git/build/
+/modules/vcs.git/dist/

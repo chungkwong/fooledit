@@ -139,31 +139,34 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 		((RegistryNode)core.getOrCreateChild(CoreModule.PROTOCOL_REGISTRY_NAME)).addChild(scheme,module);
 	}
 	public static void providesDataObjectType(String type,String module){
-		providesCore(CoreModule.DATA_OBJECT_TYPE_REGISTRY_NAME,type,module);
+		providesCore(type,module,CoreModule.DATA_OBJECT_TYPE_REGISTRY_NAME);
 	}
 	public static void providesDataObjectEditor(String type,String module){
-		providesCore(CoreModule.DATA_OBJECT_EDITOR_REGISTRY_NAME,type,module);
+		providesCore(type,module,CoreModule.DATA_OBJECT_EDITOR_REGISTRY_NAME);
 	}
 	public static void providesTypeToEditor(String type,String module){
-		providesCore(CoreModule.TYPE_TO_EDITOR_REGISTRY_NAME,type,module);
+		providesCore(type,module,CoreModule.TYPE_TO_EDITOR_REGISTRY_NAME);
 	}
 	public static void providesTemplateType(String type,String module){
-		providesCore(CoreModule.TEMPLATE_TYPE_REGISTRY_NAME,type,module);
+		providesCore(type,module,CoreModule.TEMPLATE_TYPE_REGISTRY_NAME);
 	}
 	public static void providesApplication(String type,String module){
-		providesCore(CoreModule.APPLICATION_REGISTRY_NAME,type,module);
-	}
-	public static void providesCommand(String type,String module){
-		providesCore(CoreModule.COMMAND_REGISTRY_NAME,type,module);
+		providesCore(type,module,CoreModule.APPLICATION_REGISTRY_NAME);
 	}
 	public static void providesContentTypeLoader(String type,String module){
-		providesCore(CoreModule.CONTENT_TYPE_LOADER_REGISTRY_NAME,type,module);
+		providesCore(type,module,CoreModule.CONTENT_TYPE_LOADER_REGISTRY_NAME);
 	}
 	public static void providesDynamicMenu(String type,String module){
-		providesCore(CoreModule.DYNAMIC_MENU_REGISTRY_NAME,type,module);
+		providesCore(type,module,CoreModule.DYNAMIC_MENU_REGISTRY_NAME);
 	}
-	public static void providesCore(String registry,String type,String module){
-		RegistryNode<Object,Object,String> core=CoreModule.PROVIDER_REGISTRY.getOrCreateChild(CoreModule.NAME);
+	public static void providesCommand(String type,String module){
+		providesCore(type,module,CoreModule.COMMAND_REGISTRY_NAME);
+	}
+	public static void providesCore(String type,String module,String registry){
+		provides(type,module,registry,CoreModule.NAME);
+	}
+	public static void provides(String type,String module,String registry,String target){
+		RegistryNode<Object,Object,String> core=CoreModule.PROVIDER_REGISTRY.getOrCreateChild(target);
 		((RegistryNode)core.getOrCreateChild(registry)).addChild(type,module);
 	}
 }

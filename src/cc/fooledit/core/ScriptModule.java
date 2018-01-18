@@ -43,8 +43,9 @@ public class ScriptModule extends Module{
 		evalScript("on-uninstall.scm");
 	}
 	private void evalScript(String filename)throws IOException,ScriptException{
-		File file=new File(Main.INSTANCE.getModulePath(name),filename);
-		if(file.exists())
+		File file=Main.INSTANCE.getFile(filename,name);
+		if(file.exists()){
 			Main.INSTANCE.getScriptAPI().eval(Helper.readText(file));
+		}
 	}
 }
