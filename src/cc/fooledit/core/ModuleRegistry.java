@@ -47,21 +47,16 @@ public class ModuleRegistry{
 				RegistryNode<String,Object,String> moduleDescriptor=getModuleDescriptor(module);
 				MODULE_REGISTRY.addChild(module,moduleDescriptor);
 				((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureLoaded(s));
-				Module mod=new ScriptModule(module);
 				if(!CoreModule.INSTALLED_MODULE_REGISTRY.hasChild(module)){
-					mod.onInstall();
+					Logger.getGlobal().log(Level.INFO,"Trying to install {0}",new Object[]{module});
+					onInstall(module);
 					CoreModule.INSTALLED_MODULE_REGISTRY.addChild(module,null);
 				}
-				mod.onLoad();
-				moduleDescriptor.addChild(MODULE,mod);
+				onLoad(module);
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
 		}
-	}
-	public static void unLoad(String cls) throws Exception{
-		RegistryNode<String,Object,String> moduleDescriptor=MODULE_REGISTRY.removeChild(cls);
-		((Module)moduleDescriptor.getChild(MODULE)).onUnLoad();
 	}
 	public static RegistryNode<String,Object,String> getModuleDescriptor(String name){
 		try{
@@ -109,6 +104,27 @@ public class ModuleRegistry{
 		Map<Object,Object> object=(Map<Object,Object>)JSONDecoder.decode(manifest);
 		String cls=(String)object.get("class");
 		String path=new URL(dir.toURI().toURL(),(String)object.get("classpath")).toString();
+	}
+	private void onLoadModule(){
+
+	}
+	public static void onLoad(String module)throws Exception{
+		evalScript("on-load.scm",module);
+	}
+	public static void onUnLoad(String module)throws Exception{
+		evalScript("on-unload.scm",module);
+	}
+	public static void onInstall(String module)throws Exception{
+		evalScript("on-install.scm",module);
+	}
+	public static void onUninstall(String module)throws Exception{
+		evalScript("on-uninstall.scm",module);
+	}
+	private static void evalScript(String filename,String module)throws Exception{
+		File file=Main.INSTANCE.getFile(filename,module);
+		if(file.exists()){
+			Main.INSTANCE.getScriptAPI().eval(Helper.readText(file));
+		}
 	}
 	public static final String MODULE="module";
 	public static final String NAME="name";

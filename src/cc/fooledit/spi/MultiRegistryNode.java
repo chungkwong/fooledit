@@ -20,18 +20,15 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class MultiRegistryNode<K,V,T> extends SimpleRegistryNode<K,ListRegistryNode<V,K>,T>{
-	public MultiRegistryNode(){
-
-	}
-	public void addChildElement(K name,V value){
-		if(!hasChildReal(name)){
-			addChild(name,new ListRegistryNode<>());
+public class MultiRegistryNode{
+	public static <K,V,T> void addChildElement(K name,V value,RegistryNode<K,ListRegistryNode<V,K>,T> registry){
+		if(!registry.hasChildReal(name)){
+			registry.addChild(name,new ListRegistryNode<>());
 		}
-		((ListRegistryNode<V,T>)getChild(name)).addChild(0,value);
+		((ListRegistryNode<V,T>)registry.getChild(name)).addChild(0,value);
 	}
-	public List<V> getChildElements(K name){
-		ListRegistryNode<V,K> child=getChild(name);
+	public static <K,V,T> List<V> getChildElements(K name,RegistryNode<K,ListRegistryNode<V,K>,T> registry){
+		ListRegistryNode<V,K> child=registry.getChild(name);
 		return child!=null?child.getChildren():Collections.emptyList();
 	}
 }

@@ -48,7 +48,8 @@ public class LazyTreeItem<T> extends TreeItem<T>{
 		});
 	}
 	public void refresh(){
-		getChildren().setAll(supplier.get());
+		if(isExpanded())
+			getChildren().setAll(supplier.get());
 	}
 	@Override
 	public boolean isLeaf(){

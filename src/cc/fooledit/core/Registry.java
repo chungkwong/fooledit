@@ -32,10 +32,11 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 	public static final Registry ROOT=new Registry();
 	private Registry(){
 		provider=CoreModule.PROVIDER_REGISTRY;
+		loadPreference();
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());
 	}
 	public <K,V> RegistryNode<K,V,String> resolve(String path){
-		RegistryNode node=Registry.ROOT;
+		RegistryNode node=this;
 		for(String name:path.split("/"))
 			node=(RegistryNode)node.getOrCreateChild(name);
 		return node;
@@ -45,8 +46,9 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 			RegistryNode<String,RegistryNode<Object,Object,Object>,Object> toLoad=(RegistryNode<String,RegistryNode<Object,Object,Object>,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(getPersistentFile()));
 			for(String path:toLoad.getChildNames()){
 				RegistryNode<Object,Object,String> registry=resolve(path);
+				RegistryNode<Object,Object,Object> values=toLoad.getChild(path);
 				for(Object key:toLoad.getChild(path).getChildNames())
-					registry.addChild(key,toLoad.getChild(path).getChild(key));
+					registry.addChild(key,values.getChild(key));
 			}
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);

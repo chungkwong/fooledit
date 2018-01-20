@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
+import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import java.io.*;
 import java.net.*;
@@ -54,14 +55,14 @@ public interface ContentTypeDetector{
 	}
 	public static class SuffixGuesser implements ContentTypeDetector{
 		public void registerSuffix(String suffix,String mime){
-			CoreModule.SUFFIX_REGISTRY.addChildElement(suffix.toLowerCase(),ContentTypeHelper.normalize(mime));
+			MultiRegistryNode.addChildElement(suffix.toLowerCase(),ContentTypeHelper.normalize(mime),CoreModule.SUFFIX_REGISTRY);
 		}
 		@Override
 		public List<String> listAllPossible(URLConnection connection){
 			String name=getFile(connection);
 			int delim=name.lastIndexOf('.');
 			if(delim>0&&name.charAt(delim-1)!='/'&&name.charAt(delim-1)!='\\'){
-				return CoreModule.SUFFIX_REGISTRY.getChildElements(name.substring(delim+1).toLowerCase());
+				return MultiRegistryNode.getChildElements(name.substring(delim+1).toLowerCase(),CoreModule.SUFFIX_REGISTRY);
 			}
 			return Collections.emptyList();
 		}

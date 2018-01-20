@@ -43,6 +43,11 @@ public abstract class RegistryNode<K,V,T>{
 			addChild(name,(V)new SimpleRegistryNode());
 		return getChild(name);
 	}
+	public V getOrCreateChild(K name,V def){
+		if(!hasChild(name))
+			addChild(name,def);
+		return getChild(name);
+	}
 	public V getChildOrDefault(K name,V def){
 		return hasChild(name)?getChild(name):def;
 	}
