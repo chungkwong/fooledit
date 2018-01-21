@@ -43,7 +43,7 @@ public class ImageEditorModule{
 		Registry.providesTypeToEditor(ImageObject.class.getName(),NAME);
 		Registry.providesTemplateType(ImageTemplate.class.getName(),NAME);
 		try{
-			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getChild("children")).addChild(
+			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getOrCreateChild("children")).addChild(
 					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Main.INSTANCE.getFile("templates.json",NAME))));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.INFO,null,ex);

@@ -78,6 +78,7 @@ public class Main extends Application{
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		script=new ScriptAPI();
 		registerStandardCommand();
+		Registry.ROOT.loadPreference();
 		ModuleRegistry.loadDefault();
 		CoreModule.PROTOCOL_REGISTRY.addChild("application",new ApplicationRegistry());
 		keymapRegistry=Registry.ROOT.registerKeymap(CoreModule.NAME);

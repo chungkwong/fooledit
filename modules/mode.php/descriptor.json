@@ -1,5 +1,5 @@
 {
-	"name":"editor.image",
+	"name":"mode.php",
 	"description":"",
 	"license":"GPLv3",
 	"author":"kwong",
@@ -7,5 +7,5 @@
 	"version_major":0,
 	"version_minor":0,
 	"version_revise":1,
-	"dependency":["core"]
+	"dependency":[]
 }

@@ -18,14 +18,11 @@ package cc.fooledit.core;
 import cc.fooledit.*;
 import static cc.fooledit.core.CoreModule.MODULE_REGISTRY;
 import cc.fooledit.spi.*;
-import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
-import java.nio.file.*;
 import java.util.*;
 import java.util.logging.*;
-import java.util.prefs.*;
 import java.util.stream.*;
 import java.util.zip.*;
 /**
@@ -44,26 +41,41 @@ public class ModuleRegistry{
 		if(!MODULE_REGISTRY.hasChild(module)){
 			Logger.getGlobal().log(Level.INFO,"Trying to load {0}",new Object[]{module});
 			try{
-				RegistryNode<String,Object,String> moduleDescriptor=getModuleDescriptor(module);
-				MODULE_REGISTRY.addChild(module,moduleDescriptor);
-				((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureLoaded(s));
-				if(!CoreModule.INSTALLED_MODULE_REGISTRY.hasChild(module)){
-					Logger.getGlobal().log(Level.INFO,"Trying to install {0}",new Object[]{module});
-					onInstall(module);
-					CoreModule.INSTALLED_MODULE_REGISTRY.addChild(module,null);
-				}
-				onLoad(module);
+				ensureLoaded(getModuleDescriptor(module));
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
 		}
 	}
-	public static RegistryNode<String,Object,String> getModuleDescriptor(String name){
+	private static void ensureLoaded(RegistryNode<String,Object,String> moduleDescriptor) throws Exception{
+		String module=(String)moduleDescriptor.getChild(NAME);
+		MODULE_REGISTRY.addChild(module,moduleDescriptor);
+		ensureInstalled(module);
+		((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureLoaded(s));
+		onLoad(module);
+	}
+	public static void ensureInstalled(String module){
 		try{
-			return (RegistryNode<String,Object,String>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getModulePath(name),"descriptor.json")));
+			if(!CoreModule.INSTALLED_MODULE_REGISTRY.hasChild(module))
+				ensureInstalled(getModuleDescriptor(module));
 		}catch(Exception ex){
-			throw new RuntimeException(ex);
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
+	}
+	private static void ensureInstalled(RegistryNode<String,Object,String> moduleDescriptor) throws Exception{
+		String module=(String)moduleDescriptor.getChild(NAME);
+		((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureInstalled(s));
+		if(!CoreModule.INSTALLED_MODULE_REGISTRY.hasChild(module)){
+			Logger.getGlobal().log(Level.INFO,"Trying to install {0}",new Object[]{module});
+			onInstall(module);
+			CoreModule.INSTALLED_MODULE_REGISTRY.addChild(module,null);
+		}
+	}
+	public static RegistryNode<String,Object,String> getModuleDescriptor(String name) throws Exception{
+		RegistryNode<String,Object,String> moduleDescriptor=(RegistryNode<String,Object,String>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getModulePath(name),"descriptor.json")));
+		if(!moduleDescriptor.getChild(NAME).equals(name))
+			throw new RuntimeException("Bad module format: "+name);
+		return moduleDescriptor;
 	}
 	public static Collection<String> getInstalledModules(){
 		return Arrays.stream(Main.INSTANCE.getDataPath().listFiles((File file)->file.isDirectory())).
@@ -98,12 +110,6 @@ public class ModuleRegistry{
 			}
 			return base;
 		}
-	}
-	public void install(File dir) throws BackingStoreException, IOException, SyntaxException{
-		String manifest=new String(Files.readAllBytes(new File(dir,"descriptor.json").toPath()),StandardCharsets.UTF_8);
-		Map<Object,Object> object=(Map<Object,Object>)JSONDecoder.decode(manifest);
-		String cls=(String)object.get("class");
-		String path=new URL(dir.toURI().toURL(),(String)object.get("classpath")).toString();
 	}
 	private void onLoadModule(){
 

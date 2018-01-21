@@ -28,11 +28,10 @@ import java.util.logging.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>,String>{
+public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?,String>,String>{
 	public static final Registry ROOT=new Registry();
 	private Registry(){
-		provider=CoreModule.PROVIDER_REGISTRY;
-		loadPreference();
+		provider=(RegistryNode<String,?,String>)(getOrCreateChild(CoreModule.NAME)).getOrCreateChild(CoreModule.PROVIDER_REGISTRY_NAME);
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());
 	}
 	public <K,V> RegistryNode<K,V,String> resolve(String path){
@@ -47,11 +46,18 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<?,?,String>
 			for(String path:toLoad.getChildNames()){
 				RegistryNode<Object,Object,String> registry=resolve(path);
 				RegistryNode<Object,Object,Object> values=toLoad.getChild(path);
-				for(Object key:toLoad.getChild(path).getChildNames())
-					registry.addChild(key,values.getChild(key));
+				if(values instanceof ListRegistryNode){//FIXME
+					((RegistryNode)registry.getParent()).addChild(registry.getName(),values);
+				}else{
+					for(Object key:values.getChildNames())
+						registry.addChild(key,values.getChild(key));
+				}
 			}
 		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			Logger.getGlobal().log(Level.INFO,"Failed to load registry cache",ex);
+			for(String mod:Main.INSTANCE.getDataPath().list()){
+				ModuleRegistry.ensureInstalled(mod);
+			}
 		}
 	}
 	public void syncPersistent(){

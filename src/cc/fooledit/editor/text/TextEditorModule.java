@@ -41,7 +41,7 @@ public class TextEditorModule{
 		Registry.providesTypeToEditor(TextObject.class.getName(),NAME);
 		Registry.providesTemplateType(TextTemplate.class.getName(),NAME);
 		try{
-			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getChild("children")).addChild(
+			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getOrCreateChild("children")).addChild(
 					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Main.INSTANCE.getFile("templates.json",NAME))));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.INFO,null,ex);

@@ -86,9 +86,6 @@ public class CoreModule{
 	public static void onLoad(){
 		HISTORY_REGISTRY.limit(20);
 		REGISTRY.addChild(HISTORY_REGISTRY_NAME,HISTORY_REGISTRY);
-		TEMPLATE_REGISTRY.addChildIfNotPresent("name","");
-		TEMPLATE_REGISTRY.addChildIfNotPresent("module","core");
-		TEMPLATE_REGISTRY.addChildIfNotPresent("children",new ListRegistryNode<>());
 		REGISTRY.addChild(COMMAND_REGISTRY_NAME,Main.INSTANCE.getGlobalCommandRegistry());
 		Registry.registerApplication("template","fooledit/template",TemplateEditor.INSTANCE,TemplateEditor.class,TemplateEditor.INSTANCE);
 		Registry.registerApplication("registry","fooledit/registry",RegistryEditor.INSTANCE,RegistryEditor.class,RegistryEditor.INSTANCE);
@@ -113,6 +110,9 @@ public class CoreModule{
 		PERSISTENT_REGISTRY.addChild("core/"+CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+CONTENT_TYPE_LOADER_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+SUFFIX_REGISTRY_NAME);
+		TEMPLATE_REGISTRY.addChildIfNotPresent("name","");
+		TEMPLATE_REGISTRY.addChildIfNotPresent("module","core");
+		TEMPLATE_REGISTRY.addChildIfNotPresent("children",new ListRegistryNode<>());
 		PROVIDER_REGISTRY.getOrCreateChild(NAME).addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
 	}
 	private static <T> T fromJSON(String file,Supplier<T> def){
