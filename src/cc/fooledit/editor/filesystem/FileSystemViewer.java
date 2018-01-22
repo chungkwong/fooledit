@@ -321,7 +321,7 @@ public class FileSystemViewer extends BorderPane{
 	}
 	public static void main(String[] args) throws IOException, InterruptedException{
 		/*WatchService service=FileSystems.getDefault().newWatchService();
-		new File("/home/kwong/NetBeansProjects/jtk/").toPath().register(service,
+		new File("/home/kwong/NetBeansProjects/fooledit/").toPath().register(service,
 				StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_DELETE,StandardWatchEventKinds.ENTRY_MODIFY);
 		for(int i=0;i<100;i++){
 			WatchKey key=service.poll(20,TimeUnit.SECONDS);

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.media;
-import cc.fooledit.core.DataObjectType;
+import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
@@ -43,7 +43,7 @@ public class MediaObjectType implements DataObjectType<MediaObject>{
 		}
 	}
 	public MediaObject readFrom(InputStream in) throws Exception{
-		File tmp=File.createTempFile("jtk","");
+		File tmp=File.createTempFile("fooledit","");
 		try(OutputStream out=new FileOutputStream(tmp)){
 			byte[] buf=new byte[4096];
 			int c;

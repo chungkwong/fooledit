@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import com.github.chungkwong.jschememin.type.*;
@@ -26,6 +25,7 @@ import javafx.collections.*;
 import javafx.scene.control.*;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.*;
+import cc.fooledit.Main;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>

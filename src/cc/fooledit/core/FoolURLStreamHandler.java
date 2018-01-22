@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.util;
-import cc.fooledit.core.CoreModule;
+package cc.fooledit.core;
+import cc.fooledit.core.*;
 import java.net.*;
 /**
  *
@@ -28,7 +28,7 @@ public class FoolURLStreamHandler implements URLStreamHandlerFactory{
 	}
 	@Override
 	public URLStreamHandler createURLStreamHandler(String protocol){
-		URLStreamHandler handler=CoreModule.PROTOCOL_REGISTRY.getChild(protocol);
+		URLStreamHandler handler=CoreModule.getPROTOCOL_REGISTRY().getChild(protocol);
 		if(handler!=null)
 			return handler;
 		String packagePrefix="sun.net.www.protocol";
@@ -45,7 +45,7 @@ public class FoolURLStreamHandler implements URLStreamHandlerFactory{
 			}
 			if(cls!=null){
 				handler=(URLStreamHandler)cls.newInstance();
-				CoreModule.PROTOCOL_REGISTRY.addChild(clsName,handler);
+				CoreModule.getPROTOCOL_REGISTRY().addChild(clsName,handler);
 				return handler;
 			}
 		}catch(Exception e){

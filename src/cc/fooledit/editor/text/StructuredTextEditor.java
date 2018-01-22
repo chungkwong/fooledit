@@ -217,7 +217,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		});
 
 		try{
-			//scene.setUserAgentStylesheet("com/github/chungkwong/jtk/dark.css");
+			//scene.setUserAgentStylesheet("com/github/chungkwong/fooledit/dark.css");
 			Main.INSTANCE.getScene().getStylesheets().add(Main.INSTANCE.getFile("stylesheets/default.css",TextEditorModule.NAME).toURI().toURL().toString());
 		}catch(MalformedURLException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);

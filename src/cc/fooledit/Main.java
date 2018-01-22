@@ -16,6 +16,7 @@
  */
 package cc.fooledit;
 
+import cc.fooledit.core.FoolURLStreamHandler;
 import cc.fooledit.control.*;
 import static cc.fooledit.core.CoreModule.REGISTRY;
 import cc.fooledit.core.*;
@@ -67,7 +68,6 @@ public class Main extends Application{
 	public Main(){
 		INSTANCE=this;
 		System.setProperty("user.dir",SYSTEM_PATH.toString());
-		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		Logger.getGlobal().setLevel(Level.INFO);
 		try{
 			Logger.getGlobal().addHandler(new StreamHandler(new FileOutputStream(new File(USER_PATH,"LOG")),new Notifier.SystemLogFormatter()));
@@ -85,6 +85,7 @@ public class Main extends Application{
 		new KeymapSupport();
 		initMenuBar();
 		root.setBottom(notifier.getStatusBar());
+		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		loadDefaultWorkSheet();
 		runScript();
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));

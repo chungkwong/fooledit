@@ -16,7 +16,6 @@
  */
 package cc.fooledit.core;
 import cc.fooledit.*;
-import static cc.fooledit.core.CoreModule.MODULE_REGISTRY;
 import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
@@ -38,7 +37,7 @@ public class ModuleRegistry{
 		//Arrays.stream(preload.split(":")).forEach((name)->ensureLoaded(name));
 	}
 	public static void ensureLoaded(String module){
-		if(!MODULE_REGISTRY.hasChild(module)){
+		if(!CoreModule.getMODULE_REGISTRY().hasChild(module)){
 			Logger.getGlobal().log(Level.INFO,"Trying to load {0}",new Object[]{module});
 			try{
 				ensureLoaded(getModuleDescriptor(module));
@@ -49,14 +48,14 @@ public class ModuleRegistry{
 	}
 	private static void ensureLoaded(RegistryNode<String,Object,String> moduleDescriptor) throws Exception{
 		String module=(String)moduleDescriptor.getChild(NAME);
-		MODULE_REGISTRY.addChild(module,moduleDescriptor);
+		CoreModule.getMODULE_REGISTRY().addChild(module,moduleDescriptor);
 		ensureInstalled(module);
 		((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureLoaded(s));
 		onLoad(module);
 	}
 	public static void ensureInstalled(String module){
 		try{
-			if(!CoreModule.INSTALLED_MODULE_REGISTRY.hasChild(module))
+			if(!CoreModule.getINSTALLED_MODULE_REGISTRY().hasChild(module))
 				ensureInstalled(getModuleDescriptor(module));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
@@ -65,10 +64,10 @@ public class ModuleRegistry{
 	private static void ensureInstalled(RegistryNode<String,Object,String> moduleDescriptor) throws Exception{
 		String module=(String)moduleDescriptor.getChild(NAME);
 		((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureInstalled(s));
-		if(!CoreModule.INSTALLED_MODULE_REGISTRY.hasChild(module)){
+		if(!CoreModule.getINSTALLED_MODULE_REGISTRY().hasChild(module)){
 			Logger.getGlobal().log(Level.INFO,"Trying to install {0}",new Object[]{module});
 			onInstall(module);
-			CoreModule.INSTALLED_MODULE_REGISTRY.addChild(module,null);
+			CoreModule.getINSTALLED_MODULE_REGISTRY().addChild(module,null);
 		}
 	}
 	public static RegistryNode<String,Object,String> getModuleDescriptor(String name) throws Exception{

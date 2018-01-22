@@ -95,9 +95,9 @@ public class CharsetDetector{
 		perferedEncodings.add(StandardCharsets.UTF_16);
 	}
 	public static void main(String[] args) throws IOException{
-		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/NetBeansProjects/jtk/test/cc/fooledit/editor/text/GBK.txt"))));
-		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/NetBeansProjects/jtk/test/cc/fooledit/editor/text/UTF-8.txt"))));
-		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/NetBeansProjects/jtk/test/cc/fooledit/editor/text/UTF-16.txt"))));
+		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/NetBeansProjects/fooledit/test/cc/fooledit/editor/text/GBK.txt"))));
+		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/NetBeansProjects/fooledit/test/cc/fooledit/editor/text/UTF-8.txt"))));
+		System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/NetBeansProjects/fooledit/test/cc/fooledit/editor/text/UTF-16.txt"))));
 		//System.out.println(probeCharsets(MarkableInputStream.wrap(new FileInputStream("/home/kwong/sysu_learning/政治课/中国近现代史纲要.xlsx"))));
 	}
 }
