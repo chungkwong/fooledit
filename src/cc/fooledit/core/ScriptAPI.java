@@ -36,6 +36,7 @@ public class ScriptAPI{
 		return SCHEME_ENGINE.eval(code,CONTEXT);
 	}
 	public static void main(String[] args){
+		java.net.URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		new Evaluator(true);
 	}
 }

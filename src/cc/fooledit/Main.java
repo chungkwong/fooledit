@@ -16,7 +16,6 @@
  */
 package cc.fooledit;
 
-import cc.fooledit.core.FoolURLStreamHandler;
 import cc.fooledit.control.*;
 import static cc.fooledit.core.CoreModule.REGISTRY;
 import cc.fooledit.core.*;
@@ -76,6 +75,7 @@ public class Main extends Application{
 		}
 		Logger.getGlobal().addHandler(notifier);
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
+		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		script=new ScriptAPI();
 		registerStandardCommand();
 		Registry.ROOT.loadPreference();
@@ -85,7 +85,6 @@ public class Main extends Application{
 		new KeymapSupport();
 		initMenuBar();
 		root.setBottom(notifier.getStatusBar());
-		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		loadDefaultWorkSheet();
 		runScript();
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));

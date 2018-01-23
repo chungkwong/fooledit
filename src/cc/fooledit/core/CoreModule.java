@@ -163,7 +163,7 @@ public class CoreModule{
 	}
 	static RegistryNode<String,URLStreamHandler,String> getPROTOCOL_REGISTRY(){
 		if(PROTOCOL_REGISTRY==null)
-			PROVIDER_REGISTRY=(RegistryNode<String,RegistryNode<Object,Object,String>,String>)getREGISTRY().getOrCreateChild(PROVIDER_REGISTRY_NAME);
+			PROTOCOL_REGISTRY=(RegistryNode<String,URLStreamHandler,String>)getREGISTRY().getOrCreateChild(PROTOCOL_REGISTRY_NAME);
 		return PROTOCOL_REGISTRY;
 	}
 	static RegistryNode<String,Object,String> getREGISTRY(){
@@ -171,5 +171,4 @@ public class CoreModule{
 			REGISTRY=(RegistryNode<String,Object,String>)Registry.ROOT.getOrCreateChild(NAME);
 		return REGISTRY;
 	}
-
 }

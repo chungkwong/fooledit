@@ -35,8 +35,6 @@ import org.eclipse.jgit.transport.*;
 public class GitTreeItem extends TreeItem<Object> implements NavigationTreeItem{
 	public GitTreeItem(Git git){
 		super(git);
-		//getChildren().add(new WorkingTreeItem(directory));
-		//getChildren().add(new StageTreeItem(git));
 		try{
 			getChildren().add(new StageTreeItem(git));
 			getChildren().add(new LogTreeItem(git));

@@ -1,21 +1,4 @@
-checkout
-revert
-tag
 note
-push
-pull
-add
 clear(untracker,missing,changed,added,removed,modified)
-commit
-config
-remote added
 collect
-remove tag
 commit info parent content
-remote
-blame
-branch checkout revert merge delete rename
-push
-pull
-fetch
-remote remove rename
