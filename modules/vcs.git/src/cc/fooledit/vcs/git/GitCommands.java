@@ -43,5 +43,8 @@ public class GitCommands{
 	public Properties gc(Git git) throws GitAPIException{
 		return git.gc().call();
 	}
+	public Status status(Git git) throws GitAPIException{
+		return git.status().call();
+	}
 
 }

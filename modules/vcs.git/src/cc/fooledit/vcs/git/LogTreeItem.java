@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
+import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import java.io.*;
 import java.util.*;
@@ -35,15 +36,15 @@ import org.eclipse.jgit.treewalk.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class LogTreeItem extends TreeItem<Object> implements NavigationTreeItem{
+public class LogTreeItem extends LazyTreeItem<String> implements NavigationTreeItem{
 	public LogTreeItem(Git git) throws GitAPIException{
-		super(MessageRegistry.getString("COMMIT",GitModuleReal.NAME));
-		try{
-			for(RevCommit rev:git.log().call()){
-				getChildren().add(new CommitTreeItem(rev));
+		super(()->{
+			try{
+				return StreamSupport.stream(git.log().call().spliterator(),false).map((rev)->new CommitTreeItem(rev)).collect(Collectors.toList());
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
-		}catch(NoHeadException ex){
-		}
+		},MessageRegistry.getString("COMMIT",GitModuleReal.NAME));
 	}
 	@Override
 	public String toString(){

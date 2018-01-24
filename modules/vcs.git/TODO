@@ -1,4 +1,3 @@
 note
 clear(untracker,missing,changed,added,removed,modified)
-collect
 commit info parent content

@@ -15,11 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
+import cc.fooledit.*;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.spi.*;
 import com.github.chungkwong.jschememin.type.*;
+import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 import javafx.scene.*;
+import org.eclipse.jgit.api.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -79,5 +84,32 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 	@Override
 	public String getName(){
 		return MessageRegistry.getString("GIT_REPOSITORY_VIEWER",GitModuleReal.NAME);
+	}
+	private static Git getGit() throws IOException{
+		DataObject data=Main.INSTANCE.getCurrentData();
+		if(data instanceof GitRepositoryObject){
+			return ((GitRepositoryObject)data).getRepository();
+		}else if(data instanceof FileSystemObject){
+			Iterator<Path> iterator=((FileSystemObject)data).getPaths().iterator();
+			if(iterator.hasNext()){
+				File dir=findGitDirectory(iterator.next().toFile());
+				while(iterator.hasNext()){
+					if(!findGitDirectory(iterator.next().toFile()).equals(dir)){
+						dir=null;
+						break;
+					}
+				}
+				return Git.open(dir);
+			}
+		}
+		throw new RuntimeException();
+	}
+	private static File findGitDirectory(File f){
+		while(!new File(f,".git").exists()){
+			f=f.getParentFile();
+			if(f==null)
+				return null;
+		}
+		return f;
 	}
 }

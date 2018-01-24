@@ -16,12 +16,16 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.core.*;
+import java.util.*;
 import java.util.logging.*;
+import java.util.stream.*;
+import javafx.scene.Node;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 import org.eclipse.jgit.api.*;
+import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.blame.*;
 import org.eclipse.jgit.diff.*;
 import org.eclipse.jgit.dircache.*;
@@ -32,6 +36,30 @@ import org.eclipse.jgit.dircache.*;
 public class StageTreeItem extends TreeItem<Object> implements NavigationTreeItem{
 	public StageTreeItem(Git git){
 		super(git);
+		getChildren().add(new LazySimpleTreeItem(()->{
+			try{
+				return git.status().call().getAdded().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList());
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+				return Collections.emptyList();
+			}
+		},MessageRegistry.getString("ADDED",GitModuleReal.NAME)));
+		getChildren().add(new LazySimpleTreeItem(()->{
+			try{
+				return git.status().call().getRemoved().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList());
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+				return Collections.emptyList();
+			}
+		},MessageRegistry.getString("REMOVED",GitModuleReal.NAME)));
+		getChildren().add(new LazySimpleTreeItem(()->{
+			try{
+				return git.status().call().getChanged().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList());
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+				return Collections.emptyList();
+			}
+		},MessageRegistry.getString("CHANGED",GitModuleReal.NAME)));
 	}
 	@Override
 	public String toString(){
@@ -39,7 +67,16 @@ public class StageTreeItem extends TreeItem<Object> implements NavigationTreeIte
 	}
 	@Override
 	public MenuItem[] getContextMenuItems(){
-		return new MenuItem[0];
+		MenuItem commitItem=new MenuItem(MessageRegistry.getString("COMMIT",GitModuleReal.NAME));
+		commitItem.setOnAction((e)->{
+			try{
+				((Git)getValue()).commit().call();//TODO: message
+			}catch(GitAPIException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+		});
+
+		return new MenuItem[]{commitItem};
 	}
 	@Override
 	public Node getContentPage(){

@@ -36,6 +36,7 @@ public class GitTreeItem extends TreeItem<Object> implements NavigationTreeItem{
 	public GitTreeItem(Git git){
 		super(git);
 		try{
+			getChildren().add(new WorkingTreeItem(git));
 			getChildren().add(new StageTreeItem(git));
 			getChildren().add(new LogTreeItem(git));
 			getChildren().add(new NoteListTreeItem(git));
