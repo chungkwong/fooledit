@@ -17,17 +17,9 @@
 package cc.fooledit.vcs.git;
 import cc.fooledit.core.*;
 import java.util.*;
-import java.util.logging.*;
 import java.util.stream.*;
-import javafx.scene.Node;
-import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
 import org.eclipse.jgit.api.*;
-import org.eclipse.jgit.api.errors.*;
-import org.eclipse.jgit.blame.*;
-import org.eclipse.jgit.diff.*;
 import org.eclipse.jgit.dircache.*;
 /**
  *
@@ -36,30 +28,19 @@ import org.eclipse.jgit.dircache.*;
 public class StageTreeItem extends TreeItem<Object> implements NavigationTreeItem{
 	public StageTreeItem(Git git){
 		super(git);
+		getChildren().add(new LazySimpleTreeItem(()->git.status().call().getAdded().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList()),
+				MessageRegistry.getString("ADDED",GitModuleReal.NAME)));
+		getChildren().add(new LazySimpleTreeItem(()->git.status().call().getRemoved().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList()),
+				MessageRegistry.getString("REMOVED",GitModuleReal.NAME)));
+		getChildren().add(new LazySimpleTreeItem(()->git.status().call().getChanged().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList()),
+				MessageRegistry.getString("CHANGED",GitModuleReal.NAME)));
 		getChildren().add(new LazySimpleTreeItem(()->{
-			try{
-				return git.status().call().getAdded().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList());
-			}catch(Exception ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				return Collections.emptyList();
-			}
-		},MessageRegistry.getString("ADDED",GitModuleReal.NAME)));
-		getChildren().add(new LazySimpleTreeItem(()->{
-			try{
-				return git.status().call().getRemoved().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList());
-			}catch(Exception ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				return Collections.emptyList();
-			}
-		},MessageRegistry.getString("REMOVED",GitModuleReal.NAME)));
-		getChildren().add(new LazySimpleTreeItem(()->{
-			try{
-				return git.status().call().getChanged().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList());
-			}catch(Exception ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				return Collections.emptyList();
-			}
-		},MessageRegistry.getString("CHANGED",GitModuleReal.NAME)));
+			LinkedList<TreeItem<String>> files=new LinkedList<>();
+			DirCache cache=git.getRepository().readDirCache();
+			for(int i=0;i<cache.getEntryCount();i++)
+				files.add(new SimpleTreeItem<>(cache.getEntry(i).getPathString(),new MenuItem[]{getRemoveMenuItem(),getBlameMenuItem()}));
+			return files;
+		},MessageRegistry.getString("ALL",GitModuleReal.NAME)));
 	}
 	@Override
 	public String toString(){
@@ -67,70 +48,6 @@ public class StageTreeItem extends TreeItem<Object> implements NavigationTreeIte
 	}
 	@Override
 	public MenuItem[] getContextMenuItems(){
-		MenuItem commitItem=new MenuItem(MessageRegistry.getString("COMMIT",GitModuleReal.NAME));
-		commitItem.setOnAction((e)->{
-			try{
-				((Git)getValue()).commit().call();//TODO: message
-			}catch(GitAPIException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-			}
-		});
-
-		return new MenuItem[]{commitItem};
-	}
-	@Override
-	public Node getContentPage(){
-		Git git=(Git)getValue();
-		GridPane page=new GridPane();
-		ListView<String> list=new ListView<String>();
-		GridPane.setHgrow(list,Priority.ALWAYS);
-		GridPane.setVgrow(list,Priority.ALWAYS);
-		list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		try{
-			DirCache cache=((Git)getValue()).getRepository().readDirCache();
-			for(int i=0;i<cache.getEntryCount();i++)
-				list.getItems().add(cache.getEntry(i).getPathString());
-		}catch(Exception ex){
-			Logger.getLogger(StageTreeItem.class.getName()).log(Level.SEVERE,null,ex);
-		}
-		Button remove=new Button(MessageRegistry.getString("REMOVE",GitModuleReal.NAME));
-		remove.setOnAction((e)->{
-			RmCommand command=git.rm().setCached(true);
-			list.getSelectionModel().getSelectedItems().stream().forEach((path)->{
-				command.addFilepattern(path);
-			});
-			list.getItems().removeAll(list.getSelectionModel().getSelectedItems());
-			try{
-				command.call();
-			}catch(Exception ex){
-				Logger.getLogger(StageTreeItem.class.getName()).log(Level.SEVERE,null,ex);
-			}
-		});
-		Button blame=new Button(MessageRegistry.getString("BLAME",GitModuleReal.NAME));
-		blame.setOnAction((e)->{
-			Stage dialog=new Stage();
-			dialog.setTitle(MessageRegistry.getString("BLAME",GitModuleReal.NAME));
-			StringBuilder buf=new StringBuilder();
-			list.getSelectionModel().getSelectedItems().stream().forEach((path)->{
-				try{
-					BlameResult command=git.blame().setFilePath(path).call();
-					RawText contents=command.getResultContents();
-					for(int i=0;i<contents.size();i++){
-						buf.append(command.getSourcePath(i)).append(':');
-						buf.append(command.getSourceLine(i)).append(':');
-						buf.append(command.getSourceCommit(i)).append(':');
-						buf.append(command.getSourceAuthor(i)).append(':');
-						buf.append(contents.getString(i)).append('\n');
-					}
-				}catch(Exception ex){
-					Logger.getLogger(StageTreeItem.class.getName()).log(Level.SEVERE,null,ex);
-				}
-			});
-			dialog.setScene(new Scene(new TextArea(buf.toString())));
-			dialog.setMaximized(true);
-			dialog.show();
-		});
-		page.addColumn(0,list,remove,blame);
-		return page;
+		return new MenuItem[]{getCommitMenuItem()};
 	}
 }

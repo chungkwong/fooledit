@@ -33,13 +33,13 @@ import org.eclipse.jgit.transport.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class GitTreeItem extends TreeItem<Object> implements NavigationTreeItem{
+	private final Git git;
 	public GitTreeItem(Git git){
-		super(git);
+		this.git=git;
 		try{
 			getChildren().add(new WorkingTreeItem(git));
 			getChildren().add(new StageTreeItem(git));
 			getChildren().add(new LogTreeItem(git));
-			getChildren().add(new NoteListTreeItem(git));
 			getChildren().add(new TagListTreeItem(git));
 			getChildren().add(new LocalTreeItem(git));
 			for(RemoteConfig remote:git.remoteList().call())
@@ -48,6 +48,7 @@ public class GitTreeItem extends TreeItem<Object> implements NavigationTreeItem{
 			Logger.getLogger(GitTreeItem.class.getName()).log(Level.SEVERE,null,ex);
 		}
 	}
+	private
 	@Override
 	public String toString(){
 		return ((Git)getValue()).getRepository().getDirectory().getParentFile().getName();

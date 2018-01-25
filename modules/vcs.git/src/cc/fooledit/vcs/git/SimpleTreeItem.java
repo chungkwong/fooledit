@@ -24,7 +24,15 @@ import javafx.scene.control.*;
 public class SimpleTreeItem<T> extends TreeItem<T> implements NavigationTreeItem{
 	private final MenuItem[] menuItems;
 	public SimpleTreeItem(T value){
-		this(value,new MenuItem[0]);
+		this(value,new TreeItem[0]);
+	}
+	public SimpleTreeItem(T value,TreeItem<T>[] children){
+		this(value,children,new MenuItem[0]);
+	}
+	public SimpleTreeItem(T value,TreeItem<T>[] children,MenuItem[] menuItems){
+		super(value);
+		this.menuItems=menuItems;
+		getChildren().setAll(children);
 	}
 	public SimpleTreeItem(T value,MenuItem[] menuItems){
 		super(value);

@@ -35,9 +35,11 @@ import org.eclipse.jgit.treewalk.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CommitTreeItem extends TreeItem<Object> implements NavigationTreeItem{
-	public CommitTreeItem(RevCommit rev){
+public class CommitTreeItem extends LazySimpleTreeItem<Object>{
+	public CommitTreeItem(RevCommit rev,Git git){
 		super(rev);
+		rev.getTree();
+		new TreeWalk(git.getRepository());
 		if(rev==null)
 			throw new NullPointerException();
 	}
@@ -167,7 +169,7 @@ public class CommitTreeItem extends TreeItem<Object> implements NavigationTreeIt
 		return page;
 	}
 }
-class FileTreeItem extends TreeItem<String>{
+class FileTreeItem extends LazySimpleTreeItem<Object>{
 	private final ObjectId id;
 	public FileTreeItem(ObjectId id,String name){
 		super(name);

@@ -16,8 +16,8 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.control.*;
+import cc.fooledit.util.*;
 import java.util.*;
-import java.util.function.*;
 import javafx.scene.control.*;
 /**
  *
@@ -25,10 +25,10 @@ import javafx.scene.control.*;
  */
 public class LazySimpleTreeItem<T> extends LazyTreeItem<T> implements NavigationTreeItem{
 	private final MenuItem[] menuItems;
-	public LazySimpleTreeItem(Supplier<Collection<TreeItem<T>>> supplier,T value){
+	public LazySimpleTreeItem(ThrowableSupplier<Collection<TreeItem<T>>> supplier,T value){
 		this(supplier,value,new MenuItem[0]);
 	}
-	public LazySimpleTreeItem(Supplier<Collection<TreeItem<T>>> supplier,T value,MenuItem[] menuItems){
+	public LazySimpleTreeItem(ThrowableSupplier<Collection<TreeItem<T>>> supplier,T value,MenuItem[] menuItems){
 		super(supplier,value);
 		this.menuItems=menuItems;
 	}

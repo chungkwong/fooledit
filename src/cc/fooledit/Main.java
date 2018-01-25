@@ -16,6 +16,7 @@
  */
 package cc.fooledit;
 
+import cc.fooledit.util.ThrowableFunction;
 import cc.fooledit.control.*;
 import static cc.fooledit.core.CoreModule.REGISTRY;
 import cc.fooledit.core.*;

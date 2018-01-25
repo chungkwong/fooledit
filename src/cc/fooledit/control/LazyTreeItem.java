@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
+import cc.fooledit.util.*;
 import java.util.*;
-import java.util.function.*;
+import java.util.logging.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 /**
@@ -24,7 +25,7 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class LazyTreeItem<T> extends TreeItem<T>{
-	private final Supplier<Collection<TreeItem<T>>> supplier;
+	private final ThrowableSupplier<Collection<TreeItem<T>>> supplier;
 	public LazyTreeItem(T value){
 		super(value);
 		this.supplier=null;
@@ -33,15 +34,15 @@ public class LazyTreeItem<T> extends TreeItem<T>{
 		super(value,graphic);
 		this.supplier=null;
 	}
-	public LazyTreeItem(Supplier<Collection<TreeItem<T>>> supplier,T value){
+	public LazyTreeItem(ThrowableSupplier<Collection<TreeItem<T>>> supplier,T value){
 		this(supplier,value,null);
 	}
-	public LazyTreeItem(Supplier<Collection<TreeItem<T>>> supplier,T value,Node graphic){
+	public LazyTreeItem(ThrowableSupplier<Collection<TreeItem<T>>> supplier,T value,Node graphic){
 		super(value,graphic);
 		this.supplier=supplier;
 		expandedProperty().addListener((e,o,n)->{
 			if(n){
-				getChildren().setAll(supplier.get());
+				reload();
 			}else{
 				getChildren().clear();
 			}
@@ -49,7 +50,15 @@ public class LazyTreeItem<T> extends TreeItem<T>{
 	}
 	public void refresh(){
 		if(isExpanded())
+			reload();
+	}
+	private void reload(){
+		try{
 			getChildren().setAll(supplier.get());
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			getChildren().clear();
+		}
 	}
 	@Override
 	public boolean isLeaf(){
