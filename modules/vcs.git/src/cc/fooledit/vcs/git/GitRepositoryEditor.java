@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
-import cc.fooledit.util.ThrowableFunction;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.spi.*;
+import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.io.*;
 import java.nio.file.*;
@@ -36,28 +36,29 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(GitModuleReal.NAME);
 	public static GitRepositoryEditor INSTANCE=new GitRepositoryEditor();
 	private GitRepositoryEditor(){
-		addCommand("push-git",Arrays.asList(),(args)->{return null;});
-		addCommand("pull-git",Arrays.asList(),(args)->{return null;});
-		addCommand("fetch-git",Arrays.asList(),(args)->{return null;});
-		addCommand("checkout-git",Arrays.asList(),(args)->{return null;});
-		addCommand("revert-git",Arrays.asList(),(args)->{return null;});
-		addCommand("merge-git",Arrays.asList(),(args)->{return null;});
-		addCommand("add-branch",Arrays.asList(),(args)->{return null;});
-		addCommand("remove-branch",Arrays.asList(),(args)->{return null;});
-		addCommand("rename-branch",Arrays.asList(),(args)->{return null;});
-		addCommand("add-git",Arrays.asList(),(args)->{return null;});
-		addCommand("remove-git",Arrays.asList(),(args)->{return null;});
-		addCommand("add-tag-git",Arrays.asList(),(args)->{return null;});
-		addCommand("remove-tag-git",Arrays.asList(),(args)->{return null;});
-		addCommand("add-remote-git",Arrays.asList(),(args)->{return null;});
-		addCommand("remove-remote-git",Arrays.asList(),(args)->{return null;});
-		addCommand("rename-remote-git",Arrays.asList(),(args)->{return null;});
-		addCommand("config-remote-git",Arrays.asList(),(args)->{return null;});
-		addCommand("commit-git",Arrays.asList(),(args)->{return null;});
-		addCommand("init-git",Arrays.asList(),(args)->{return null;});
-		addCommand("clone-git",Arrays.asList(),(args)->{return null;});
-		addCommand("config-git",Arrays.asList(),(args)->{return null;});
-		addCommand("blame-git",Arrays.asList(),(args)->{return null;});
+		addCommand("git-push",Arrays.asList(),(args)->{return null;});
+		addCommand("git-pull",Arrays.asList(),(args)->{return null;});
+		addCommand("git-fetch",Arrays.asList(),(args)->{return null;});
+		addCommand("git-checkout",Arrays.asList(),(args)->{return null;});
+		addCommand("git-revert",Arrays.asList(),(args)->{return null;});
+		addCommand("git-merge",Arrays.asList(),(args)->{return null;});
+		addCommand("git-add-branch",Arrays.asList(),(args)->{return null;});
+		addCommand("git-branch-delete",Arrays.asList(),(args)->{return null;});
+		addCommand("git-branch-rename",Arrays.asList(),(args)->{return null;});
+		addCommand("git-add",Arrays.asList(),(args)->{return null;});
+		addCommand("git-remove",Arrays.asList(),(args)->{return null;});
+		addCommand("git-add-tag",Arrays.asList(),(args)->{return null;});
+		addCommand("git-remove-tag",Arrays.asList(),(args)->{return null;});
+		addCommand("git-add-remote",Arrays.asList(),(args)->{return null;});
+		addCommand("git-remote-delete",Arrays.asList(),(args)->{return null;});
+		addCommand("git-remote-rename",Arrays.asList(),(args)->{return null;});
+		addCommand("git-remote-set-url",Arrays.asList(),(args)->{return null;});
+		addCommand("git-config-remote",Arrays.asList(),(args)->{return null;});
+		addCommand("git-commit",Arrays.asList(),(args)->{return null;});
+		addCommand("git-init",Arrays.asList(),(args)->{return null;});
+		addCommand("git-clone",Arrays.asList(),(args)->{return null;});
+		addCommand("git-config",Arrays.asList(),(args)->{return null;});
+		addCommand("git-blame",Arrays.asList(),(args)->{return null;});
 	}
 	private void addCommand(String name,List<String> args,ThrowableFunction<ScmPairOrNil,ScmObject> proc){
 		commandRegistry.addChild(name,new Command(name,proc,GitModuleReal.NAME));

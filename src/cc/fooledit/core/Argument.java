@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.vcs.git;
-import cc.fooledit.core.*;
-import java.util.stream.*;
-import javafx.scene.control.*;
-import org.eclipse.jgit.api.*;
-import org.eclipse.jgit.api.errors.*;
+package cc.fooledit.core;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class LogTreeItem extends LazySimpleTreeItem<Object>{
-	public LogTreeItem(Git git) throws GitAPIException{
-		super(()->StreamSupport.stream(git.log().call().spliterator(),false).map((rev)->new CommitTreeItem(rev)).collect(Collectors.toList())
-				,MessageRegistry.getString("COMMIT",GitModuleReal.NAME),
-				new MenuItem[0]);
+public class Argument{
+	private final String name;
+	private final boolean required;
+	public Argument(String name,boolean required){
+		this.name=name;
+		this.required=required;
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016,2018 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,16 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.vcs.git;
-import javafx.scene.*;
-import javafx.scene.control.*;
+package cc.fooledit.util;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface NavigationTreeItem{
-	MenuItem[] getContextMenuItems();
-	default Node getContentPage(){
-		return new Label();
-	}
+@FunctionalInterface
+public interface ThrowableConsumer<T>{
+	void accept(T obj)throws Exception;
 }

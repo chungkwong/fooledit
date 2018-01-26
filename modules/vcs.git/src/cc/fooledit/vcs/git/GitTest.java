@@ -16,15 +16,21 @@
  */
 package cc.fooledit.vcs.git;
 import java.io.*;
+import javafx.application.*;
+import javafx.scene.*;
+import javafx.stage.*;
 import org.eclipse.jgit.api.*;
-import org.eclipse.jgit.api.errors.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class GitTest{
-	public static void main(String[] args) throws GitAPIException{
-		org.apache.log4j.BasicConfigurator.configure();
-		Git.init().setGitDir(new File("/home/kwong/foobar-cpp2.git")).call();
+public class GitTest extends Application{
+	@Override
+	public void start(Stage primaryStage) throws Exception{
+		primaryStage.setScene(new Scene(new GitRepositoryViewer(Git.open(new File("/home/kwong/projects/RichTextFX")))));
+		primaryStage.show();
+	}
+	public static void main(String[] args){
+		launch(args);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016,2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,10 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.core.*;
+import cc.fooledit.vcs.git.MenuItemBuilder;
 import java.util.*;
 import java.util.logging.*;
+import java.util.stream.*;
 import javafx.application.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -31,12 +33,10 @@ import org.eclipse.jgit.transport.*;
 public class RemoteTreeItem extends TreeItem<Object> implements NavigationTreeItem{
 	public RemoteTreeItem(RemoteConfig ref){
 		super(ref);
-		for(RefSpec refSpec:ref.getFetchRefSpecs()){
-			getChildren().add(new RemoteSpecTreeItem(refSpec,true));
-		}
-		for(RefSpec refSpec:ref.getPushRefSpecs()){
-			getChildren().add(new RemoteSpecTreeItem(refSpec,false));
-		}
+		getChildren().add(new LazySimpleTreeItem<>(()->ref.getFetchRefSpecs().stream().map((spec)->new RemoteSpecTreeItem(spec)).collect(Collectors.toList()),
+				MessageRegistry.getString("FETCH",GitModuleReal.NAME)));
+		getChildren().add(new LazySimpleTreeItem<>(()->ref.getPushRefSpecs().stream().map((spec)->new RemoteSpecTreeItem(spec)).collect(Collectors.toList()),
+				MessageRegistry.getString("PUSH",GitModuleReal.NAME)));
 	}
 	@Override
 	public String toString(){
@@ -44,17 +44,13 @@ public class RemoteTreeItem extends TreeItem<Object> implements NavigationTreeIt
 	}
 	@Override
 	public MenuItem[] getContextMenuItems(){
-		MenuItem push=new MenuItem(MessageRegistry.getString("PUSH",GitModuleReal.NAME));
-		push.setOnAction((e)->gitPush());
-		MenuItem pull=new MenuItem(MessageRegistry.getString("PULL",GitModuleReal.NAME));
-		pull.setOnAction((e)->gitPull());
-		MenuItem fetch=new MenuItem(MessageRegistry.getString("FETCH",GitModuleReal.NAME));
-		fetch.setOnAction((e)->gitFetch());
-		MenuItem remove=new MenuItem(MessageRegistry.getString("REMOVE REMOTE",GitModuleReal.NAME));
-		remove.setOnAction((e)->gitRemoteRemove());
-		MenuItem resetURL=new MenuItem(MessageRegistry.getString("RESET URL",GitModuleReal.NAME));
-		resetURL.setOnAction((e)->gitRemoteResetURL());
-		return new MenuItem[]{push,pull,fetch,remove,resetURL};
+		return new MenuItem[]{
+			MenuItemBuilder.build("PUSH",(e)->GitCommands.execute("git-push")),
+			MenuItemBuilder.build("PULL",(e)->GitCommands.execute("git-pull")),
+			MenuItemBuilder.build("FETCH",(e)->GitCommands.execute("git-fetch")),
+			MenuItemBuilder.build("REMOVE REMOTE",(e)->GitCommands.execute("git-branch-delete")),
+			MenuItemBuilder.build("RESET URL",(e)->GitCommands.execute("git-remote-set-url"))
+		};
 	}
 	private void gitRemoteResetURL(){
 		TextInputDialog branchDialog=new TextInputDialog();
@@ -95,17 +91,18 @@ public class RemoteTreeItem extends TreeItem<Object> implements NavigationTreeIt
 				FetchResult result=command.call();
 				ArrayList<CommitTreeItem> commits=new ArrayList<>();
 				Platform.runLater(()->{
+					Git git=(Git)getParent().getValue();
 					for(Ref ref:result.getAdvertisedRefs())
 						try{
-							commits.add(new CommitTreeItem(((Git)getParent().getValue()).log().addRange(ref.getObjectId(),ref.getObjectId()).call().iterator().next()));
+							commits.add(new CommitTreeItem(git.log().addRange(ref.getObjectId(),ref.getObjectId()).call().iterator().next(),git));
 						}catch(Exception ex){
 							Logger.getLogger(RemoteTreeItem.class.getName()).log(Level.SEVERE,null,ex);
 						}
-					getParent().getChildren().filtered(item->item instanceof LocalTreeItem).
-						forEach((item)->item.getChildren().addAll(commits));
+//					getParent().getChildren().filtered(item->item instanceof LocalTreeItem).
+//						forEach((item)->item.getChildren().addAll(commits));
 				});
 			}catch(Exception ex){
-				Logger.getLogger(GitTreeItem.class.getName()).log(Level.SEVERE,null,ex);
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
 				Platform.runLater(()->{
 					progressDialog.hide();
 				});
@@ -120,10 +117,11 @@ public class RemoteTreeItem extends TreeItem<Object> implements NavigationTreeIt
 				PullResult result=command.call();
 				HashSet<CommitTreeItem> commits=new HashSet<>();
 				Platform.runLater(()->{
+					Git git=(Git)getParent().getValue();
 					if(result.getFetchResult()!=null){
 						for(Ref ref:result.getFetchResult().getAdvertisedRefs())
 							try{
-								commits.add(new CommitTreeItem(((Git)getParent().getValue()).log().addRange(ref.getObjectId(),ref.getObjectId()).call().iterator().next()));
+								commits.add(new CommitTreeItem(git.log().addRange(ref.getObjectId(),ref.getObjectId()).call().iterator().next(),git));
 							}catch(Exception ex){
 								Logger.getLogger(RemoteTreeItem.class.getName()).log(Level.SEVERE,null,ex);
 							}
@@ -131,18 +129,18 @@ public class RemoteTreeItem extends TreeItem<Object> implements NavigationTreeIt
 					if(result.getMergeResult()!=null&&result.getMergeResult().getMergeStatus().equals(MergeResult.MergeStatus.MERGED)){
 						try{
 							ObjectId head=result.getMergeResult().getNewHead();
-							commits.add(new CommitTreeItem(((Git)getParent().getValue()).log().addRange(head,head).call().iterator().next()));
+							commits.add(new CommitTreeItem(git.log().addRange(head,head).call().iterator().next(),git));
 						}catch(Exception ex){
 							Logger.getLogger(RemoteTreeItem.class.getName()).log(Level.SEVERE,null,ex);
 						}
 					}else{
 						new Alert(Alert.AlertType.INFORMATION,result.toString(),ButtonType.CLOSE).show();
 					}
-					getParent().getChildren().filtered(item->item instanceof LocalTreeItem).
-						forEach((item)->item.getChildren().addAll(commits));
+//					getParent().getChildren().filtered(item->item instanceof LocalTreeItem).
+//						forEach((item)->item.getChildren().addAll(commits));
 				});
 			}catch(Exception ex){
-				Logger.getLogger(GitTreeItem.class.getName()).log(Level.SEVERE,null,ex);
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
 				Platform.runLater(()->{
 					progressDialog.hide();
 				});
@@ -168,7 +166,7 @@ public class RemoteTreeItem extends TreeItem<Object> implements NavigationTreeIt
 			try{
 				command.call();
 			}catch(Exception ex){
-				Logger.getLogger(GitTreeItem.class.getName()).log(Level.SEVERE,null,ex);
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
 				Platform.runLater(()->{
 					progressDialog.hide();
 				});

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016,2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,19 +16,14 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.core.*;
-import java.io.*;
+import cc.fooledit.vcs.git.MenuItemBuilder;
 import java.util.*;
 import java.util.logging.*;
-import java.util.stream.*;
-import javafx.beans.value.*;
-import javafx.geometry.*;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.errors.*;
 import org.eclipse.jgit.lib.*;
-import org.eclipse.jgit.notes.*;
 import org.eclipse.jgit.revwalk.*;
 import org.eclipse.jgit.treewalk.*;
 /**
@@ -36,12 +31,22 @@ import org.eclipse.jgit.treewalk.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CommitTreeItem extends LazySimpleTreeItem<Object>{
+	private final Git git;
 	public CommitTreeItem(RevCommit rev,Git git){
-		super(rev);
-		rev.getTree();
-		new TreeWalk(git.getRepository());
-		if(rev==null)
-			throw new NullPointerException();
+		super(()->{
+			LinkedList<TreeItem<Object>> list=new LinkedList<>();
+			TreeWalk walk=new TreeWalk(git.getRepository());
+			walk.addTree(rev.getTree());
+			while(walk.next()){
+				if(walk.isSubtree()){
+					list.add(new DirectoryTreeItem(walk.getObjectId(0),walk.getNameString(),git));
+				}else{
+					list.add(new FileTreeItem(walk.getObjectId(0),walk.getNameString()));
+				}
+			}
+			return list;
+		},rev);
+		this.git=git;
 	}
 	@Override
 	public String toString(){
@@ -55,15 +60,11 @@ public class CommitTreeItem extends LazySimpleTreeItem<Object>{
 	}
 	@Override
 	public MenuItem[] getContextMenuItems(){
-		MenuItem checkout=new MenuItem(MessageRegistry.getString("CHECKOUT",GitModuleReal.NAME));
-		checkout.setOnAction((e)->gitCheckout());
-		MenuItem revert=new MenuItem(MessageRegistry.getString("REVERT",GitModuleReal.NAME));
-		revert.setOnAction((e)->gitRevert());
-		MenuItem tag=new MenuItem(MessageRegistry.getString("TAG",GitModuleReal.NAME));
-		tag.setOnAction((e)->gitTag());
-		MenuItem note=new MenuItem(MessageRegistry.getString("NOTE",GitModuleReal.NAME));
-		note.setOnAction((e)->gitNote());
-		return new MenuItem[]{checkout,revert,tag,note};
+		return new MenuItem[]{
+			MenuItemBuilder.build("CHECKOUT",(e)->GitCommands.execute("git-checkout")),
+			MenuItemBuilder.build("REVERT",(e)->GitCommands.execute("git-revert")),
+			MenuItemBuilder.build("TAG",(e)->GitCommands.execute("git-tag"))
+		};
 	}
 	private void gitCheckout(){
 		try{
@@ -75,7 +76,7 @@ public class CommitTreeItem extends LazySimpleTreeItem<Object>{
 	private void gitRevert(){
 		try{
 			RevCommit rev=((Git)getParent().getParent().getValue()).revert().include((RevCommit)getValue()).call();
-			getParent().getChildren().add(new CommitTreeItem(rev));
+			getParent().getChildren().add(new CommitTreeItem(rev,git));
 		}catch(Exception ex){
 			Logger.getLogger(BranchTreeItem.class.getName()).log(Level.SEVERE,null,ex);
 		}
@@ -88,94 +89,44 @@ public class CommitTreeItem extends LazySimpleTreeItem<Object>{
 		if(name.isPresent())
 			try{
 				Ref tag=((Git)getParent().getParent().getValue()).tag().setName(name.get()).setObjectId((RevCommit)getValue()).call();
-				getParent().getParent().getChildren().filtered(item->item instanceof TagListTreeItem).
-					forEach((item)->item.getChildren().add(new TagTreeItem(tag)));
+//				getParent().getParent().getChildren().filtered(item->item instanceof TagListTreeItem).
+//					forEach((item)->item.getChildren().add(new TagTreeItem(tag)));
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
-	}
-	private void gitNote(){
-		TextInputDialog dialog=new TextInputDialog();
-		dialog.setTitle(MessageRegistry.getString("CHOOSE THE MESSAGE OF THE NOTE",GitModuleReal.NAME));
-		dialog.setHeaderText(MessageRegistry.getString("ENTER THE MESSAGE:",GitModuleReal.NAME));
-		Optional<String> msg=dialog.showAndWait();
-		if(msg.isPresent())
-			try{
-				Note note=((Git)getParent().getParent().getValue()).notesAdd().setObjectId((RevCommit)getValue()).setMessage(msg.get()).call();
-				getParent().getParent().getChildren().filtered(item->item instanceof NoteListTreeItem).
-					forEach((item)->item.getChildren().add(new NoteTreeItem(note)));
-			}catch(Exception ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-			}
-	}
-	@Override
-	public Node getContentPage(){
-		RevCommit rev=(RevCommit)getValue();
-		Repository repository=((Git)getParent().getParent().getValue()).getRepository();
-		SplitPane page=new SplitPane();
-		page.setOrientation(Orientation.VERTICAL);
-		StringBuilder buf=new StringBuilder();
-		buf.append(MessageRegistry.getString("PARENTS:",GitModuleReal.NAME));
-		for(int i=0;i<rev.getParentCount();i++)
-			buf.append(rev.getParent(i)).append('\n');
-		buf.append(MessageRegistry.getString("MESSAGE:",GitModuleReal.NAME));
-		buf.append(rev.getFullMessage());
-		TextArea msg=new TextArea(buf.toString());
-		msg.setEditable(false);
-		page.getItems().add(msg);
-		SplitPane fileViewer=new SplitPane();
-		fileViewer.setOrientation(Orientation.HORIZONTAL);
-		TreeView tree=new TreeView(new TreeItem());
-		tree.setShowRoot(false);
-		TextArea content=new TextArea();
-		content.setEditable(false);
-		try(TreeWalk walk=new TreeWalk(repository)){
-			walk.addTree(rev.getTree());
-			walk.setRecursive(true);
-			LinkedList<TreeItem> items=new LinkedList<>();
-			items.add(tree.getRoot());
-			while(walk.next()){
-				TreeItem item=new FileTreeItem(walk.getObjectId(0),walk.getPathString());
-				/*while(walk.getDepth()<items.size()-1)
-					items.removeLast();
-				if(walk.getDepth()>items.size()-1)
-					items.addLast(item);*/
-				items.getLast().getChildren().add(item);
-			}
-		}catch(Exception ex){
-			Logger.getLogger(CommitTreeItem.class.getName()).log(Level.SEVERE,null,ex);
-		}
-		tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-			@Override
-			public void changed(ObservableValue ov,Object t,Object t1){
-				if(t1!=null){
-					try{
-						ObjectLoader obj=repository.open(((FileTreeItem)t1).getId());
-						if(obj.getType()!=Constants.OBJ_TREE){
-							StringBuilder buf=new StringBuilder();
-							BufferedReader in=new BufferedReader(new InputStreamReader(obj.openStream(),rev.getEncoding()));
-							content.setText(in.lines().collect(Collectors.joining("\n")));
-						}
-					}catch(Exception ex){
-						Logger.getLogger(CommitTreeItem.class.getName()).log(Level.SEVERE,null,ex);
-					}
-				}
-			}
-		});
-		fileViewer.getItems().add(tree);
-		fileViewer.getItems().add(content);
-		page.getItems().add(fileViewer);
-		page.setDividerPositions(0.2,0.8);
-		return page;
 	}
 }
-class FileTreeItem extends LazySimpleTreeItem<Object>{
-	private final ObjectId id;
-	public FileTreeItem(ObjectId id,String name){
-		super(name);
-		this.id=id;
+class DirectoryTreeItem extends LazySimpleTreeItem<Object>{
+	private final String name;
+	public DirectoryTreeItem(ObjectId id,String name,Git git){
+		super(()->{
+			LinkedList<TreeItem<Object>> list=new LinkedList<>();
+			TreeWalk walk=new TreeWalk(git.getRepository());
+			walk.addTree(id);
+			while(walk.next()){
+				if(walk.isSubtree()){
+					list.add(new DirectoryTreeItem(walk.getObjectId(0),walk.getNameString(),git));
+				}else{
+					list.add(new FileTreeItem(walk.getObjectId(0),walk.getNameString()));
+				}
+			}
+			return list;
+		},id);
+		this.name=name;
 	}
-	public ObjectId getId(){
-		return id;
+	@Override
+	public String toString(){
+		return name;
+	}
+}
+class FileTreeItem extends SimpleTreeItem<Object>{
+	private final String name;
+	public FileTreeItem(ObjectId id,String name){
+		super(id);
+		this.name=name;
+	}
+	@Override
+	public String toString(){
+		return name;
 	}
 }

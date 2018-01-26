@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016,2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,28 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
-import cc.fooledit.core.*;
 import javafx.scene.control.*;
 import org.eclipse.jgit.transport.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class RemoteSpecTreeItem extends TreeItem implements NavigationTreeItem{
-	private final boolean fetch;
-	public RemoteSpecTreeItem(RefSpec ref,boolean fetch){
+public class RemoteSpecTreeItem extends TreeItem<Object> implements NavigationTreeItem{
+	public RemoteSpecTreeItem(RefSpec ref){
 		super(ref);
-		this.fetch=fetch;
-	}
-	public boolean isFetch(){
-		return fetch;
 	}
 	@Override
 	public String toString(){
-		return ((RefSpec)getValue()).getSource()+"->"+getType()+((RefSpec)getValue()).getDestination();
-	}
-	private String getType(){
-		return fetch?MessageRegistry.getString("(FETCH)",GitModuleReal.NAME):MessageRegistry.getString("(PUSH)",GitModuleReal.NAME);
+		return ((RefSpec)getValue()).getSource()+"->"+((RefSpec)getValue()).getDestination();
 	}
 	@Override
 	public MenuItem[] getContextMenuItems(){

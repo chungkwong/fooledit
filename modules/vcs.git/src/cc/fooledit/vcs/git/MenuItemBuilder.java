@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
+import cc.fooledit.core.*;
+import cc.fooledit.util.*;
+import java.util.logging.*;
 import javafx.event.*;
 import javafx.scene.control.*;
 /**
@@ -22,9 +25,15 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MenuItemBuilder{
-	public static MenuItem build(String text,EventHandler<ActionEvent> action){
-		MenuItem item=new MenuItem(text);
-		item.setOnAction(action);
+	public static MenuItem build(String text,ThrowableConsumer<ActionEvent> action){
+		MenuItem item=new MenuItem(MessageRegistry.getString(text,GitModuleReal.NAME));
+		item.setOnAction((e)->{
+			try{
+				action.accept(e);
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+		});
 		return item;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016,2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.core.*;
+import cc.fooledit.vcs.git.MenuItemBuilder;
 import java.util.*;
 import java.util.logging.*;
 import javafx.scene.control.*;
@@ -37,25 +38,21 @@ public class BranchTreeItem extends TreeItem<Object> implements NavigationTreeIt
 	}
 	@Override
 	public MenuItem[] getContextMenuItems(){
-		MenuItem checkout=new MenuItem(MessageRegistry.getString("CHECKOUT",GitModuleReal.NAME));
-		checkout.setOnAction((e)->gitCheckout());
-		MenuItem revert=new MenuItem(MessageRegistry.getString("REVERT",GitModuleReal.NAME));
-		revert.setOnAction((e)->gitRevert());
-		MenuItem mergeBranch=new MenuItem(MessageRegistry.getString("MERGE",GitModuleReal.NAME));
-		mergeBranch.setOnAction((e)->gitMerge());
-		MenuItem rmBranch=new MenuItem(MessageRegistry.getString("REMOVE BRANCH",GitModuleReal.NAME));
-		rmBranch.setOnAction((e)->gitBranchRemove());
-		MenuItem renameBranch=new MenuItem(MessageRegistry.getString("RENAME BRANCH",GitModuleReal.NAME));
-		renameBranch.setOnAction((e)->gitBranchRename());
-		return new MenuItem[]{checkout,revert,mergeBranch,rmBranch,renameBranch};
+		return new MenuItem[]{
+			MenuItemBuilder.build("CHECKOUT",(e)->GitCommands.execute("git-checkout")),
+			MenuItemBuilder.build("REVERT",(e)->GitCommands.execute("git-revert")),
+			MenuItemBuilder.build("MERGE",(e)->GitCommands.execute("git-merge")),
+			MenuItemBuilder.build("REMOVE BRANCH",(e)->GitCommands.execute("git-branch-delete")),
+			MenuItemBuilder.build("RENAME BRANCH",(e)->GitCommands.execute("git-branch-rename"))
+		};
 	}
 	private void gitMerge(){
 		try{
 			MergeResult result=((Git)getParent().getParent().getValue()).merge().include((Ref)getValue()).call();
 			if(result.getMergeStatus().equals(MergeResult.MergeStatus.MERGED)){
 				RevCommit commit=((Git)getParent().getParent().getValue()).log().addRange(result.getNewHead(),result.getNewHead()).call().iterator().next();
-				getParent().getParent().getChildren().filtered(item->item instanceof LocalTreeItem).
-					forEach((item)->item.getChildren().add(new CommitTreeItem(commit)));
+//				getParent().getParent().getChildren().filtered(item->item instanceof LocalTreeItem).
+//					forEach((item)->item.getChildren().add(new CommitTreeItem(commit)));
 			}else{
 				new Alert(Alert.AlertType.INFORMATION,result.getMergeStatus().toString(),ButtonType.CLOSE).show();
 			}
@@ -93,8 +90,8 @@ public class BranchTreeItem extends TreeItem<Object> implements NavigationTreeIt
 	private void gitRevert(){
 		try{
 			RevCommit rev=((Git)getParent().getParent().getValue()).revert().include((Ref)getValue()).call();
-			getParent().getParent().getChildren().filtered(item->item instanceof LocalTreeItem).
-					forEach((item)->item.getChildren().add(new CommitTreeItem(rev)));
+//			getParent().getParent().getChildren().filtered(item->item instanceof LocalTreeItem).
+//					forEach((item)->item.getChildren().add(new CommitTreeItem(rev)));
 		}catch(Exception ex){
 			Logger.getLogger(BranchTreeItem.class.getName()).log(Level.SEVERE,null,ex);
 		}
