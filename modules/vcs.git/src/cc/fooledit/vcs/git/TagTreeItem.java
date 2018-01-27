@@ -16,9 +16,7 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.core.*;
-import java.util.logging.*;
 import javafx.scene.control.*;
-import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.lib.*;
 /**
  *
@@ -35,15 +33,7 @@ public class TagTreeItem extends TreeItem<Object> implements NavigationTreeItem{
 	@Override
 	public MenuItem[] getContextMenuItems(){
 		MenuItem removeTag=new MenuItem(MessageRegistry.getString("REMOVE TAG",GitModuleReal.NAME));
-		removeTag.setOnAction((e)->gitTagRemove());
+		removeTag.setOnAction((e)->GitCommands.execute("git-tag-delete"));
 		return new MenuItem[]{removeTag};
-	}
-	private void gitTagRemove(){
-		try{
-			((Git)getParent().getParent().getValue()).tagDelete().setTags(((Ref)getValue()).getName()).call();
-			getParent().getChildren().remove(this);
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
 	}
 }

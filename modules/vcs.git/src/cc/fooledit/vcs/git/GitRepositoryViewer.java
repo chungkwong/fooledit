@@ -55,9 +55,8 @@ public class GitRepositoryViewer extends BorderPane{
 					createLocalTreeItem(),
 					createRemoteTreeItem()
 				},new MenuItem[]{
-					MenuItemBuilder.build("NEW REMOTE",(e)->GitCommands.addRemote(git)),
-					MenuItemBuilder.build("COLLECT GARGAGE",(e)->GitCommands.gc(git)),
-					MenuItemBuilder.build("CONFIGURE",(e)->GitCommands.config(git))
+					MenuItemBuilder.build("COLLECT GARGAGE",(e)->GitCommands.execute("git-gc")),
+					MenuItemBuilder.build("CONFIGURE",(e)->GitCommands.execute("git-config"))
 				});
 	}
 	private TreeItem<Object> createWorkingTreeItem(){
@@ -79,11 +78,11 @@ public class GitRepositoryViewer extends BorderPane{
 	}
 	private TreeItem<Object> createStageTreeItem(){
 		MenuItem[] rm=new MenuItem[]{
-			MenuItemBuilder.build("REMOVE",(e)->GitCommands.remove(null,git))//FIXME
+			MenuItemBuilder.build("REMOVE",(e)->GitCommands.execute("git-remove"))
 		};
 		MenuItem[] all=new MenuItem[]{
-			MenuItemBuilder.build("REMOVE",(e)->GitCommands.remove(null,git)),//FIXME
-			MenuItemBuilder.build("BLAME",(e)->GitCommands.blame(null,git))//FIXME
+			MenuItemBuilder.build("REMOVE",(e)->GitCommands.execute("git-remove")),
+			MenuItemBuilder.build("BLAME",(e)->GitCommands.execute("git-blame"))
 		};
 		return new SimpleTreeItem<>(MessageRegistry.getString("STAGING AREA",GitModuleReal.NAME),
 				new TreeItem[]{new LazySimpleTreeItem(()->git.status().call().getAdded().stream().map((file)->new SimpleTreeItem<String>(file,rm)).collect(Collectors.toList()),
@@ -100,7 +99,7 @@ public class GitRepositoryViewer extends BorderPane{
 						return files;
 					},MessageRegistry.getString("ALL",GitModuleReal.NAME))
 				},new MenuItem[]{
-					MenuItemBuilder.build("COMMIT",(e)->GitCommands.commit(git))
+					MenuItemBuilder.build("COMMIT",(e)->GitCommands.execute("git-commit"))
 				});
 	}
 	private TreeItem<Object> createTagListTreeItem(){
@@ -116,14 +115,14 @@ public class GitRepositoryViewer extends BorderPane{
 		return new LazySimpleTreeItem<>(()->git.branchList().call().stream().map((ref)->new BranchTreeItem(ref)).collect(Collectors.toList()),
 				MessageRegistry.getString("LOCAL BRANCH",GitModuleReal.NAME),
 			new MenuItem[]{
-				MenuItemBuilder.build("BRANCH",(e)->GitCommands.addBranch(null,git))//FIXME
+				MenuItemBuilder.build("BRANCH",(e)->GitCommands.execute("git-branch-add"))
 			});
 	}
 	private TreeItem<Object> createRemoteTreeItem(){
 		return new LazySimpleTreeItem<>(()->git.remoteList().call().stream().map((ref)->new RemoteTreeItem(ref)).collect(Collectors.toList()),
 				MessageRegistry.getString("REMOTE BRANCH",GitModuleReal.NAME),
 			new MenuItem[]{
-				MenuItemBuilder.build("REMOTE ADD",(e)->GitCommands.addRemote(git))//FIXME
+				MenuItemBuilder.build("REMOTE ADD",(e)->GitCommands.execute("git-remote-add"))
 			});
 	}
 	private FlowPane createColumnsChooser(TreeTableView<Object> nav){

@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
-import cc.fooledit.core.*;
 import cc.fooledit.vcs.git.MenuItemBuilder;
-import java.util.*;
 import java.util.logging.*;
 import javafx.scene.control.*;
 import org.eclipse.jgit.api.*;
-import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.*;
 /**
@@ -63,26 +60,6 @@ public class BranchTreeItem extends TreeItem<Object> implements NavigationTreeIt
 	private void gitCheckout(){
 		try{
 			((Git)getParent().getParent().getValue()).checkout().setName(((Ref)getValue()).getName()).call();
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
-	}
-	private void gitBranchRename(){
-		TextInputDialog branchDialog=new TextInputDialog();
-		branchDialog.setTitle(MessageRegistry.getString("CHOOSE A NEW NAME FOR THE BRANCH",GitModuleReal.NAME));
-		branchDialog.setHeaderText(MessageRegistry.getString("ENTER THE NEW NAME OF THE BRANCH:",GitModuleReal.NAME));
-		Optional<String> name=branchDialog.showAndWait();
-		if(name.isPresent())
-			try{
-				setValue(((Git)getParent().getParent().getValue()).branchRename().setOldName(((Ref)getValue()).getName()).setNewName(name.get()).call());
-			}catch(GitAPIException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-			}
-	}
-	private void gitBranchRemove(){
-		try{
-			((Git)getParent().getParent().getValue()).branchDelete().setBranchNames(((Ref)getValue()).getName()).call();
-			getParent().getChildren().remove(this);
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}

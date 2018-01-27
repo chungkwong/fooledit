@@ -149,17 +149,17 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("decode-url",(area)->area.transform(StructuredTextEditor::decodeURL));
 		addCommand("scroll-to-top",(area)->area.getArea().showParagraphAtTop(area.getArea().getCurrentParagraph()));
 		addCommand("scroll-to-bottom",(area)->area.getArea().showParagraphAtBottom(area.getArea().getCurrentParagraph()));
-		addCommand("move-to-paragraph",Collections.singletonList("line"),(args,area)->{
+		addCommand("move-to-paragraph",Collections.singletonList(new Argument("line")),(args,area)->{
 				int index=SchemeConverter.toInteger(ScmList.first(args));
 				area.getArea().moveTo(index,Math.min(area.getArea().getCaretColumn(),area.getArea().getParagraphLength(index)));
 				area.getArea().showParagraphInViewport(index);
 				return null;
 		});
-		addCommand("move-to-column",Collections.singletonList("line"),(args,area)->{
+		addCommand("move-to-column",Collections.singletonList(new Argument("line")),(args,area)->{
 				area.getArea().moveTo(area.getArea().getCurrentParagraph(),SchemeConverter.toInteger(ScmList.first(args)));
 				return null;
 		});
-		addCommand("move-to-position",Collections.singletonList("line"),(args,area)->{
+		addCommand("move-to-position",Collections.singletonList(new Argument("line")),(args,area)->{
 				area.getArea().moveTo(SchemeConverter.toInteger(ScmList.first(args)));
 				area.getArea().showParagraphInViewport(area.getArea().getCurrentParagraph());
 				return null;
@@ -177,7 +177,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("current-anchor",Collections.emptyList(),(args,area)->{
 				return ScmInteger.valueOf(area.getArea().getAnchor());
 		});
-		addCommand("->position",Arrays.asList("line","column"),(args,area)->{
+		addCommand("->position",Arrays.asList(new Argument("line"),new Argument("column")),(args,area)->{
 				return ScmInteger.valueOf(area.getArea().getAbsolutePosition(SchemeConverter.toInteger(ScmList.first(args)),SchemeConverter.toInteger(ScmList.second(args))));
 		});
 		addCommand("length",Collections.emptyList(),(args,area)->{
@@ -194,18 +194,18 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList())),true));
 		addCommand("highlight",(area)->area.selections().add(area.createSelection(area.getArea().getSelection())));
 		addCommand("unhighlight",(area)->area.unhighlight());
-		addCommand("find-string",Collections.singletonList("target"),(args,area)->{
+		addCommand("find-string",Collections.singletonList(new Argument("target")),(args,area)->{
 				return ScmInteger.valueOf(area.find(SchemeConverter.toString(ScmList.first(args))));
 		});
-		addCommand("find-regex",Collections.singletonList("target"),(args,area)->{
+		addCommand("find-regex",Collections.singletonList(new Argument("target")),(args,area)->{
 				return ScmInteger.valueOf(area.findRegex(SchemeConverter.toString(ScmList.first(args))));
 		});
-		addCommand("replace-string",Collections.singletonList("replacement"),(args,area)->{
+		addCommand("replace-string",Collections.singletonList(new Argument("replacement")),(args,area)->{
 				String replacement=SchemeConverter.toString(ScmList.first(args));
 				area.replace((t)->replacement);
 				return null;
 		});
-		addCommand("replace",Collections.singletonList("function"),(args,area)->{
+		addCommand("replace",Collections.singletonList(new Argument("function")),(args,area)->{
 				ScmProcedure function=(ScmProcedure)(ScmList.first(args));
 				area.replace((t)->((ScmString)function.call(ScmList.toList(new ScmString(t)))).getValue());
 				return null;
@@ -229,7 +229,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private void addCommand(String name,Consumer<CodeEditor> action){
 		commandRegistry.addChild(name,new Command(name,()->action.accept(getCurrentEditor()),TextEditorModule.NAME));
 	}
-	private void addCommand(String name,List<String> parameters,BiFunction<ScmPairOrNil,CodeEditor,ScmObject> action){
+	private void addCommand(String name,List<Argument> parameters,BiFunction<ScmPairOrNil,CodeEditor,ScmObject> action){
 		commandRegistry.addChild(name,new Command(name,parameters,(args)->action.apply(args,getCurrentEditor()),TextEditorModule.NAME));
 	}
 	private CodeEditor getCurrentEditor(){

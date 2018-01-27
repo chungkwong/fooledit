@@ -17,6 +17,7 @@
 package cc.fooledit.core;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
+import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
@@ -79,7 +80,7 @@ public class MiniBuffer extends BorderPane{
 	public void executeCommand(Command command){
 		executeCommand(command,new ArrayList<>(),command.getParameters());
 	}
-	private void executeCommand(Command command,List<ScmString> collected,List<String> missing){
+	private void executeCommand(Command command,List<ScmObject> collected,List<Argument> missing){
 		if(missing.isEmpty()){
 			main.getNotifier().notifyStarted(command.getDisplayName());
 			ScmObject obj=command.accept(ScmList.toList(collected));
@@ -89,11 +90,22 @@ public class MiniBuffer extends BorderPane{
 				main.getNotifier().notifyFinished(command.getDisplayName());
 			if(!command.getName().equals("command"))
 				restore();
-		}else
+		}else{
+			Argument arg=missing.get(0);
+			if(arg.getDef()!=null){
+				try{
+					collected.add(SchemeConverter.toScheme(arg.getDef().get()));
+					executeCommand(command,collected,missing.subList(1,missing.size()));
+					return;
+				}catch(Exception ex){
+					Logger.getGlobal().log(Level.FINE,null,ex);
+				}
+			}
 			setMode((p)->{
 				collected.add(new ScmString(p));
 				executeCommand(command,collected,missing.subList(1,missing.size()));
-			},null,"",new Label(MessageRegistry.getString(missing.get(0),command.getModule())),null);
+			},null,"",new Label(MessageRegistry.getString(missing.get(0).getName(),command.getModule())),null);
+		}
 	}
 	@Override
 	public void requestFocus(){

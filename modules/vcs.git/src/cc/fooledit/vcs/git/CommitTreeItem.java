@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
-import cc.fooledit.core.*;
 import cc.fooledit.vcs.git.MenuItemBuilder;
 import java.util.*;
 import java.util.logging.*;
@@ -63,7 +62,7 @@ public class CommitTreeItem extends LazySimpleTreeItem<Object>{
 		return new MenuItem[]{
 			MenuItemBuilder.build("CHECKOUT",(e)->GitCommands.execute("git-checkout")),
 			MenuItemBuilder.build("REVERT",(e)->GitCommands.execute("git-revert")),
-			MenuItemBuilder.build("TAG",(e)->GitCommands.execute("git-tag"))
+			MenuItemBuilder.build("TAG",(e)->GitCommands.execute("git-tag-add"))
 		};
 	}
 	private void gitCheckout(){
@@ -80,20 +79,6 @@ public class CommitTreeItem extends LazySimpleTreeItem<Object>{
 		}catch(Exception ex){
 			Logger.getLogger(BranchTreeItem.class.getName()).log(Level.SEVERE,null,ex);
 		}
-	}
-	private void gitTag(){
-		TextInputDialog dialog=new TextInputDialog();
-		dialog.setTitle(MessageRegistry.getString("CHOOSE NAME FOR THE TAG",GitModuleReal.NAME));
-		dialog.setHeaderText(MessageRegistry.getString("ENTER THE NAME OF THE TAG:",GitModuleReal.NAME));
-		Optional<String> name=dialog.showAndWait();
-		if(name.isPresent())
-			try{
-				Ref tag=((Git)getParent().getParent().getValue()).tag().setName(name.get()).setObjectId((RevCommit)getValue()).call();
-//				getParent().getParent().getChildren().filtered(item->item instanceof TagListTreeItem).
-//					forEach((item)->item.getChildren().add(new TagTreeItem(tag)));
-			}catch(Exception ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-			}
 	}
 }
 class DirectoryTreeItem extends LazySimpleTreeItem<Object>{

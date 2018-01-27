@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.util.ThrowableFunction;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
@@ -28,7 +27,7 @@ public class Command{
 	private final String module;
 	private final String name;
 	private final ThrowableFunction<ScmPairOrNil,ScmObject> action;
-	private final List<String> parameters;
+	private final List<Argument> parameters;
 	private static Pair<Command,ScmPairOrNil> lastCommand=new Pair<>(null,null);
 	public Command(String name,Runnable action,String module){
 		this(name,(t)->{
@@ -39,7 +38,7 @@ public class Command{
 	public Command(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
 		this(name,Collections.emptyList(),action,module);
 	}
-	public Command(String name,List<String> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
+	public Command(String name,List<Argument> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
 		this.action=action;
 		this.module=module;
 		this.name=name;
@@ -55,7 +54,7 @@ public class Command{
 	public String getModule(){
 		return module;
 	}
-	public List<String> getParameters(){
+	public List<Argument> getParameters(){
 		return parameters;
 	}
 	public ScmObject accept(ScmPairOrNil t){

@@ -18,12 +18,14 @@ package cc.fooledit.vcs.git;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.diff.*;
+import org.eclipse.jgit.dircache.*;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.*;
 import org.eclipse.jgit.transport.*;
@@ -39,16 +41,16 @@ public class GitCommands{
 	public static Git init(File file)throws Exception{
 		return Git.init().setDirectory(file).call();
 	}
-	public static Git clone(String uri,String branch,File dir)throws Exception{
-		return Git.cloneRepository().setDirectory(dir).setURI(uri).setBranch(branch).call();//TODO: Progress
+	public static Git clone(String uri,File dir)throws Exception{
+		return Git.cloneRepository().setDirectory(dir).setURI(uri).call();//TODO: Progress
 	}
 	public static Iterable<PushResult> push(String remote,Git git)throws Exception{
 		return git.push().setRemote(remote).call();
 	}
-	public static PullResult pull(String remote,String branch,Git git)throws Exception{
-		return git.pull().setRemoteBranchName(branch).setRemote(remote).call();
+	public static PullResult pull(String remote,Git git)throws Exception{
+		return git.pull().setRemote(remote).call();
 	}
-	public static FetchResult fetch(String remote,String branch,Git git)throws Exception{
+	public static FetchResult fetch(String remote,Git git)throws Exception{
 		return git.fetch().setRemote(remote).call();
 	}
 	public static Properties gc(Git git) throws GitAPIException{
@@ -65,6 +67,12 @@ public class GitCommands{
 	}
 	public static Ref addBranch(String name,Git git) throws GitAPIException{
 		return git.branchCreate().setName(name).call();
+	}
+	public static List<String> deleteBranch(String name,Git git) throws GitAPIException{
+		return git.branchDelete().setBranchNames(name).call();
+	}
+	public static Ref renameBranch(String name,String newname,Git git) throws GitAPIException{
+		return git.branchRename().setOldName(name).setNewName(newname).call();
 	}
 	public static String diff(String v1,String v2,Git git,boolean detailed){
 		try(ObjectReader reader=git.getRepository().newObjectReader()){
@@ -110,23 +118,34 @@ public class GitCommands{
 				return "";
 		}
 	}
-	public static void addRemote(Git git){
-		/*TextInputDialog dialog=new TextInputDialog();
-		dialog.setTitle(MessageRegistry.getString("CHOOSE A NAME FOR THE NEW REMOTE CONFIGURE",GitModuleReal.NAME));
-		dialog.setHeaderText(MessageRegistry.getString("ENTER THE NAME OF THE NEW REMOTE CONFIGURE:",GitModuleReal.NAME));
-		Optional<String> name=dialog.showAndWait();
-		dialog.setTitle(MessageRegistry.getString("CHOOSE A URI FOR THE NEW REMOTE CONFIGURE",GitModuleReal.NAME));
-		dialog.setHeaderText(MessageRegistry.getString("ENTER THE URI OF THE NEW REMOTE CONFIGURE:",GitModuleReal.NAME));
-		Optional<String> uri=dialog.showAndWait();
-		if(name.isPresent())
-			try{
-				RemoteAddCommand command=((Git)getValue()).remoteAdd();
-				command.setName(name.get());
-				command.setUri(new URIish(uri.get()));
-				getChildren().add(new RemoteTreeItem(command.call()));
-			}catch(Exception ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-			}*/
+	public static RemoteConfig addRemote(String name,String uri,Git git) throws URISyntaxException, GitAPIException{
+		RemoteAddCommand command=git.remoteAdd();
+		command.setName(name);
+		command.setUri(new URIish(uri));
+		return command.call();
+	}
+	public static RemoteConfig deleteRemote(String name,Git git) throws URISyntaxException, GitAPIException{
+		RemoteRemoveCommand command=git.remoteRemove();
+		command.setName(name);
+		return command.call();
+	}
+	public static RemoteConfig setRemote(String name,String uri,Git git) throws URISyntaxException, GitAPIException{
+		RemoteSetUrlCommand command=git.remoteSetUrl();
+		command.setName(name);
+		command.setUri(new URIish(uri));
+		command.setPush(true);
+		command.call();
+		command=git.remoteSetUrl();
+		command.setName(name);
+		command.setUri(new URIish(uri));
+		command.setPush(false);
+		return command.call();
+	}
+	public static Ref addTag(String tag,RevObject id,Git git) throws GitAPIException{
+		return git.tag().setName(tag).setObjectId(id).call();
+	}
+	public static List<String> removeTag(String tag,Git git) throws GitAPIException{
+		return git.tagDelete().setTags(tag).call();
 	}
 	public static void config(Git git){
 		/*
@@ -147,22 +166,11 @@ public class GitCommands{
 		}
 		*/
 	}
-	static void add(Object object,Git git){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public static DirCache add(String filepattern,Git git) throws GitAPIException{
+		return git.add().addFilepattern(filepattern).call();
 	}
-	static void remove(Object object,Git git){
-		/*item.setOnAction((e)->{
-			RmCommand command=((Git)getValue()).rm().setCached(true);
-			list.getSelectionModel().getSelectedItems().stream().forEach((path)->{
-				command.addFilepattern(path);
-			});
-			list.getItems().removeAll(list.getSelectionModel().getSelectedItems());
-			try{
-				command.call();
-			}catch(Exception ex){
-				Logger.getLogger(StageTreeItem.class.getName()).log(Level.SEVERE,null,ex);
-			}
-		});*/
+	public static DirCache remove(String filepattern,Git git) throws GitAPIException{
+		return git.rm().addFilepattern(filepattern).call();
 	}
 	static void blame(Object object,Git git){
 		/*item.setOnAction((e)->{

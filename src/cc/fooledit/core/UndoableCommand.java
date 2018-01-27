@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.util.ThrowableFunction;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
@@ -30,7 +29,7 @@ public class UndoableCommand extends Command{
 		super(name,action,module);
 		this.backup=backup;
 	}
-	public UndoableCommand(String name,List<String> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,Function<ScmPairOrNil,UndoableAction> backup,String module){
+	public UndoableCommand(String name,List<Argument> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,Function<ScmPairOrNil,UndoableAction> backup,String module){
 		super(name,parameters,action,module);
 		this.backup=backup;
 	}

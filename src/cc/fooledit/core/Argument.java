@@ -15,17 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-
+import cc.fooledit.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Argument{
 	private final String name;
-	private final boolean required;
-	public Argument(String name,boolean required){
-		this.name=name;
-		this.required=required;
+	private final ThrowableSupplier<Object> def;
+	public Argument(String name){
+		this(name,null);
 	}
-
+	public Argument(String name,ThrowableSupplier<Object> def){
+		this.name=name;
+		this.def=def;
+	}
+	public String getName(){
+		return name;
+	}
+	public ThrowableSupplier<Object> getDef(){
+		return def;
+	}
 }
