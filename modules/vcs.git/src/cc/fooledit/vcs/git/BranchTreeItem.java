@@ -16,18 +16,17 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.vcs.git.MenuItemBuilder;
-import java.util.logging.*;
+import cc.fooledit.vcs.git.TreeItemBuilder;
 import javafx.scene.control.*;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.lib.*;
-import org.eclipse.jgit.revwalk.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BranchTreeItem extends TreeItem<Object> implements NavigationTreeItem{
-	public BranchTreeItem(Ref ref){
-		super(ref);
+public class BranchTreeItem extends LazySimpleTreeItem<Object>{
+	public BranchTreeItem(Ref ref,Git git){
+		super(TreeItemBuilder.getTreeItemsSupplier(TreeItemBuilder.toTree(ref,git),git),ref);
 	}
 	@Override
 	public String toString(){
@@ -42,35 +41,5 @@ public class BranchTreeItem extends TreeItem<Object> implements NavigationTreeIt
 			MenuItemBuilder.build("REMOVE BRANCH",(e)->GitCommands.execute("git-branch-delete")),
 			MenuItemBuilder.build("RENAME BRANCH",(e)->GitCommands.execute("git-branch-rename"))
 		};
-	}
-	private void gitMerge(){
-		try{
-			MergeResult result=((Git)getParent().getParent().getValue()).merge().include((Ref)getValue()).call();
-			if(result.getMergeStatus().equals(MergeResult.MergeStatus.MERGED)){
-				RevCommit commit=((Git)getParent().getParent().getValue()).log().addRange(result.getNewHead(),result.getNewHead()).call().iterator().next();
-//				getParent().getParent().getChildren().filtered(item->item instanceof LocalTreeItem).
-//					forEach((item)->item.getChildren().add(new CommitTreeItem(commit)));
-			}else{
-				new Alert(Alert.AlertType.INFORMATION,result.getMergeStatus().toString(),ButtonType.CLOSE).show();
-			}
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
-	}
-	private void gitCheckout(){
-		try{
-			((Git)getParent().getParent().getValue()).checkout().setName(((Ref)getValue()).getName()).call();
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
-	}
-	private void gitRevert(){
-		try{
-			RevCommit rev=((Git)getParent().getParent().getValue()).revert().include((Ref)getValue()).call();
-//			getParent().getParent().getChildren().filtered(item->item instanceof LocalTreeItem).
-//					forEach((item)->item.getChildren().add(new CommitTreeItem(rev)));
-		}catch(Exception ex){
-			Logger.getLogger(BranchTreeItem.class.getName()).log(Level.SEVERE,null,ex);
-		}
 	}
 }

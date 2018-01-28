@@ -15,16 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
-import cc.fooledit.core.*;
+import cc.fooledit.vcs.git.MenuItemBuilder;
+import cc.fooledit.vcs.git.TreeItemBuilder;
 import javafx.scene.control.*;
+import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.lib.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TagTreeItem extends TreeItem<Object> implements NavigationTreeItem{
-	public TagTreeItem(Ref ref){
-		super(ref);
+public class TagTreeItem extends LazySimpleTreeItem<Object>{
+	public TagTreeItem(Ref ref,Git git){
+		super(TreeItemBuilder.getTreeItemsSupplier(TreeItemBuilder.toTree(ref,git),git),ref);
 	}
 	@Override
 	public String toString(){
@@ -32,8 +34,8 @@ public class TagTreeItem extends TreeItem<Object> implements NavigationTreeItem{
 	}
 	@Override
 	public MenuItem[] getContextMenuItems(){
-		MenuItem removeTag=new MenuItem(MessageRegistry.getString("REMOVE TAG",GitModuleReal.NAME));
-		removeTag.setOnAction((e)->GitCommands.execute("git-tag-delete"));
-		return new MenuItem[]{removeTag};
+		return new MenuItem[]{
+			MenuItemBuilder.build("REMOVE_TAG",(e)->GitCommands.execute("git-tag-delete"))
+		};
 	}
 }

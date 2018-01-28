@@ -103,7 +103,7 @@ public class GitRepositoryViewer extends BorderPane{
 				});
 	}
 	private TreeItem<Object> createTagListTreeItem(){
-		return new LazySimpleTreeItem<>(()->git.tagList().call().stream().map((ref)->new TagTreeItem(ref)).collect(Collectors.toList()),
+		return new LazySimpleTreeItem<>(()->git.tagList().call().stream().map((ref)->new TagTreeItem(ref,git)).collect(Collectors.toList()),
 				MessageRegistry.getString("TAG",GitModuleReal.NAME));
 	}
 	private TreeItem<Object> createLogTreeItem(){
@@ -112,7 +112,7 @@ public class GitRepositoryViewer extends BorderPane{
 				new MenuItem[0]);
 	}
 	private TreeItem<Object> createLocalTreeItem(){
-		return new LazySimpleTreeItem<>(()->git.branchList().call().stream().map((ref)->new BranchTreeItem(ref)).collect(Collectors.toList()),
+		return new LazySimpleTreeItem<>(()->git.branchList().call().stream().map((ref)->new BranchTreeItem(ref,git)).collect(Collectors.toList()),
 				MessageRegistry.getString("LOCAL BRANCH",GitModuleReal.NAME),
 			new MenuItem[]{
 				MenuItemBuilder.build("BRANCH",(e)->GitCommands.execute("git-branch-add"))
@@ -172,15 +172,12 @@ public class GitRepositoryViewer extends BorderPane{
 		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("REFERNECE",GitModuleReal.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
-				if(p.getValue() instanceof CommitTreeItem){
-					ObjectId id=((RevCommit)p.getValue().getValue()).getId();
-					return new ReadOnlyObjectWrapper<>(id==null?"":id.getName());
-				}else if(p.getValue() instanceof BranchTreeItem){
-					ObjectId id=((Ref)p.getValue().getValue()).getLeaf().getObjectId();
-					return new ReadOnlyObjectWrapper<>(id==null?"":id.getName());
-				}else if(p.getValue() instanceof TagTreeItem){
-					ObjectId id=((Ref)p.getValue().getValue()).getTarget().getLeaf().getObjectId();
-					return new ReadOnlyObjectWrapper<>(id==null?"":id.getName());
+				if(p.getValue().getValue() instanceof ObjectId){
+					ObjectId id=(ObjectId)p.getValue().getValue();
+					return new ReadOnlyObjectWrapper<>(id.getName());
+				}else if(p.getValue().getValue() instanceof Ref){
+					ObjectId id=((Ref)p.getValue().getValue()).getObjectId();
+					return new ReadOnlyObjectWrapper<>(id.getName());
 				}else
 					return new ReadOnlyObjectWrapper<>("");
 			}

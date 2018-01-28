@@ -25,6 +25,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import javafx.scene.*;
+import javafx.scene.control.*;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.revwalk.*;
 /**
@@ -38,15 +39,16 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 	public static GitRepositoryEditor INSTANCE=new GitRepositoryEditor();
 	private GitRepositoryEditor(){
 		Argument git=new Argument("GIT",GitRepositoryEditor::getGit);
-		Argument remote=new Argument("REMOTE",GitRepositoryEditor::getRemote);
-		Argument branch=new Argument("REMOTE",GitRepositoryEditor::getBranch);
+		Argument remote=new Argument("REMOTE",GitRepositoryEditor::getSelectedItem);
+		Argument branch=new Argument("REMOTE",GitRepositoryEditor::getSelectedItem);
 		Argument msg=new Argument("MESSAGE");
 		Argument uri=new Argument("URI");
 		Argument name=new Argument("NAME");
-		Argument tag=new Argument("TAG",GitRepositoryEditor::getTag);
+		Argument tag=new Argument("TAG",GitRepositoryEditor::getSelectedItem);
 		Argument dir=new Argument("DIRECTORY",GitRepositoryEditor::getDirectory);
 		Argument file=new Argument("DIRECTORY",GitRepositoryEditor::getFile);
-		Argument commit=new Argument("COMMIT",GitRepositoryEditor::getCommit);
+		Argument commit=new Argument("COMMIT",GitRepositoryEditor::getSelectedItem);
+		Argument commitOrBranch=new Argument("COMMIT_OR_BRANCH",GitRepositoryEditor::getSelectedItem);
 		addCommand("git-push",Arrays.asList(),(args)->{
 			return SchemeConverter.toScheme(GitCommands.push(SchemeConverter.toJava(ScmList.first(args)).toString(),(Git)SchemeConverter.toJava(ScmList.second(args))));
 		});
@@ -56,9 +58,11 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		addCommand("git-fetch",Arrays.asList(),(args)->{
 			return SchemeConverter.toScheme(GitCommands.fetch(SchemeConverter.toJava(ScmList.first(args)).toString(),(Git)SchemeConverter.toJava(ScmList.second(args))));
 		});
-		addCommand("git-checkout",Arrays.asList(),(args)->{return null;});
-		addCommand("git-revert",Arrays.asList(),(args)->{return null;});
-		addCommand("git-merge",Arrays.asList(),(args)->{return null;});
+		addCommand("git-checkout",Arrays.asList(commitOrBranch,git),(args)->{return null;});
+		addCommand("git-revert",Arrays.asList(commitOrBranch,git),(args)->{return null;});
+		addCommand("git-merge",Arrays.asList(commitOrBranch,git),(args)->{
+			return SchemeConverter.toScheme(GitCommands.merge(SchemeConverter.toJava(ScmList.first(args)).toString(),(Git)SchemeConverter.toJava(ScmList.second(args))));
+		});
 		addCommand("git-branch-add",Arrays.asList(name,git),(args)->{
 			return SchemeConverter.toScheme(GitCommands.addBranch(SchemeConverter.toJava(ScmList.first(args)).toString(),(Git)SchemeConverter.toJava(ScmList.second(args))));
 		});
@@ -101,8 +105,8 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		addCommand("git-clone",Arrays.asList(uri,dir),(args)->{
 			return SchemeConverter.toScheme(GitCommands.clone(SchemeConverter.toJava(ScmList.first(args)).toString(),(File)SchemeConverter.toJava(ScmList.second(args))));
 		});
-		addCommand("git-config",Arrays.asList(),(args)->{return null;});
-		addCommand("git-blame",Arrays.asList(),(args)->{return null;});
+		addCommand("git-config",Arrays.asList(),(args)->{return null;});//TODO
+		addCommand("git-blame",Arrays.asList(),(args)->{return null;});//TODO
 	}
 	private void addCommand(String name,List<Argument> args,ThrowableFunction<ScmPairOrNil,ScmObject> proc){
 		commandRegistry.addChild(name,new Command(name,proc,GitModuleReal.NAME));
@@ -159,27 +163,6 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		}
 		return f;
 	}
-	private static String getRemote() throws Exception{
-		Node node=Main.INSTANCE.getCurrentNode();
-		if(node instanceof GitRepositoryViewer){
-
-		}
-		throw new Exception();
-	}
-	private static String getBranch() throws Exception{
-		Node node=Main.INSTANCE.getCurrentNode();
-		if(node instanceof GitRepositoryViewer){
-
-		}
-		throw new Exception();
-	}
-	private static RevObject getCommit() throws Exception{
-		Node node=Main.INSTANCE.getCurrentNode();
-		if(node instanceof GitRepositoryViewer){
-
-		}
-		throw new Exception();
-	}
 	private static File getDirectory() throws Exception{
 		Node node=Main.INSTANCE.getCurrentNode();
 		if(node instanceof GitRepositoryViewer){
@@ -194,10 +177,12 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		}
 		throw new Exception();
 	}
-	private static String getTag() throws Exception{
+	private static Object getSelectedItem() throws Exception{
 		Node node=Main.INSTANCE.getCurrentNode();
 		if(node instanceof GitRepositoryViewer){
-
+			TreeTableView.TreeTableViewSelectionModel model=((TreeTableView)((GitRepositoryViewer)node).getCenter()).getSelectionModel();
+			if(!model.isEmpty())
+				return model.getSelectedItem();
 		}
 		throw new Exception();
 	}

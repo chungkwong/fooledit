@@ -44,14 +44,17 @@ public class GitCommands{
 	public static Git clone(String uri,File dir)throws Exception{
 		return Git.cloneRepository().setDirectory(dir).setURI(uri).call();//TODO: Progress
 	}
-	public static Iterable<PushResult> push(String remote,Git git)throws Exception{
-		return git.push().setRemote(remote).call();
+	public static Iterable<PushResult> push(Object remote,Git git)throws Exception{
+		return git.push().setRemote(toRemoteConfigName(remote)).call();
 	}
 	public static PullResult pull(String remote,Git git)throws Exception{
-		return git.pull().setRemote(remote).call();
+		return git.pull().setRemote(toRemoteConfigName(remote)).call();
 	}
 	public static FetchResult fetch(String remote,Git git)throws Exception{
-		return git.fetch().setRemote(remote).call();
+		return git.fetch().setRemote(toRemoteConfigName(remote)).call();
+	}
+	private static String toRemoteConfigName(Object remote){
+		return remote instanceof RemoteConfig?((RemoteConfig)remote).getName():Objects.toString(remote);
 	}
 	public static Properties gc(Git git) throws GitAPIException{
 		return git.gc().call();
@@ -68,11 +71,14 @@ public class GitCommands{
 	public static Ref addBranch(String name,Git git) throws GitAPIException{
 		return git.branchCreate().setName(name).call();
 	}
-	public static List<String> deleteBranch(String name,Git git) throws GitAPIException{
-		return git.branchDelete().setBranchNames(name).call();
+	public static List<String> deleteBranch(Object branch,Git git) throws GitAPIException{
+		return git.branchDelete().setBranchNames(toRefName(branch)).call();
 	}
-	public static Ref renameBranch(String name,String newname,Git git) throws GitAPIException{
-		return git.branchRename().setOldName(name).setNewName(newname).call();
+	public static Ref renameBranch(Object branch,String newname,Git git) throws GitAPIException{
+		return git.branchRename().setOldName(toRefName(branch)).setNewName(newname).call();
+	}
+	private static String toRefName(Object ref){
+		return ref instanceof Ref?((Ref)ref).getName():Objects.toString(ref.toString());
 	}
 	public static String diff(String v1,String v2,Git git,boolean detailed){
 		try(ObjectReader reader=git.getRepository().newObjectReader()){
@@ -118,19 +124,50 @@ public class GitCommands{
 				return "";
 		}
 	}
+	public static MergeResult merge(Object obj,Git git) throws GitAPIException, IOException{
+		obj=toBranchOrCommit(obj,git);
+		if(obj instanceof AnyObjectId)
+			return git.merge().include((AnyObjectId)obj).call();
+		else
+			return git.merge().include((Ref)obj).call();
+	}
+	public static Ref checkout(Object obj,Git git) throws GitAPIException, IOException{
+		obj=toBranchOrCommit(obj,git);
+		if(obj instanceof RevCommit)
+			return git.checkout().setStartPoint((RevCommit)obj).call();
+		else
+			return git.checkout().setName(obj.toString()).call();
+	}
+	public static RevCommit revert(Object obj,Git git) throws GitAPIException, IOException{
+		obj=toBranchOrCommit(obj,git);
+		if(obj instanceof AnyObjectId)
+			return git.revert().include((AnyObjectId)obj).call();
+		else
+			return git.revert().include(git.getRepository().findRef(obj.toString())).call();
+	}
+	private static Object toBranchOrCommit(Object obj,Git git) throws IOException{
+		if(obj instanceof AnyObjectId||obj instanceof Ref)
+			return obj;
+		else{
+			String name=Objects.toString(obj);
+			ObjectId id=git.getRepository().resolve(name);
+			return id!=null?git.getRepository().parseCommit(id):git.getRepository().findRef(name);
+		}
+	}
 	public static RemoteConfig addRemote(String name,String uri,Git git) throws URISyntaxException, GitAPIException{
 		RemoteAddCommand command=git.remoteAdd();
 		command.setName(name);
 		command.setUri(new URIish(uri));
 		return command.call();
 	}
-	public static RemoteConfig deleteRemote(String name,Git git) throws URISyntaxException, GitAPIException{
+	public static RemoteConfig deleteRemote(Object remote,Git git) throws URISyntaxException, GitAPIException{
 		RemoteRemoveCommand command=git.remoteRemove();
-		command.setName(name);
+		command.setName(toRemoteConfigName(remote));
 		return command.call();
 	}
-	public static RemoteConfig setRemote(String name,String uri,Git git) throws URISyntaxException, GitAPIException{
+	public static RemoteConfig setRemote(Object remote,String uri,Git git) throws URISyntaxException, GitAPIException{
 		RemoteSetUrlCommand command=git.remoteSetUrl();
+		String name=toRemoteConfigName(remote);
 		command.setName(name);
 		command.setUri(new URIish(uri));
 		command.setPush(true);
@@ -141,11 +178,11 @@ public class GitCommands{
 		command.setPush(false);
 		return command.call();
 	}
-	public static Ref addTag(String tag,RevObject id,Git git) throws GitAPIException{
-		return git.tag().setName(tag).setObjectId(id).call();
+	public static Ref addTag(String tag,Object id,Git git) throws GitAPIException, IOException{
+		return git.tag().setName(tag).setObjectId((RevObject)toBranchOrCommit(id,git)).call();
 	}
-	public static List<String> removeTag(String tag,Git git) throws GitAPIException{
-		return git.tagDelete().setTags(tag).call();
+	public static List<String> removeTag(Object tag,Git git) throws GitAPIException{
+		return git.tagDelete().setTags(toRefName(tag)).call();
 	}
 	public static void config(Git git){
 		/*
@@ -172,7 +209,7 @@ public class GitCommands{
 	public static DirCache remove(String filepattern,Git git) throws GitAPIException{
 		return git.rm().addFilepattern(filepattern).call();
 	}
-	static void blame(Object object,Git git){
+	public static void blame(Object object,Git git){
 		/*item.setOnAction((e)->{
 			(e)->{
 			Stage dialog=new Stage();

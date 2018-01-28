@@ -16,7 +16,7 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.vcs.git.MenuItemBuilder;
-import java.util.*;
+import cc.fooledit.vcs.git.TreeItemBuilder;
 import java.util.logging.*;
 import javafx.scene.control.*;
 import org.eclipse.jgit.api.*;
@@ -24,7 +24,6 @@ import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.errors.*;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.*;
-import org.eclipse.jgit.treewalk.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -32,26 +31,14 @@ import org.eclipse.jgit.treewalk.*;
 public class CommitTreeItem extends LazySimpleTreeItem<Object>{
 	private final Git git;
 	public CommitTreeItem(RevCommit rev,Git git){
-		super(()->{
-			LinkedList<TreeItem<Object>> list=new LinkedList<>();
-			TreeWalk walk=new TreeWalk(git.getRepository());
-			walk.addTree(rev.getTree());
-			while(walk.next()){
-				if(walk.isSubtree()){
-					list.add(new DirectoryTreeItem(walk.getObjectId(0),walk.getNameString(),git));
-				}else{
-					list.add(new FileTreeItem(walk.getObjectId(0),walk.getNameString()));
-				}
-			}
-			return list;
-		},rev);
+		super(TreeItemBuilder.getTreeItemsSupplier(rev.getTree(),git),rev);
 		this.git=git;
 	}
 	@Override
 	public String toString(){
 		try{
 			ObjectId id=((RevCommit)getValue()).getId();
-			return ((Git)getParent().getParent().getValue()).nameRev().add(id).call().get(id);
+			return git.nameRev().add(id).call().get(id);
 		}catch(MissingObjectException|JGitInternalException|GitAPIException ex){
 			Logger.getLogger(CommitTreeItem.class.getName()).log(Level.SEVERE,null,ex);
 		}
@@ -64,54 +51,5 @@ public class CommitTreeItem extends LazySimpleTreeItem<Object>{
 			MenuItemBuilder.build("REVERT",(e)->GitCommands.execute("git-revert")),
 			MenuItemBuilder.build("TAG",(e)->GitCommands.execute("git-tag-add"))
 		};
-	}
-	private void gitCheckout(){
-		try{
-			((Git)getParent().getParent().getValue()).checkout().setName(((RevCommit)getValue()).getName()).call();
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
-	}
-	private void gitRevert(){
-		try{
-			RevCommit rev=((Git)getParent().getParent().getValue()).revert().include((RevCommit)getValue()).call();
-			getParent().getChildren().add(new CommitTreeItem(rev,git));
-		}catch(Exception ex){
-			Logger.getLogger(BranchTreeItem.class.getName()).log(Level.SEVERE,null,ex);
-		}
-	}
-}
-class DirectoryTreeItem extends LazySimpleTreeItem<Object>{
-	private final String name;
-	public DirectoryTreeItem(ObjectId id,String name,Git git){
-		super(()->{
-			LinkedList<TreeItem<Object>> list=new LinkedList<>();
-			TreeWalk walk=new TreeWalk(git.getRepository());
-			walk.addTree(id);
-			while(walk.next()){
-				if(walk.isSubtree()){
-					list.add(new DirectoryTreeItem(walk.getObjectId(0),walk.getNameString(),git));
-				}else{
-					list.add(new FileTreeItem(walk.getObjectId(0),walk.getNameString()));
-				}
-			}
-			return list;
-		},id);
-		this.name=name;
-	}
-	@Override
-	public String toString(){
-		return name;
-	}
-}
-class FileTreeItem extends SimpleTreeItem<Object>{
-	private final String name;
-	public FileTreeItem(ObjectId id,String name){
-		super(id);
-		this.name=name;
-	}
-	@Override
-	public String toString(){
-		return name;
 	}
 }
