@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="mode.json" default="compile-grammar" basedir=".">
+	<description>Builds, tests, and runs the project mode.json.</description>
+	<target name="compile-grammar" depends="check-grammar-timestamp" unless="${grammar.uptodate}">
+		<mkdir dir="generated-sources"/>
+		<mkdir dir="generated-classes"/>
+		<java classname="org.antlr.v4.Tool" failonerror="true" classpath="../../lib/antlr-4.7-complete.jar">
+			<arg value="-o"/>
+			<arg value="generated-sources"/>
+			<arg file="JSON.g4"/>
+		</java>
+		<copy todir="generated-sources">
+			<fileset dir=".">
+				<include name="*.java"/>
+			</fileset>
+		</copy>
+		<copy todir=".">
+			<fileset dir="generated-sources">
+				<include name="*.tokens"/>
+			</fileset>
+		</copy>
+		<javac srcdir="generated-sources" destdir="generated-classes" classpath="../../lib/antlr-4.7-complete.jar"/>
+		<jar destfile="parser.g4" basedir="generated-classes" />
+		<delete dir="generated-sources" includeEmptyDirs="true" quiet="true"/>
+		<delete dir="generated-classes" includeEmptyDirs="true" quiet="true"/>
+	</target>
+	<target name="check-grammar-timestamp">
+		<uptodate targetfile="parser.jar" property="grammar.uptodate">
+			<srcfiles dir=".">
+				<include name="*.g4"/>
+				<include name="../../lib/antlr-4.7-complete.jar"/>
+			</srcfiles>
+		</uptodate>
+	</target>
+</project>

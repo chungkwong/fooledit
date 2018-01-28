@@ -60,4 +60,12 @@
 			<fileset dir="etc"/>
 		</copy>
 	</target>
+	<target name="-post-init">
+		<get src="http://www.antlr.org/download/antlr-4.7-complete.jar" dest="lib/antlr-4.7-complete.jar" usetimestamp="true"/>
+		<get src="http://central.maven.org/maven2/org/apache/commons/commons-compress/1.15/commons-compress-1.15.jar" dest="lib/commons-compress-1.15.jar" usetimestamp="true"/>
+		<get src="http://central.maven.org/maven2/org/freemarker/freemarker/2.3.23/freemarker-2.3.23.jar" dest="lib/freemarker.jar" usetimestamp="true"/>
+		<get src="https://github.com/FXMisc/RichTextFX/releases/download/0.8.1/richtextfx-fat-0.8.1.jar" dest="lib/richtextfx-fat-0.8.1.jar" usetimestamp="true"/>
+		<get src="" dest="lib/JSchemeMin.jar" usetimestamp="true"/>
+		<get src="" dest="lib/JSON.jar" usetimestamp="true"/>
+	</target>
 </project>
