@@ -47,10 +47,10 @@ public class GitCommands{
 	public static Iterable<PushResult> push(Object remote,Git git)throws Exception{
 		return git.push().setRemote(toRemoteConfigName(remote)).call();
 	}
-	public static PullResult pull(String remote,Git git)throws Exception{
+	public static PullResult pull(Object remote,Git git)throws Exception{
 		return git.pull().setRemote(toRemoteConfigName(remote)).call();
 	}
-	public static FetchResult fetch(String remote,Git git)throws Exception{
+	public static FetchResult fetch(Object remote,Git git)throws Exception{
 		return git.fetch().setRemote(toRemoteConfigName(remote)).call();
 	}
 	private static String toRemoteConfigName(Object remote){
@@ -235,6 +235,17 @@ public class GitCommands{
 			dialog.show();
 		}
 		});*/
+	}
+	public static Object view(Object obj,Git git) throws Exception{
+		AnyObjectId id=toObjectId(obj,git);
+		Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(new GitConnection(null,git).getURL()));//TODO
+		return id;
+	}
+	private static AnyObjectId toObjectId(Object obj,Git git) throws Exception{
+		if(obj instanceof AnyObjectId)
+			return (AnyObjectId)obj;
+		else
+			return git.getRepository().resolve(Objects.toString(obj));
 	}
 	public static String read(ObjectId id,Git git) throws IOException{
 		ObjectLoader obj=git.getRepository().open(id);

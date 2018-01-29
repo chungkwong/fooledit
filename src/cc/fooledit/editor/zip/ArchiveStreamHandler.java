@@ -37,7 +37,7 @@ import sun.net.www.*;
 public class ArchiveStreamHandler extends URLStreamHandler{
 	private static final String separator="!/";
 	protected URLConnection openConnection(URL u)throws IOException{
-		return new ArchiveConnection(u,this);
+		return new ArchiveConnection(u);
 	}
 	private static int indexOfBangSlash(String spec){
 		int indexOfBang=spec.length();
@@ -119,7 +119,7 @@ public class ArchiveStreamHandler extends URLStreamHandler{
 				file=url.getFile();
 			}
 		}
-        // then figure out if the spec is
+		// then figure out if the spec is
 		// 1. absolute (jar:)
 		// 2. relative (i.e. url + foo/bar/baz.ext)
 		// 3. anchor-only (i.e. url + #foo), which we already did (refOnly)
@@ -190,7 +190,7 @@ class ArchiveConnection extends URLConnection{
 	private ArchiveInputStream archiveFile;
 	private ArchiveEntry archiveEntry;
 	private String contentType;
-	public ArchiveConnection(URL url,ArchiveStreamHandler handler)
+	public ArchiveConnection(URL url)
 			throws MalformedURLException,IOException{
 		super(url);
 		parseSpecs(url);
@@ -304,34 +304,34 @@ class ArchiveConnection extends URLConnection{
 		return archiveFileURLConnection.getDefaultUseCaches();
 	}
 
-    /**
-     * The connection to the JAR file URL, if the connection has been
-     * initiated. This should be set by connect.
-     */
-    protected URLConnection jarFileURLConnection;
+	/**
+	 * The connection to the JAR file URL, if the connection has been
+	 * initiated. This should be set by connect.
+	 */
+	protected URLConnection jarFileURLConnection;
 
 	private void parseSpecs(URL url) throws MalformedURLException {
-        String spec = url.getFile();
-        int separator = spec.lastIndexOf("!/");
-        if (separator == -1) {
-            throw new MalformedURLException("no !/ found in url spec:" + spec);
-        }
-        archiveFileURL = new URL(spec.substring(0, separator++));
-        entryName = null;
-        if (++separator != spec.length()) {
-            entryName = spec.substring(separator, spec.length());
-            entryName = ParseUtil.decode (entryName);
-        }
-    }
+		String spec = url.getFile();
+		int separator = spec.lastIndexOf("!/");
+		if (separator == -1) {
+			throw new MalformedURLException("no !/ found in url spec:" + spec);
+		}
+		archiveFileURL = new URL(spec.substring(0, separator++));
+		entryName = null;
+		if (++separator != spec.length()) {
+			entryName = spec.substring(separator, spec.length());
+			entryName = ParseUtil.decode (entryName);
+		}
+	}
 	public URL getArchiveFileURL(){
 		return archiveFileURL;
 	}
 	public String getEntryName() {
-        return entryName;
-    }
-    public ArchiveEntry getArchiveEntry() throws IOException {
-        return archiveEntry;
-    }
+		return entryName;
+	}
+	public ArchiveEntry getArchiveEntry() throws IOException {
+		return archiveEntry;
+	}
 	private static String getArchiver(String mime){
 		return mime2archive.get(mime);
 	}
