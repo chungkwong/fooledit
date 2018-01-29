@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- You may freely edit this file. See commented blocks below for --><!-- some examples of how to customize the build. --><!-- (If you delete it and reopen the project it will be recreated.) --><!-- By default, only the Clean and Build commands use this build script. --><project name="fooledit" default="default" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<?xml version="1.0" encoding="UTF-8"?><!-- You may freely edit this file. See commented blocks below for --><!-- some examples of how to customize the build. --><!-- (If you delete it and reopen the project it will be recreated.) --><!-- By default, only the Clean and Build commands use this build script. -->
+<project name="fooledit" default="default" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant"  xmlns:ivy="antlib:org.apache.ivy.ant">
     <description>Builds, tests, and runs the project fooledit.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
@@ -60,12 +61,31 @@
 			<fileset dir="etc"/>
 		</copy>
 	</target>
-	<target name="-post-init">
-		<get src="http://www.antlr.org/download/antlr-4.7-complete.jar" dest="lib/antlr-4.7-complete.jar" usetimestamp="true"/>
-		<get src="http://central.maven.org/maven2/org/apache/commons/commons-compress/1.15/commons-compress-1.15.jar" dest="lib/commons-compress-1.15.jar" usetimestamp="true"/>
-		<get src="http://central.maven.org/maven2/org/freemarker/freemarker/2.3.23/freemarker-2.3.23.jar" dest="lib/freemarker.jar" usetimestamp="true"/>
-		<get src="https://github.com/FXMisc/RichTextFX/releases/download/0.8.1/richtextfx-fat-0.8.1.jar" dest="lib/richtextfx-fat-0.8.1.jar" usetimestamp="true"/>
-		<get src="" dest="lib/JSchemeMin.jar" usetimestamp="true"/>
-		<get src="" dest="lib/JSON.jar" usetimestamp="true"/>
+	<target name="-post-init" depends="resolve">
 	</target>
+	<property name="ivy.install.version" value="2.4.0"/>
+	<property name="ivy.jar.dir" value="ivy"/>
+	<property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
+	<target name="check-for-ivy">
+        <available property="ivy.downloaded" file="${ivy.jar.file}"/>
+    </target>
+	<target name="download-ivy" depends="check-for-ivy" unless="ivy.downloaded">
+		<mkdir dir="${ivy.jar.dir}"/>
+		<get src="http://central.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.jar.file}" usetimestamp="true"/>
+	</target>
+	<target name="install-ivy" depends="download-ivy">
+		<path id="ivy.lib.path">
+			<fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+		</path>
+		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+	</target>
+	<target name="clean-ivy">
+		<delete dir="${ivy.jar.dir}"/>
+	</target>
+	<target name="clean-ivy-cache" depends="install-ivy">
+		<ivy:cleancache/>
+	</target>
+	<target name="resolve" depends="install-ivy">
+        <ivy:retrieve />
+    </target>
 </project>

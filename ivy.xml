@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation=
+                   "http://ant.apache.org/ivy/schemas/ivy.xsd">
+	<info organisation="cc.fooledit" module="core"/>
+	<dependencies defaultconfmapping="default->master,compile" defaultconf="default">
+		<dependency org="org.apache.commons" name="commons-compress" rev="1.15"/>
+		<dependency org="org.fxmisc.richtext" name="richtextfx" rev="0.8.1"/>
+		<dependency org="org.freemarker" name="freemarker" rev="2.3.23"/>
+		<dependency org="org.antlr" name="antlr4" rev="4.7"/>
+	</dependencies>
+</ivy-module>
