@@ -31,7 +31,7 @@ import org.eclipse.jgit.revwalk.*;
 public class CommitTreeItem extends LazySimpleTreeItem<Object>{
 	private final Git git;
 	public CommitTreeItem(RevCommit rev,Git git){
-		super(TreeItemBuilder.getTreeItemsSupplier(rev.getTree(),git),rev);
+		super(rev,TreeItemBuilder.getTreeItemsSupplier(rev.getTree(),git));
 		this.git=git;
 	}
 	@Override

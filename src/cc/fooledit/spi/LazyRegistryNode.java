@@ -34,11 +34,13 @@ public class LazyRegistryNode<K,V,T> extends SimpleRegistryNode<K,V,T>{
 	public V getChildReal(K name){
 		if(super.hasChildReal(name)){
 			return super.getChildReal(name);
-		}else{
+		}else if(supplier!=null){
 			V value=supplier.apply(name);
 			if(cache)
 				addChild(name,value);
 			return value;
+		}else{
+			return null;
 		}
 	}
 	@Override

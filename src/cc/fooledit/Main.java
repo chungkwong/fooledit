@@ -69,6 +69,7 @@ public class Main extends Application{
 		INSTANCE=this;
 		System.setProperty("user.dir",SYSTEM_PATH.toString());
 		Logger.getGlobal().setLevel(Level.INFO);
+		USER_PATH.mkdirs();
 		try{
 			Logger.getGlobal().addHandler(new StreamHandler(new FileOutputStream(new File(USER_PATH,"LOG")),new Notifier.SystemLogFormatter()));
 		}catch(FileNotFoundException ex){

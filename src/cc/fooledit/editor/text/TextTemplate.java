@@ -109,7 +109,7 @@ public class TextTemplate implements Template<TextObject>{
 		return out.toString();
 	}
 	static{
-		ENGINE=new Configuration(new Version(2,3,26));
+		ENGINE=new Configuration(new Version(2,3,23));
 		ENGINE.setDefaultEncoding("UTF-8");
 		try{
 			ENGINE.setDirectoryForTemplateLoading(new File(Main.INSTANCE.getModulePath(TextEditorModule.NAME),"modes"));

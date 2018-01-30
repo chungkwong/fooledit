@@ -27,10 +27,10 @@ import org.eclipse.jgit.transport.*;
 public class RemoteTreeItem extends TreeItem<Object> implements NavigationTreeItem{
 	public RemoteTreeItem(RemoteConfig ref){
 		super(ref);
-		getChildren().add(new LazySimpleTreeItem<>(()->ref.getFetchRefSpecs().stream().map((spec)->new RemoteSpecTreeItem(spec)).collect(Collectors.toList()),
-				MessageRegistry.getString("FETCH",GitModuleReal.NAME)));
-		getChildren().add(new LazySimpleTreeItem<>(()->ref.getPushRefSpecs().stream().map((spec)->new RemoteSpecTreeItem(spec)).collect(Collectors.toList()),
-				MessageRegistry.getString("PUSH",GitModuleReal.NAME)));
+		getChildren().add(new LazySimpleTreeItem<>(MessageRegistry.getString("FETCH",GitModuleReal.NAME),
+				()->ref.getFetchRefSpecs().stream().map((spec)->new RemoteSpecTreeItem(spec)).collect(Collectors.toList())));
+		getChildren().add(new LazySimpleTreeItem<>(MessageRegistry.getString("PUSH",GitModuleReal.NAME),
+				()->ref.getPushRefSpecs().stream().map((spec)->new RemoteSpecTreeItem(spec)).collect(Collectors.toList())));
 	}
 	@Override
 	public String toString(){

@@ -58,6 +58,7 @@ public class FileCommands{
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
+			Main.INSTANCE.getMiniBuffer().restore();
 		},null,"",new Label("URL:"),null);
 	}
 	public static void save(){

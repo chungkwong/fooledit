@@ -34,10 +34,10 @@ public class LazyTreeItem<T> extends TreeItem<T>{
 		super(value,graphic);
 		this.supplier=null;
 	}
-	public LazyTreeItem(ThrowableSupplier<Collection<TreeItem<T>>> supplier,T value){
-		this(supplier,value,null);
+	public LazyTreeItem(T value,ThrowableSupplier<Collection<TreeItem<T>>> supplier){
+		this(value,supplier,null);
 	}
-	public LazyTreeItem(ThrowableSupplier<Collection<TreeItem<T>>> supplier,T value,Node graphic){
+	public LazyTreeItem(T value,ThrowableSupplier<Collection<TreeItem<T>>> supplier,Node graphic){
 		super(value,graphic);
 		this.supplier=supplier;
 		expandedProperty().addListener((e,o,n)->{

@@ -54,7 +54,7 @@ public class FileSystemViewer extends BorderPane{
 			watchService=null;
 		}
 		Stream<Path> roots=StreamSupport.stream(Spliterators.spliteratorUnknownSize(FileSystems.getDefault().getRootDirectories().iterator(),0),false);
-		TreeItem<Path> root=new LazyTreeItem<Path>(()->roots.sorted().map((r)->createTreeItem(r)).collect(Collectors.toList()),null);
+		TreeItem<Path> root=new LazyTreeItem<Path>(null,()->roots.sorted().map((r)->createTreeItem(r)).collect(Collectors.toList()));
 		tree.setShowRoot(false);
 		tree.setRoot(root);
 		tree.setTableMenuButtonVisible(true);
@@ -81,7 +81,8 @@ public class FileSystemViewer extends BorderPane{
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).setCellFactory((p)->new FileCell());
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).prefWidthProperty().bind(tree.widthProperty().multiply(0.4));
 		tree.setEditable(true);
-		tree.getFocusModel().focusedIndexProperty().addListener(((e,o,n)->tree.scrollTo(n.intValue())));
+		tree.getFocusModel().focusedIndexProperty().addListener(
+				(e,o,n)->tree.scrollTo(n.intValue()));
 		data.getPaths().forEach((path)->selectPath(path));
 		tree.getSelectionModel().getSelectedItems().addListener(
 				(ListChangeListener.Change<? extends TreeItem<Path>> c)->{
@@ -208,7 +209,7 @@ public class FileSystemViewer extends BorderPane{
 				}catch(IOException ex){
 					Logger.getGlobal().log(Level.SEVERE,null,ex);
 				}
-			return new LazyTreeItem<Path>(()->getChildren(path),path);
+			return new LazyTreeItem<Path>(path,()->getChildren(path));
 		}else{
 			return new TreeItem<>(path);
 		}

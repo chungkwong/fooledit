@@ -32,7 +32,7 @@ public class ParseTreeViewer extends TreeView{
 	}
 	private TreeItem<Tree> createTreeItem(Tree tree){
 		if(!(tree instanceof TerminalNode)){
-			return new LazyTreeItem<>(()->getChildren(tree),tree);
+			return new LazyTreeItem<>(tree,()->getChildren(tree));
 		}else{
 			return new TreeItem<>(tree);
 		}

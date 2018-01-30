@@ -62,13 +62,13 @@ public class RegistryViewer extends BorderPane{
 		setCenter(tree);
 	}
 	private static TreeItem<Object> createTreeNode(RegistryNode pref){
-		LazyTreeItem item=new LazyTreeItem(()->{
+		LazyTreeItem item=new LazyTreeItem(pref,()->{
 			return pref.getChildNames().stream().map((child)->{
 				return pref.getChild(child)instanceof RegistryNode?
 						createTreeNode((RegistryNode)pref.getChild(child)):
 						new TreeItem<Object>(new Pair<>(child,pref.getChild(child)));
 			}).collect(Collectors.<Object>toList());
-		},pref);
+		});
 		RegistryChangeListener listener=new RegistryChangeListener() {
 			@Override
 			public void itemRemoved(Object key,Object oldValue,RegistryNode node){

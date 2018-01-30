@@ -25,11 +25,11 @@ import javafx.scene.control.*;
  */
 public class LazySimpleTreeItem<T> extends LazyTreeItem<T> implements NavigationTreeItem{
 	private final MenuItem[] menuItems;
-	public LazySimpleTreeItem(ThrowableSupplier<Collection<TreeItem<T>>> supplier,T value){
-		this(supplier,value,new MenuItem[0]);
+	public LazySimpleTreeItem(T value,ThrowableSupplier<Collection<TreeItem<T>>> supplier){
+		this(value,supplier,new MenuItem[0]);
 	}
-	public LazySimpleTreeItem(ThrowableSupplier<Collection<TreeItem<T>>> supplier,T value,MenuItem[] menuItems){
-		super(supplier,value);
+	public LazySimpleTreeItem(T value,ThrowableSupplier<Collection<TreeItem<T>>> supplier,MenuItem[] menuItems){
+		super(value,supplier);
 		this.menuItems=menuItems;
 	}
 	@Override

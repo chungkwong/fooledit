@@ -163,6 +163,24 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		}
 		throw new Exception();
 	}
+	static File getGitDirectory() throws Exception{
+		DataObject data=Main.INSTANCE.getCurrentData();
+		if(data instanceof FileSystemObject){
+			Iterator<Path> iterator=((FileSystemObject)data).getPaths().iterator();
+			if(iterator.hasNext()){
+				File dir=findGitDirectory(iterator.next().toFile());
+				while(dir!=null&&iterator.hasNext()){
+					if(!dir.equals(findGitDirectory(iterator.next().toFile()))){
+						dir=null;
+						break;
+					}
+				}
+				if(dir!=null)
+					return dir;
+			}
+		}
+		throw new Exception();
+	}
 	private static File findGitDirectory(File f){
 		while(!new File(f,".git").exists()){
 			f=f.getParentFile();

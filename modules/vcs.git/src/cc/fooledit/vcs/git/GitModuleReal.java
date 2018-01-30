@@ -18,9 +18,12 @@ package cc.fooledit.vcs.git;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
+import cc.fooledit.util.SchemeConverter;
 import com.github.chungkwong.jschememin.type.*;
+import java.io.File;
 import java.net.*;
 import java.nio.file.*;
+import java.util.Arrays;
 import javafx.collections.*;
 import javafx.scene.control.*;
 /**
@@ -31,11 +34,13 @@ public class GitModuleReal{
 	public static final String NAME="vcs.git";
 	public static final String APPLICATION_NAME="git";
 	public static void onLoad() throws ClassNotFoundException, MalformedURLException{
-		org.apache.log4j.BasicConfigurator.configure();
+		DataObjectTypeRegistry.addDataObjectType(GitRepositoryObjectType.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(GitRepositoryEditor.INSTANCE,GitRepositoryObject.class);
 		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("git-init",GitRepositoryEditor.INSTANCE.getCommandRegistry().getChild("git-init"));
 		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("git-clone",GitRepositoryEditor.INSTANCE.getCommandRegistry().getChild("git-clone"));
-		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("git-browse",new Command("git-browse",(params)->{
-//			Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(GitRepositoryEditor.getGit()));
+		Argument dir=new Argument("DIRECTORY",GitRepositoryEditor::getGitDirectory);
+		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("git-browse",new Command("git-browse",Arrays.asList(dir),(params)->{			
+			Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(((File)SchemeConverter.toJava(ScmList.first(params))).toURI().toURL()));
 			return null;
 		},NAME));
 		CoreModule.DYNAMIC_MENU_REGISTRY.addChild(APPLICATION_NAME,(items)->{
@@ -45,6 +50,7 @@ public class GitModuleReal{
 			items.add(createMenuItem("git-browse","BROWSE"));
 		});
 		CoreModule.PROTOCOL_REGISTRY.addChild(NAME,new GitStreamHandler());
+		ContentTypeHelper.getURL_GUESSER().registerPathPattern("^.*[/\\\\]\\.git$","directory/git");
 	}
 	private static MenuItem createMenuItem(String command,String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name,NAME));
@@ -56,9 +62,13 @@ public class GitModuleReal{
 	}
 	public static void onInstall(){
 		Registry.providesDynamicMenu(APPLICATION_NAME,NAME);
-		Registry.providesProtocol("git",NAME);
 		Registry.provides("git-init",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
 		Registry.provides("git-clone",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
 		Registry.provides("git-browse",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
+		Registry.providesDataObjectType(GitRepositoryObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(GitRepositoryEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(GitRepositoryObject.class.getName(),NAME);
+		Registry.providesProtocol("git",NAME);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.addChild("directory/git",GitRepositoryObjectType.class.getName());
 	}
 }

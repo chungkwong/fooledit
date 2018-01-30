@@ -16,7 +16,6 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.core.*;
-import cc.fooledit.vcs.git.MenuItemBuilder;
 import java.text.*;
 import java.util.*;
 import java.util.stream.*;
@@ -61,19 +60,20 @@ public class GitRepositoryViewer extends BorderPane{
 	}
 	private TreeItem<Object> createWorkingTreeItem(){
 		MenuItem[] add=new MenuItem[]{
-			MenuItemBuilder.build("ADD",(e)->GitCommands.add(null,git))//FIXME
+			MenuItemBuilder.build("ADD",(e)->GitCommands.execute("git-add"))
 		};
 		return new SimpleTreeItem<>(MessageRegistry.getString("WORKING DIRECTORY",GitModuleReal.NAME),
-				new TreeItem[]{new LazySimpleTreeItem(()->git.status().call().getIgnoredNotInIndex().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList()),
-					MessageRegistry.getString("IGNORED",GitModuleReal.NAME)),
-					new LazySimpleTreeItem(()->git.status().call().getUntracked().stream().map((file)->new SimpleTreeItem<String>(file,add)).collect(Collectors.toList()),
-					MessageRegistry.getString("UNTRACKED",GitModuleReal.NAME)),
-					new LazySimpleTreeItem(()->git.status().call().getConflicting().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList()),
-					MessageRegistry.getString("CONFLICTING",GitModuleReal.NAME)),
-					new LazySimpleTreeItem(()->git.status().call().getMissing().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList()),
-					MessageRegistry.getString("MISSING",GitModuleReal.NAME)),
-					new LazySimpleTreeItem(()->git.status().call().getModified().stream().map((file)->new SimpleTreeItem<String>(file,add)).collect(Collectors.toList()),
-					MessageRegistry.getString("MODIFIED",GitModuleReal.NAME))
+				new TreeItem[]{
+					new LazySimpleTreeItem(MessageRegistry.getString("IGNORED",GitModuleReal.NAME),
+							()->git.status().call().getIgnoredNotInIndex().stream().map((file)->new SimpleTreeItem<>(file)).collect(Collectors.toList())),
+					new LazySimpleTreeItem(MessageRegistry.getString("UNTRACKED",GitModuleReal.NAME),
+							()->git.status().call().getUntracked().stream().map((file)->new SimpleTreeItem<>(file,add)).collect(Collectors.toList())),
+					new LazySimpleTreeItem(MessageRegistry.getString("CONFLICTING",GitModuleReal.NAME),
+							()->git.status().call().getConflicting().stream().map((file)->new SimpleTreeItem<>(file)).collect(Collectors.toList())),
+					new LazySimpleTreeItem(MessageRegistry.getString("MISSING",GitModuleReal.NAME),
+							()->git.status().call().getMissing().stream().map((file)->new SimpleTreeItem<>(file)).collect(Collectors.toList())),
+					new LazySimpleTreeItem(MessageRegistry.getString("MODIFIED",GitModuleReal.NAME),
+							()->git.status().call().getModified().stream().map((file)->new SimpleTreeItem<>(file,add)).collect(Collectors.toList()))
 				});
 	}
 	private TreeItem<Object> createStageTreeItem(){
@@ -85,42 +85,43 @@ public class GitRepositoryViewer extends BorderPane{
 			MenuItemBuilder.build("BLAME",(e)->GitCommands.execute("git-blame"))
 		};
 		return new SimpleTreeItem<>(MessageRegistry.getString("STAGING AREA",GitModuleReal.NAME),
-				new TreeItem[]{new LazySimpleTreeItem(()->git.status().call().getAdded().stream().map((file)->new SimpleTreeItem<String>(file,rm)).collect(Collectors.toList()),
-				MessageRegistry.getString("ADDED",GitModuleReal.NAME)),
-					new LazySimpleTreeItem(()->git.status().call().getRemoved().stream().map((file)->new SimpleTreeItem<String>(file)).collect(Collectors.toList()),
-					MessageRegistry.getString("REMOVED",GitModuleReal.NAME)),
-					new LazySimpleTreeItem(()->git.status().call().getChanged().stream().map((file)->new SimpleTreeItem<String>(file,rm)).collect(Collectors.toList()),
-					MessageRegistry.getString("CHANGED",GitModuleReal.NAME)),
-					new LazySimpleTreeItem(()->{
+				new TreeItem[]{
+					new LazySimpleTreeItem(MessageRegistry.getString("ADDED",GitModuleReal.NAME),
+							()->git.status().call().getAdded().stream().map((file)->new SimpleTreeItem<>(file,rm)).collect(Collectors.toList())),
+					new LazySimpleTreeItem(MessageRegistry.getString("REMOVED",GitModuleReal.NAME),
+							()->git.status().call().getRemoved().stream().map((file)->new SimpleTreeItem<>(file)).collect(Collectors.toList())),
+					new LazySimpleTreeItem(MessageRegistry.getString("CHANGED",GitModuleReal.NAME),
+							()->git.status().call().getChanged().stream().map((file)->new SimpleTreeItem<>(file,rm)).collect(Collectors.toList())),
+					new LazySimpleTreeItem(MessageRegistry.getString("ALL",GitModuleReal.NAME),()->{
 						LinkedList<TreeItem<String>> files=new LinkedList<>();
 						DirCache cache=git.getRepository().readDirCache();
 						for(int i=0;i<cache.getEntryCount();i++)
 							files.add(new SimpleTreeItem<>(cache.getEntry(i).getPathString(),all));
 						return files;
-					},MessageRegistry.getString("ALL",GitModuleReal.NAME))
+					})
 				},new MenuItem[]{
 					MenuItemBuilder.build("COMMIT",(e)->GitCommands.execute("git-commit"))
 				});
 	}
 	private TreeItem<Object> createTagListTreeItem(){
-		return new LazySimpleTreeItem<>(()->git.tagList().call().stream().map((ref)->new TagTreeItem(ref,git)).collect(Collectors.toList()),
-				MessageRegistry.getString("TAG",GitModuleReal.NAME));
+		return new LazySimpleTreeItem<>(MessageRegistry.getString("TAG",GitModuleReal.NAME),
+				()->git.tagList().call().stream().map((ref)->new TagTreeItem(ref,git)).collect(Collectors.toList()));
 	}
 	private TreeItem<Object> createLogTreeItem(){
-		return new LazySimpleTreeItem<>(()->StreamSupport.stream(git.log().call().spliterator(),false).map((rev)->new CommitTreeItem(rev,git)).collect(Collectors.toList())
-				,MessageRegistry.getString("COMMIT",GitModuleReal.NAME),
+		return new LazySimpleTreeItem<>(MessageRegistry.getString("COMMIT",GitModuleReal.NAME),
+				()->StreamSupport.stream(git.log().call().spliterator(),false).map((rev)->new CommitTreeItem(rev,git)).collect(Collectors.toList()),
 				new MenuItem[0]);
 	}
 	private TreeItem<Object> createLocalTreeItem(){
-		return new LazySimpleTreeItem<>(()->git.branchList().call().stream().map((ref)->new BranchTreeItem(ref,git)).collect(Collectors.toList()),
-				MessageRegistry.getString("LOCAL BRANCH",GitModuleReal.NAME),
+		return new LazySimpleTreeItem<>(MessageRegistry.getString("LOCAL BRANCH",GitModuleReal.NAME),
+				()->git.branchList().call().stream().map((ref)->new BranchTreeItem(ref,git)).collect(Collectors.toList()),
 			new MenuItem[]{
 				MenuItemBuilder.build("BRANCH",(e)->GitCommands.execute("git-branch-add"))
 			});
 	}
 	private TreeItem<Object> createRemoteTreeItem(){
-		return new LazySimpleTreeItem<>(()->git.remoteList().call().stream().map((ref)->new RemoteTreeItem(ref)).collect(Collectors.toList()),
-				MessageRegistry.getString("REMOTE BRANCH",GitModuleReal.NAME),
+		return new LazySimpleTreeItem<>(MessageRegistry.getString("REMOTE BRANCH",GitModuleReal.NAME),
+				()->git.remoteList().call().stream().map((ref)->new RemoteTreeItem(ref)).collect(Collectors.toList()),
 			new MenuItem[]{
 				MenuItemBuilder.build("REMOTE ADD",(e)->GitCommands.execute("git-remote-add"))
 			});

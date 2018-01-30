@@ -56,7 +56,7 @@ public class TreeItemBuilder{
 class DirectoryTreeItem extends LazySimpleTreeItem<Object>{
 	private final String name;
 	public DirectoryTreeItem(ObjectId id,String name,Git git){
-		super(TreeItemBuilder.getTreeItemsSupplier(id,git),id);
+		super(id,TreeItemBuilder.getTreeItemsSupplier(id,git));
 		this.name=name;
 	}
 	@Override

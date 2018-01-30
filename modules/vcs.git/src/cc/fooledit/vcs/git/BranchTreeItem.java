@@ -26,7 +26,7 @@ import org.eclipse.jgit.lib.*;
  */
 public class BranchTreeItem extends LazySimpleTreeItem<Object>{
 	public BranchTreeItem(Ref ref,Git git){
-		super(TreeItemBuilder.getTreeItemsSupplier(TreeItemBuilder.toTree(ref,git),git),ref);
+		super(ref,TreeItemBuilder.getTreeItemsSupplier(TreeItemBuilder.toTree(ref,git),git));
 	}
 	@Override
 	public String toString(){

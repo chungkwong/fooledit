@@ -33,8 +33,8 @@ public class GitModule{
 	public static void onUnLoad(){
 
 	}
-	public static void onInstall(){
-		Registry.providesDynamicMenu(APPLICATION_NAME,NAME);
-		Registry.provides("init-git",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
+	public static void onInstall()throws ReflectiveOperationException, MalformedURLException{
+		URLClassLoader loader=new URLClassLoader(new URL[]{Main.INSTANCE.getFile("dist/vcs.git.jar",NAME).toURI().toURL()});
+		loader.loadClass("cc.fooledit.vcs.git.GitModuleReal").getMethod("onInstall").invoke(null);
 	}
 }

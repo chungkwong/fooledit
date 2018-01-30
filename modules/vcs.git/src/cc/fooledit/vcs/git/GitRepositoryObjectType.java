@@ -17,7 +17,12 @@
 package cc.fooledit.vcs.git;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
+import java.io.File;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.util.FS;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -52,7 +57,14 @@ public class GitRepositoryObjectType implements DataObjectType<GitRepositoryObje
 	}
 	@Override
 	public GitRepositoryObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		Git git;
+		if(connection.getURL().getProtocol().equals("file")){
+			git=Git.open(new File(connection.getURL().toURI()));
+		}else if(connection.getURL().getProtocol().equals("git")){
+			git=Git.open(new File(new URI(connection.getURL().getFile())));
+		}else{
+			git=Git.cloneRepository().setURI(connection.getURL().toString()).setDirectory(Files.createTempDirectory("git").toFile()).call();
+		}
+		return new GitRepositoryObject(git);
 	}
-
 }
