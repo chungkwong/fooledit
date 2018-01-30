@@ -99,7 +99,7 @@
 (map-suffix-to-mime "xsd" "application/xml")
 (map-suffix-to-mime "rng" "application/xml")
 (map-suffix-to-mime "y" "text/x-yacc")
-;(map-glob-to-mime "(.*[/\\\\])?(GNUmakefile|makefile|Makefile)" "text/x-makefile")
+(map-glob-to-mime "(.*[/\\\\])?(GNUmakefile|makefile|Makefile)" "text/x-makefile")
 (mime-alias "application/x-javascript" "application/javascript")
 (mime-alias "application/x-tex" "text/x-tex")
 (mime-alias "application/x-troff" "text/troff")

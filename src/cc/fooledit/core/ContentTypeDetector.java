@@ -32,25 +32,46 @@ public interface ContentTypeDetector{
 	enum State{LIKELY,POSSIBLE,IMPOSSIBLE}
 	List<String> listAllPossible(URLConnection connection);
 	State probe(URLConnection connection,String mime);
-	public static class URLPatternGuesser implements ContentTypeDetector{
+	public static class URLPatternGuesser implements ContentTypeDetector,RegistryChangeListener<String,String,String>{
 		private final List<Pair<Predicate<String>,String>> pattern2mime=new ArrayList<>();
+		private boolean used=false;
 		public void registerPathPattern(String regex,String mime){
-			registerPathPattern(Pattern.compile(regex).asPredicate(),mime);
+			CoreModule.GLOB_REGISTRY.addChild(regex,mime);
 		}
 		public void registerPathPattern(Predicate<String> pred,String mime){
 			pattern2mime.add(new Pair<>(pred,ContentTypeHelper.normalize(mime)));
 		}
 		@Override
 		public List<String> listAllPossible(URLConnection connection){
+			init();
 			String name=getFile(connection);
 			List<String> candidates=pattern2mime.stream().filter((pair)->pair.getKey().test(name)).map(Pair::getValue).collect(Collectors.toList());
 			return candidates;
 		}
 		@Override
 		public State probe(URLConnection connection,String mime){
+			init();
 			String name=getFile(connection);
 			boolean possible=pattern2mime.stream().filter((pair)->pair.getKey().test(name)).map(Pair::getValue).allMatch((type)->Objects.equals(mime,type));
 			return possible?State.LIKELY:State.POSSIBLE;
+		}
+		private void init(){
+			if(!used){
+				CoreModule.GLOB_REGISTRY.toMap().forEach((regex,mime)->addRegex(regex,mime));
+				CoreModule.GLOB_REGISTRY.addListener(this);
+				used=true;
+			}
+		}
+		@Override
+		public void itemRemoved(String regex,String oldValue,RegistryNode<String,String,String> node){
+
+		}
+		@Override
+		public void itemAdded(String key,String newValue,RegistryNode<String,String,String> node){
+			addRegex(key,newValue);
+		}
+		private void addRegex(String regex,String mime){
+			pattern2mime.add(new Pair<>(Pattern.compile(regex).asPredicate(),ContentTypeHelper.normalize(mime)));
 		}
 	}
 	public static class SuffixGuesser implements ContentTypeDetector{

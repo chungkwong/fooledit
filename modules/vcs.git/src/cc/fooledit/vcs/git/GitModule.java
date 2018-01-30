@@ -30,7 +30,7 @@ import javafx.scene.control.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class GitModuleReal{
+public class GitModule{
 	public static final String NAME="vcs.git";
 	public static final String APPLICATION_NAME="git";
 	public static void onLoad() throws ClassNotFoundException, MalformedURLException{

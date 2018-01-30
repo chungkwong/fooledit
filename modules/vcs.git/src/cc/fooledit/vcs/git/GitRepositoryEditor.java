@@ -33,9 +33,9 @@ import org.eclipse.jgit.revwalk.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(GitModuleReal.NAME);
-	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(GitModuleReal.NAME);
-	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(GitModuleReal.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(GitModule.NAME);
+	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(GitModule.NAME);
+	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(GitModule.NAME);
 	public static GitRepositoryEditor INSTANCE=new GitRepositoryEditor();
 	private GitRepositoryEditor(){
 		Argument git=new Argument("GIT",GitRepositoryEditor::getGit);
@@ -89,7 +89,7 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		addCommand("git-tag-add",Arrays.asList(name,commit,git),(args)->{
 			return SchemeConverter.toScheme(GitCommands.addTag(SchemeConverter.toJava(ScmList.first(args)).toString(),(RevObject)SchemeConverter.toJava(ScmList.second(args)),(Git)SchemeConverter.toJava(ScmList.third(args))));
 		});
-		addCommand("git-tag-remove",Arrays.asList(tag,git),(args)->{
+		addCommand("git-tag-delete",Arrays.asList(tag,git),(args)->{
 			return SchemeConverter.toScheme(GitCommands.removeTag(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
 		});
 		addCommand("git-remote-add",Arrays.asList(uri,name,git),(args)->{
@@ -117,7 +117,7 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		addCommand("git-blame",Arrays.asList(),(args)->{return null;});//TODO
 	}
 	private void addCommand(String name,List<Argument> args,ThrowableFunction<ScmPairOrNil,ScmObject> proc){
-		commandRegistry.addChild(name,new Command(name,proc,GitModuleReal.NAME));
+		commandRegistry.addChild(name,new Command(name,proc,GitModule.NAME));
 	}
 	@Override
 	public Node edit(GitRepositoryObject data,Object remark,RegistryNode<String,Object,String> meta){
@@ -141,7 +141,7 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("GIT_REPOSITORY_VIEWER",GitModuleReal.NAME);
+		return MessageRegistry.getString("GIT_REPOSITORY_VIEWER",GitModule.NAME);
 	}
 	static Git getGit() throws Exception{
 		DataObject data=Main.INSTANCE.getCurrentData();

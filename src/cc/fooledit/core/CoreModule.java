@@ -39,6 +39,7 @@ public class CoreModule{
 	public static final String CONTENT_TYPE_DETECTOR_REGISTRY_NAME="content_type_detector";
 	public static final String CONTENT_TYPE_LOADER_REGISTRY_NAME="content_type_loader";
 	public static final String SUFFIX_REGISTRY_NAME="suffix";
+	public static final String GLOB_REGISTRY_NAME="glob";
 	public static final String COMMAND_REGISTRY_NAME="command";
 	public static final String DATA_OBJECT_REGISTRY_NAME="data_object";
 	public static final String DATA_OBJECT_TYPE_REGISTRY_NAME="data_object_type";
@@ -67,6 +68,7 @@ public class CoreModule{
 	public static RegistryNode<String,String,String> CONTENT_TYPE_SUPERCLASS_REGISTRY;
 	public static RegistryNode<String,String,String> CONTENT_TYPE_LOADER_REGISTRY;
 	public static RegistryNode<String,ListRegistryNode<String,String>,String> SUFFIX_REGISTRY;
+	public static RegistryNode<String,String,String> GLOB_REGISTRY;
 	public static NavigableRegistryNode<String,RegistryNode,String> DATA_OBJECT_REGISTRY;
 	public static RegistryNode<String,DataObjectType,String> DATA_OBJECT_TYPE_REGISTRY;
 	public static RegistryNode<String,DataEditor,String> DATA_OBJECT_EDITOR_REGISTRY;
@@ -111,6 +113,7 @@ public class CoreModule{
 		PERSISTENT_REGISTRY.addChild("core/"+CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+CONTENT_TYPE_LOADER_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+SUFFIX_REGISTRY_NAME);
+		PERSISTENT_REGISTRY.addChild("core/"+GLOB_REGISTRY_NAME);
 		TEMPLATE_REGISTRY.addChildIfNotPresent("name","");
 		TEMPLATE_REGISTRY.addChildIfNotPresent("module","core");
 		TEMPLATE_REGISTRY.addChildIfNotPresent("children",new ListRegistryNode<>());
@@ -127,6 +130,7 @@ public class CoreModule{
 		CONTENT_TYPE_SUPERCLASS_REGISTRY=(RegistryNode<String,String,String>)REGISTRY.getOrCreateChild(CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME);
 		CONTENT_TYPE_LOADER_REGISTRY=(RegistryNode<String,String,String>)REGISTRY.getOrCreateChild(CONTENT_TYPE_LOADER_REGISTRY_NAME);
 		SUFFIX_REGISTRY=(RegistryNode<String,ListRegistryNode<String,String>,String>)REGISTRY.getOrCreateChild(SUFFIX_REGISTRY_NAME);
+		GLOB_REGISTRY=(RegistryNode<String,String,String>)REGISTRY.getOrCreateChild(GLOB_REGISTRY_NAME);
 		DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
 		DATA_OBJECT_TYPE_REGISTRY=(RegistryNode<String,DataObjectType,String>)REGISTRY.getOrCreateChild(DATA_OBJECT_TYPE_REGISTRY_NAME);
 		DATA_OBJECT_EDITOR_REGISTRY=(RegistryNode<String,DataEditor,String>)REGISTRY.getOrCreateChild(DATA_OBJECT_EDITOR_REGISTRY_NAME);

@@ -27,7 +27,7 @@ import org.eclipse.jgit.api.*;
 public class GitTest extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		primaryStage.setScene(new Scene(new GitRepositoryViewer(Git.open(new File("/home/kwong/experimental/Misc.wiki")))));
+		primaryStage.setScene(new Scene(new GitRepositoryViewer(Git.open(new File("/home/kwong/projects/RichTextFX")))));
 		primaryStage.show();
 	}
 	public static void main(String[] args){

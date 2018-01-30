@@ -49,7 +49,7 @@ public class GitRepositoryObjectType implements DataObjectType<GitRepositoryObje
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("GIT_REPOSITORY",GitModuleReal.NAME);
+		return MessageRegistry.getString("GIT_REPOSITORY",GitModule.NAME);
 	}
 	@Override
 	public void writeTo(GitRepositoryObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{

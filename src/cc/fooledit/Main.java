@@ -16,7 +16,6 @@
  */
 package cc.fooledit;
 
-import cc.fooledit.util.ThrowableFunction;
 import cc.fooledit.control.*;
 import static cc.fooledit.core.CoreModule.REGISTRY;
 import cc.fooledit.core.*;
@@ -158,6 +157,14 @@ public class Main extends Application{
 		});
 		addCommand("get-or-create-registry",(o)->{
 			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).getOrCreateChild(SchemeConverter.toString(ScmList.second(o))));
+		});
+		addCommand("inform-jar",(o)->{
+			String jar=SchemeConverter.toString(ScmList.first(o));
+			String cls=SchemeConverter.toString(ScmList.second(o));
+			String method=SchemeConverter.toString(ScmList.third(o));
+			URLClassLoader loader=new URLClassLoader(new URL[]{new File(SYSTEM_PATH,jar).toURI().toURL()});
+			loader.loadClass(cls).getMethod(method).invoke(null);
+			return null;
 		});
 	}
 	private void addCommand(String name,Runnable action){

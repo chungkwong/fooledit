@@ -27,9 +27,9 @@ import org.eclipse.jgit.transport.*;
 public class RemoteTreeItem extends TreeItem<Object> implements NavigationTreeItem{
 	public RemoteTreeItem(RemoteConfig ref){
 		super(ref);
-		getChildren().add(new LazySimpleTreeItem<>(MessageRegistry.getString("FETCH",GitModuleReal.NAME),
+		getChildren().add(new LazySimpleTreeItem<>(MessageRegistry.getString("FETCH",GitModule.NAME),
 				()->ref.getFetchRefSpecs().stream().map((spec)->new RemoteSpecTreeItem(spec)).collect(Collectors.toList())));
-		getChildren().add(new LazySimpleTreeItem<>(MessageRegistry.getString("PUSH",GitModuleReal.NAME),
+		getChildren().add(new LazySimpleTreeItem<>(MessageRegistry.getString("PUSH",GitModule.NAME),
 				()->ref.getPushRefSpecs().stream().map((spec)->new RemoteSpecTreeItem(spec)).collect(Collectors.toList())));
 	}
 	@Override
@@ -42,7 +42,7 @@ public class RemoteTreeItem extends TreeItem<Object> implements NavigationTreeIt
 			MenuItemBuilder.build("PUSH",(e)->GitCommands.execute("git-push")),
 			MenuItemBuilder.build("PULL",(e)->GitCommands.execute("git-pull")),
 			MenuItemBuilder.build("FETCH",(e)->GitCommands.execute("git-fetch")),
-			MenuItemBuilder.build("REMOVE REMOTE",(e)->GitCommands.execute("git-branch-delete")),
+			MenuItemBuilder.build("REMOVE REMOTE",(e)->GitCommands.execute("git-remote-delete")),
 			MenuItemBuilder.build("RESET URL",(e)->GitCommands.execute("git-remote-set-url"))
 		};
 	}
