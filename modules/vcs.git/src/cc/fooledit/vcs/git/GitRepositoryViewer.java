@@ -16,6 +16,7 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.core.*;
+import cc.fooledit.vcs.git.MenuItemBuilder;
 import java.text.*;
 import java.util.*;
 import java.util.stream.*;
@@ -35,13 +36,16 @@ import org.eclipse.jgit.transport.*;
  */
 public class GitRepositoryViewer extends BorderPane{
 	private final Git git;
+	private final TreeTableView<Object> nav;
 	public GitRepositoryViewer(Git git){
 		this.git=git;
-		TreeTableView<Object> nav=new TreeTableView<>(createGitTreeItem());
-		nav.setShowRoot(true);
+		nav=new TreeTableView<>(createGitTreeItem());
+		nav.setShowRoot(false);
 		ContextMenu contextMenu=new ContextMenu();
 		nav.setOnContextMenuRequested((e)->contextMenu.getItems().setAll(((NavigationTreeItem)nav.getSelectionModel().getSelectedItem()).getContextMenuItems()));
 		nav.setContextMenu(contextMenu);
+		nav.getFocusModel().focusedIndexProperty().addListener(
+				(e,o,n)->nav.scrollTo(n.intValue()));
 		setCenter(nav);
 		setBottom(createColumnsChooser(nav));
 	}
@@ -213,5 +217,8 @@ public class GitRepositoryViewer extends BorderPane{
 				nav.getColumns().remove(column);
 		});
 		return chooser;
+	}
+	public TreeTableView<Object> getTree(){
+		return nav;
 	}
 }

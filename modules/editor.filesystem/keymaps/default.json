@@ -12,7 +12,7 @@
 	"End":"focus-last-in-directory",
 	"S-Space":"select-to",
 	"M-Space":"deselect",
-	"C-A":"clear-selection",
+	"C-S-A":"clear-selection",
 	"Space":"toggle-selection",
 	"Delete":"delete",
 	"C-C":"mark",

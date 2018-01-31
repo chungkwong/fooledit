@@ -1,11 +1,46 @@
 {
 	"children":[
-		{"name":"INIT","command":"init-git"},
-		{"name":"CLONE","command":"clone-git"},
-		{},
-		{"name":"COMMIT","command":"commit-git"},
-		{},
-		{"name":"PULL","command":"pull-git"},
-		{"name":"PUSH","command":"push-git"}
+		{
+			"name":"GIT",
+			"children":[
+				{"command":"git-view","name":"VIEW"},
+				{"command":"git-add","name":"ADD"},
+				{"command":"git-remove","name":"REMOVE"},
+				{"command":"git-commit","name":"COMMIT"},
+				{"command":"git-checkout","name":"CHECKOUT"},
+				{"command":"git-revert","name":"REVERT"},
+				{"command":"git-merge","name":"MERGE"},
+				{"command":"git-gc","name":"COLLECT GARGAGE"},
+				{
+					"name":"BRANCH",
+					"children":[
+						{"command":"git-branch-add","name":"ADD"},
+						{"command":"git-branch-delete","name":"DELETE"},
+						{"command":"git-branch-rename","name":"RENAME"}
+					]
+				},
+				{
+					"name":"REMOTE",
+					"children":[
+						{"command":"git-push","name":"PUSH"},
+						{"command":"git-pull","name":"PULL"},
+						{"command":"git-fetch","name":"FETCH"},
+						{},
+						{"command":"git-remote-add","name":","},
+						{"command":"git-remote-delete","name":","},
+						{"command":"git-remote-set-url","name":","}
+
+					]
+				},
+				{
+					"name":"TAG",
+					"children":[
+						{"command":"git-tag-add","name":"ADD"},
+						{"command":"git-tag-delete","name":"DELETE"}
+					]
+				}
+			]
+		}
+
 	]
 }

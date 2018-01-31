@@ -60,6 +60,7 @@ public class CoreModule{
 	public static final String TEMPLATE_REGISTRY_NAME="template";
 	public static final String TEMPLATE_TYPE_REGISTRY_NAME="template_type";
 	public static final String WINDOW_REGISTRY_NAME="window";
+	public static final String MISC_REGISTRY_NAME="misc";
 	public static RegistryNode<String,Object,String> REGISTRY;
 	public static RegistryNode<String,String,String> APPLICATION_REGISTRY;
 	public static RegistryNode<String,Object,String> CLIP_REGISTRY;
@@ -84,6 +85,7 @@ public class CoreModule{
 	public static RegistryNode<String,Serializier,String> SERIALIZIER_REGISTRY;
 	public static RegistryNode<String,Object,String> TEMPLATE_REGISTRY;
 	public static RegistryNode<String,Function<Map<Object,Object>,Template>,String> TEMPLATE_TYPE_REGISTRY;
+	public static RegistryNode<String,Object,String> MISC_REGISTRY;
 	public static void onLoad(){
 		onInit();
 		HISTORY_REGISTRY.limit(20);
@@ -105,7 +107,6 @@ public class CoreModule{
 	public static void onInstall(){
 		onInit();
 		PERSISTENT_REGISTRY.addChild("core/"+PROVIDER_REGISTRY_NAME);
-		PERSISTENT_REGISTRY.addChild("core/"+PROTOCOL_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+PERSISTENT_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+INSTALLED_MODULE_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+TEMPLATE_REGISTRY_NAME);
@@ -114,10 +115,11 @@ public class CoreModule{
 		PERSISTENT_REGISTRY.addChild("core/"+CONTENT_TYPE_LOADER_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+SUFFIX_REGISTRY_NAME);
 		PERSISTENT_REGISTRY.addChild("core/"+GLOB_REGISTRY_NAME);
+		PERSISTENT_REGISTRY.addChild("core/"+MISC_REGISTRY_NAME);
 		TEMPLATE_REGISTRY.addChildIfNotPresent("name","");
 		TEMPLATE_REGISTRY.addChildIfNotPresent("module","core");
 		TEMPLATE_REGISTRY.addChildIfNotPresent("children",new ListRegistryNode<>());
-		PROVIDER_REGISTRY.getOrCreateChild(NAME).addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
+		MISC_REGISTRY.addChild(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
 	}
 	private static void onInit(){
 		if(PROVIDER_REGISTRY!=null)
@@ -146,6 +148,7 @@ public class CoreModule{
 		SERIALIZIER_REGISTRY=(RegistryNode<String,Serializier,String>)REGISTRY.getOrCreateChild(SERIALIZIER_REGISTRY_NAME);
 		TEMPLATE_REGISTRY=(RegistryNode<String,Object,String>)REGISTRY.getOrCreateChild(TEMPLATE_REGISTRY_NAME);
 		TEMPLATE_TYPE_REGISTRY=(RegistryNode<String,Function<Map<Object,Object>,Template>,String>)REGISTRY.getOrCreateChild(TEMPLATE_TYPE_REGISTRY_NAME);
+		MISC_REGISTRY=(RegistryNode<String,Object,String>)REGISTRY.getOrCreateChild(MISC_REGISTRY_NAME);
 	}
 	private static <T> T fromJSON(String file,Supplier<T> def){
 		try{

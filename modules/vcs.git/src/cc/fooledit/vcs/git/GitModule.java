@@ -18,12 +18,12 @@ package cc.fooledit.vcs.git;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
-import cc.fooledit.util.SchemeConverter;
+import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
-import java.io.File;
+import java.io.*;
 import java.net.*;
 import java.nio.file.*;
-import java.util.Arrays;
+import java.util.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
 /**
@@ -39,7 +39,7 @@ public class GitModule{
 		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("git-init",GitRepositoryEditor.INSTANCE.getCommandRegistry().getChild("git-init"));
 		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("git-clone",GitRepositoryEditor.INSTANCE.getCommandRegistry().getChild("git-clone"));
 		Argument dir=new Argument("DIRECTORY",GitRepositoryEditor::getGitDirectory);
-		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("git-browse",new Command("git-browse",Arrays.asList(dir),(params)->{			
+		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("git-browse",new Command("git-browse",Arrays.asList(dir),(params)->{
 			Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(((File)SchemeConverter.toJava(ScmList.first(params))).toURI().toURL()));
 			return null;
 		},NAME));
@@ -49,7 +49,7 @@ public class GitModule{
 			items.add(createMenuItem("git-clone","CLONE"));
 			items.add(createMenuItem("git-browse","BROWSE"));
 		});
-		CoreModule.PROTOCOL_REGISTRY.addChild(NAME,new GitStreamHandler());
+		CoreModule.PROTOCOL_REGISTRY.addChild("git",new GitStreamHandler());
 		ContentTypeHelper.getURL_GUESSER().registerPathPattern("^.*[/\\\\]\\.git$","directory/git");
 	}
 	private static MenuItem createMenuItem(String command,String name){

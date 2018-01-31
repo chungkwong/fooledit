@@ -44,8 +44,8 @@ public class GitCommands{
 	public static Git clone(String uri,File dir)throws Exception{
 		return Git.cloneRepository().setDirectory(dir).setURI(uri).call();//TODO: Progress
 	}
-	public static Iterable<PushResult> push(Object remote,Git git)throws Exception{
-		return git.push().setRemote(toRemoteConfigName(remote)).call();
+	public static Iterable<PushResult> push(Object remote,String username,String password,Git git)throws Exception{
+		return git.push().setRemote(toRemoteConfigName(remote)).setCredentialsProvider(new UsernamePasswordCredentialsProvider(username,password)).call();
 	}
 	public static PullResult pull(Object remote,Git git)throws Exception{
 		return git.pull().setRemote(toRemoteConfigName(remote)).call();
@@ -238,7 +238,7 @@ public class GitCommands{
 	}
 	public static Object view(Object obj,Git git) throws Exception{
 		AnyObjectId id=toObjectId(obj,git);
-		Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(new GitConnection(null,git).getURL()));//TODO
+		Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(new GitConnection(id,git).getURL()));
 		return id;
 	}
 	private static AnyObjectId toObjectId(Object obj,Git git) throws Exception{

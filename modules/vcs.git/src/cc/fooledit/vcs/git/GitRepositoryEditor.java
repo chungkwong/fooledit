@@ -16,6 +16,7 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.*;
+import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.spi.*;
@@ -44,6 +45,8 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		Argument msg=new Argument("MESSAGE");
 		Argument uri=new Argument("URI");
 		Argument name=new Argument("NAME");
+		Argument user=new Argument("USER");
+		Argument pass=new Argument("PASSWORD");
 		Argument tag=new Argument("TAG",GitRepositoryEditor::getSelectedItem);
 		Argument dir=new Argument("DIRECTORY",GitRepositoryEditor::getDirectory);
 		Argument file=new Argument("FILE",GitRepositoryEditor::getSelectedItem);
@@ -51,7 +54,9 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		Argument id=new Argument("ID",GitRepositoryEditor::getSelectedItem);
 		Argument commitOrBranch=new Argument("COMMIT_OR_BRANCH",GitRepositoryEditor::getSelectedItem);
 		addCommand("git-push",Arrays.asList(remote,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.push(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return SchemeConverter.toScheme(GitCommands.push(SchemeConverter.toJava(ScmList.first(args)),
+					SchemeConverter.toString(ScmList.second(args)),SchemeConverter.toString(ScmList.third(args)),
+					(Git)SchemeConverter.toJava(ScmList.get(args,3))));
 		});
 		addCommand("git-pull",Arrays.asList(remote,git),(args)->{
 			return SchemeConverter.toScheme(GitCommands.pull(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
@@ -115,9 +120,10 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		});
 		addCommand("git-config",Arrays.asList(),(args)->{return null;});//TODO
 		addCommand("git-blame",Arrays.asList(),(args)->{return null;});//TODO
+		TreeTableHelper.installCommonCommands(()->((GitRepositoryViewer)Main.INSTANCE.getCurrentNode()).getTree(),commandRegistry,GitModule.NAME);
 	}
 	private void addCommand(String name,List<Argument> args,ThrowableFunction<ScmPairOrNil,ScmObject> proc){
-		commandRegistry.addChild(name,new Command(name,proc,GitModule.NAME));
+		commandRegistry.addChild(name,new Command(name,args,proc,GitModule.NAME));
 	}
 	@Override
 	public Node edit(GitRepositoryObject data,Object remark,RegistryNode<String,Object,String> meta){
@@ -232,9 +238,9 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 	private static Object getSelectedItem() throws Exception{
 		Node node=Main.INSTANCE.getCurrentNode();
 		if(node instanceof GitRepositoryViewer){
-			TreeTableView.TreeTableViewSelectionModel model=((TreeTableView)((GitRepositoryViewer)node).getCenter()).getSelectionModel();
+			TreeTableView.TreeTableViewSelectionModel<Object> model=((TreeTableView<Object>)((GitRepositoryViewer)node).getCenter()).getSelectionModel();
 			if(!model.isEmpty())
-				return model.getSelectedItem();
+				return model.getSelectedItem().getValue();
 		}
 		throw new Exception();
 	}

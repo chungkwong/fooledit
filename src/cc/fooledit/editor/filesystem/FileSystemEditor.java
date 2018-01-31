@@ -19,14 +19,12 @@ import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import com.sun.javafx.scene.control.skin.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
 import java.util.stream.*;
-import javafx.collections.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 /**
@@ -39,24 +37,8 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(FileSystemModule.NAME);
 	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(FileSystemModule.NAME);
 	private FileSystemEditor(){
-		addCommand("focus-previous",(viewer)->viewer.getTree().getFocusModel().focusPrevious());
-		addCommand("focus-next",(viewer)->viewer.getTree().getFocusModel().focusNext());
-		addCommand("focus-first",(viewer)->viewer.getTree().getFocusModel().focus(0));
-		addCommand("focus-last",(viewer)->viewer.getTree().getFocusModel().focus(viewer.getTree().getExpandedItemCount()-1));
-		addCommand("focus-first-in-directory",(viewer)->focusBeginOfDirectory(viewer.getTree()));
-		addCommand("focus-last-in-directory",(viewer)->focusEndOfDirectory(viewer.getTree()));
-		addCommand("focus-up",(viewer)->focusUp(viewer.getTree()));
-		addCommand("focus-down",(viewer)->focusDown(viewer.getTree()));
-		addCommand("move-to-previous-page",(viewer)->moveToPreviousPage(viewer.getTree()));
-		addCommand("move-to-next-page",(viewer)->moveToNextPage(viewer.getTree()));
-		addCommand("select",(viewer)->viewer.getTree().getSelectionModel().select(viewer.getTree().getFocusModel().getFocusedIndex()));
-		addCommand("select-to",(viewer)->selectTo(viewer.getTree()));
-		addCommand("deselect",(viewer)->viewer.getTree().getSelectionModel().clearSelection(viewer.getTree().getFocusModel().getFocusedIndex()));
-		addCommand("clear-selection",(viewer)->viewer.getTree().getSelectionModel().clearSelection());
-		addCommand("toggle-selection",(viewer)->toggleSelection(viewer.getTree()));
+		TreeTableHelper.installCommonCommands(()->((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getTree(),commandRegistry,FileSystemModule.NAME);
 		addCommand("delete",(viewer)->viewer.getSelectedPaths().forEach((path)->delete(path)));
-		addCommand("expand",(viewer)->viewer.getTree().getTreeItem(viewer.getTree().getSelectionModel().getFocusedIndex()).setExpanded(true));
-		addCommand("fold",(viewer)->viewer.getTree().getTreeItem(viewer.getTree().getSelectionModel().getFocusedIndex()).setExpanded(false));
 		addCommand("mark",(viewer)->viewer.markPaths());
 		addCommand("submit",(viewer)->viewer.fireAction());
 		addCommand("rename",(viewer)->viewer.getSelectedPaths().forEach((path)->rename(path)));
@@ -76,54 +58,6 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	}
 	private void addCommand(String name,Consumer<FileSystemViewer> action){
 		commandRegistry.addChild(name,new Command(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),FileSystemModule.NAME));
-	}
-	private void moveToPreviousPage(TreeTableView<Path> tree){
-		int newIndex=((TreeTableViewSkin)tree.getSkin()).onScrollPageUp(true);
-		tree.getFocusModel().focus(newIndex);
-	}
-	private void moveToNextPage(TreeTableView<Path> tree){
-		int newIndex=((TreeTableViewSkin)tree.getSkin()).onScrollPageDown(true);
-		tree.getFocusModel().focus(newIndex);
-	}
-	private void focusUp(TreeTableView<Path> tree){
-		TreeItem<Path> curr=tree.getFocusModel().getFocusedItem();
-		if(curr.isExpanded()){
-			curr.setExpanded(false);
-		}else{
-			tree.getFocusModel().focus(tree.getRow(curr.getParent()));
-		}
-	}
-	private void focusDown(TreeTableView<Path> tree){
-		TreeItem<Path> curr=tree.getFocusModel().getFocusedItem();
-		if(curr.isExpanded()){
-			if(!curr.getChildren().isEmpty()){
-				tree.getFocusModel().focus(tree.getRow(curr.getChildren().get(0)));
-			}
-		}else if(!curr.isLeaf()){
-			curr.setExpanded(true);
-			tree.scrollTo(tree.getFocusModel().getFocusedIndex());
-		}
-	}
-	private static void focusBeginOfDirectory(TreeTableView<Path> tree){
-		TreeItem<Path> curr=tree.getFocusModel().getFocusedItem();
-		tree.getFocusModel().focus(tree.getRow(curr.getParent().getChildren().get(0)));
-	}
-	private static void focusEndOfDirectory(TreeTableView<Path> tree){
-		TreeItem<Path> curr=tree.getFocusModel().getFocusedItem();
-		ObservableList<TreeItem<Path>> sibling=curr.getParent().getChildren();
-		tree.getFocusModel().focus(tree.getRow(sibling.get(sibling.size()-1)));
-	}
-	private static void toggleSelection(TreeTableView<Path> tree){
-		int curr=tree.getFocusModel().getFocusedIndex();
-		if(tree.getSelectionModel().isSelected(curr))
-			tree.getSelectionModel().clearSelection(curr);
-		else
-			tree.getSelectionModel().select(curr);
-	}
-	private static void selectTo(TreeTableView<Path> tree){
-		int last=tree.getSelectionModel().getSelectedIndex();
-		int curr=tree.getFocusModel().getFocusedIndex();
-		tree.getSelectionModel().selectRange(Math.min(last,curr),Math.max(last,curr)+1);
 	}
 	private static final void delete(Path path){
 		try{
