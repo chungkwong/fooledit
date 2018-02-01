@@ -15,16 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.svn;
-import org.tmatesoft.svn.core.*;
+import cc.fooledit.core.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SvnTest {
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String[] args) throws SVNException{
+public class SvnRepositoryObject implements DataObject<SvnRepositoryObject>{
+	@Override
+	public DataObjectType<SvnRepositoryObject> getDataObjectType(){
+		return SvnRepositoryObjectType.INSTANCE;
 	}
-
 }

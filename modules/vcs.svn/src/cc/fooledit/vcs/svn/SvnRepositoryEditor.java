@@ -15,16 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.svn;
-import org.tmatesoft.svn.core.*;
+import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
+import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SvnTest {
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String[] args) throws SVNException{
+public class SvnRepositoryEditor implements DataEditor<SvnRepositoryObject>{
+	public static final SvnRepositoryEditor INSTANCE=new SvnRepositoryEditor();
+	private SvnRepositoryEditor(){
+	}
+	@Override
+	public Node edit(SvnRepositoryObject data,Object remark,RegistryNode<String,Object,String> meta){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public String getName(){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }
