@@ -88,4 +88,10 @@
 	<target name="resolve" depends="install-ivy">
         <ivy:retrieve />
     </target>
+	
+	<target name="submodules" depends="jar">
+		<subant>
+			<fileset dir="." includes="modules/*/build.xml"/>
+		</subant>
+	</target>
 </project>
