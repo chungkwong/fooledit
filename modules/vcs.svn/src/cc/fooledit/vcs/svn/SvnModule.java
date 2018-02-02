@@ -18,9 +18,12 @@ package cc.fooledit.vcs.svn;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
+import cc.fooledit.spi.*;
+import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.net.*;
 import java.nio.file.*;
+import java.util.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
 /**
@@ -30,13 +33,29 @@ import javafx.scene.control.*;
 public class SvnModule{
 	public static final String NAME="vcs.svn";
 	public static final String APPLICATION_NAME="svn";
+	public static final String SETTINGS_REGISTRY_NAME="settings";
+	public static final RegistryNode<String,Object,String> SETTINGS_REGISTRY=
+			(RegistryNode<String,Object,String>)Registry.ROOT.getOrCreateChild(SvnModule.NAME).getOrCreateChild(SETTINGS_REGISTRY_NAME);
+	private static final RegistryNode<String,Command,String> commands=Registry.ROOT.registerCommand(NAME);
 	public static void onLoad() throws ClassNotFoundException, MalformedURLException{
 		DataObjectTypeRegistry.addDataObjectType(SvnRepositoryObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(SvnRepositoryEditor.INSTANCE,SvnRepositoryObject.class);
+
+		Argument makeParent=createArgument("MAKE_PARENT");
+		Argument properties=createArgument("PROPERTIES");
+		Argument breakLock=createArgument("BREAK_LOCK");
+		Argument stealLock=createArgument("STEAL_LOCK");
+		Argument force=createArgument("FORCE");
+		Argument dryrun=createArgument("DRY_RUN");
+		Argument deleteFile=createArgument("DELETE_FILE");
+		Argument url=new Argument("URL");
 		Argument name=new Argument("NAME");
+		Argument msg=new Argument("MESSAGE");
 		Argument files=new Argument("FILES",()->{
 			return ((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getSelectedPaths();
 		});
+
+
 		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("svn-init",SvnRepositoryEditor.INSTANCE.getCommandRegistry().getChild("svn-init"));
 //		Argument dir=new Argument("DIRECTORY",SvnRepositoryEditor::getSvnDirectory);
 //		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("svn-browse",new Command("svn-browse",Arrays.asList(dir),(params)->{
@@ -104,4 +123,11 @@ public class SvnModule{
 		Registry.providesProtocol("svn",NAME);
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.addChild("directory/svn",SvnRepositoryObjectType.class.getName());
 	}
+	private static Argument createArgument(String name){
+		return new Argument(MessageRegistry.getString(name,NAME),()->SETTINGS_REGISTRY.getChild(name));
+	}
+	private void addCommand(String name,List<Argument> args,ThrowableFunction<ScmPairOrNil,ScmObject> proc){
+		commands.addChild(name,new Command(name,args,proc,NAME));
+	}
+
 }
