@@ -32,66 +32,91 @@ public class SvnCommands{
 		//SVN.setAuthenticationManager();
 		Argument a=new Argument(null);
 	}
-	public static void add(Object file) throws SVNException{
-		SVN.getWCClient().doAdd(new File[]{toFile(file)},true,true,true,SVNDepth.EMPTY,true,true,true,true);
+	public static void add(Object file,boolean force,boolean mkdir,Object depth,
+			boolean depthIsSticky,boolean includeIgnored,boolean makeParent) throws SVNException{
+		SVN.getWCClient().doAdd(new File[]{toFile(file)},force,mkdir,true,toDepth(file),
+				depthIsSticky,includeIgnored,makeParent);
 	}
 	public static void auth() throws SVNException{
-
+		//TODO
 	}
-	public static void blame () throws SVNException{
-
+	public static void blame() throws SVNException{
+		//TODO
 	}
 	public static void cat(Object path,Object rev) throws SVNException{
 		//(File repositoryRoot, String path, SVNRevision revision, OutputStream out)
-		SVN.getLookClient().doCat(null,null,SVNRevision.HEAD,null);
+		SVN.getLookClient().doCat(null,null,toRevision(rev),null);
 	}
-	public static void changelist () throws SVNException{
-		//Collection<String> changeLists, Collection<File> targets, SVNDepth depth, ISVNChangelistHandler handler
-		SVN.getChangelistClient().doGetChangeLists(null,null,SVNDepth.EMPTY,null);
+	public static void changelistAdd(Object file,String name,Object depth) throws SVNException{
+		SVN.getChangelistClient().doAddToChangelist(new File[]{toFile(file)},toDepth(file),name,null);
 	}
-	public static void checkout() throws SVNException{
-		SVN.getUpdateClient().doCheckout(null,null,SVNRevision.WORKING,SVNRevision.HEAD,SVNDepth.EMPTY,true);
+	public static void changelistGet(Object file,String name,Object depth) throws SVNException{
+		SVN.getChangelistClient().doGetChangeLists(toFile(file),Collections.singleton(name),toDepth(depth),null);
 	}
-	public static void cleanup() throws SVNException{
-		SVN.getWCClient().doCleanup(null,true,true,true,true,true,true);
+	public static void changelistRemove(Object file,String name,Object depth) throws SVNException{
+		SVN.getChangelistClient().doRemoveFromChangelist(new File[]{toFile(file)},toDepth(depth),new String[]{name});
 	}
-	public static void commit() throws SVNException{
-		SVN.getCommitClient().doCommit(paths,true,null,null,changelists,true,true,SVNDepth.EMPTY);
+	public static void checkout(Object url,Object dest,Object pegRev,Object rev,Object depth,boolean recursive,boolean force) throws SVNException{
+		SVN.getUpdateClient().doCheckout(toURL(url),toFile(dest),toRevision(pegRev),toRevision(rev),toDepth(depth),true);
 	}
-	public static void copy(Object from,Object to) throws SVNException{
+	public static void cleanup(Object path,boolean deleteWCProperties,boolean breakLocks,
+			boolean vacuumPristines,boolean removeUnversionedItems,boolean removeIgnoredItems,
+			boolean includeExternals) throws SVNException{
+		SVN.getWCClient().doCleanup(toFile(path),deleteWCProperties,breakLocks,vacuumPristines,
+				removeUnversionedItems,removeIgnoredItems,includeExternals);
+	}
+	public static void commit(File file,boolean keepLocks,String commitMessage,
+			Object revProp,Object changelists,boolean keepChangelist,
+			boolean force,Object depth) throws SVNException{
+		//File[] paths, boolean keepLocks, String commitMessage, SVNProperties revisionProperties, String[] changelists, boolean keepChangelist, boolean force, SVNDepth depth
+		SVN.getCommitClient().doCommit(new File[]{toFile(file)},keepLocks,commitMessage,toProperties(revProp),
+				toChangeList(changelists),keepChangelist,force,toDepth(depth));
+	}
+	public static void copy(Object from,Object to,boolean isMove,boolean makeParents,
+			boolean failWhenDstExists,boolean allowMixedRevisions,boolean metadataOnly)throws SVNException{
 		SVNCopySource[] src=new SVNCopySource[]{toCopySource(from)};
 		File dest=toFile(to);
-		SVN.getCopyClient().doCopy(src,dest,true,true,true,true,true);
+		SVN.getCopyClient().doCopy(src,dest,isMove,makeParents,failWhenDstExists,allowMixedRevisions,metadataOnly);
 	}
 	public static void delete(Object file,boolean force,boolean deleteFile,boolean dryrun) throws SVNException{
 		SVN.getWCClient().doDelete(toFile(file),force,deleteFile,dryrun);
 	}
-	public static void diff () throws SVNException{
-		SVN.getDiffClient().doDiff(null,SVNRevision.HEAD,null,SVNRevision.HEAD,SVNDepth.EMPTY,true,null,null);
+	public static void diff(Object file,Object pegRev,Object rN,Object rM,Object depth,
+			boolean useAncestry, OutputStream result, Collection<String> changeLists) throws SVNException{
+		SVN.getDiffClient().doDiff(toFile(file),toRevision(pegRev),toRevision(rN),toRevision(rM),
+				toDepth(depth),useAncestry,null,null);
 	}
-	public static void export() throws SVNException{
-		SVN.getUpdateClient().doExport(null,null,SVNRevision.WORKING,SVNRevision.HEAD,null,true,SVNDepth.EMPTY)
+	public static void export(Object src, Object dst,Object pegRev,Object rev,
+			String eolStyle,boolean overwrite,SVNDepth depth) throws SVNException{
+		SVN.getUpdateClient().doExport(toFile(src),toFile(rev),toRevision(pegRev),toRevision(rev),
+				eolStyle,overwrite,toDepth(depth));
 	}
-	public static void im() throws SVNException{
-		SVN.getCommitClient().doImport(null,null,null,null,true,true,SVNDepth.EMPTY,true);
+	public static void im(Object path,Object dstURL,String commitMessage,Object revProp,
+			boolean useGlobalIgnores,boolean ignoreUnknownNodeTypes,Object depth, boolean applyAutoProperties) throws SVNException{
+		SVN.getCommitClient().doImport(toFile(path),toURL(dstURL),commitMessage,toProperties(revProp),
+				useGlobalIgnores,ignoreUnknownNodeTypes,toDepth(depth),applyAutoProperties);
 	}
 	public static void info(Object url) throws SVNException{
 		SVN.getAdminClient().doInfo(toURL(url));
 	}
-	public static void list () throws SVNException{
-		SVN.getLogClient().doList(null,SVNRevision.WORKING,SVNRevision.HEAD,true,SVNDepth.EMPTY,entryFields,null);
+	public static void list(Object url,Object pegRev,Object rev,boolean fetchLocks,
+			SVNDepth depth) throws SVNException{
+		SVN.getLogClient().doList(toURL(url),toRevision(pegRev),toRevision(rev),fetchLocks,
+				toDepth(rev),SVNDirEntry.DIRENT_ALL,null);
 	}
 	public static void lock(Object url,boolean stealLock,String msg) throws SVNException{
 		SVN.getWCClient().doLock(new SVNURL[]{toURL(url)},stealLock,msg);
 	}
-	public static void log() throws SVNException{
+	public static void log(SVNURL url, String[] paths, SVNRevision pegRevision, SVNRevision startRevision, SVNRevision endRevision, boolean stopOnCopy, boolean discoverChangedPaths, boolean includeMergedRevisions, long limit, String[] revisionProperties, ISVNLogEntryHandler handler) throws SVNException{
 		SVN.getLogClient().doLog(null,paths,SVNRevision.WORKING,SVNRevision.WORKING,SVNRevision.WORKING,true,true,true,limit,revisionProperties,null);
 	}
-	public static void merge() throws SVNException{
-		SVN.getDiffClient().doMerge(null,SVNRevision.HEAD,null,SVNRevision.HEAD,null,SVNDepth.EMPTY,true,true,true,true);
+	public static void merge(Object url1,Object rev1,Object url2,Object rev2,Object dstPath,
+			Object depth,boolean useAncestry,boolean force,boolean dryRun,boolean recordOnly) throws SVNException{
+		SVN.getDiffClient().doMerge(toURL(url1),toRevision(rev1),toURL(url2),toRevision(rev2),toFile(dstPath),
+				toDepth(depth),useAncestry,force,dryRun,recordOnly);
 	}
-	public static void mergeinfo() throws SVNException{
-		SVN.getDiffClient().doGetMergedMergeInfo(null,SVNRevision.WORKING)
+	public static void mergeinfo(Object url,Object pegRev)throws SVNException{
+		SVN.getDiffClient().doGetMergedMergeInfo(toURL(url),toRevision(pegRev));
 	}
 	public static void mkdir(Object url,String msg,Object prop,boolean makeParent) throws SVNException{
 		SVN.getCommitClient().doMkDir(new SVNURL[]{toURL(url)},msg,toProperties(prop),makeParent);
@@ -99,8 +124,9 @@ public class SvnCommands{
 	public static void move(Object from,Object to) throws SVNException{
 		SVN.getMoveClient().doMove(toFile(from),toFile(to));
 	}
-	public static void patch() throws SVNException{
-		SVN.getDiffClient().doPatch(null,null,true,stripCount,true,true,true);
+	public static void patch(Object absPatchPath,Object localAbsPath,boolean dryRun,int stripCount,
+			boolean ignoreWhitespace,boolean removeTempFiles,boolean reverse) throws SVNException{
+		SVN.getDiffClient().doPatch(toFile(absPatchPath),toFile(localAbsPath),dryRun,stripCount,ignoreWhitespace,removeTempFiles,reverse);
 	}
 	public static void propdel () throws SVNException{
 
@@ -108,52 +134,51 @@ public class SvnCommands{
 	public static void propedit () throws SVNException{
 
 	}
-	public static void propget () throws SVNException{
-
+	public static void propget(Object path,String propName,Object pegRev,Object rev,
+			Object depth,Object changes) throws SVNException{
+		SVN.getWCClient().doGetProperty(toFile(path),propName,toRevision(pegRev),toRevision(rev),
+				toDepth(depth),ISVNPropertyHandler.NULL,toChanges(changes));
 	}
 	public static void proplist () throws SVNException{
 
 	}
-	public static void propset () throws SVNException{
-
+	public static void propset(File path, String propName, Object propValue,boolean skipChecks,
+			Object depth,Object changes) throws SVNException{
+		SVN.getWCClient().doSetProperty(toFile(path),propName,propValue,skipChecks,toDepth(depth),
+				ISVNPropertyHandler.NULL,toChanges(changes));
 	}
-	public static void relocate() throws SVNException{
-		SVN.getUpdateClient().doRelocate(null,null,null,true);
+	public static void relocate(Object dst,Object oldURL,Object newURL,boolean recursive) throws SVNException{
+		SVN.getUpdateClient().doRelocate(toFile(dst),toURL(oldURL),toURL(newURL),recursive);
 	}
-	public static void resolve() throws SVNException{
-
+	public static void resolve(Object path,Object depth,boolean resolveContents,
+			boolean resolveProperties,boolean resolveTree)throws SVNException{
+		SVN.getWCClient().doResolve(toFile(path),toDepth(depth),resolveContents,resolveProperties,resolveTree,null);
 	}
 	public static void resolved() throws SVNException{
 
 	}
-	public static void revert() throws SVNException{
-
+	public static void revert(Object path,Object depth,Object changes) throws SVNException{
+		SVN.getWCClient().doRevert(new File[]{toFile(path)},toDepth(depth),toChanges(changes));
 	}
-	public static void status () throws SVNException{
-		SVN.getStatusClient().doStatus(null,SVNRevision.HEAD,SVNDepth.EMPTY,true,true,true,true,null,null)
+	public static void status(Object path,Object rev,Object depth,boolean remote,boolean reportAll,
+			boolean includeIgnored, boolean collectParentExternal,Object changes) throws SVNException{
+		SVN.getStatusClient().doStatus(toFile(path),toRevision(rev),toDepth(depth),remote,reportAll,
+				includeIgnored,collectParentExternal,null,toChanges(changes));
 	}
-	public static void sw () throws SVNException{
-		SVN.getUpdateClient().doSwitch(null,null,SVNRevision.WORKING,SVNRevision.HEAD,SVNDepth.EMPTY,true,true,true)
+	public static void sw(Object path,Object url,Object pegRev,Object rev,Object depth,
+			boolean allowUnversionedObstructions,boolean depthIsSticky,boolean ignoreAncestry) throws SVNException{
+		SVN.getUpdateClient().doSwitch(toFile(path),toURL(url),toRevision(pegRev),toRevision(rev),
+				toDepth(depth),allowUnversionedObstructions,depthIsSticky,ignoreAncestry);
 	}
 	public static void unlock(Object url,boolean breakLock) throws SVNException{
 		SVN.getWCClient().doUnlock(new SVNURL[]{toURL(url)},breakLock);
 	}
-	public static void update () throws SVNException{
-		SVN.getUpdateClient().doUpdate(paths,SVNRevision.HEAD,SVNDepth.EMPTY,true,true,true)
+	public static void update(Object file,Object rev,Object depth,
+			boolean allowUnversionedObstructions,boolean depthIsSticky,boolean makeParents) throws SVNException{
+		SVN.getUpdateClient().doUpdate(new File[]{toFile(file)},toRevision(rev),toDepth(depth),allowUnversionedObstructions,depthIsSticky,makeParents);
 	}
-	public static void upgrade() throws SVNException{
-		SVN.getAdminClient().doUpgrade(null);
-	}
-
-	public static void checkout(String url,String file){
-		SVN.getUpdateClient();
-	}
-	public static void commit(String url,String file){
-		SVN.getCommitClient().doMkDir(urls,file);
-	}
-	public static void mkdir(Object url,String msg,){
-		SVN.getOperationFactory().createMkDir()
-		SVN.getCommitClient().doMkDir(new ,msg,null,true)r(new SVNURL[]{},file);
+	public static void upgrade(Object root) throws SVNException{
+		SVN.getAdminClient().doUpgrade(toFile(root));
 	}
 	private static File toFile(Object obj){
 		if(obj instanceof File){
@@ -181,6 +206,9 @@ public class SvnCommands{
 	private static SVNProperties toProperties(Object obj){
 		return SVNProperties.wrap(null);
 	}
+	private static SVNDepth toDepth(Object obj){
+
+	}
 	private static SVNRevision toRevision(Object obj){
 		if(obj instanceof Number){
 			return SVNRevision.create(((Number)obj).longValue());
@@ -189,5 +217,11 @@ public class SvnCommands{
 		}else{
 			return SVNRevision.parse(Objects.toString(obj));
 		}
+	}
+	private static String[] toChangeList(Object obj){
+
+	}
+	private static Collections<String> toChanges(Object obj){
+
 	}
 }
