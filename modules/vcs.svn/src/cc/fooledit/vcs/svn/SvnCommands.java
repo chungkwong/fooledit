@@ -72,9 +72,9 @@ public class SvnCommands{
 		SVN.getCommitClient().doCommit(new File[]{toFile(file)},keepLocks,commitMessage,toProperties(revProp),
 				toChangeList(changelists),keepChangelist,force,toDepth(depth));
 	}
-	public static void copy(Object from,Object to,boolean isMove,boolean makeParents,
+	public static void copy(Object from,Object pegRev,Object rev,Object to,boolean isMove,boolean makeParents,
 			boolean failWhenDstExists,boolean allowMixedRevisions,boolean metadataOnly)throws SVNException{
-		SVNCopySource[] src=new SVNCopySource[]{toCopySource(from)};
+		SVNCopySource[] src=new SVNCopySource[]{toCopySource(pegRev,rev,from)};
 		File dest=toFile(to);
 		SVN.getCopyClient().doCopy(src,dest,isMove,makeParents,failWhenDstExists,allowMixedRevisions,metadataOnly);
 	}
@@ -144,15 +144,15 @@ public class SvnCommands{
 	}
 	public static void propset(File path, String propName, Object propValue,boolean skipChecks,
 			Object depth,Object changes) throws SVNException{
-		SVN.getWCClient().doSetProperty(toFile(path),propName,propValue,skipChecks,toDepth(depth),
+		SVN.getWCClient().doSetProperty(toFile(path),propName,toValue(propValue),skipChecks,toDepth(depth),
 				ISVNPropertyHandler.NULL,toChanges(changes));
 	}
 	public static void relocate(Object dst,Object oldURL,Object newURL,boolean recursive) throws SVNException{
 		SVN.getUpdateClient().doRelocate(toFile(dst),toURL(oldURL),toURL(newURL),recursive);
 	}
 	public static void resolve(Object path,Object depth,boolean resolveContents,
-			boolean resolveProperties,boolean resolveTree)throws SVNException{
-		SVN.getWCClient().doResolve(toFile(path),toDepth(depth),resolveContents,resolveProperties,resolveTree,null);
+			boolean resolveProperties,boolean resolveTree,Object conflictChoice)throws SVNException{
+		SVN.getWCClient().doResolve(toFile(path),toDepth(depth),resolveContents,resolveProperties,resolveTree,toConflictChoice(conflictChoice));
 	}
 	public static void resolved() throws SVNException{
 
@@ -189,25 +189,29 @@ public class SvnCommands{
 			return new File(Objects.toString(obj));
 		}
 	}
-	private static SVNCopySource toCopySource(Object obj){
-		SVNRevision pegRevision;
-		SVNRevision revision;
-		if(obj instanceof File){
-			return new SVNCopySource(pegRevision,revision,(File)obj);
-		}else if(obj instanceof Path){
-			return new SVNCopySource(pegRevision,revision,((Path)obj).toFile());
-		}else{
-			return new SVNCopySource(pegRevision,revision,new SVNURL(Objects.toString(obj)));
-		}SVNURL.parseURIEncoded(null);
+	private static SVNCopySource toCopySource(Object pegRev,Object rev,Object obj) throws SVNException{
+		return new SVNCopySource(toRevision(pegRev),toRevision(rev),toURL(obj));
 	}
-	private static SVNURL toURL(Object obj){
-
+	private static SVNURL toURL(Object obj) throws SVNException{
+		if(obj instanceof Path)
+			obj=((Path)obj).toFile();
+		if(obj instanceof File){
+			return SVNURL.fromFile((File)obj);
+		}else{
+			return SVNURL.parseURIEncoded(Objects.toString(obj));
+		}
 	}
 	private static SVNProperties toProperties(Object obj){
 		return SVNProperties.wrap(null);
 	}
 	private static SVNDepth toDepth(Object obj){
-
+		if(obj instanceof Number){
+			return SVNDepth.fromID(((Number)obj).intValue());
+		}else if(obj instanceof Boolean){
+			return SVNDepth.fromRecurse((Boolean)obj);
+		}else{
+			return SVNDepth.fromString(Objects.toString(obj));
+		}
 	}
 	private static SVNRevision toRevision(Object obj){
 		if(obj instanceof Number){
@@ -219,9 +223,31 @@ public class SvnCommands{
 		}
 	}
 	private static String[] toChangeList(Object obj){
-
+		if(obj instanceof Collection){
+			return ((Collection<String>)obj).toArray(new String[0]);
+		}else{
+			return new String[0];
+		}
 	}
-	private static Collections<String> toChanges(Object obj){
-
+	private static Collection<String> toChanges(Object obj){
+		if(obj instanceof Collection){
+			return (Collection<String>)obj;
+		}else{
+			return Collections.emptySet();
+		}
+	}
+	private static SVNConflictChoice toConflictChoice(Object conflictChoice){
+		switch(Objects.toString(conflictChoice).toUpperCase()){
+			case "POSTPONE":return SVNConflictChoice.POSTPONE;
+			case "MINE_CONFLICT":return SVNConflictChoice.MINE_CONFLICT;
+			case "MINE_FULL":return SVNConflictChoice.MINE_FULL;
+			case "THEIRS_CONFLICT":return SVNConflictChoice.THEIRS_CONFLICT;
+			case "THEIRS_FULL":return SVNConflictChoice.THEIRS_FULL;
+			case "BASE":return SVNConflictChoice.BASE;
+			default:return SVNConflictChoice.MERGED;
+		}
+	}
+	private static SVNPropertyValue toValue(Object propValue){
+		return SVNPropertyValue.create(Objects.toString(propValue));
 	}
 }
