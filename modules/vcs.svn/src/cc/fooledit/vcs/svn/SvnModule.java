@@ -98,7 +98,114 @@ public class SvnModule{
 		Argument files=new Argument("FILES",()->{
 			return ((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getSelectedPaths();
 		});
-
+		addCommand("svn-add",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-auth",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-blame ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-cat",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-changelist ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-checkout ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-cleanup",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-commit ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-copy ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-delete ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-diff ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-export",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-import",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-info",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-list ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-lock",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-log",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-merge",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-mergeinfo",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-mkdir",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-move ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-patch",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-propdel ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-propedit ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-propget ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-proplist ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-propset ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-relocate",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-resolve",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-resolved",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-revert",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-status ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-switch ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-unlock",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-update ",Arrays.asList(),(args)->{
+				return null;
+		});
+		addCommand("svn-upgrade",Arrays.asList(),(args)->{
+				return null;
+		});
 
 		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("svn-init",SvnRepositoryEditor.INSTANCE.getCommandRegistry().getChild("svn-init"));
 //		Argument dir=new Argument("DIRECTORY",SvnRepositoryEditor::getSvnDirectory);
@@ -226,8 +333,10 @@ public class SvnModule{
 	private static Argument createArgument(String name){
 		return new Argument(MessageRegistry.getString(name,NAME),()->SETTINGS_REGISTRY.getChild(name));
 	}
-	private void addCommand(String name,List<Argument> args,ThrowableFunction<ScmPairOrNil,ScmObject> proc){
-		commands.addChild(name,new Command(name,args,proc,NAME));
+	private static void addCommand(String name,List<Argument> args,ThrowableFunction<Object[],Object> proc){
+		commands.addChild(name,new Command(name,args,(a)->SchemeConverter.toScheme(proc.accept(toArgumentList(a))),NAME));
 	}
-
+	private static Object[] toArgumentList(ScmPairOrNil args){
+		return ScmList.asStream(args).map(SchemeConverter::toJava).toArray();
+	}
 }
