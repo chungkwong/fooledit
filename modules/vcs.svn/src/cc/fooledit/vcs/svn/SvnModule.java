@@ -26,6 +26,7 @@ import java.nio.file.*;
 import java.util.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
+import org.tmatesoft.svn.core.wc.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -54,10 +55,13 @@ public class SvnModule{
 		Argument url=new Argument("URL");
 		Argument name=new Argument("NAME");
 		Argument msg=new Argument("MESSAGE");
+		Argument changeListFilter=new Argument("CHANGE_LIST_FILTER");
 		Argument depth=createArgument("DEPTH");
 		Argument depthIsSticky=createArgument("DEPTH_IS_STICKY");
 		Argument recursive=createArgument("RECURSIVE");
-		Argument revision=new Argument("REVISION");
+		Argument revision=createArgument("REVISION");
+		Argument startRevision=createArgument("START_REVISION");
+		Argument endRevision=createArgument("END_REVISION");
 		Argument pegRevision=createArgument("PEG_REVISION");
 		Argument deleteWCProperties=createArgument("DELETE_WC_PROPERTIES");
 		Argument vacuumPristines=createArgument("VACUUM_PRISTINES");
@@ -92,119 +96,161 @@ public class SvnModule{
 		Argument removeTempFiles=createArgument("REMOVE_TEMP_FILE");
 		Argument recordOnly=createArgument("RECORD_ONLY");
 		Argument reverse=createArgument("REVERSE");
-		Argument changeLists=createArgument("CHANGE_LISTS");
+		Argument includeMergedRevisions=createArgument("INCLUDE_MERGED_REVISIONS");
+		Argument limit=createArgument("LIMIT");
+		Argument stripCount=createArgument("STRIP_COUNT");
+		Argument ignoreMimeType=createArgument("IGNORE_MIME_TYPE");
+		Argument encoding=createArgument("ENCODING");
+
+		Argument urls=createArgument("URLS");
+
 		Argument stopOnCopy=createArgument("STOP_ON_COPY");
 		Argument discoverChangedPaths=createArgument("DISCOVER_CHANGED_PATHS");
 		Argument files=new Argument("FILES",()->{
 			return ((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getSelectedPaths();
 		});
-		addCommand("svn-add",Arrays.asList(),(args)->{
-				return null;
+		Argument file=new Argument("FILE",()->{
+			return ((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getSelectedPaths().iterator().next();
 		});
-		addCommand("svn-auth",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-add",Arrays.asList(files,force,mkdir,depth,depthIsSticky,includeIgnored,makeParent),(args)->{
+			SvnCommands.add(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
+			return null;
 		});
-		addCommand("svn-blame ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-blame",Arrays.asList(url,pegRevision,startRevision,endRevision,ignoreMimeType,includeMergedRevisions,encoding),(args)->{
+			SvnCommands.blame(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
+			return null;
 		});
-		addCommand("svn-cat",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-cat",Arrays.asList(file,revision),(args)->{
+			SvnCommands.cat(args[0],args[1]);
+			return null;
 		});
-		addCommand("svn-changelist ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-changelist-add",Arrays.asList(files,name,depth),(args)->{
+			SvnCommands.changelistAdd(args[0],args[1],args[2]);
+			return null;
 		});
-		addCommand("svn-checkout ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-changelist-remove",Arrays.asList(files,changeListFilter,depth),(args)->{
+			SvnCommands.changelistRemove(args[0],args[1],args[2]);
+			return null;
 		});
-		addCommand("svn-cleanup",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-changelist-get",Arrays.asList(file,changeListFilter,depth),(args)->{
+			SvnCommands.changelistGet(args[0],args[1],args[2]);
+			return null;
 		});
-		addCommand("svn-commit ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-checkout",Arrays.asList(url,file,pegRevision,revision,depth,recursive,force),(args)->{
+			SvnCommands.checkout(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
+			return null;
 		});
-		addCommand("svn-copy ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-cleanup",Arrays.asList(file,deleteWCProperties,breakLock,vacuumPristines,removeUnversionedItems,removeIgnoredItems,includeExternals),(args)->{
+			SvnCommands.cleanup(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
+			return null;
 		});
-		addCommand("svn-delete ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-commit",Arrays.asList(files,keepLock,msg,revProp,changeListFilter,keepChangeLists,force,depth),(args)->{
+			SvnCommands.commit(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
+			return null;
 		});
-		addCommand("svn-diff ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-copy",Arrays.asList(urls,pegRevision,revision,file,isMove,makeParent,failWhenDstExists,allowMixedRevisions,metadataOnly),(args)->{
+			SvnCommands.copy(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8]);
+			return null;
 		});
-		addCommand("svn-export",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-delete",Arrays.asList(file,force,deleteFile,dryrun),(args)->{
+			SvnCommands.delete(args[0],args[1],args[2],args[3]);
+			return null;
 		});
-		addCommand("svn-import",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-diff",Arrays.asList(file,pegRevision,revision,revision,depth,useAncestry,changeListFilter),(args)->{
+			SvnCommands.diff(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
+			return null;
 		});
-		addCommand("svn-info",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-export",Arrays.asList(url,file,pegRevision,revision,eol,overwrite,depth),(args)->{
+			SvnCommands.export(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
+			return null;
 		});
-		addCommand("svn-list ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-import",Arrays.asList(file,url,msg,revProp,useGlobalIgnores,ignoreUnknownNodeTypes,depth,applyAutoProperties),(args)->{
+			SvnCommands.im(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
+			return null;
 		});
-		addCommand("svn-lock",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-info",Arrays.asList(url),(args)->{
+			SvnCommands.info(args[0]);
+			return null;
 		});
-		addCommand("svn-log",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-list",Arrays.asList(url,pegRevision,revision,fetchLock,depth),(args)->{
+			SvnCommands.list(args[0],args[1],args[2],args[3],args[4]);
+			return null;
 		});
-		addCommand("svn-merge",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-lock",Arrays.asList(url,stealLock,msg),(args)->{
+			SvnCommands.lock(args[0],args[1],args[2]);
+			return null;
 		});
-		addCommand("svn-mergeinfo",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-log",Arrays.asList(url,file,pegRevision,startRevision,endRevision,stopOnCopy,discoverChangedPaths,includeMergedRevisions,limit,revProp),(args)->{
+			SvnCommands.log(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9]);
+			return null;
 		});
-		addCommand("svn-mkdir",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-merge",Arrays.asList(url,revision,url,revision,file,depth,useAncestry,force,dryrun,recordOnly),(args)->{
+			SvnCommands.merge(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9]);
+			return null;
 		});
-		addCommand("svn-move ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-mergeinfo",Arrays.asList(url,pegRevision),(args)->{
+			SvnCommands.mergeinfo(args[0],args[1]);
+			return null;
 		});
-		addCommand("svn-patch",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-mkdir",Arrays.asList(url,msg,properties,makeParent),(args)->{
+			SvnCommands.mkdir(args[0],args[1],args[2],args[3]);
+			return null;
 		});
-		addCommand("svn-propdel ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-move",Arrays.asList(file,file),(args)->{
+			SvnCommands.move(args[0],args[1]);
+			return null;
 		});
-		addCommand("svn-propedit ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-patch",Arrays.asList(file,file,dryrun,stripCount,ignoreWhitespace,removeTempFiles,reverse),(args)->{
+			SvnCommands.patch(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
+			return null;
 		});
-		addCommand("svn-propget ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-propdel",Arrays.asList(file,name,skipChecks,depth,changeListFilter),(args)->{
+			SvnCommands.propdel(args[0],args[1],args[2],args[3],args[4]);
+			return null;
 		});
-		addCommand("svn-proplist ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-propget",Arrays.asList(file,name,pegRevision,revision,depth,changeListFilter),(args)->{
+			SvnCommands.propget(args[0],args[1],args[2],args[3],args[4],args[5]);
+			return null;
 		});
-		addCommand("svn-propset ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-proplist",Arrays.asList(file,pegRevision,revision,depth,changeListFilter),(args)->{
+			SvnCommands.proplist(args[0],args[1],args[2],args[3],args[4]);
+			return null;
 		});
-		addCommand("svn-relocate",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-propset",Arrays.asList(file,name,value,skipChecks,depth,changeListFilter),(args)->{
+			SvnCommands.propset(args[0],args[1],args[2],args[3],args[4],args[5]);
+			return null;
 		});
-		addCommand("svn-resolve",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-relocate",Arrays.asList(file,url,url,recursive),(args)->{
+			SvnCommands.relocate(args[0],args[1],args[2],args[3]);
+			return null;
 		});
-		addCommand("svn-resolved",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-resolve",Arrays.asList(file,depth,resolveContent,resolveProp,resolveTree,conflictChoice),(args)->{
+			SvnCommands.resolve(args[0],args[1],args[2],args[3],args[4],args[5]);
+			return null;
 		});
-		addCommand("svn-revert",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-revert",Arrays.asList(files,depth,changeListFilter),(args)->{
+			SvnCommands.revert(args[0],args[1],args[2]);
+			return null;
 		});
-		addCommand("svn-status ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-status",Arrays.asList(file,revision,depth,remote,reportAll,includeIgnored,collectParentExternal,changeListFilter),(args)->{
+			SvnCommands.status(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
+			return null;
 		});
-		addCommand("svn-switch ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-switch",Arrays.asList(file,url,pegRevision,revision,depth,allowUnversionedObstructions,depthIsSticky,ignoreAncestry),(args)->{
+			SvnCommands.sw(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
+			return null;
 		});
-		addCommand("svn-unlock",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-unlock",Arrays.asList(url,breakLock),(args)->{
+			SvnCommands.unlock(args[0],args[1]);
+			return null;
 		});
-		addCommand("svn-update ",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-update",Arrays.asList(file,revision,depth,allowUnversionedObstructions,depthIsSticky,makeParent),(args)->{
+			SvnCommands.update(args[0],args[1],args[2],args[3],args[4],args[5]);
+			return null;
 		});
-		addCommand("svn-upgrade",Arrays.asList(),(args)->{
-				return null;
+		addCommand("svn-upgrade",Arrays.asList(file),(args)->{
+			SvnCommands.upgrade(args[0]);
+			return null;
 		});
 
 		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("svn-init",SvnRepositoryEditor.INSTANCE.getCommandRegistry().getChild("svn-init"));
@@ -232,59 +278,61 @@ public class SvnModule{
 	}
 	public static void onInstall(){
 		Registry.providesDynamicMenu(APPLICATION_NAME,NAME);
-		providesFileCommand();
+		providesFileCommands();
 		Registry.providesDataObjectType(SvnRepositoryObjectType.class.getName(),NAME);
 		Registry.providesDataObjectEditor(SvnRepositoryEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(SvnRepositoryObject.class.getName(),NAME);
 		Registry.providesProtocol("svn",NAME);
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.addChild("directory/svn",SvnRepositoryObjectType.class.getName());
 		CoreModule.PERSISTENT_REGISTRY.addChild("vcs.svn/"+SETTINGS_REGISTRY_NAME);
+		providesDefaultValues();
 	}
-	private static void providesFileCommand(){
-		Registry.provides("svn-auth",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-add",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-blame",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-cat",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-changelist",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-checkout",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-cleanup",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-commit",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-copy",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-delete",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-diff",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-export",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-import",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-info",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-list",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-lock",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-log",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-merge",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-mergeinfo",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-mkdir",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-move",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-patch",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-propdel",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-propedit",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-propget",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-proplist",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-propset",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-relocate",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-resolve",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-resolved",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-revert",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-status",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-switch",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-unlock",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-update",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("svn-upgrade",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
+	private static void providesFileCommands(){
+		providesFileCommand("svn-auth");
+		providesFileCommand("svn-add");
+		providesFileCommand("svn-blame");
+		providesFileCommand("svn-cat");
+		providesFileCommand("svn-changelist");
+		providesFileCommand("svn-checkout");
+		providesFileCommand("svn-cleanup");
+		providesFileCommand("svn-commit");
+		providesFileCommand("svn-copy");
+		providesFileCommand("svn-delete");
+		providesFileCommand("svn-diff");
+		providesFileCommand("svn-export");
+		providesFileCommand("svn-import");
+		providesFileCommand("svn-info");
+		providesFileCommand("svn-list");
+		providesFileCommand("svn-lock");
+		providesFileCommand("svn-log");
+		providesFileCommand("svn-merge");
+		providesFileCommand("svn-mergeinfo");
+		providesFileCommand("svn-mkdir");
+		providesFileCommand("svn-move");
+		providesFileCommand("svn-patch");
+		providesFileCommand("svn-propdel");
+		providesFileCommand("svn-propget");
+		providesFileCommand("svn-proplist");
+		providesFileCommand("svn-propset");
+		providesFileCommand("svn-relocate");
+		providesFileCommand("svn-resolve");
+		providesFileCommand("svn-revert");
+		providesFileCommand("svn-status");
+		providesFileCommand("svn-switch");
+		providesFileCommand("svn-unlock");
+		providesFileCommand("svn-update");
+		providesFileCommand("svn-upgrade");
 	}
-	private static void providesDefaultValue(){
+	private static void providesFileCommand(String name){
+		Registry.provides(name,NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
+	}
+	private static void providesDefaultValues(){
 		SETTINGS_REGISTRY.addChildIfNotPresent("ALLOW_MIXED_REVISIONS",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("ALLOW_UNVERSIONED_OBSTRUCTIONS",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("APPLY_AUTO_PROPERTIES",true);
 		SETTINGS_REGISTRY.addChildIfNotPresent("BREAK_LOCK",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("COLLECT_PARENT_EXTERNAL",true);
-		SETTINGS_REGISTRY.addChildIfNotPresent("CHANGE_LISTS",null);
+		SETTINGS_REGISTRY.addChildIfNotPresent("CHANGE_LIST_FILTER",null);
 		SETTINGS_REGISTRY.addChildIfNotPresent("CONFLICT_CHOICE","MERGED");
 		SETTINGS_REGISTRY.addChildIfNotPresent("DELETE_FILE",true);
 		SETTINGS_REGISTRY.addChildIfNotPresent("DELETE_WC_PROPERTIES",false);
@@ -292,11 +340,14 @@ public class SvnModule{
 		SETTINGS_REGISTRY.addChildIfNotPresent("DEPTH","INFINITY");
 		SETTINGS_REGISTRY.addChildIfNotPresent("DISCOVER_CHANGED_PATHS",true);
 		SETTINGS_REGISTRY.addChildIfNotPresent("DRY_RUN",false);
+		SETTINGS_REGISTRY.addChildIfNotPresent("ENCODING","utf-8");
+		SETTINGS_REGISTRY.addChildIfNotPresent("END_REVISION",SVNRevision.HEAD.getName());
 		SETTINGS_REGISTRY.addChildIfNotPresent("EOL",System.getProperty("line.separator"));
 		SETTINGS_REGISTRY.addChildIfNotPresent("FAIL_WHEN_DST_EXISTS",true);
 		SETTINGS_REGISTRY.addChildIfNotPresent("FETCH_LOCK",true);
 		SETTINGS_REGISTRY.addChildIfNotPresent("FORCE",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("IGNORE_ANCESTRY",false);
+		SETTINGS_REGISTRY.addChildIfNotPresent("IGNORE_MIME_TYPE",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("IGNORE_UNKNOWN_NODE_TYPES",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("IGNORE_WHITESACES",true);
 		SETTINGS_REGISTRY.addChildIfNotPresent("INCLUDE_EXTERNALS",true);
@@ -304,11 +355,12 @@ public class SvnModule{
 		SETTINGS_REGISTRY.addChildIfNotPresent("IS_MOVE",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("KEEP_CHANGE_LISTS",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("KEEP_LOCK",true);
+		SETTINGS_REGISTRY.addChildIfNotPresent("LIMIT",0);
 		SETTINGS_REGISTRY.addChildIfNotPresent("MAKE_PARENT",true);
 		SETTINGS_REGISTRY.addChildIfNotPresent("METADATA_ONLY",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("MKDIR",true);
 		SETTINGS_REGISTRY.addChildIfNotPresent("OVERWRITE",false);
-		SETTINGS_REGISTRY.addChildIfNotPresent("PEG_REVISION","BASE");
+		SETTINGS_REGISTRY.addChildIfNotPresent("PEG_REVISION",SVNRevision.WORKING.getName());
 		SETTINGS_REGISTRY.addChildIfNotPresent("PROPERTIES",null);
 		SETTINGS_REGISTRY.addChildIfNotPresent("RECORD_ONLY",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("RECURSIVE",true);
@@ -321,10 +373,13 @@ public class SvnModule{
 		SETTINGS_REGISTRY.addChildIfNotPresent("RESOLVE_PROPERTIES",true);
 		SETTINGS_REGISTRY.addChildIfNotPresent("RESOLVE_TREE",true);
 		SETTINGS_REGISTRY.addChildIfNotPresent("REVERSE",true);
+		SETTINGS_REGISTRY.addChildIfNotPresent("REVISION",SVNRevision.WORKING.getName());
 		SETTINGS_REGISTRY.addChildIfNotPresent("REVISION_PROPERTIES",null);
 		SETTINGS_REGISTRY.addChildIfNotPresent("SKIP_CHECKS",false);
+		SETTINGS_REGISTRY.addChildIfNotPresent("START_REVISION",0);
 		SETTINGS_REGISTRY.addChildIfNotPresent("STOP_ON_COPY",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("STEAL_LOCK",false);
+		SETTINGS_REGISTRY.addChildIfNotPresent("STRIP_COUNT",0);
 		SETTINGS_REGISTRY.addChildIfNotPresent("USE_ANCESTRY",false);
 		SETTINGS_REGISTRY.addChildIfNotPresent("USE_GLOBAL_IGNORE",true);
 		SETTINGS_REGISTRY.addChildIfNotPresent("VACUUM_PRISTINES",true);
