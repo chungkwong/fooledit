@@ -90,17 +90,44 @@ public class SvnCommands{
 	}
 	public static void blame(Object url,Object pegRevision,Object startRevision,Object endRevision,
 			Object ignoreMimeType,Object includeMergedRevisions,Object inputEncodin) throws SVNException{
+		ISVNAnnotateHandler handler=new ISVNAnnotateHandler(){
+			@Override
+			public void handleLine(Date date,long revision,String author,String line) throws SVNException{
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+			@Override
+			public void handleLine(Date date,long revision,String author,String line,Date mergedDate,long mergedRevision,String mergedAuthor,String mergedPath,int lineNumber) throws SVNException{
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+			@Override
+			public boolean handleRevision(Date date,long revision,String author,File contents) throws SVNException{
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+			@Override
+			public void handleEOF() throws SVNException{
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		};
 		SVN.getLogClient().doAnnotate(toURL(url),toRevision(pegRevision),toRevision(startRevision),
-				toRevision(endRevision),toBoolean(ignoreMimeType),toBoolean(includeMergedRevisions),null,toString(inputEncodin));
+				toRevision(endRevision),toBoolean(ignoreMimeType),toBoolean(includeMergedRevisions),handler,toString(inputEncodin));
 	}
 	public static void cat(Object path,Object rev) throws SVNException{
-		SVN.getLookClient().doCat(null,null,toRevision(rev),null);
+		File file=toFile(path);
+		File root=SVNWCUtil.getWorkingCopyRoot(file,false);
+		String loc=root.toPath().relativize(file.toPath()).toString();
+		SVN.getLookClient().doCat(root,loc,toRevision(rev),null);
 	}
-	public static void changelistAdd(Object file,Object name,Object depth) throws SVNException{
-		SVN.getChangelistClient().doAddToChangelist(toFiles(file),toDepth(file),toString(name),null);
+	public static void changelistAdd(Object file,Object name,Object depth,Object filter) throws SVNException{
+		SVN.getChangelistClient().doAddToChangelist(toFiles(file),toDepth(file),toString(name),toStringArray(filter));
 	}
 	public static void changelistGet(Object file,Object name,Object depth) throws SVNException{
-		SVN.getChangelistClient().doGetChangeLists(toFile(file),toStringSet(name),toDepth(depth),null);
+		ISVNChangelistHandler handler=new ISVNChangelistHandler() {
+			@Override
+			public void handle(File path,String changelistName){
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		};
+		SVN.getChangelistClient().doGetChangeLists(toFile(file),toStringSet(name),toDepth(depth),handler);
 	}
 	public static void changelistRemove(Object file,Object changeLists,Object depth) throws SVNException{
 		SVN.getChangelistClient().doRemoveFromChangelist(toFiles(file),toDepth(depth),toStringArray(changeLists));
@@ -149,17 +176,29 @@ public class SvnCommands{
 		SVN.getAdminClient().doInfo(toURL(url));
 	}
 	public static void list(Object url,Object pegRev,Object rev,Object fetchLocks,Object depth) throws SVNException{
+		ISVNDirEntryHandler handler=new ISVNDirEntryHandler() {
+			@Override
+			public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException{
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		};
 		SVN.getLogClient().doList(toURL(url),toRevision(pegRev),toRevision(rev),toBoolean(fetchLocks),
-				toDepth(rev),SVNDirEntry.DIRENT_ALL,null);
+				toDepth(rev),SVNDirEntry.DIRENT_ALL,handler);
 	}
 	public static void lock(Object url,Object stealLock,Object msg) throws SVNException{
 		SVN.getWCClient().doLock(toURLs(url),toBoolean(stealLock),toString(msg));
 	}
 	public static void log(Object url,Object path, Object pegRev,Object startRev,Object endRev,
 			Object stopOnCopy,Object discoverChangedPaths,Object includeMergedRevisions,Object limit,Object revisionProperties) throws SVNException{
+		ISVNLogEntryHandler handler=new ISVNLogEntryHandler() {
+			@Override
+			public void handleLogEntry(SVNLogEntry logEntry) throws SVNException{
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		};
 		SVN.getLogClient().doLog(toURL(url),new String[]{toString(path)},toRevision(pegRev),toRevision(startRev),
 				toRevision(endRev),toBoolean(stopOnCopy),toBoolean(discoverChangedPaths),toBoolean(includeMergedRevisions),
-				toLong(limit),toStringArray(revisionProperties),null);
+				toLong(limit),toStringArray(revisionProperties),handler);
 	}
 	public static void merge(Object url1,Object rev1,Object url2,Object rev2,Object dstPath,
 			Object depth,Object useAncestry,Object force,Object dryRun,Object recordOnly) throws SVNException{
@@ -213,8 +252,14 @@ public class SvnCommands{
 	}
 	public static void status(Object path,Object rev,Object depth,Object remote,Object reportAll,
 			Object includeIgnored, Object collectParentExternal,Object changes) throws SVNException{
+		ISVNStatusHandler handler=new ISVNStatusHandler() {
+			@Override
+			public void handleStatus(SVNStatus status) throws SVNException{
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		};
 		SVN.getStatusClient().doStatus(toFile(path),toRevision(rev),toDepth(depth),toBoolean(remote),toBoolean(reportAll),
-				toBoolean(includeIgnored),toBoolean(collectParentExternal),null,toStringSet(changes));
+				toBoolean(includeIgnored),toBoolean(collectParentExternal),handler,toStringSet(changes));
 	}
 	public static void sw(Object path,Object url,Object pegRev,Object rev,Object depth,
 			Object allowUnversionedObstructions,Object depthIsSticky,Object ignoreAncestry) throws SVNException{

@@ -39,79 +39,83 @@ public class SvnModule{
 			(RegistryNode<String,Object,String>)Registry.ROOT.getOrCreateChild(SvnModule.NAME).getOrCreateChild(SETTINGS_REGISTRY_NAME);
 	private static final RegistryNode<String,Command,String> commands=Registry.ROOT.registerCommand(NAME);
 	public static void onLoad() throws ClassNotFoundException, MalformedURLException{
-		DataObjectTypeRegistry.addDataObjectType(SvnRepositoryObjectType.INSTANCE);
-		DataObjectTypeRegistry.addDataEditor(SvnRepositoryEditor.INSTANCE,SvnRepositoryObject.class);
+		DataObjectTypeRegistry.addDataObjectType(RollingObjectType.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(RollingEditor.INSTANCE,RollingObject.class);
 
-		Argument makeParent=createArgument("MAKE_PARENT");
-		Argument mkdir=createArgument("MKDIR");
-		Argument properties=createArgument("PROPERTIES");
-		Argument fetchLock=createArgument("FETCH_LOCK");
-		Argument keepLock=createArgument("KEEP_LOCK");
+		Argument allowMixedRevisions=createArgument("ALLOW_MIXED_REVISIONS");
+		Argument allowUnversionedObstructions=createArgument("ALLOW_UNVERSIONED_OBSTRUCTIONS");
+		Argument applyAutoProperties=createArgument("APPLY_AUTO_PROPERTIES");
 		Argument breakLock=createArgument("BREAK_LOCK");
-		Argument stealLock=createArgument("STEAL_LOCK");
-		Argument force=createArgument("FORCE");
-		Argument dryrun=createArgument("DRY_RUN");
+		Argument changeListFilter=createArgument("CHANGE_LIST_FILTER");
+		Argument collectParentExternal=createArgument("COLLECT_PARENT_EXTERNAL");
+		Argument conflictChoice=createArgument("CONFLICT_CHOICE");
 		Argument deleteFile=createArgument("DELETE_FILE");
-		Argument url=new Argument("URL");
-		Argument name=new Argument("NAME");
-		Argument msg=new Argument("MESSAGE");
-		Argument changeListFilter=new Argument("CHANGE_LIST_FILTER");
+		Argument deleteWCProperties=createArgument("DELETE_WC_PROPERTIES");
 		Argument depth=createArgument("DEPTH");
 		Argument depthIsSticky=createArgument("DEPTH_IS_STICKY");
-		Argument recursive=createArgument("RECURSIVE");
-		Argument revision=createArgument("REVISION");
-		Argument startRevision=createArgument("START_REVISION");
+		Argument discoverChangedPaths=createArgument("DISCOVER_CHANGED_PATHS");
+		Argument dryrun=createArgument("DRY_RUN");
+		Argument encoding=createArgument("ENCODING");
 		Argument endRevision=createArgument("END_REVISION");
-		Argument pegRevision=createArgument("PEG_REVISION");
-		Argument deleteWCProperties=createArgument("DELETE_WC_PROPERTIES");
-		Argument vacuumPristines=createArgument("VACUUM_PRISTINES");
-		Argument removeUnversionedItems=createArgument("REMOVE_UNVERSIONED_ITEMS");
-		Argument removeIgnoredItems=createArgument("REMOVE_IGNORED_ITEMS");
+		Argument eol=createArgument("EOL");
+		Argument failWhenDstExists=createArgument("FAIL_WHEN_DST_EXISTS");
+		Argument fetchLock=createArgument("FETCH_LOCK");
+		Argument force=createArgument("FORCE");
+		Argument ignoreAncestry=createArgument("IGNORE_ANCESTRY");
+		Argument ignoreMimeType=createArgument("IGNORE_MIME_TYPE");
+		Argument ignoreUnknownNodeTypes=createArgument("IGNORE_UNKNOWN_NODE_TYPES");
+		Argument ignoreWhitespace=createArgument("IGNORE_WHITESACES");
 		Argument includeExternals=createArgument("INCLUDE_EXTERNALS");
 		Argument includeIgnored=createArgument("INCLUDE_IGNORED");
-		Argument failWhenDstExists=createArgument("FAIL_WHEN_DST_EXISTS");
-		Argument allowMixedRevisions=createArgument("ALLOW_MIXED_REVISIONS");
-		Argument metadataOnly=createArgument("METADATA_ONLY");
-		Argument keepChangeLists=createArgument("KEEP_CHANGE_LISTS");
-		Argument revProp=createArgument("REVISION_PROPERTIES");
-		Argument useAncestry=createArgument("USE_ANCESTRY");
+		Argument includeMergedRevisions=createArgument("INCLUDE_MERGED_REVISIONS");
 		Argument isMove=createArgument("IS_MOVE");
-		Argument eol=createArgument("EOL");
+		Argument keepChangeLists=createArgument("KEEP_CHANGE_LISTS");
+		Argument keepLock=createArgument("KEEP_LOCK");
+		Argument limit=createArgument("LIMIT");
+		Argument makeParent=createArgument("MAKE_PARENT");
+		Argument metadataOnly=createArgument("METADATA_ONLY");
+		Argument mkdir=createArgument("MKDIR");
 		Argument overwrite=createArgument("OVERWRITE");
-		Argument useGlobalIgnores=createArgument("USE_GLOBAL_IGNORE");
-		Argument ignoreUnknownNodeTypes=createArgument("IGNORE_UNKNOWN_NODE_TYPES");
-		Argument applyAutoProperties=createArgument("APPLY_AUTO_PROPERTIES");
-		Argument allowUnversionedObstructions=createArgument("ALLOW_UNVERSIONED_OBSTRUCTIONS");
-		Argument ignoreAncestry=createArgument("IGNORE_ANCESTRY");
-		Argument resolveTree=createArgument("RESOLVE_TREE");
+		Argument pegRevision=createArgument("PEG_REVISION");
+		Argument properties=createArgument("PROPERTIES");
+		Argument recordOnly=createArgument("RECORD_ONLY");
+		Argument recursive=createArgument("RECURSIVE");
+		Argument remote=createArgument("REMOTE");
+		Argument removeIgnoredItems=createArgument("REMOVE_IGNORED_ITEMS");
+		Argument removeTempFiles=createArgument("REMOVE_TEMP_FILE");
+		Argument removeUnversionedItems=createArgument("REMOVE_UNVERSIONED_ITEMS");
+		Argument reportAll=createArgument("REPORT_ALL");
 		Argument resolveContent=createArgument("RESOLVE_CONTENT");
 		Argument resolveProp=createArgument("RESOLVE_PROPERTIES");
-		Argument conflictChoice=createArgument("CONFLICT_CHOICE");
-		Argument remote=createArgument("REMOTE");
-		Argument reportAll=createArgument("REPORT_ALL");
-		Argument collectParentExternal=createArgument("COLLECT_PARENT_EXTERNAL");
-		Argument value=new Argument("VALUE");
-		Argument skipChecks=createArgument("SKIP_CHECKS");
-		Argument ignoreWhitespace=createArgument("IGNORE_WHITESACES");
-		Argument removeTempFiles=createArgument("REMOVE_TEMP_FILE");
-		Argument recordOnly=createArgument("RECORD_ONLY");
+		Argument resolveTree=createArgument("RESOLVE_TREE");
 		Argument reverse=createArgument("REVERSE");
-		Argument includeMergedRevisions=createArgument("INCLUDE_MERGED_REVISIONS");
-		Argument limit=createArgument("LIMIT");
-		Argument stripCount=createArgument("STRIP_COUNT");
-		Argument ignoreMimeType=createArgument("IGNORE_MIME_TYPE");
-		Argument encoding=createArgument("ENCODING");
-
-		Argument urls=createArgument("URLS");
-
+		Argument revision=createArgument("REVISION");
+		Argument revProp=createArgument("REVISION_PROPERTIES");
+		Argument skipChecks=createArgument("SKIP_CHECKS");
+		Argument startRevision=createArgument("START_REVISION");
+		Argument stealLock=createArgument("STEAL_LOCK");
 		Argument stopOnCopy=createArgument("STOP_ON_COPY");
-		Argument discoverChangedPaths=createArgument("DISCOVER_CHANGED_PATHS");
+		Argument stripCount=createArgument("STRIP_COUNT");
+		Argument useAncestry=createArgument("USE_ANCESTRY");
+		Argument useGlobalIgnores=createArgument("USE_GLOBAL_IGNORE");
+		Argument vacuumPristines=createArgument("VACUUM_PRISTINES");
+
 		Argument files=new Argument("FILES",()->{
 			return ((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getSelectedPaths();
 		});
 		Argument file=new Argument("FILE",()->{
 			return ((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getSelectedPaths().iterator().next();
 		});
+		Argument urls=new Argument("URLS",()->{
+			return ((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getSelectedPaths();
+		});
+		Argument url=new Argument("URL",()->{
+			return ((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getSelectedPaths().iterator().next();
+		});
+		Argument name=new Argument("NAME");
+		Argument msg=new Argument("MESSAGE");
+		Argument value=new Argument("VALUE");
+
 		addCommand("svn-add",Arrays.asList(files,force,mkdir,depth,depthIsSticky,includeIgnored,makeParent),(args)->{
 			SvnCommands.add(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
 			return null;
@@ -124,8 +128,8 @@ public class SvnModule{
 			SvnCommands.cat(args[0],args[1]);
 			return null;
 		});
-		addCommand("svn-changelist-add",Arrays.asList(files,name,depth),(args)->{
-			SvnCommands.changelistAdd(args[0],args[1],args[2]);
+		addCommand("svn-changelist-add",Arrays.asList(files,name,depth,changeListFilter),(args)->{
+			SvnCommands.changelistAdd(args[0],args[1],args[2],args[3]);
 			return null;
 		});
 		addCommand("svn-changelist-remove",Arrays.asList(files,changeListFilter,depth),(args)->{
@@ -253,7 +257,7 @@ public class SvnModule{
 			return null;
 		});
 
-		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("svn-init",SvnRepositoryEditor.INSTANCE.getCommandRegistry().getChild("svn-init"));
+		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("svn-init",RollingEditor.INSTANCE.getCommandRegistry().getChild("svn-init"));
 //		Argument dir=new Argument("DIRECTORY",SvnRepositoryEditor::getSvnDirectory);
 //		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("svn-browse",new Command("svn-browse",Arrays.asList(dir),(params)->{
 //			Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(((File)SchemeConverter.toJava(ScmList.first(params))).toURI().toURL()));
@@ -279,11 +283,11 @@ public class SvnModule{
 	public static void onInstall(){
 		Registry.providesDynamicMenu(APPLICATION_NAME,NAME);
 		providesFileCommands();
-		Registry.providesDataObjectType(SvnRepositoryObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(SvnRepositoryEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(SvnRepositoryObject.class.getName(),NAME);
+		Registry.providesDataObjectType(RollingObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(RollingEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(RollingObject.class.getName(),NAME);
 		Registry.providesProtocol("svn",NAME);
-		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.addChild("directory/svn",SvnRepositoryObjectType.class.getName());
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.addChild("directory/svn",RollingObjectType.class.getName());
 		CoreModule.PERSISTENT_REGISTRY.addChild("vcs.svn/"+SETTINGS_REGISTRY_NAME);
 		providesDefaultValues();
 	}

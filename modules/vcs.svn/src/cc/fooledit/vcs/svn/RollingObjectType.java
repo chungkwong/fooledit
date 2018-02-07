@@ -22,9 +22,9 @@ import java.net.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SvnRepositoryObjectType implements DataObjectType<SvnRepositoryObject>{
-	public static final SvnRepositoryObjectType INSTANCE=new SvnRepositoryObjectType();
-	private SvnRepositoryObjectType(){
+public class RollingObjectType implements DataObjectType<RollingObject>{
+	public static final RollingObjectType INSTANCE=new RollingObjectType();
+	private RollingObjectType(){
 	}
 	@Override
 	public boolean canRead(){
@@ -39,7 +39,7 @@ public class SvnRepositoryObjectType implements DataObjectType<SvnRepositoryObje
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public SvnRepositoryObject create(){
+	public RollingObject create(){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
@@ -47,11 +47,11 @@ public class SvnRepositoryObjectType implements DataObjectType<SvnRepositoryObje
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public void writeTo(SvnRepositoryObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(RollingObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public SvnRepositoryObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public RollingObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

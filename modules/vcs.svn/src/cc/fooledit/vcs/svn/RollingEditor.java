@@ -16,13 +16,23 @@
  */
 package cc.fooledit.vcs.svn;
 import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
+import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SvnRepositoryObject implements DataObject<SvnRepositoryObject>{
-	@Override
-	public DataObjectType<SvnRepositoryObject> getDataObjectType(){
-		return SvnRepositoryObjectType.INSTANCE;
+public class RollingEditor implements DataEditor<RollingObject>{
+	public static final RollingEditor INSTANCE=new RollingEditor();
+	private RollingEditor(){
 	}
+	@Override
+	public Node edit(RollingObject data,Object remark,RegistryNode<String,Object,String> meta){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public String getName(){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 }
