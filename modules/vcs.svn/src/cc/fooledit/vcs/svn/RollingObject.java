@@ -25,7 +25,7 @@ import java.util.*;
 public class RollingObject implements DataObject<RollingObject>{
 	private final List<CodeEditor> views=new LinkedList<>();
 	public void append(String str){
-		//views.stream().forEach((viewer)->viewer.getArea().append(str));
+		views.stream().forEach((viewer)->viewer.getArea().appendText(str));
 	}
 	void registerViewer(CodeEditor viewer){
 		views.add(viewer);

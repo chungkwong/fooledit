@@ -16,6 +16,9 @@
  */
 package cc.fooledit.vcs.svn;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
+import cc.fooledit.editor.text.*;
+import cc.fooledit.spi.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -90,22 +93,23 @@ public class SvnCommands{
 	}
 	public static void blame(Object url,Object pegRevision,Object startRevision,Object endRevision,
 			Object ignoreMimeType,Object includeMergedRevisions,Object inputEncodin) throws SVNException{
+		TextObject text=createAndShowDataObject(Objects.toString(url));
 		ISVNAnnotateHandler handler=new ISVNAnnotateHandler(){
 			@Override
 			public void handleLine(Date date,long revision,String author,String line) throws SVNException{
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				text.getText().set(text.getText().getValue()+"["+date+"r"+revision+"by"+author+"]"+line+"\n");
 			}
 			@Override
 			public void handleLine(Date date,long revision,String author,String line,Date mergedDate,long mergedRevision,String mergedAuthor,String mergedPath,int lineNumber) throws SVNException{
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				text.getText().set(text.getText().getValue()+"["+date+"r"+revision+"by"+author+"]"+line+"\n");
 			}
 			@Override
 			public boolean handleRevision(Date date,long revision,String author,File contents) throws SVNException{
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				return true;
 			}
 			@Override
 			public void handleEOF() throws SVNException{
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
 			}
 		};
 		SVN.getLogClient().doAnnotate(toURL(url),toRevision(pegRevision),toRevision(startRevision),
@@ -121,10 +125,11 @@ public class SvnCommands{
 		SVN.getChangelistClient().doAddToChangelist(toFiles(file),toDepth(file),toString(name),toStringArray(filter));
 	}
 	public static void changelistGet(Object file,Object name,Object depth) throws SVNException{
+		TextObject text=createAndShowDataObject(Objects.toString(file));
 		ISVNChangelistHandler handler=new ISVNChangelistHandler() {
 			@Override
 			public void handle(File path,String changelistName){
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				text.getText().set(text.getText().getValue()+changelistName+"\n");
 			}
 		};
 		SVN.getChangelistClient().doGetChangeLists(toFile(file),toStringSet(name),toDepth(depth),handler);
@@ -176,10 +181,11 @@ public class SvnCommands{
 		SVN.getAdminClient().doInfo(toURL(url));
 	}
 	public static void list(Object url,Object pegRev,Object rev,Object fetchLocks,Object depth) throws SVNException{
-		ISVNDirEntryHandler handler=new ISVNDirEntryHandler() {
+		TextObject text=createAndShowDataObject(Objects.toString(url));
+		ISVNDirEntryHandler handler=new ISVNDirEntryHandler(){
 			@Override
 			public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException{
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				text.getText().set(text.getText().getValue()+dirEntry.toString()+"\n");
 			}
 		};
 		SVN.getLogClient().doList(toURL(url),toRevision(pegRev),toRevision(rev),toBoolean(fetchLocks),
@@ -190,10 +196,11 @@ public class SvnCommands{
 	}
 	public static void log(Object url,Object path, Object pegRev,Object startRev,Object endRev,
 			Object stopOnCopy,Object discoverChangedPaths,Object includeMergedRevisions,Object limit,Object revisionProperties) throws SVNException{
+		TextObject text=createAndShowDataObject(Objects.toString(url)+':'+Objects.toString(path));
 		ISVNLogEntryHandler handler=new ISVNLogEntryHandler() {
 			@Override
 			public void handleLogEntry(SVNLogEntry logEntry) throws SVNException{
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				text.getText().set(text.getText().getValue()+logEntry.toString()+"\n\n");
 			}
 		};
 		SVN.getLogClient().doLog(toURL(url),new String[]{toString(path)},toRevision(pegRev),toRevision(startRev),
@@ -409,5 +416,14 @@ public class SvnCommands{
 		}else{
 			return Integer.parseInt(Objects.toString(obj));
 		}
+	}
+	private static TextObject createAndShowDataObject(String name){
+		TextObject text=new TextObject("");
+		RegistryNode<String,Object,String> obj=new SimpleRegistryNode<>();
+		obj.addChild(DataObject.DEFAULT_NAME,name);
+		obj.addChild(DataObject.DATA,text);
+		DataObjectRegistry.addDataObject(obj);
+		Main.INSTANCE.show(obj);
+		return text;
 	}
 }

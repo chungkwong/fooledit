@@ -82,6 +82,7 @@ public class Main extends Application{
 		Registry.ROOT.loadPreference();
 		ModuleRegistry.loadDefault();
 		CoreModule.PROTOCOL_REGISTRY.addChild("application",new ApplicationRegistry());
+		CoreModule.PROTOCOL_REGISTRY.addChild("data",new DataStreamHandler());
 		keymapRegistry=Registry.ROOT.registerKeymap(CoreModule.NAME);
 		new KeymapSupport();
 		initMenuBar();
