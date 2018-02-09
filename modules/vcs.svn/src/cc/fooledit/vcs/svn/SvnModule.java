@@ -39,8 +39,6 @@ public class SvnModule{
 			(RegistryNode<String,Object,String>)Registry.ROOT.getOrCreateChild(SvnModule.NAME).getOrCreateChild(SETTINGS_REGISTRY_NAME);
 	private static final RegistryNode<String,Command,String> commands=Registry.ROOT.registerCommand(NAME);
 	public static void onLoad() throws ClassNotFoundException, MalformedURLException{
-		DataObjectTypeRegistry.addDataObjectType(RollingObjectType.INSTANCE);
-		DataObjectTypeRegistry.addDataEditor(RollingEditor.INSTANCE,RollingObject.class);
 
 		Argument allowMixedRevisions=createArgument("ALLOW_MIXED_REVISIONS");
 		Argument allowUnversionedObstructions=createArgument("ALLOW_UNVERSIONED_OBSTRUCTIONS");
@@ -257,7 +255,6 @@ public class SvnModule{
 			return null;
 		});
 
-		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("svn-init",RollingEditor.INSTANCE.getCommandRegistry().getChild("svn-init"));
 //		Argument dir=new Argument("DIRECTORY",SvnRepositoryEditor::getSvnDirectory);
 //		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("svn-browse",new Command("svn-browse",Arrays.asList(dir),(params)->{
 //			Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(((File)SchemeConverter.toJava(ScmList.first(params))).toURI().toURL()));
@@ -265,9 +262,6 @@ public class SvnModule{
 //		},NAME));
 		CoreModule.DYNAMIC_MENU_REGISTRY.addChild(APPLICATION_NAME,(items)->{
 			ObservableList<Path> paths=((FileSystemObject)Main.INSTANCE.getCurrentData()).getPaths();
-			items.add(createMenuItem("svn-init","INIT"));
-			items.add(createMenuItem("svn-clone","CLONE"));
-			items.add(createMenuItem("svn-browse","BROWSE"));
 		});
 //		CoreModule.PROTOCOL_REGISTRY.addChild("svn",new SvnStreamHandler());
 		ContentTypeHelper.getURL_GUESSER().registerPathPattern("^.*[/\\\\]\\.svn$","directory/svn");
@@ -283,11 +277,7 @@ public class SvnModule{
 	public static void onInstall(){
 		Registry.providesDynamicMenu(APPLICATION_NAME,NAME);
 		providesFileCommands();
-		Registry.providesDataObjectType(RollingObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(RollingEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(RollingObject.class.getName(),NAME);
 		Registry.providesProtocol("svn",NAME);
-		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.addChild("directory/svn",RollingObjectType.class.getName());
 		CoreModule.PERSISTENT_REGISTRY.addChild("vcs.svn/"+SETTINGS_REGISTRY_NAME);
 		providesDefaultValues();
 	}

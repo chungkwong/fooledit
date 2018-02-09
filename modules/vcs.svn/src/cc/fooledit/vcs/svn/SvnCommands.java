@@ -33,7 +33,6 @@ public class SvnCommands{
 	private static final SVNClientManager SVN=SVNClientManager.newInstance();
 
 	static{
-
 		ISVNAuthenticationManager authManager=SVNWCUtil.createDefaultAuthenticationManager();
 		authManager.setAuthenticationProvider(new ISVNAuthenticationProvider() {
 			@Override
@@ -58,7 +57,6 @@ public class SvnCommands{
 			}
 		});
 		SVN.setAuthenticationManager(authManager);
-
 	}
 	private static String input(String prompt,String def){
 		String[] result=new String[1];
@@ -119,6 +117,7 @@ public class SvnCommands{
 		File file=toFile(path);
 		File root=SVNWCUtil.getWorkingCopyRoot(file,false);
 		String loc=root.toPath().relativize(file.toPath()).toString();
+		TextObject text=createAndShowDataObject(Objects.toString(file));
 		SVN.getLookClient().doCat(root,loc,toRevision(rev),null);
 	}
 	public static void changelistAdd(Object file,Object name,Object depth,Object filter) throws SVNException{
