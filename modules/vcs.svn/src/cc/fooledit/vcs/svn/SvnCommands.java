@@ -30,7 +30,7 @@ import org.tmatesoft.svn.core.wc.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class SvnCommands{
-	private static final SVNClientManager SVN=SVNClientManager.newInstance();
+	static final SVNClientManager SVN=SVNClientManager.newInstance();
 
 	static{
 		ISVNAuthenticationManager authManager=SVNWCUtil.createDefaultAuthenticationManager();
@@ -40,13 +40,15 @@ public class SvnCommands{
 				String old=last!=null?last.getUserName():"";
 				switch(kind){
 					case ISVNAuthenticationManager.PASSWORD:
-						return SVNPasswordAuthentication.newInstance(input("USERNAME:"+realm,old),input("PASSWORD:"+realm,old).toCharArray(),true,svnurl,false);
+						return SVNPasswordAuthentication.newInstance(input(MessageRegistry.getString("USERNAME",SvnModule.NAME)+realm,old),
+								input(MessageRegistry.getString("PASSWORD",SvnModule.NAME)+realm,old).toCharArray(),true,svnurl,false);
 					case ISVNAuthenticationManager.USERNAME:
 						return SVNUserNameAuthentication.newInstance(input(kind+":"+realm,old),true,svnurl,false);
 					case ISVNAuthenticationManager.SSH:
-						return SVNSSHAuthentication.newInstance(input("USERNAME:"+realm,old),input("PASSWORD:"+realm,old).toCharArray(),22,true,svnurl,false);
+						return SVNSSHAuthentication.newInstance(input(MessageRegistry.getString("USERNAME",SvnModule.NAME)+realm,old),
+								input(MessageRegistry.getString("PASSWORD",SvnModule.NAME)+realm,old).toCharArray(),22,true,svnurl,false);
 					case ISVNAuthenticationManager.SSL:
-						return SVNSSLAuthentication.newInstance(kind,input("ALIAS",old),true,svnurl,false);
+						return SVNSSLAuthentication.newInstance(kind,input(MessageRegistry.getString("ALIAS",SvnModule.NAME),old),true,svnurl,false);
 					default:
 						return null;
 				}
@@ -113,12 +115,12 @@ public class SvnCommands{
 		SVN.getLogClient().doAnnotate(toURL(url),toRevision(pegRevision),toRevision(startRevision),
 				toRevision(endRevision),toBoolean(ignoreMimeType),toBoolean(includeMergedRevisions),handler,toString(inputEncodin));
 	}
-	public static void cat(Object path,Object rev) throws SVNException{
+	public static void cat(Object path,Object rev) throws Exception{
 		File file=toFile(path);
 		File root=SVNWCUtil.getWorkingCopyRoot(file,false);
 		String loc=root.toPath().relativize(file.toPath()).toString();
-		TextObject text=createAndShowDataObject(Objects.toString(file));
-		SVN.getLookClient().doCat(root,loc,toRevision(rev),null);
+		SVNRevision r=toRevision(rev);
+		Main.INSTANCE.show(DataObjectRegistry.readFrom(new SvnConnection(root,loc,r).getURL()));
 	}
 	public static void changelistAdd(Object file,Object name,Object depth,Object filter) throws SVNException{
 		SVN.getChangelistClient().doAddToChangelist(toFiles(file),toDepth(file),toString(name),toStringArray(filter));
