@@ -274,7 +274,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		codeEditor.textProperty().bindBidirectional(data.getText());
 		if(remark instanceof ListRegistryNode){
 			List<Number> pair=((ListRegistryNode<Number,String>)remark).getChildren();
-			codeEditor.getArea().selectRange(pair.get(0).intValue(),pair.get(1).intValue());
+			int len=codeEditor.getArea().getLength();
+			codeEditor.getArea().selectRange(Math.min(pair.get(0).intValue(),len),Math.min(pair.get(1).intValue(),len));
 			for(int i=2;i<pair.size();i+=2)
 				codeEditor.selections().add(codeEditor.createSelection(pair.get(i).intValue(),pair.get(i+1).intValue()));
 		}

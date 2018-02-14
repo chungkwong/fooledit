@@ -22,9 +22,7 @@ import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.net.*;
-import java.nio.file.*;
 import java.util.*;
-import javafx.collections.*;
 import javafx.scene.control.*;
 import org.tmatesoft.svn.core.wc.*;
 /**
@@ -255,15 +253,7 @@ public class SvnModule{
 			return null;
 		});
 
-//		Argument dir=new Argument("DIRECTORY",SvnRepositoryEditor::getSvnDirectory);
-//		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("svn-browse",new Command("svn-browse",Arrays.asList(dir),(params)->{
-//			Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(((File)SchemeConverter.toJava(ScmList.first(params))).toURI().toURL()));
-//			return null;
-//		},NAME));
-		CoreModule.DYNAMIC_MENU_REGISTRY.addChild(APPLICATION_NAME,(items)->{
-			ObservableList<Path> paths=((FileSystemObject)Main.INSTANCE.getCurrentData()).getPaths();
-		});
-//		CoreModule.PROTOCOL_REGISTRY.addChild("svn",new SvnStreamHandler());
+		CoreModule.PROTOCOL_REGISTRY.addChild("svn",new SvnStreamHandler());
 		ContentTypeHelper.getURL_GUESSER().registerPathPattern("^.*[/\\\\]\\.svn$","directory/svn");
 	}
 	private static MenuItem createMenuItem(String command,String name){
@@ -275,7 +265,6 @@ public class SvnModule{
 
 	}
 	public static void onInstall(){
-		Registry.providesDynamicMenu(APPLICATION_NAME,NAME);
 		providesFileCommands();
 		Registry.providesProtocol("svn",NAME);
 		CoreModule.PERSISTENT_REGISTRY.addChild("vcs.svn/"+SETTINGS_REGISTRY_NAME);
@@ -383,7 +372,7 @@ public class SvnModule{
 		return new Argument(MessageRegistry.getString(name,NAME),()->SETTINGS_REGISTRY.getChild(name));
 	}
 	private static void addCommand(String name,List<Argument> args,ThrowableFunction<Object[],Object> proc){
-		commands.addChild(name,new Command(name,args,(a)->SchemeConverter.toScheme(proc.accept(toArgumentList(a))),NAME));
+		commands.addChild(name,new Command(name,args,(a)->SchemeConverter.toScheme(proc.accept(toArgumentList(a))),FileSystemModule.NAME));
 	}
 	private static Object[] toArgumentList(ScmPairOrNil args){
 		return ScmList.asStream(args).map(SchemeConverter::toJava).toArray();

@@ -15,9 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.svn;
+import cc.fooledit.util.*;
 import java.io.*;
 import java.net.URLConnection;
 import java.net.*;
+import java.util.*;
+import java.util.logging.*;
+import java.util.stream.*;
 import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.wc.*;
 import sun.net.www.*;
@@ -119,8 +123,8 @@ public class SvnStreamHandler extends URLStreamHandler{
 		return (ctxFile+spec);
 	}
 	public static void main(String[] args) throws MalformedURLException{
-		URL.setURLStreamHandlerFactory((p)->new SvnStreamHandler());
-		URL url=new URL("svn:file:///home/kwong!foo/bar.txt?rev=some");
+		URL.setURLStreamHandlerFactory((p)->p.equals("svn")?new SvnStreamHandler():null);
+		URL url=new URL("svn:file:///home/kwong!foo/bar.txt?rev=s%2Fome");
 		System.out.println(url.getProtocol());
 		System.out.println(url.getHost());
 		System.out.println(url.getPort());
@@ -144,7 +148,8 @@ class SvnConnection extends URLConnection{
 		}
 		root=new File(new URL(spec.substring(0,separator++)).toURI());
 		path=ParseUtil.decode(spec.substring(separator,spec.length()));
-		rev=SVNRevision.parse(url.getQuery().substring(4));
+		Map<String,String> parameters=parseQuery(url.getQuery());
+		rev=SVNRevision.parse(parameters.get("rev"));
 	}
 	public SvnConnection(File root,String path,SVNRevision rev) throws MalformedURLException{
 		super(new URL("svn","",root.toURI().toString()+"!/"+path+"?rev="+rev.toString()));
@@ -168,5 +173,21 @@ class SvnConnection extends URLConnection{
 				throw new IOException(ex);
 			}
 		return in;
+	}
+	private static Map<String,String> parseQuery(String query){
+		if(query==null)
+			return Collections.emptyMap();
+		return Arrays.stream(query.split("&")).map((s)->parseParameter(s)).collect(Collectors.toMap(Pair::getKey,Pair::getValue));
+	}
+	public static Pair<String,String> parseParameter(String p) {
+		int i=p.indexOf('=');
+		String key=i!=-1?p.substring(0,i):p;
+		String value=i!=-1?p.substring(i+1):"";
+		try{
+			return new Pair<>(URLDecoder.decode(key,"UTF-8"),URLDecoder.decode(value,"UTF-8"));
+		}catch(UnsupportedEncodingException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			return new Pair<>(key,value);
+		}
 	}
 }
