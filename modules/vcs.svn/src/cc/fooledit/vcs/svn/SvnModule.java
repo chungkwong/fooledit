@@ -35,7 +35,6 @@ public class SvnModule{
 	public static final String SETTINGS_REGISTRY_NAME="settings";
 	public static final RegistryNode<String,Object,String> SETTINGS_REGISTRY=
 			(RegistryNode<String,Object,String>)Registry.ROOT.getOrCreateChild(SvnModule.NAME).getOrCreateChild(SETTINGS_REGISTRY_NAME);
-	private static final RegistryNode<String,Command,String> commands=Registry.ROOT.registerCommand(NAME);
 	public static void onLoad() throws ClassNotFoundException, MalformedURLException{
 
 		Argument allowMixedRevisions=createArgument("ALLOW_MIXED_REVISIONS");
@@ -372,7 +371,7 @@ public class SvnModule{
 		return new Argument(MessageRegistry.getString(name,NAME),()->SETTINGS_REGISTRY.getChild(name));
 	}
 	private static void addCommand(String name,List<Argument> args,ThrowableFunction<Object[],Object> proc){
-		commands.addChild(name,new Command(name,args,(a)->SchemeConverter.toScheme(proc.accept(toArgumentList(a))),FileSystemModule.NAME));
+		FileSystemEditor.INSTANCE.getCommandRegistry().addChild(name,new Command(name,args,(a)->SchemeConverter.toScheme(proc.accept(toArgumentList(a))),FileSystemModule.NAME));
 	}
 	private static Object[] toArgumentList(ScmPairOrNil args){
 		return ScmList.asStream(args).map(SchemeConverter::toJava).toArray();
