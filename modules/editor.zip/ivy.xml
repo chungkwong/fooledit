@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation=
+                   "http://ant.apache.org/ivy/schemas/ivy.xsd">
+	<info organisation="cc.fooledit" module="editor.zip"/>
+	<dependencies defaultconfmapping="default->master,compile" defaultconf="default">
+		<dependency org="org.apache.commons" name="commons-compress" rev="1.15"/>
+		<dependency org="com.github.junrar" name="junrar" rev="0.7"/>
+	</dependencies>
+</ivy-module>

@@ -143,6 +143,10 @@ public class Main extends Application{
 			CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.addChild(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
+		addCommand("mime-parent",(o)->{
+			CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.addChild(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			return null;
+		});
 		addCommand("ensure-loaded",(o)->{
 			ModuleRegistry.ensureLoaded(SchemeConverter.toString(ScmList.first(o)));
 			return ScmNil.NIL;
