@@ -205,13 +205,19 @@ class ArchiveConnection extends URLConnection{
 			if((entryName!=null)){
 				try{
 					archiveFile=new ArchiveStreamFactory().createArchiveInputStream(archiveFileURLConnection.getInputStream());
-					//archiveFile=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(archiveFileURLConnection.getContentType()),archiveFileURLConnection.getInputStream());
-					while((archiveEntry=archiveFile.getNextEntry())!=null){
-						if(archiveEntry.getName().equals(entryName))
-							break;
-					}
 				}catch(ArchiveException ex){
-					Logger.getGlobal().log(Level.SEVERE,null,ex);
+					Logger.getGlobal().log(Level.INFO,null,ex);
+				}
+				if(archiveFile==null)
+					try{
+						archiveFile=new RarInputStream(archiveFileURLConnection.getInputStream());
+					}catch(ArchiveException ex1){
+						throw new IOException(ex1);
+					}
+				//archiveFile=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(archiveFileURLConnection.getContentType()),archiveFileURLConnection.getInputStream());
+				while((archiveEntry=archiveFile.getNextEntry())!=null){
+					if(archiveEntry.getName().equals(entryName))
+						break;
 				}
 			}
 			connected=true;

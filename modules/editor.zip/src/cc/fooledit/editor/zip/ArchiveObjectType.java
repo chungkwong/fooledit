@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.zip;
-import cc.fooledit.core.ContentTypeHelper;
-import cc.fooledit.core.DataObjectType;
+import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
+import java.io.*;
 import java.net.*;
 import java.util.*;
 import org.apache.commons.compress.archivers.*;
@@ -48,8 +48,7 @@ public class ArchiveObjectType implements DataObjectType<ArchiveObject>{
 	@Override
 	public ArchiveObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		URL url=connection.getURL();
-		String mime=ContentTypeHelper.guess(connection).get(0);
-		try(ArchiveInputStream archive=new ArchiveStreamFactory().createArchiveInputStream(getArchiver(mime),connection.getInputStream())){
+		try(ArchiveInputStream archive=openStream(connection)){
 			ArchiveEntry entry;
 			List<ArchiveEntry> entries=new ArrayList<>();
 			while((entry=archive.getNextEntry())!=null){
@@ -57,6 +56,13 @@ public class ArchiveObjectType implements DataObjectType<ArchiveObject>{
 			}
 			return new ArchiveObject(entries,url);
 		}
+	}
+	private static ArchiveInputStream openStream(URLConnection connection) throws ArchiveException, IOException{
+		String mime=ContentTypeHelper.guess(connection).get(0);
+		if(mime.equals("application/vnd.rar"))
+			return new RarInputStream(connection.getInputStream());
+		else
+			return new ArchiveStreamFactory().createArchiveInputStream(getArchiver(mime),connection.getInputStream());
 	}
 	@Override
 	public String getDisplayName(){
@@ -78,6 +84,7 @@ public class ArchiveObjectType implements DataObjectType<ArchiveObject>{
 		mime2archive.put("application/x-tar","TAR");
 		mime2archive.put("application/zip","ZIP");
 		mime2archive.put("application/x-zip-compressed","ZIP");
+		mime2archive.put("application/vnd.rar","RAR");
 	}
 	@Override
 	public void writeTo(ArchiveObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{

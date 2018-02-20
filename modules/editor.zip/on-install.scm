@@ -19,6 +19,7 @@
 (map-mime-to-type "application/zip" "cc.fooledit.editor.zip.ArchiveObjectType")
 (map-mime-to-type "application/x-zip-compressed" "cc.fooledit.editor.zip.ArchiveObjectType")
 (map-mime-to-type "application/zlib" "cc.fooledit.editor.zip.ZipObjectType")
+(map-mime-to-type "application/vnd.rar" "cc.fooledit.editor.zip.ArchiveObjectType")
 (map-suffix-to-mime "7z" "application/x-7z-compressed")
 (map-suffix-to-mime "ar" "application/x-archive")
 (map-suffix-to-mime "arj" "application/x-arj")
@@ -26,6 +27,7 @@
 (map-suffix-to-mime "bz2" "application/x-bzip2")
 (map-suffix-to-mime "cpio" "application/x-cpio")
 (map-suffix-to-mime "deb" "application/vnd.debian.binary-package")
+(map-suffix-to-mime "rar" "application/vnd.rar")
 (map-suffix-to-mime "ear" "application/x-java-archive")
 (map-suffix-to-mime "gz" "application/x-gzip")
 (map-suffix-to-mime "jar" "application/x-java-archive")
@@ -48,6 +50,8 @@
 (mime-alias "application/x-bzip2" "application/x-bzip")
 (mime-alias "application/x-deb" "application/vnd.debian.binary-package")
 (mime-alias "application/x-debian-package" "application/vnd.debian.binary-package")
+(mime-alias "application/x-rar" "application/vnd.rar")
+(mime-alias "application/x-rar-compressed" "application/vnd.rar")
 
 ;TODO: DUMP,Brotli,DEFLATE,LZ77,LZW,Snappy
 

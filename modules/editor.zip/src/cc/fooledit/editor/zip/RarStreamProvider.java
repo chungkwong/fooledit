@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2018 Chan Chung Kwong <1m02math@126.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.zip;
 import com.github.junrar.*;
@@ -9,7 +20,6 @@ import com.github.junrar.exception.*;
 import com.github.junrar.rarfile.*;
 import java.io.*;
 import java.util.*;
-import java.util.logging.*;
 import org.apache.commons.compress.archivers.*;
 /**
  *
@@ -35,10 +45,13 @@ public class RarStreamProvider implements ArchiveStreamProvider{
 	}
 }
 class RarInputStream extends ArchiveInputStream{
-	private Archive archive;
-	public RarInputStream(InputStream in){
+	private final Archive archive;
+	private FileHeader header;
+	private InputStream curr;
+	public RarInputStream(InputStream in)throws ArchiveException{
 		try{
 			File tmp=File.createTempFile("rar","");
+			tmp.deleteOnExit();
 			FileOutputStream out=new FileOutputStream(tmp);
 			byte[] buf=new byte[4096];
 			int c;
@@ -48,13 +61,42 @@ class RarInputStream extends ArchiveInputStream{
 			out.close();
 			this.archive=new Archive(tmp);
 		}catch(RarException|IOException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-			this.archive=null;
+			throw new ArchiveException(ex.getMessage(),ex);
 		}
 	}
 	@Override
+	public int read() throws IOException{
+		if(ensureStreamLoaded())return -1;
+		return curr.read();
+	}
+	@Override
+	public int read(byte[] b) throws IOException{
+		if(ensureStreamLoaded())return -1;
+		return curr.read(b);
+	}
+	@Override
+	public int read(byte[] b,int off,int len) throws IOException{
+		if(ensureStreamLoaded())return -1;
+		return curr.read(b,off,len);
+	}
+	private boolean ensureStreamLoaded() throws IOException{
+		if(curr==null){
+			if(header==null){
+				return true;
+			}else{
+				try{
+					curr=archive.getInputStream(header);
+				}catch(RarException ex){
+					throw new IOException(ex);
+				}
+			}
+		}
+		return false;
+	}
+	@Override
 	public ArchiveEntry getNextEntry() throws IOException{
-		return new RarEntry(archive.nextFileHeader());
+		header=archive.nextFileHeader();
+		return header!=null?new RarEntry(header):null;
 	}
 }
 class RarEntry implements ArchiveEntry{
