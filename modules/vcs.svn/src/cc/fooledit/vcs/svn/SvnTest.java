@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.svn;
+import java.io.*;
 import org.tmatesoft.svn.core.*;
+import org.tmatesoft.svn.core.wc.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -25,6 +27,8 @@ public class SvnTest {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) throws SVNException{
+		SVNClientManager SVN=SVNClientManager.newInstance();
+		System.out.println(SVN.getWCClient().doInfo(SVNURL.fromFile(new File("/home/kwong/projects/svntest/")),SVNRevision.HEAD,SVNRevision.HEAD).getCommittedRevision());
 	}
 
 }

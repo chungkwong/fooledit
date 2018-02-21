@@ -144,8 +144,7 @@ public class SvnModule{
 			return null;
 		});
 		addCommand("svn-commit",Arrays.asList(files,keepLock,msg,revProp,changeListFilter,keepChangeLists,force,depth),(args)->{
-			SvnCommands.commit(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
-			return null;
+			return SvnCommands.commit(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
 		});
 		addCommand("svn-copy",Arrays.asList(urls,pegRevision,revision,file,isMove,makeParent,failWhenDstExists,allowMixedRevisions,metadataOnly),(args)->{
 			SvnCommands.copy(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8]);
@@ -168,8 +167,7 @@ public class SvnModule{
 			return null;
 		});
 		addCommand("svn-info",Arrays.asList(url),(args)->{
-			SvnCommands.info(args[0]);
-			return null;
+			return ScmInteger.valueOf(SvnCommands.info(args[0]));
 		});
 		addCommand("svn-list",Arrays.asList(url,pegRevision,revision,fetchLock,depth),(args)->{
 			SvnCommands.list(args[0],args[1],args[2],args[3],args[4]);
@@ -188,8 +186,7 @@ public class SvnModule{
 			return null;
 		});
 		addCommand("svn-mergeinfo",Arrays.asList(url,pegRevision),(args)->{
-			SvnCommands.mergeinfo(args[0],args[1]);
-			return null;
+			return SvnCommands.mergeinfo(args[0],args[1]);
 		});
 		addCommand("svn-mkdir",Arrays.asList(url,msg,properties,makeParent),(args)->{
 			SvnCommands.mkdir(args[0],args[1],args[2],args[3]);

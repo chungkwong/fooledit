@@ -130,7 +130,7 @@ public class SvnCommands{
 		ISVNChangelistHandler handler=new ISVNChangelistHandler() {
 			@Override
 			public void handle(File path,String changelistName){
-				text.getText().set(text.getText().getValue()+changelistName+"\n");
+				text.getText().set(text.getText().getValue()+path.toString()+":"+changelistName+"\n");
 			}
 		};
 		SVN.getChangelistClient().doGetChangeLists(toFile(file),toStringSet(name),toDepth(depth),handler);
@@ -147,10 +147,10 @@ public class SvnCommands{
 		SVN.getWCClient().doCleanup(toFile(path),toBoolean(deleteWCProperties),toBoolean(breakLocks),toBoolean(vacuumPristines),
 				toBoolean(removeUnversionedItems),toBoolean(removeIgnoredItems),toBoolean(includeExternals));
 	}
-	public static void commit(Object file,Object keepLocks,Object commitMessage,
+	public static SVNCommitInfo commit(Object file,Object keepLocks,Object commitMessage,
 			Object revProp,Object changelists,Object keepChangelist,
 			Object force,Object depth) throws SVNException{
-		SVN.getCommitClient().doCommit(toFiles(file),toBoolean(keepLocks),toString(commitMessage),toProperties(revProp),
+		return SVN.getCommitClient().doCommit(toFiles(file),toBoolean(keepLocks),toString(commitMessage),toProperties(revProp),
 				toStringArray(changelists),toBoolean(keepChangelist),toBoolean(force),toDepth(depth));
 	}
 	public static void copy(Object from,Object pegRev,Object rev,Object to,Object isMove,Object makeParents,
@@ -178,8 +178,8 @@ public class SvnCommands{
 		SVN.getCommitClient().doImport(toFile(path),toURL(dstURL),toString(commitMessage),toProperties(revProp),
 				toBoolean(useGlobalIgnores),toBoolean(ignoreUnknownNodeTypes),toDepth(depth),toBoolean(applyAutoProperties));
 	}
-	public static void info(Object url) throws SVNException{
-		SVN.getAdminClient().doInfo(toURL(url));
+	public static long info(Object url) throws SVNException{
+		return SVN.getAdminClient().doInfo(toURL(url)).getLastMergedRevision();
 	}
 	public static void list(Object url,Object pegRev,Object rev,Object fetchLocks,Object depth) throws SVNException{
 		TextObject text=createAndShowDataObject(Objects.toString(url));
@@ -213,8 +213,8 @@ public class SvnCommands{
 		SVN.getDiffClient().doMerge(toURL(url1),toRevision(rev1),toURL(url2),toRevision(rev2),toFile(dstPath),
 				toDepth(depth),toBoolean(useAncestry),toBoolean(force),toBoolean(dryRun),toBoolean(recordOnly));
 	}
-	public static void mergeinfo(Object url,Object pegRev)throws SVNException{
-		SVN.getDiffClient().doGetMergedMergeInfo(toURL(url),toRevision(pegRev));
+	public static Map<SVNURL,SVNMergeRangeList> mergeinfo(Object url,Object pegRev)throws SVNException{
+		return SVN.getDiffClient().doGetMergedMergeInfo(toURL(url),toRevision(pegRev));
 	}
 	public static void mkdir(Object url,Object msg,Object prop,Object makeParent) throws SVNException{
 		SVN.getCommitClient().doMkDir(toURLs(url),toString(msg),toProperties(prop),toBoolean(makeParent));

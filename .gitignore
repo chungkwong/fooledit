@@ -10,3 +10,5 @@
 /modules/vcs.svn/build/
 /modules/vcs.svn/dist/
 /modules/editor.zip/nbproject/private/
+/modules/editor.zip/build/
+/modules/editor.zip/dist/
