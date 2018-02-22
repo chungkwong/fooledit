@@ -175,10 +175,13 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	}
 	@Override
 	public Node edit(FileSystemObject data,Object remark,RegistryNode<String,Object,String> meta){
-		if(remark!=null&&remark instanceof List){
-			((List<String>)remark).forEach((path)->{
-				if(path!=null)
-					data.getPaths().add(new File(path).toPath());
+		if(remark!=null&&remark instanceof ListRegistryNode){
+			((ListRegistryNode<String,String>)remark).getChildren().forEach((path)->{
+				if(path!=null){
+					File file=new File(path);
+					if(file.exists())
+						data.getPaths().add(file.toPath());
+				}
 			});
 		}
 		FileSystemViewer viewer=new FileSystemViewer(data);
@@ -190,7 +193,8 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	}
 	@Override
 	public Object getRemark(Node node){
-		return ((FileSystemViewer)node).getSelectedPaths().stream().map((path)->path.toAbsolutePath().toString()).collect(Collectors.toList());
+		List<String> selected=((FileSystemViewer)node).getSelectedPaths().stream().map((path)->path.toAbsolutePath().toString()).collect(Collectors.toList());
+		return new ListRegistryNode<>(selected);
 	}
 	@Override
 	public RegistryNode<String,Command,String> getCommandRegistry(){

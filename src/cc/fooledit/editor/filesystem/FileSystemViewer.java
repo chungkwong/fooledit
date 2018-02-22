@@ -168,12 +168,12 @@ public class FileSystemViewer extends BorderPane{
 	}
 	public void focusPath(Path path){
 		TreeItem<Path> treeItem=getTreeItem(path,true);
-		if(tree!=null)
+		if(treeItem!=null)
 			tree.getFocusModel().focus(tree.getRow(treeItem));
 	}
 	public void selectPath(Path path){
 		TreeItem<Path> treeItem=getTreeItem(path,true);
-		if(tree!=null)
+		if(treeItem!=null)
 			tree.getSelectionModel().select(tree.getRow(treeItem));
 	}
 	private TreeItem<Path> getTreeItem(Path path,boolean expand){

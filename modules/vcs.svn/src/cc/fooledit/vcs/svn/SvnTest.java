@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.svn;
-import java.io.*;
 import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.wc.*;
 /**
@@ -28,7 +27,7 @@ public class SvnTest {
 	 */
 	public static void main(String[] args) throws SVNException{
 		SVNClientManager SVN=SVNClientManager.newInstance();
-		System.out.println(SVN.getWCClient().doInfo(SVNURL.fromFile(new File("/home/kwong/projects/svntest/")),SVNRevision.HEAD,SVNRevision.HEAD).getCommittedRevision());
+		System.out.println(SVN.getWCClient().doInfo(SVNURL.parseURIEncoded("https://svn.code.sf.net/p/mathocr/code/trunk/net/sf/mathocr/Main.java"),SVNRevision.HEAD,SVNRevision.HEAD).getCommittedRevision());
 	}
 
 }

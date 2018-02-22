@@ -19,6 +19,7 @@ import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
 import cc.fooledit.spi.*;
+import cc.fooledit.util.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -116,11 +117,16 @@ public class SvnCommands{
 				toRevision(endRevision),toBoolean(ignoreMimeType),toBoolean(includeMergedRevisions),handler,toString(inputEncodin));
 	}
 	public static void cat(Object path,Object rev) throws Exception{
-		File file=toFile(path);
-		File root=SVNWCUtil.getWorkingCopyRoot(file,false);
-		String loc=root.toPath().relativize(file.toPath()).toString();
+		Pair<File,String> file=splitWorkingCopy(toFile(path));
+		File root=file.getKey();
+		String loc=file.getValue();
 		SVNRevision r=toRevision(rev);
 		Main.INSTANCE.show(DataObjectRegistry.readFrom(new SvnConnection(root,loc,r).getURL()));
+	}
+	private static Pair<File,String> splitWorkingCopy(File file) throws SVNException{
+		File root=SVNWCUtil.getWorkingCopyRoot(file,false);
+		String loc=root.toPath().relativize(file.toPath()).toString();
+		return new Pair<>(root,loc);
 	}
 	public static void changelistAdd(Object file,Object name,Object depth,Object filter) throws SVNException{
 		SVN.getChangelistClient().doAddToChangelist(toFiles(file),toDepth(file),toString(name),toStringArray(filter));
