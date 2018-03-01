@@ -17,25 +17,20 @@
 package cc.fooledit.editor.media;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.text.*;
 import cc.fooledit.spi.*;
-import java.io.*;
 import java.util.function.*;
-import java.util.logging.*;
-import static javafx.application.Application.launch;
 import javafx.application.*;
 import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.media.*;
-import javafx.stage.*;
 import javafx.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class MediaEditor extends Application implements DataEditor<MediaObject>{
+public class MediaEditor implements DataEditor<MediaObject>{
 	public static final MediaEditor INSTANCE=new MediaEditor();
 	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(MediaEditorModule.NAME);
 	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(MediaEditorModule.NAME);
@@ -65,33 +60,6 @@ public class MediaEditor extends Application implements DataEditor<MediaObject>{
 		editor.setMediaPlayer(player);
 		player.play();
 		return new BorderPane(new ScrollPane(editor),new Label(player.getMedia().getMetadata().toString()),null,new MediaControl(player),null);
-	}
-	@Override
-	public void start(Stage primaryStage){
-		MediaObject data;
-		try{
-			//FileInputStream in=new FileInputStream("/home/kwong/音乐/半斤八两-许冠杰.mp3");
-			//data=AudioObjectType.INSTANCE.readFrom(in);
-			//data=new AudioObject(new MediaPlayer(new Media(new File("/home/kwong/视频/860b4ce2a01af63795899c89bc9a8c7b.mp4").toURI().toString())));
-			//data=new AudioObject(new MediaPlayer(new Media(new File("/home/kwong/音乐/半斤八两-许冠杰.mp3").toURI().toString())));
-			data=new MediaObject(new MediaPlayer(new Media(new File("/home/kwong/视频/860b4ce2a01af63795899c89bc9a8c7b.mp4").toURI().toString())));
-			//in.close();
-		}catch(Exception ex){
-			Logger.getLogger(PlainTextEditor.class.getName()).log(Level.SEVERE,null,ex);
-			throw new RuntimeException();
-		}
-		Node edit=new MediaEditor().edit(data,null,null);
-		Scene scene=new Scene(new BorderPane(edit));
-		primaryStage.setTitle("IDEM");
-		primaryStage.setScene(scene);
-		primaryStage.setMaximized(true);
-		primaryStage.show();
-	}
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String[] args){
-		launch(args);
 	}
 	@Override
 	public String getName(){
@@ -161,10 +129,12 @@ class MediaControl extends HBox{
 			mp.setCycleCount(loop.isSelected()?MediaPlayer.INDEFINITE:1);
 		});
 		getChildren().add(loop);
+		Label rateLabel=new Label(MessageRegistry.getString("RATE",MediaEditorModule.NAME));
+		getChildren().add(rateLabel);
 		rateSpinner=new Spinner<>(0.0,8.0,1.0,0.5);
 		mp.rateProperty().bind(rateSpinner.valueProperty());
 		getChildren().add(rateSpinner);
-		Label volumeLabel=new Label("X Vol: ");
+		Label volumeLabel=new Label(MessageRegistry.getString("VOLUME",MediaEditorModule.NAME));
 		getChildren().add(volumeLabel);
 		volumeSlider=new Slider(0,2.0,1.0);
 		volumeSlider.valueProperty().addListener((ov)->mp.setVolume(volumeSlider.getValue()));
