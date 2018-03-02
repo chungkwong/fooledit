@@ -22,7 +22,7 @@ import org.tmatesoft.svn.core.wc.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SvnTest {
+public class SvnTest{
 	/**
 	 * @param args the command line arguments
 	 */
@@ -30,5 +30,4 @@ public class SvnTest {
 		SVNClientManager SVN=SVNClientManager.newInstance();
 		System.out.println(SVN.getWCClient().doInfo(new File("http://svn.code.sf.net/p/mathocr/code/trunk/net/sf/mathocr/Main.java"),SVNRevision.HEAD).getCommittedRevision());
 	}
-
 }
