@@ -27,6 +27,8 @@ public class MediaEditorModule{
 	public static void onLoad(){
 		addDataObjectType(MediaObjectType.INSTANCE);
 		addDataEditor(MediaEditor.INSTANCE,MediaObject.class);
+		addDataObjectType(MidiObjectType.INSTANCE);
+		addDataEditor(MidiEditor.INSTANCE,MidiObject.class);
 	}
 	public static void onUnLoad(){
 
@@ -35,5 +37,8 @@ public class MediaEditorModule{
 		Registry.providesDataObjectType(MediaObjectType.class.getName(),NAME);
 		Registry.providesDataObjectEditor(MediaEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(MediaObject.class.getName(),NAME);
+		Registry.providesDataObjectType(MidiObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(MidiEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(MidiObject.class.getName(),NAME);
 	}
 }
