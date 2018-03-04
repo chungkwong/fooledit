@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.media;
 import cc.fooledit.core.*;
-import java.util.*;
 import javax.sound.midi.*;
 /**
  *
@@ -33,8 +32,5 @@ public class MidiObject implements DataObject<MidiObject>{
 	}
 	public Sequence getSequence(){
 		return sequence;
-	}
-	public static void main(String[] args){
-		System.out.println(Arrays.toString(MidiSystem.getMidiFileTypes()));
 	}
 }
