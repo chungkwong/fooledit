@@ -16,6 +16,7 @@
  */
 package cc.fooledit.editor.media;
 import cc.fooledit.core.*;
+import java.util.*;
 import javax.sound.midi.*;
 /**
  *
@@ -32,5 +33,16 @@ public class MidiObject implements DataObject<MidiObject>{
 	}
 	public Sequence getSequence(){
 		return sequence;
+	}
+	public static void main(String[] args) throws InvalidMidiDataException, MidiUnavailableException, InterruptedException{
+		System.out.println(Arrays.toString(MidiSystem.getSynthesizer().getAvailableInstruments()));
+		ShortMessage myMsg=new ShortMessage();
+		long timeStamp=-1;
+		Receiver rcvr=MidiSystem.getReceiver();
+		myMsg.setMessage(ShortMessage.PROGRAM_CHANGE,0,25,0);
+		rcvr.send(myMsg,timeStamp);
+		myMsg.setMessage(ShortMessage.NOTE_ON,0,60,93);
+		rcvr.send(myMsg,timeStamp);
+		Thread.sleep(4000);
 	}
 }

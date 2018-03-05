@@ -17,8 +17,11 @@
 package cc.fooledit.editor.media;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
+import java.text.*;
+import java.util.*;
 import java.util.logging.*;
-import javafx.scene.*;
+import java.util.stream.*;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javax.sound.midi.*;
@@ -44,7 +47,7 @@ public class MidiEditor implements DataEditor<MidiObject>{
 		return MessageRegistry.getString("MIDI_EDITOR",MediaEditorModule.NAME);
 	}
 }
-class MidiViewer extends HBox{
+class MidiViewer extends BorderPane{
 	private final Sequence sequence;
 	private final Sequencer sequencer;
 	public MidiViewer(Sequence sequence)throws MidiUnavailableException, InvalidMidiDataException{
@@ -52,6 +55,12 @@ class MidiViewer extends HBox{
 		this.sequencer=MidiSystem.getSequencer(true);
 		sequencer.open();
 		sequencer.setSequence(sequence);
+		setBottom(getToolBar());
+		VBox tracks=new VBox();
+		tracks.getChildren().setAll(Arrays.stream(sequence.getTracks()).map(this::getTrackBar).collect(Collectors.toList()));
+		setCenter(new ScrollPane(tracks));
+	}
+	private Node getToolBar(){
 		Slider timeSlider=new Slider(0,sequence.getTickLength(),0);
 		HBox.setHgrow(timeSlider,Priority.ALWAYS);
 		timeSlider.setMaxWidth(Double.MAX_VALUE);
@@ -59,16 +68,37 @@ class MidiViewer extends HBox{
 		playButton.setOnAction((e)->{
 			sequencer.start();
 		});
-		getChildren().add(playButton);
 		Button stopButton=new Button("||");
 		stopButton.setOnAction((e)->{
 			sequencer.stop();
 			timeSlider.setValue(sequencer.getTickPosition());
 		});
-		getChildren().add(stopButton);
 		timeSlider.valueProperty().addListener((ov)->{
 			sequencer.setTickPosition((long)timeSlider.getValue());
 		});
-		getChildren().add(timeSlider);
+		return new HBox(playButton,stopButton,timeSlider);
+	}
+	private Node getTrackBar(Track track){
+		ListView<MidiEvent> events=new ListView<>();
+		/*events.setCellFactory(new Callback<ListView<MidiEvent>,ListCell<MidiEvent>>() {
+			@Override
+			public ListCell<MidiEvent> call(ListView<MidiEvent> param){
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		});*/
+		ArrayList<MidiEvent> data=new ArrayList<>(track.size());
+		for(int i=0;i<track.size();i++){
+			data.add(track.get(i));
+		}
+		events.getItems().setAll(data);
+		TitledPane pane=new TitledPane(getTrackTitle(track),events);
+		pane.setCollapsible(true);
+		return pane;
+	}
+	private String getTrackTitle(Track track){
+		return NumberFormat.getIntegerInstance().format(track.size())+
+				MessageRegistry.getString("EVENTS",MediaEditorModule.NAME)+
+				NumberFormat.getIntegerInstance().format(track.ticks())+
+				MessageRegistry.getString("TICKS",MediaEditorModule.NAME);
 	}
 }
