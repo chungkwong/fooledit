@@ -73,9 +73,8 @@ class MidiViewer extends BorderPane{
 		buf.append(sequence.getMicrosecondLength()/1000000.0);
 		buf.append(MessageRegistry.getString("SECONDS",MediaEditorModule.NAME)).append(' ');
 		buf.append(MessageRegistry.getString("RESOLUTION",MediaEditorModule.NAME)).append(':');
-		buf.append(sequence.getResolution()).append(' ');
-		buf.append(MessageRegistry.getString("DIVISION_TYPE",MediaEditorModule.NAME)).append(':');
-		buf.append(getDivisionTypeName(sequence.getDivisionType())).append(' ');
+		buf.append(sequence.getResolution()).append('/');
+		buf.append(MessageRegistry.getString(getDivisionTypeName(sequence.getDivisionType()),MediaEditorModule.NAME));
 		return new Label(buf.toString());
 	}
 	private String getDivisionTypeName(float type){
@@ -136,37 +135,37 @@ class MidiViewer extends BorderPane{
 		});
 		return column;
 	}
-	private TreeTableColumn<Object,Number> getTypeColumn(){
-		TreeTableColumn<Object,Number> column=new TreeTableColumn<>(MessageRegistry.getString("TYPE",MediaEditorModule.NAME));
+	private TreeTableColumn<Object,String> getTypeColumn(){
+		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("TYPE",MediaEditorModule.NAME));
 		column.setCellValueFactory((param)->{
 			Object val=param.getValue().getValue();
 			if(val instanceof MidiEvent){
 				MidiMessage value=((MidiEvent)val).getMessage();
 				if(value instanceof ShortMessage)
-					return new ReadOnlyLongWrapper(((ShortMessage)value).getCommand());
+					return new ReadOnlyStringWrapper(getCommandName(((ShortMessage)value).getCommand()));
 					//return new SimpleLongProperty(value,"tick",((MidiEvent)value).getTick());
 				else if(value instanceof MetaMessage)
-					return new ReadOnlyLongWrapper(((MetaMessage)value).getType());
+					return new ReadOnlyStringWrapper(getTypeName(((MetaMessage)value).getType()));
 				else
-					return new ReadOnlyLongWrapper(-1);
+					return new ReadOnlyStringWrapper(MessageRegistry.getString("UNKNOWN",MediaEditorModule.NAME));
 			}else
-				return new ReadOnlyLongWrapper(-1);
+				return new ReadOnlyStringWrapper("");
 		});
 		return column;
 	}
-	private TreeTableColumn<Object,Number> getData1Column(){
-		TreeTableColumn<Object,Number> column=new TreeTableColumn<>(MessageRegistry.getString("DATA1",MediaEditorModule.NAME));
+	private TreeTableColumn<Object,String> getData1Column(){
+		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("DATA1",MediaEditorModule.NAME));
 		column.setCellValueFactory((param)->{
 			Object val=param.getValue().getValue();
 			if(val instanceof MidiEvent){
 				MidiMessage value=((MidiEvent)val).getMessage();
 				if(value instanceof ShortMessage)
-					return new ReadOnlyLongWrapper(((ShortMessage)value).getData1());
+					return new ReadOnlyStringWrapper(getData1((ShortMessage)value));
 					//return new SimpleLongProperty(value,"tick",((MidiEvent)value).getTick());
 				else
-					return new ReadOnlyLongWrapper(value.getLength());
+					return new ReadOnlyStringWrapper(Integer.toString(value.getLength()));
 			}else
-				return new ReadOnlyLongWrapper(-1);
+				return new ReadOnlyStringWrapper("");
 		});
 		return column;
 	}
@@ -177,7 +176,7 @@ class MidiViewer extends BorderPane{
 			if(val instanceof MidiEvent){
 				MidiMessage value=((MidiEvent)val).getMessage();
 				if(value instanceof ShortMessage)
-					return new ReadOnlyObjectWrapper<>(((ShortMessage)value).getData2());
+					return new ReadOnlyObjectWrapper<>(getData2((ShortMessage)value));
 					//return new SimpleLongProperty(value,"tick",((MidiEvent)value).getTick());
 				else
 					return new ReadOnlyObjectWrapper<>(value.getMessage());
@@ -203,6 +202,189 @@ class MidiViewer extends BorderPane{
 			sequencer.setTickPosition((long)timeSlider.getValue());
 		});
 		return new HBox(playButton,stopButton,timeSlider);
+	}
+	private String getCommandName(int command){
+		switch(command){
+			case ShortMessage.ACTIVE_SENSING:return "ACTIVE_SENSING";
+			case ShortMessage.CHANNEL_PRESSURE:return "CHANNEL_PRESSURE";
+			case ShortMessage.CONTINUE:return "CONTINUE";
+			case ShortMessage.CONTROL_CHANGE:return "CONTROL_CHANGE";
+			case ShortMessage.END_OF_EXCLUSIVE:return "END_OF_EXCLUSIVE";
+			case ShortMessage.MIDI_TIME_CODE:return "MIDI_TIME_CODE";
+			case ShortMessage.NOTE_OFF:return "NOTE_OFF";
+			case ShortMessage.NOTE_ON:return "NOTE_ON";
+			case ShortMessage.PITCH_BEND:return "PITCH_BEND";
+			case ShortMessage.POLY_PRESSURE:return "POLY_PRESSURE";
+			case ShortMessage.PROGRAM_CHANGE:return "PROGRAM_CHANGE";
+			case ShortMessage.SONG_POSITION_POINTER:return "SONG_POSITION_POINTER";
+			case ShortMessage.SONG_SELECT:return "SONG_SELECT";
+			case ShortMessage.START:return "START";
+			case ShortMessage.STOP:return "STOP";
+			case ShortMessage.SYSTEM_RESET:return "SYSTEM_RESET";
+			case ShortMessage.TIMING_CLOCK:return "TIMING_CLOCK";
+			case ShortMessage.TUNE_REQUEST:return "TUNE_REQUEST";
+			default:return Integer.toString(command);
+		}
+	}
+	private String getTypeName(int type){
+		switch(type){
+			case 0x00:return "SEQUENCE_NUMBER";
+			case 0x01:return "TEXT_EVENT";
+			case 0x02:return "COPYRIGHT_NOTICE";
+			case 0x03:return "NAME";
+			case 0x04:return "INSTRUMENT";
+			case 0x05:return "LYRIC";
+			case 0x06:return "MARKER";
+			case 0x07:return "CUE_POINT";
+			case 0x20:return "MIDI_CHANNEL_PREFIX";
+			case 0x2F:return "END_OF_TRACK";
+			case 0x51:return "SET_TEMPO";
+			case 0x54:return "SMPTE_OFFSET";
+			case 0x58:return "TIME_SIGNATURE";
+			case 0x59:return "KEY_SIGNATURE";
+			case 0x7F:return "SEQUENCER_SPECIFIC";
+			default:return Integer.toString(type);
+		}
+	}
+	private String getData1(ShortMessage msg){
+		int data1=msg.getData1();
+		switch(msg.getCommand()){
+			case ShortMessage.ACTIVE_SENSING:return "";
+			case ShortMessage.CHANNEL_PRESSURE:return Integer.toString(data1);
+			case ShortMessage.CONTINUE:return "";
+			case ShortMessage.CONTROL_CHANGE:return getControlName(data1);
+			case ShortMessage.END_OF_EXCLUSIVE:return "";
+			case ShortMessage.MIDI_TIME_CODE:return getControlName(data1);
+			case ShortMessage.NOTE_OFF:return getNodeName(data1);
+			case ShortMessage.NOTE_ON:return getNodeName(data1);
+			case ShortMessage.PITCH_BEND:return Integer.toString(data1<<8|msg.getData2());
+			case ShortMessage.POLY_PRESSURE:return getNodeName(data1);
+			case ShortMessage.PROGRAM_CHANGE:return getProgramName(data1);
+			case ShortMessage.SONG_POSITION_POINTER:return Integer.toString(data1<<8|msg.getData2());
+			case ShortMessage.SONG_SELECT:return Integer.toString(data1);
+			case ShortMessage.START:return "";
+			case ShortMessage.STOP:return "";
+			case ShortMessage.SYSTEM_RESET:return "";
+			case ShortMessage.TIMING_CLOCK:return "";
+			case ShortMessage.TUNE_REQUEST:return "";
+			default:return Integer.toString(data1);
+		}
+	}
+	private String getData2(ShortMessage msg){
+		int data1=msg.getData1();
+		switch(msg.getCommand()){
+			case ShortMessage.ACTIVE_SENSING:return "";
+			case ShortMessage.CHANNEL_PRESSURE:return "";
+			case ShortMessage.CONTINUE:return "";
+			case ShortMessage.CONTROL_CHANGE:return Integer.toString(data1);
+			case ShortMessage.END_OF_EXCLUSIVE:return "";
+			case ShortMessage.MIDI_TIME_CODE:return Integer.toString(data1);
+			case ShortMessage.NOTE_OFF:return Integer.toString(data1);
+			case ShortMessage.NOTE_ON:return Integer.toString(data1);
+			case ShortMessage.PITCH_BEND:return "";
+			case ShortMessage.POLY_PRESSURE:return Integer.toString(data1);
+			case ShortMessage.PROGRAM_CHANGE:return "";
+			case ShortMessage.SONG_POSITION_POINTER:return "";
+			case ShortMessage.SONG_SELECT:return "";
+			case ShortMessage.START:return "";
+			case ShortMessage.STOP:return "";
+			case ShortMessage.SYSTEM_RESET:return "";
+			case ShortMessage.TIMING_CLOCK:return "";
+			case ShortMessage.TUNE_REQUEST:return "";
+			default:return Integer.toString(data1);
+		}
+	}
+	private static final String[] NOTES=new String[]{"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
+	private String getNodeName(int note){
+		return NOTES[note%12]+(note/12-1);
+	}
+	private String getProgramName(int program){
+		Instrument[] instruments;
+		try{
+			instruments=MidiSystem.getSynthesizer().getAvailableInstruments();
+			if(program<instruments.length)
+				return instruments[program].getName();
+		}catch(MidiUnavailableException ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+		return Integer.toString(program);
+	}
+	private String getControlName(int control){
+		switch(control){
+			case 0: return "Bank Select";
+			case 1: return "Modulation wheel";
+			case 2: return "Breath control";
+			case 4: return "Foot controller";
+			case 5: return "Portamento time";
+			case 6: return "Data Entry";
+			case 7: return "Channel Volume (formerly Main Volume)";
+			case 8: return "Balance";
+			case 10: return "Pan";
+			case 11: return "Expression Controller";
+			case 12: return "Effect control 1";
+			case 13: return "Effect control 2";
+			case 16: return "General Purpose Controller #1";
+			case 17: return "General Purpose Controller #2";
+			case 18: return "General Purpose Controller #3";
+			case 19: return "General Purpose Controller #4";
+			case 32: return "Bank Select";
+			case 33: return "Modulation wheel";
+			case 34: return "Breath control";
+			case 36: return "Foot controller";
+			case 37: return "Portamento time";
+			case 38: return "Data entry";
+			case 39: return "Channel Volume (formerly Main Volume)";
+			case 40: return "Balance";
+			case 42: return "Pan";
+			case 43: return "Expression Controller";
+			case 44: return "Effect control 1";
+			case 45: return "Effect control 2";
+			case 48: return "General Purpose Controller #1";
+			case 49: return "General Purpose Controller #2";
+			case 50: return "General Purpose Controller #3";
+			case 51: return "General Purpose Controller #4";
+			case 64: return "Damper pedal on/off (Sustain) ";
+			case 65: return "Portamento on/off";
+			case 66: return "Sustenuto on/off";
+			case 67: return "Soft pedal on/off";
+			case 68: return "Legato Footswitch";
+			case 69: return "Hold 2";
+			case 70: return "Sound Controller 1 (Sound Variation)";
+			case 71: return "Sound Controller 2 (Timbre)";
+			case 72: return "Sound Controller 3 (Release Time)";
+			case 73: return "Sound Controller 4 (Attack Time)";
+			case 74: return "Sound Controller 5 (Brightness)";
+			case 75: return "Sound Controller 6";
+			case 76: return "Sound Controller 7";
+			case 77: return "Sound Controller 8";
+			case 78: return "Sound Controller 9";
+			case 79: return "Sound Controller 10";
+			case 80: return "General Purpose Controller #5";
+			case 81: return "General Purpose Controller #6";
+			case 82: return "General Purpose Controller #7";
+			case 83: return "General Purpose Controller #8";
+			case 84: return "Portamento Control";
+			case 91: return "Effects 1 Depth";
+			case 92: return "Effects 2 Depth";
+			case 93: return "Effects 3 Depth";
+			case 94: return "Effects 4 Depth";
+			case 95: return "Effects 5 Depth";
+			case 96: return "Data entry +1";
+			case 97: return "Data entry -1";
+			case 98: return "Non-Registered Parameter";
+			case 99: return "Non-Registered Parameter";
+			case 100: return "Registered Parameter";
+			case 101: return "Registered Parameter";
+			case 120: return "All Sound Off";
+			case 121: return "Reset All Controllers";
+			case 122: return "Local control on/off";
+			case 123: return "All notes off";
+			case 124: return "Omni mode off (+ all notes off)";
+			case 125: return "Omni mode on (+ all notes off)";
+			case 126: return "Poly mode on/off (+ all notes off)";
+			case 127: return "Poly mode on (incl mono=off +all notes off)";
+			default:return Integer.toString(control);
+		}
 	}
 	private String getTrackTitle(Track track){
 		return NumberFormat.getIntegerInstance().format(track.size())+
