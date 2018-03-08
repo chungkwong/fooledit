@@ -18,6 +18,7 @@ package cc.fooledit.editor.media;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
+import java.nio.charset.*;
 import java.text.*;
 import java.util.*;
 import java.util.logging.*;
@@ -103,35 +104,37 @@ class MidiViewer extends BorderPane{
 			return events;
 		});
 	}
-	private TreeTableColumn<Object,Number> getTimeColumn(){
-		TreeTableColumn<Object,Number> column=new TreeTableColumn<>(MessageRegistry.getString("TIME",MediaEditorModule.NAME));
+	private TreeTableColumn<Object,String> getTimeColumn(){
+		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("TIME",MediaEditorModule.NAME));
 		column.setCellValueFactory((param)->{
 			Object value=param.getValue().getValue();
 			if(value instanceof MidiEvent)
 				//return new ReadOnlyLongWrapper(((MidiEvent)value).getTick());
-				return new SimpleLongProperty(value,"tick",((MidiEvent)value).getTick());
+				return new ReadOnlyStringWrapper(Long.toString(((MidiEvent)value).getTick()));
+			else if(value instanceof Track)
+				return new ReadOnlyStringWrapper(getTrackTitle((Track)value));
 			else
-				return new ReadOnlyLongWrapper(-1);
+				return new ReadOnlyStringWrapper("");
 		});
 		return column;
 	}
-	private TreeTableColumn<Object,Number> getChannelColumn(){
-		TreeTableColumn<Object,Number> column=new TreeTableColumn<>(MessageRegistry.getString("CHANNEL",MediaEditorModule.NAME));
+	private TreeTableColumn<Object,String> getChannelColumn(){
+		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("CHANNEL",MediaEditorModule.NAME));
 		column.setCellValueFactory((param)->{
 			Object val=param.getValue().getValue();
 			if(val instanceof MidiEvent){
 				MidiMessage value=((MidiEvent)val).getMessage();
 				if(value instanceof ShortMessage)
-					return new ReadOnlyLongWrapper(((ShortMessage)value).getChannel());
+					return new ReadOnlyStringWrapper(Integer.toString(((ShortMessage)value).getChannel()));
 					//return new SimpleLongProperty(value,"tick",((MidiEvent)value).getTick());
 				else if(value instanceof MetaMessage)
-					return new ReadOnlyLongWrapper(-2);
+					return new ReadOnlyStringWrapper("META");
 				else if(value instanceof SysexMessage)
-					return new ReadOnlyLongWrapper(-3);
+					return new ReadOnlyStringWrapper("SYSEX");
 				else
-					return new ReadOnlyLongWrapper(-4);
+					return new ReadOnlyStringWrapper("OTHER");
 			}else
-				return new ReadOnlyLongWrapper(-1);
+				return new ReadOnlyStringWrapper("");
 		});
 		return column;
 	}
@@ -178,8 +181,10 @@ class MidiViewer extends BorderPane{
 				if(value instanceof ShortMessage)
 					return new ReadOnlyObjectWrapper<>(getData2((ShortMessage)value));
 					//return new SimpleLongProperty(value,"tick",((MidiEvent)value).getTick());
+				else if(value instanceof MetaMessage)
+					return new ReadOnlyObjectWrapper<>(getMetaData((MetaMessage)value));
 				else
-					return new ReadOnlyObjectWrapper<>(value.getMessage());
+					return new ReadOnlyObjectWrapper<>(Arrays.toString(value.getMessage()));
 			}else
 				return new ReadOnlyObjectWrapper<>("");
 		});
@@ -246,6 +251,29 @@ class MidiViewer extends BorderPane{
 			default:return Integer.toString(type);
 		}
 	}
+	private String getMetaData(MetaMessage msg){
+		int type=msg.getType();
+		byte[] data=msg.getData();
+		switch(type){
+			case 0x00:return Integer.toString(data[0]<<7|data[1]);
+			case 0x01:return new String(data,StandardCharsets.UTF_8);
+			case 0x02:return new String(data,StandardCharsets.UTF_8);
+			case 0x03:return new String(data,StandardCharsets.UTF_8);
+			case 0x04:return new String(data,StandardCharsets.UTF_8);
+			case 0x05:return new String(data,StandardCharsets.UTF_8);
+			case 0x06:return new String(data,StandardCharsets.UTF_8);
+			case 0x07:return new String(data,StandardCharsets.UTF_8);
+			case 0x20:return Integer.toString(data[0]);
+			case 0x2F:return "";
+			case 0x51:return Arrays.toString(data);//Integer.toString(data[0]<<14|data[1]<<7|data[2]);
+			case 0x54:return data[0]+":"+data[1]+":"+data[2]+":"+data[3]+":"+data[4];
+			case 0x58:return data[0]+"/"+(1<<data[1])+"time"+data[2]+"MIDI clocks per dotted-quarter"+
+					data[3]+"notated 32nd-notes per quarter-note";
+			case 0x59:return Math.abs(data[0])+(data[0]>=0?"sharps":"flats")+(data[1]==0?" major":" minor");
+			case 0x7F:return Arrays.toString(data);
+			default:return Arrays.toString(data);
+		}
+	}
 	private String getData1(ShortMessage msg){
 		int data1=msg.getData1();
 		switch(msg.getCommand()){
@@ -257,10 +285,10 @@ class MidiViewer extends BorderPane{
 			case ShortMessage.MIDI_TIME_CODE:return getControlName(data1);
 			case ShortMessage.NOTE_OFF:return getNodeName(data1);
 			case ShortMessage.NOTE_ON:return getNodeName(data1);
-			case ShortMessage.PITCH_BEND:return Integer.toString(data1<<8|msg.getData2());
+			case ShortMessage.PITCH_BEND:return Integer.toString(data1<<7|msg.getData2());
 			case ShortMessage.POLY_PRESSURE:return getNodeName(data1);
 			case ShortMessage.PROGRAM_CHANGE:return getProgramName(data1);
-			case ShortMessage.SONG_POSITION_POINTER:return Integer.toString(data1<<8|msg.getData2());
+			case ShortMessage.SONG_POSITION_POINTER:return Integer.toString(data1<<7|msg.getData2());
 			case ShortMessage.SONG_SELECT:return Integer.toString(data1);
 			case ShortMessage.START:return "";
 			case ShortMessage.STOP:return "";
@@ -271,18 +299,18 @@ class MidiViewer extends BorderPane{
 		}
 	}
 	private String getData2(ShortMessage msg){
-		int data1=msg.getData1();
+		int data2=msg.getData2();
 		switch(msg.getCommand()){
 			case ShortMessage.ACTIVE_SENSING:return "";
 			case ShortMessage.CHANNEL_PRESSURE:return "";
 			case ShortMessage.CONTINUE:return "";
-			case ShortMessage.CONTROL_CHANGE:return Integer.toString(data1);
+			case ShortMessage.CONTROL_CHANGE:return getControlValue(msg.getData1(),data2);
 			case ShortMessage.END_OF_EXCLUSIVE:return "";
-			case ShortMessage.MIDI_TIME_CODE:return Integer.toString(data1);
-			case ShortMessage.NOTE_OFF:return Integer.toString(data1);
-			case ShortMessage.NOTE_ON:return Integer.toString(data1);
+			case ShortMessage.MIDI_TIME_CODE:return Integer.toString(data2);
+			case ShortMessage.NOTE_OFF:return Integer.toString(data2);
+			case ShortMessage.NOTE_ON:return Integer.toString(data2);
 			case ShortMessage.PITCH_BEND:return "";
-			case ShortMessage.POLY_PRESSURE:return Integer.toString(data1);
+			case ShortMessage.POLY_PRESSURE:return Integer.toString(data2);
 			case ShortMessage.PROGRAM_CHANGE:return "";
 			case ShortMessage.SONG_POSITION_POINTER:return "";
 			case ShortMessage.SONG_SELECT:return "";
@@ -291,7 +319,7 @@ class MidiViewer extends BorderPane{
 			case ShortMessage.SYSTEM_RESET:return "";
 			case ShortMessage.TIMING_CLOCK:return "";
 			case ShortMessage.TUNE_REQUEST:return "";
-			default:return Integer.toString(data1);
+			default:return Integer.toString(data2);
 		}
 	}
 	private static final String[] NOTES=new String[]{"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
@@ -317,7 +345,7 @@ class MidiViewer extends BorderPane{
 			case 4: return "Foot controller";
 			case 5: return "Portamento time";
 			case 6: return "Data Entry";
-			case 7: return "Channel Volume (formerly Main Volume)";
+			case 7: return "Channel Volume";
 			case 8: return "Balance";
 			case 10: return "Pan";
 			case 11: return "Expression Controller";
@@ -333,7 +361,7 @@ class MidiViewer extends BorderPane{
 			case 36: return "Foot controller";
 			case 37: return "Portamento time";
 			case 38: return "Data entry";
-			case 39: return "Channel Volume (formerly Main Volume)";
+			case 39: return "Channel Volume";
 			case 40: return "Balance";
 			case 42: return "Pan";
 			case 43: return "Expression Controller";
@@ -385,6 +413,86 @@ class MidiViewer extends BorderPane{
 			case 127: return "Poly mode on (incl mono=off +all notes off)";
 			default:return Integer.toString(control);
 		}
+	}
+	private String getControlValue(int control,int value){
+		switch(control){
+			case 0: return getProgramName(value);
+			case 1: return Integer.toString(value);
+			case 2: return Integer.toString(value);
+			case 4: return Integer.toString(value);
+			case 5: return Integer.toString(value);
+			case 6: return Integer.toString(value);
+			case 7: return Integer.toString(value);
+			case 8: return Integer.toString(value);
+			case 10: return Integer.toString(value);
+			case 11: return Integer.toString(value);
+			case 12: return Integer.toString(value);
+			case 13: return Integer.toString(value);
+			case 16: return Integer.toString(value);
+			case 17: return Integer.toString(value);
+			case 18: return Integer.toString(value);
+			case 19: return Integer.toString(value);
+			case 32: return getProgramName(toMSB(value));
+			case 33: return Integer.toString(toMSB(value));
+			case 34: return Integer.toString(toMSB(value));
+			case 36: return Integer.toString(toMSB(value));
+			case 37: return Integer.toString(toMSB(value));
+			case 38: return Integer.toString(toMSB(value));
+			case 39: return Integer.toString(toMSB(value));
+			case 40: return Integer.toString(toMSB(value));
+			case 42: return Integer.toString(toMSB(value));
+			case 43: return Integer.toString(toMSB(value));
+			case 44: return Integer.toString(toMSB(value));
+			case 45: return Integer.toString(toMSB(value));
+			case 48: return Integer.toString(toMSB(value));
+			case 49: return Integer.toString(toMSB(value));
+			case 50: return Integer.toString(toMSB(value));
+			case 51: return Integer.toString(toMSB(value));
+			case 64: return value==63?"off":"on";
+			case 65: return value==63?"off":"on";
+			case 66: return value==63?"off":"on";
+			case 67: return value==63?"off":"on";
+			case 68: return value==63?"off":"on";
+			case 69: return value==63?"off":"on";
+			case 70: return Integer.toString(toMSB(value));
+			case 71: return Integer.toString(toMSB(value));
+			case 72: return Integer.toString(toMSB(value));
+			case 73: return Integer.toString(toMSB(value));
+			case 74: return Integer.toString(toMSB(value));
+			case 75: return Integer.toString(toMSB(value));
+			case 76: return Integer.toString(toMSB(value));
+			case 77: return Integer.toString(toMSB(value));
+			case 78: return Integer.toString(toMSB(value));
+			case 79: return Integer.toString(toMSB(value));
+			case 80: return Integer.toString(toMSB(value));
+			case 81: return Integer.toString(toMSB(value));
+			case 82: return Integer.toString(toMSB(value));
+			case 83: return Integer.toString(toMSB(value));
+			case 84: return getNodeName(value);
+			case 91: return Integer.toString(toMSB(value));
+			case 92: return Integer.toString(toMSB(value));
+			case 93: return Integer.toString(toMSB(value));
+			case 94: return Integer.toString(toMSB(value));
+			case 95: return Integer.toString(toMSB(value));
+			case 96: return Integer.toString(toMSB(value));
+			case 97: return Integer.toString(toMSB(value));
+			case 98: return Integer.toString(toMSB(value));
+			case 99: return Integer.toString(value);
+			case 100: return Integer.toString(toMSB(value));
+			case 101: return Integer.toString(value);
+			case 120: return "";
+			case 121: return "";
+			case 122: return value==0?"off":"on";
+			case 123: return "";
+			case 124: return "";
+			case 125: return "";
+			case 126: return Integer.toString(value);
+			case 127: return "";
+			default:return Integer.toString(control);
+		}
+	}
+	private int toMSB(int i){
+		return ((i&1)<<6)|((i&2)<<4)|((i&4)<<2)|(i&8)|((i&16)>>2)|((i&32)>>4)|((i&64)>>6);
 	}
 	private String getTrackTitle(Track track){
 		return NumberFormat.getIntegerInstance().format(track.size())+
