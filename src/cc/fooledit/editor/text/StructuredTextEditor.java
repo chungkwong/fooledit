@@ -33,7 +33,6 @@ import java.util.stream.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javax.activation.*;
-import org.antlr.v4.runtime.*;
 import org.fxmisc.richtext.*;
 /**
  *
@@ -211,7 +210,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				return null;
 		});
 		addCommand("syntax-tree",Collections.emptyList(),(args,area)->{
-				OptionDialog.showDialog(new ParseTreeViewer((ParserRuleContext)area.syntaxTree()));
+				//OptionDialog.showDialog(new ParseTreeViewer((ParserRuleContext)area.syntaxTree()));
 				return null;
 //return new ScmJavaObject(area.syntaxTree());
 		});

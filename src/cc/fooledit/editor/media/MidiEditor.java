@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
 import javafx.beans.property.*;
+import javafx.collections.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -65,6 +66,7 @@ class MidiViewer extends BorderPane{
 		events.getColumns().setAll(getTimeColumn(),getChannelColumn(),getTypeColumn(),getData1Column(),getData2Column());
 		setCenter(events);
 		setTop(getInfo());
+		setRight(getPlayground());
 	}
 	private Label getInfo(){
 		StringBuilder buf=new StringBuilder();
@@ -499,5 +501,34 @@ class MidiViewer extends BorderPane{
 				MessageRegistry.getString("EVENTS",MediaEditorModule.NAME)+
 				NumberFormat.getIntegerInstance().format(track.ticks())+
 				MessageRegistry.getString("TICKS",MediaEditorModule.NAME);
+	}
+	private Node getPlayground() throws MidiUnavailableException{
+		ComboBox<Instrument> programs=new ComboBox<>(FXCollections.observableArrayList(MidiSystem.getSynthesizer().getAvailableInstruments()));
+		programs.getSelectionModel().selectFirst();
+		GridPane keyboard=new GridPane();
+		keyboard.getChildren();
+		for(int j=0;j<12;j++){
+			keyboard.add(new Label(NOTES[j]),j+1,0);
+		}
+		Receiver recv=MidiSystem.getReceiver();
+		for(int i=0;i<11;i++){
+			keyboard.add(new Label(Integer.toString(i-1)),0,i+1);
+			for(int j=0;j<12;j++){
+				int n=i*12+j;
+				if(n<128){
+					Button note=new Button();
+					note.setOnAction((e)->{
+						try{
+							recv.send(new ShortMessage(ShortMessage.PROGRAM_CHANGE,0,programs.getSelectionModel().getSelectedItem().getPatch().getProgram(),0),-1);
+							recv.send(new ShortMessage(ShortMessage.NOTE_ON,0,n,93),-1);
+						}catch(InvalidMidiDataException ex){
+							Logger.getGlobal().log(Level.SEVERE,null,ex);
+						}
+					});
+					keyboard.add(note,j+1,i+1);
+				}
+			}
+		}
+		return new BorderPane(keyboard,programs,null,null,null);
 	}
 }

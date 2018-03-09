@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,30 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
+import javafx.application.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class OptionDialog{
-	public static void showConfirmDialog(String title,String content){
-		Dialog dialog=new Dialog();
-		dialog.setTitle(title);
-		dialog.setContentText(content);
-		dialog.showAndWait();
+public class CharacterChooser extends Application{
+	@Override
+	public void start(Stage primaryStage) throws Exception{
+		TextArea area=new TextArea();
+		StringBuilder buf=new StringBuilder();
+		for(int i=0;i<0x10FFFF;i++){
+			buf.append(i).append(':').appendCodePoint(i).append('\n');
+		}
+		area.setText(buf.toString());
+		primaryStage.setScene(new Scene(new BorderPane(area)));
+		primaryStage.show();
 	}
-	public static String showInputDialog(String title,String prompt){
-		TextInputDialog dialog=new TextInputDialog();
-		dialog.setTitle(title);
-		dialog.setHeaderText(prompt);
-		return dialog.showAndWait().get();
-	}
-	public static void showDialog(Node node){
-		Dialog dialog=new Dialog();
-		dialog.setResizable(true);
-		dialog.getDialogPane().setContent(node);
-		dialog.getDialogPane().getButtonTypes().setAll(ButtonType.CLOSE);
-		dialog.show();
+	public static void main(String[] args){
+		launch(args);
 	}
 }
