@@ -17,8 +17,8 @@
 package cc.fooledit.editor.pdf;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import com.itextpdf.text.pdf.*;
 import java.net.*;
+import org.apache.pdfbox.pdmodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -41,7 +41,7 @@ public class PdfObjectType implements DataObjectType<PdfObject>{
 	}
 	@Override
 	public PdfObject create(){
-		return new PdfObject(new PdfDocument());
+		return new PdfObject(new PDDocument());
 	}
 	@Override
 	public String getDisplayName(){
@@ -49,11 +49,10 @@ public class PdfObjectType implements DataObjectType<PdfObject>{
 	}
 	@Override
 	public void writeTo(PdfObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
-		PdfWriter.getInstance(data.getDocument(),connection.getOutputStream()).close();
+		data.getDocument().save(connection.getOutputStream());
 	}
 	@Override
 	public PdfObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return new PdfObject(PDDocument.load(connection.getInputStream()));
 	}
-
 }

@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.pdf;
+import cc.fooledit.*;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.media.*;
 import cc.fooledit.spi.*;
+import java.util.function.*;
 import javafx.scene.*;
 /**
  *
@@ -24,15 +27,33 @@ import javafx.scene.*;
  */
 public class PdfEditor implements DataEditor<PdfObject>{
 	public static final PdfEditor INSTANCE=new PdfEditor();
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(PdfModule.NAME);
+	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(PdfModule.NAME);
+	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(PdfModule.NAME);
 	private PdfEditor(){
+
 	}
 	@Override
 	public Node edit(PdfObject data,Object remark,RegistryNode<String,Object,String> meta){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return new PdfViewer(data.getDocument());
 	}
 	@Override
 	public String getName(){
 		return MessageRegistry.getString("PDF_EDITOR",PdfModule.NAME);
 	}
-
+	private void addCommand(String name,Consumer<PdfViewer> action){
+		commandRegistry.addChild(name,new Command(name,()->action.accept((PdfViewer)Main.INSTANCE.getCurrentNode()),MediaEditorModule.NAME));
+	}
+	@Override
+	public MenuRegistry getMenuRegistry(){
+		return menuRegistry;
+	}
+	@Override
+	public RegistryNode<String,Command,String> getCommandRegistry(){
+		return commandRegistry;
+	}
+	@Override
+	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
+		return keymapRegistry;
+	}
 }

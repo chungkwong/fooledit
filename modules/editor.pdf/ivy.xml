@@ -5,6 +5,6 @@
                    "http://ant.apache.org/ivy/schemas/ivy.xsd">
 	<info organisation="cc.fooledit" module="editor.pdf"/>
 	<dependencies defaultconfmapping="default->master,compile" defaultconf="default">
-		<dependency org="com.itextpdf" name="itextpdf" rev="5.5.13"/>
+		<dependency org="org.apache.pdfbox" name="pdfbox" rev="2.0.8"/>
 	</dependencies>
 </ivy-module>

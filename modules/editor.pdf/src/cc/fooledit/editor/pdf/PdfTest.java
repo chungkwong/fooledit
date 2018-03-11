@@ -15,22 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.pdf;
-import cc.fooledit.core.*;
+import java.io.*;
+import javafx.application.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
 import org.apache.pdfbox.pdmodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PdfObject implements DataObject<PdfObject>{
-	private final PDDocument doc;
-	public PdfObject(PDDocument doc){
-		this.doc=doc;
-	}
+public class PdfTest extends Application{
 	@Override
-	public DataObjectType<PdfObject> getDataObjectType(){
-		return PdfObjectType.INSTANCE;
+	public void start(Stage primaryStage) throws Exception{
+		primaryStage.setScene(new Scene(new BorderPane(new PdfViewer(PDDocument.load(new File("/home/kwong/下载/1710.05830.pdf"))))));
+		primaryStage.show();
 	}
-	public PDDocument getDocument(){
-		return doc;
+	public static void main(String[] args) throws Exception{
+		launch(args);
 	}
 }
