@@ -35,7 +35,7 @@ public class Pair<K,V>{
 	}
 	@Override
 	public boolean equals(Object obj){
-		return obj instanceof Pair&&((Pair)obj).key.equals(key)&&((Pair)obj).value.equals(value);
+		return obj instanceof Pair&&Objects.equals(((Pair)obj).key,key)&&Objects.equals(((Pair)obj).value,value);
 	}
 	@Override
 	public int hashCode(){

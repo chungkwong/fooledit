@@ -15,27 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.core.DataObjectTypeRegistry;
-import cc.fooledit.core.DataObject;
-import cc.fooledit.core.DataEditor;
 import java.util.*;
-import javafx.scene.control.*;
+import javafx.application.*;
+import javafx.scene.*;
 import javafx.scene.layout.*;
+import javafx.stage.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Previewer extends BorderPane{
-	private final Label sorry=new Label("Sorry");
-	public Previewer(){
-
+public class Previewer extends Application{
+	@Override
+	public void start(Stage primaryStage) throws Exception{
+		primaryStage.setScene(new Scene(new BorderPane(new BeanViewer(new Date()))));
+		primaryStage.show();
 	}
-	public void showDataObject(DataObject obj){
-		List<DataEditor> editors=DataObjectTypeRegistry.getDataEditors(obj.getClass());
-		if(editors.isEmpty()){
-			setCenter(sorry);
-		}else{
-			setCenter(editors.get(0).edit(obj,null,null));
-		}
+	public static void main(String[] args){
+		launch(args);
 	}
 }

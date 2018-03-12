@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.pdf;
+import cc.fooledit.control.*;
 import java.io.*;
 import java.util.logging.*;
 import javafx.embed.swing.*;
@@ -40,6 +41,7 @@ public class PdfViewer extends BorderPane{
 		curr=new Spinner<>(0,document.getNumberOfPages()-1,0);
 		zoom=new Spinner<>(0,Double.MAX_VALUE,1.0,0.5);
 		setCenter(new ScrollPane(view));
+		setRight(getInfoPane());
 		setTop(getPagePane());
 		setLeft(getOutlinePane());
 	}
@@ -67,14 +69,17 @@ public class PdfViewer extends BorderPane{
 	private Node getOutlinePane(){
 		return null;
 	}
+	private Node getInfoPane(){
+		return new BeanViewer(document);
+	}
 	public PDDocument getDocument(){
 		return document;
 	}
 	public void moveToPage(int page){
-
+		curr.getEditor().setText(Integer.toString(page));
 	}
 	public void setScale(float scale){
-		
+		zoom.getEditor().setText(Float.toString(scale));
 	}
 	public int getPageIndex(){
 		return curr.getValue().intValue();
