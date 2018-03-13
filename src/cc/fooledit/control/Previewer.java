@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import java.util.*;
 import javafx.application.*;
 import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 /**
@@ -27,7 +27,16 @@ import javafx.stage.*;
 public class Previewer extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		primaryStage.setScene(new Scene(new BorderPane(new BeanViewer(new Date()))));
+		TextArea content=new TextArea("");
+		Label box1=new Label("AAAAAAAAAA");
+		Label box2=new Label("BBBBBBBBBB");
+		TitledPane p1=new TitledPane("1",new Button("CCC"));
+		TitledPane p2=new TitledPane("2",new Button("DDD"));
+		SideBar bar=new SideBar(SideBar.Side.RIGHT);
+		bar.addItem("AA",null,box1);
+		bar.addItem("BB",null,box2);
+		primaryStage.setScene(new Scene(new BorderPane(content,null,bar,null,null)));
+		//primaryStage.setScene(new Scene(new BorderPane(new BeanViewer(new Date()))));
 		primaryStage.show();
 	}
 	public static void main(String[] args){

@@ -47,6 +47,27 @@ public class BeanViewer extends TreeTableView<Pair<String,Object>> {
 		Pair<String,Object> pair=new Pair<>(name,obj);
 		if(obj==null||obj.getClass().isPrimitive()){
 			return new TreeItem<>(pair);
+		}else if(obj.getClass().isArray()){
+			return new LazyTreeItem<>(pair,()->{
+				Object[] array=(Object[])obj;
+				ArrayList<TreeItem<Pair<String,Object>>> list=new ArrayList<>(array.length);
+				for(int i=0;i<array.length;i++)
+					list.add(createTreeItem(Integer.toString(i),array[i]));
+				return list;
+			});
+		}else if(obj instanceof List){
+			return new LazyTreeItem<>(pair,()->{
+				ArrayList<TreeItem<Pair<String,Object>>> list=new ArrayList<>(((List)obj).size());
+				ListIterator iter=((List)obj).listIterator();
+				while(iter.hasNext()){
+					list.add(createTreeItem(Integer.toString(iter.nextIndex()),iter.next()));
+				}
+				return list;
+			});
+		}else if(obj instanceof Map){
+			return new LazyTreeItem<>(pair,()->{
+				return ((Map<Object,Object>)obj).entrySet().stream().map((e)->createTreeItem(Objects.toString(e.getKey()),e.getValue())).collect(Collectors.toList());
+			});
 		}else{
 			return new LazyTreeItem<>(pair,()->{
 				return getAttributes(obj.getClass()).stream().map((key)->createTreeItem(key,getValue(key,obj))).collect(Collectors.toList());
@@ -65,8 +86,5 @@ public class BeanViewer extends TreeTableView<Pair<String,Object>> {
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return null;
 		}
-	}
-	public static void main(String[] args){
-		System.out.println(getAttributes(Date.class));
 	}
 }

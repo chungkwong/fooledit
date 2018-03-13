@@ -49,8 +49,18 @@ public class SideBar extends BorderPane{
 				header=null;
 		}
 	}
-	public void addItem(String title,Node content){
-		ToggleButton icon=new ToggleButton(title);
+	public void addItem(String title,Node graphic,Node content){
+		ToggleButton icon=new ToggleButton(title,graphic);
+		icon.setOnMouseEntered((e)->{
+			if(!icon.isSelected()){
+				setCenter(content);
+			}
+		});
+		icon.setOnMouseExited((e)->{
+			if(!icon.isSelected()){
+				setCenter(icons.getSelectedToggle()==null?null:(Node)icons.getSelectedToggle().getUserData());
+			}
+		});
 		if(side==Side.LEFT)
 			icon.setRotate(-90);
 		else if(side==Side.RIGHT)

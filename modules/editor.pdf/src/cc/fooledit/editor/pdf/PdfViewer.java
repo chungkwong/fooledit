@@ -32,38 +32,35 @@ import org.apache.pdfbox.rendering.*;
 public class PdfViewer extends BorderPane{
 	private final PDDocument document;
 	private final PDFRenderer renderer;
+	private final Pagination pagination;
 	private final ImageView view=new ImageView();
-	private final Spinner<Number> curr;
 	private final Spinner<Number> zoom;
 	public PdfViewer(PDDocument document){
 		this.document=document;
 		this.renderer=new PDFRenderer(document);
-		curr=new Spinner<>(0,document.getNumberOfPages()-1,0);
+		this.pagination=new Pagination(document.getNumberOfPages(),0);
 		zoom=new Spinner<>(0,Double.MAX_VALUE,1.0,0.5);
-		setCenter(new ScrollPane(view));
+		pagination.setPageFactory((index)->new ImageView(getPage(index,zoom.getValue().floatValue())));
+		setCenter(new ScrollPane(pagination));
 		setRight(getInfoPane());
 		setTop(getPagePane());
 		setLeft(getOutlinePane());
 	}
 	private Node getPagePane(){
-		curr.setEditable(true);
 		zoom.setEditable(true);
-		curr.valueProperty().addListener((e,o,n)->{
-			showPage(n.intValue(),zoom.getValue().floatValue());
-		});
 		zoom.valueProperty().addListener((e,o,n)->{
-			showPage(curr.getValue().intValue(),n.floatValue());
+			pagination.setCurrentPageIndex(pagination.getCurrentPageIndex());
 		});
 		Label total=new Label("/"+document.getNumberOfPages());
 		Label percent=new Label("×");
-		showPage(0,1.0f);
-		return new HBox(curr,total,zoom,percent);
+		return new HBox(zoom,percent);
 	}
-	public void showPage(int index,float dpi){
+	public Image getPage(int index,float dpi){
 		try{
-			view.setImage(SwingFXUtils.toFXImage(renderer.renderImage(index,dpi),null));
+			return SwingFXUtils.toFXImage(renderer.renderImage(index,dpi),null);
 		}catch(IOException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
+			return new WritableImage(0,0);
 		}
 	}
 	private Node getOutlinePane(){
@@ -76,13 +73,13 @@ public class PdfViewer extends BorderPane{
 		return document;
 	}
 	public void moveToPage(int page){
-		curr.getEditor().setText(Integer.toString(page));
+		pagination.setCurrentPageIndex(page);
 	}
 	public void setScale(float scale){
 		zoom.getEditor().setText(Float.toString(scale));
 	}
 	public int getPageIndex(){
-		return curr.getValue().intValue();
+		return pagination.getCurrentPageIndex();
 	}
 	public float getScale(){
 		return zoom.getValue().floatValue();
