@@ -37,38 +37,44 @@ public class ModuleRegistry{
 		//Arrays.stream(preload.split(":")).forEach((name)->ensureLoaded(name));
 	}
 	public static void ensureLoaded(String module){
-		if(!CoreModule.getMODULE_REGISTRY().hasChild(module)){
-			Logger.getGlobal().log(Level.INFO,"Trying to load {0}",new Object[]{module});
+		if(!CoreModule.getLOADED_MODULE_REGISTRY().hasChild(module)){
 			try{
-				ensureLoaded(getModuleDescriptor(module));
+				load(getModuleDescriptor(module));
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
 		}
 	}
-	private static void ensureLoaded(RegistryNode<String,Object,String> moduleDescriptor) throws Exception{
+	private static void load(RegistryNode<String,Object,String> moduleDescriptor) throws Exception{
 		String module=(String)moduleDescriptor.getChild(NAME);
-		CoreModule.getMODULE_REGISTRY().addChild(module,moduleDescriptor);
+		Logger.getGlobal().log(Level.INFO,"Trying to load {0}",new Object[]{module});
+		if(CoreModule.getLOADING_MODULE_REGISTRY().hasChildLoaded(module))
+			return;
+		CoreModule.getLOADING_MODULE_REGISTRY().addChild(module,moduleDescriptor);
 		ensureInstalled(module);
 		((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureLoaded(s));
 		onLoad(module);
+		CoreModule.getLOADING_MODULE_REGISTRY().removeChild(module);
+		CoreModule.getLOADED_MODULE_REGISTRY().addChild(module,moduleDescriptor);
 	}
 	public static void ensureInstalled(String module){
-		try{
-			if(!CoreModule.getINSTALLED_MODULE_REGISTRY().hasChild(module))
-				ensureInstalled(getModuleDescriptor(module));
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
+		if(!CoreModule.getINSTALLED_MODULE_REGISTRY().hasChild(module))
+			try{
+				install(getModuleDescriptor(module));
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
 	}
-	private static void ensureInstalled(RegistryNode<String,Object,String> moduleDescriptor) throws Exception{
+	private static void install(RegistryNode<String,Object,String> moduleDescriptor) throws Exception{
 		String module=(String)moduleDescriptor.getChild(NAME);
+		Logger.getGlobal().log(Level.INFO,"Trying to install {0}",new Object[]{module});
+		if(CoreModule.getINSTALLING_MODULE_REGISTRY().hasChildLoaded(module))
+			return;
+		CoreModule.getINSTALLING_MODULE_REGISTRY().addChild(module,null);
 		((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureInstalled(s));
-		if(!CoreModule.getINSTALLED_MODULE_REGISTRY().hasChild(module)){
-			Logger.getGlobal().log(Level.INFO,"Trying to install {0}",new Object[]{module});
-			onInstall(module);
-			CoreModule.getINSTALLED_MODULE_REGISTRY().addChild(module,null);
-		}
+		onInstall(module);
+		CoreModule.getINSTALLING_MODULE_REGISTRY().removeChild(module);
+		CoreModule.getINSTALLED_MODULE_REGISTRY().addChild(module,null);
 	}
 	public static RegistryNode<String,Object,String> getModuleDescriptor(String name) throws Exception{
 		RegistryNode<String,Object,String> moduleDescriptor=(RegistryNode<String,Object,String>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getModulePath(name),"descriptor.json")));

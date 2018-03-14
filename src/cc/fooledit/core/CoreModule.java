@@ -48,8 +48,10 @@ public class CoreModule{
 	public static final String TYPE_TO_EDITOR_REGISTRY_NAME="type_to_editor";
 	public static final String EVENT_REGISTRY_NAME="event";
 	public static final String HISTORY_REGISTRY_NAME="history";
-	public static final String MODULE_REGISTRY_NAME="module";
+	public static final String LOADED_MODULE_REGISTRY_NAME="loaded_module";
+	public static final String LOADING_MODULE_REGISTRY_NAME="loading_module";
 	public static final String INSTALLED_MODULE_REGISTRY_NAME="installed_module";
+	public static final String INSTALLING_MODULE_REGISTRY_NAME="installing_module";
 	public static final String KEYMAP_REGISTRY_NAME="keymap";
 	public static final String MESSAGE_REGISTRY_NAME="message";
 	public static final String MENU_REGISTRY_NAME="menu";
@@ -77,8 +79,10 @@ public class CoreModule{
 	public static RegistryNode<String,ListRegistryNode<String,String>,String> TYPE_TO_EDITOR_REGISTRY;
 	public static RegistryNode<String,List<Consumer>,String> EVENT_REGISTRY;
 	public static ListRegistryNode<RegistryNode<String,Object,String>,String> HISTORY_REGISTRY;
-	public static RegistryNode<String,RegistryNode<String,Object,String>,String> MODULE_REGISTRY;
+	public static RegistryNode<String,RegistryNode<String,Object,String>,String> LOADED_MODULE_REGISTRY;
+	public static RegistryNode<String,RegistryNode<String,Object,String>,String> LOADING_MODULE_REGISTRY;
 	public static RegistryNode<String,Object,String> INSTALLED_MODULE_REGISTRY;
+	public static RegistryNode<String,Object,String> INSTALLING_MODULE_REGISTRY;
 	public static RegistryNode<String,URLStreamHandler,String> PROTOCOL_REGISTRY;
 	public static RegistryNode<String,RegistryNode<Object,Object,String>,String> PROVIDER_REGISTRY;
 	public static ListRegistryNode<String,String> PERSISTENT_REGISTRY;
@@ -140,8 +144,10 @@ public class CoreModule{
 		TYPE_TO_EDITOR_REGISTRY=(RegistryNode<String,ListRegistryNode<String,String>,String>)REGISTRY.getOrCreateChild(TYPE_TO_EDITOR_REGISTRY_NAME);
 		EVENT_REGISTRY=(RegistryNode<String,List<Consumer>,String>)REGISTRY.getOrCreateChild(EVENT_REGISTRY_NAME);
 		HISTORY_REGISTRY=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
-		MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object,String>,String>)REGISTRY.getOrCreateChild(MODULE_REGISTRY_NAME);
+		LOADED_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object,String>,String>)REGISTRY.getOrCreateChild(LOADED_MODULE_REGISTRY_NAME);
+		LOADING_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object,String>,String>)REGISTRY.getOrCreateChild(LOADING_MODULE_REGISTRY_NAME);
 		INSTALLED_MODULE_REGISTRY=(RegistryNode<String,Object,String>)REGISTRY.getOrCreateChild(INSTALLED_MODULE_REGISTRY_NAME);
+		INSTALLING_MODULE_REGISTRY=(RegistryNode<String,Object,String>)REGISTRY.getOrCreateChild(INSTALLING_MODULE_REGISTRY_NAME);
 		PROTOCOL_REGISTRY=(RegistryNode<String,URLStreamHandler,String>)REGISTRY.getOrCreateChild(PROTOCOL_REGISTRY_NAME);
 		PROVIDER_REGISTRY=(RegistryNode<String,RegistryNode<Object,Object,String>,String>)REGISTRY.getOrCreateChild(PROVIDER_REGISTRY_NAME);
 		PERSISTENT_REGISTRY=(ListRegistryNode<String,String>)REGISTRY.getOrCreateChild(PERSISTENT_REGISTRY_NAME,new ListRegistryNode<>());
@@ -163,10 +169,20 @@ public class CoreModule{
 			INSTALLED_MODULE_REGISTRY=(RegistryNode<String,Object,String>)getREGISTRY().getOrCreateChild(INSTALLED_MODULE_REGISTRY_NAME);
 		return INSTALLED_MODULE_REGISTRY;
 	}
-	static RegistryNode<String,RegistryNode<String,Object,String>,String> getMODULE_REGISTRY(){
-		if(MODULE_REGISTRY==null)
-			MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object,String>,String>)getREGISTRY().getOrCreateChild(MODULE_REGISTRY_NAME);
-		return MODULE_REGISTRY;
+	static RegistryNode<String,RegistryNode<String,Object,String>,String> getLOADED_MODULE_REGISTRY(){
+		if(LOADED_MODULE_REGISTRY==null)
+			LOADED_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object,String>,String>)getREGISTRY().getOrCreateChild(LOADED_MODULE_REGISTRY_NAME);
+		return LOADED_MODULE_REGISTRY;
+	}
+	static RegistryNode<String,Object,String> getINSTALLING_MODULE_REGISTRY(){
+		if(INSTALLING_MODULE_REGISTRY==null)
+			INSTALLING_MODULE_REGISTRY=(RegistryNode<String,Object,String>)getREGISTRY().getOrCreateChild(INSTALLING_MODULE_REGISTRY_NAME);
+		return INSTALLING_MODULE_REGISTRY;
+	}
+	static RegistryNode<String,RegistryNode<String,Object,String>,String> getLOADING_MODULE_REGISTRY(){
+		if(LOADING_MODULE_REGISTRY==null)
+			LOADING_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object,String>,String>)getREGISTRY().getOrCreateChild(LOADING_MODULE_REGISTRY_NAME);
+		return LOADING_MODULE_REGISTRY;
 	}
 	static RegistryNode<String,URLStreamHandler,String> getPROTOCOL_REGISTRY(){
 		if(PROTOCOL_REGISTRY==null)
