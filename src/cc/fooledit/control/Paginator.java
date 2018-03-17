@@ -17,29 +17,45 @@
 package cc.fooledit.control;
 import java.util.function.*;
 import javafx.beans.property.*;
-import javafx.scene.*;
 import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Paginator extends VBox{
-	private final Function<Integer,Node> pageFactory;
+	private final Function<Integer,Region> pageFactory;
 	private final IntegerProperty pageCount;
 	private final IntegerProperty pageIndex;
-	public Paginator(Function<Integer,Node> pageFactory,int count){
+	public Paginator(Function<Integer,Region> pageFactory,int count){
 		this.pageFactory=pageFactory;
 		pageCount=new SimpleIntegerProperty(count);
 		pageIndex=new SimpleIntegerProperty(0);
 		pageIndex.addListener((e,o,n)->showPage(n.intValue()));
+		heightProperty().addListener((e,o,n)->{
+			showPage(pageIndex.get());
+		});
+
+//		heightProperty().addListener((e,o,n)->showPage(n.intValue()));
 	}
 	public IntegerProperty pageCount(){
 		return pageCount;
 	}
-	public IntegerProperty getPageIndex(){
+	public IntegerProperty pageIndex(){
 		return pageIndex;
 	}
 	private void showPage(int page){
-		
+		getChildren().clear();
+		int height=0;
+		System.out.println(getHeight());
+
+		while(page>=0&&page<pageCount.getValue()&&height<getHeight()){
+			Region widget=pageFactory.apply(page);
+			getChildren().add(widget);
+			height+=widget.getMinHeight();
+			System.err.println(widget.getMinHeight());
+			if(widget.getMinHeight()<0)
+				return;
+			++page;
+		}
 	}
 }

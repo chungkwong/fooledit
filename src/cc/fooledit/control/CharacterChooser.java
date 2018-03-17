@@ -27,14 +27,28 @@ import javafx.stage.*;
 public class CharacterChooser extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		TextArea area=new TextArea();
-		StringBuilder buf=new StringBuilder();
-		for(int i=0;i<0x10FFFF;i++){
-			buf.append(i).append(':').appendCodePoint(i).append('\n');
-		}
-		area.setText(buf.toString());
-		primaryStage.setScene(new Scene(new BorderPane(area)));
+		int charPerLine=20;
+		int lines=0x110000/charPerLine+1;
+		Paginator paginator=new Paginator((i)->{
+			/*int start=i*charPerLine;
+			StringBuilder buf=new StringBuilder();
+			for(int j=start;j<start+charPerLine;j++){
+				try{
+					buf.appendCodePoint(j);
+				}catch(Exception ex){
+
+				}
+			}*/
+			//return new Label(buf.toString());
+			return new Label("Hello");
+		},lines);
+		primaryStage.setScene(new Scene(new BorderPane(paginator)));
 		primaryStage.show();
+		System.out.println(new Label("hello").getHeight());
+		System.out.println(new Label("hello").getMinHeight());
+		paginator.pageIndex().setValue(1);
+		System.out.println("a"+new Label("hello").prefHeight(300));
+		System.out.println("b"+new Label("hello").getMinHeight());
 	}
 	public static void main(String[] args){
 		launch(args);

@@ -16,6 +16,7 @@
  */
 package cc.fooledit.control;
 import javafx.application.*;
+import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -27,15 +28,18 @@ import javafx.stage.*;
 public class Previewer extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		TextArea content=new TextArea("");
+		SplitPane content=new SplitPane(new TextArea(),new TextArea());
+		TabPane left=new TabPane(new Tab("hello",new TextArea()),new Tab("world",new TextArea()));
 		Label box1=new Label("AAAAAAAAAA");
 		Label box2=new Label("BBBBBBBBBB");
-		TitledPane p1=new TitledPane("1",new Button("CCC"));
-		TitledPane p2=new TitledPane("2",new Button("DDD"));
+		left.setRotateGraphic(true);
+		left.setSide(Side.LEFT);
+		Tab t=new Tab("MMM");
+
 		SideBar bar=new SideBar(SideBar.Side.RIGHT);
 		bar.addItem("AA",null,box1);
 		bar.addItem("BB",null,box2);
-		primaryStage.setScene(new Scene(new BorderPane(content,null,bar,null,null)));
+		primaryStage.setScene(new Scene(new BorderPane(content,null,bar,null,left)));
 		//primaryStage.setScene(new Scene(new BorderPane(new BeanViewer(new Date()))));
 		primaryStage.show();
 	}

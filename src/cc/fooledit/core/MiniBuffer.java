@@ -17,8 +17,6 @@
 package cc.fooledit.core;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
-import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
@@ -60,7 +58,7 @@ public class MiniBuffer extends BorderPane{
 		input.setOnAction((e)->{
 			Command command=main.getCommandRegistry().get(input.getText());
 			if(command!=null){
-				executeCommand(command);
+				TaskManager.executeCommand(command);
 			}else{
 				try{
 					main.getNotifier().notify(Objects.toString(main.getScriptAPI().eval(input.getText())));
@@ -76,36 +74,6 @@ public class MiniBuffer extends BorderPane{
 		Node curr=Main.INSTANCE.getCurrentNode();
 		if(curr!=null)
 			curr.requestFocus();
-	}
-	public void executeCommand(Command command){
-		executeCommand(command,new ArrayList<>(),command.getParameters());
-	}
-	private void executeCommand(Command command,List<ScmObject> collected,List<Argument> missing){
-		if(missing.isEmpty()){
-			main.getNotifier().notifyStarted(command.getDisplayName());
-			ScmObject obj=command.accept(ScmList.toList(collected));
-			if(obj!=null)
-				main.getNotifier().notify(obj.toExternalRepresentation());
-			else
-				main.getNotifier().notifyFinished(command.getDisplayName());
-			if(!command.getName().equals("command"))
-				restore();
-		}else{
-			Argument arg=missing.get(0);
-			if(arg.getDef()!=null){
-				try{
-					collected.add(SchemeConverter.toScheme(arg.getDef().get()));
-					executeCommand(command,collected,missing.subList(1,missing.size()));
-					return;
-				}catch(Exception ex){
-					Logger.getGlobal().log(Level.FINE,null,ex);
-				}
-			}
-			setMode((p)->{
-				collected.add(new ScmString(p));
-				executeCommand(command,collected,missing.subList(1,missing.size()));
-			},null,"",new Label(MessageRegistry.getString(missing.get(0).getName(),command.getModule())),null);
-		}
 	}
 	@Override
 	public void requestFocus(){

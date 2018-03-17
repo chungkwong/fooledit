@@ -473,7 +473,7 @@ public class Main extends Application{
 					if(code.equals(next)){
 						e.consume();
 						curr=null;
-						input.executeCommand(getCommandRegistry().get(commandName));
+						TaskManager.executeCommand(getCommandRegistry().get(commandName));
 						ignore=true;
 					}else if(next!=null&&next.startsWith(code+' ')){
 						e.consume();
