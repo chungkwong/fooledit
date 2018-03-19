@@ -18,6 +18,7 @@ package cc.fooledit.core;
 import cc.fooledit.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
+import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
@@ -29,29 +30,58 @@ import javafx.scene.control.*;
  */
 public class TaskManager{
 	private static final ExecutorService executor=Executors.newCachedThreadPool();
-	private static final List<Task<?>> tasks=new ArrayList<>();
 	public static void executeTask(Task<?> task){
-		tasks.add(task);
-		task.setOnCancelled(null);
-		task.setOnSucceeded(null);
-		task.setOnFailed(null);
+		String id=getTitle(task);
+		CoreModule.TASK_REGISTRY.addChild(id,task);
+		task.setOnRunning((e)->{
+			Logger.getGlobal().log(Level.INFO,
+					MessageFormat.format(MessageRegistry.getString("EXECUTING",CoreModule.NAME),id));
+		});
+		task.setOnFailed((e)->{
+			Logger.getGlobal().log(Level.SEVERE,
+					MessageFormat.format(MessageRegistry.getString("FAILED",CoreModule.NAME),id),
+					task.getException());
+			CoreModule.TASK_REGISTRY.removeChild(id);
+		});
+		task.setOnCancelled((e)->{
+			Logger.getGlobal().log(Level.INFO,
+					MessageFormat.format(MessageRegistry.getString("CANCELLED",CoreModule.NAME),id));
+			CoreModule.TASK_REGISTRY.removeChild(id);
+		});
+		task.setOnSucceeded((e)->{
+			Logger.getGlobal().log(Level.INFO,
+					MessageFormat.format(MessageRegistry.getString("EXECUTED",CoreModule.NAME),id,task.getValue()));
+			CoreModule.TASK_REGISTRY.removeChild(id);
+		});
 		executor.submit(task);
+
+	}
+	private static String getTitle(Task<?> task){
+		String name=task.getTitle();
+		if(name==null)
+			name="";
+		if(CoreModule.TASK_REGISTRY.hasChildLoaded(name)){
+			for(int i=1;;i++){
+				String tmp=name+":"+i;
+				if(!CoreModule.TASK_REGISTRY.hasChildLoaded(tmp)){
+					name=tmp;
+					break;
+				}
+			}
+		}
+		return name;
 	}
 	public static void executeCommand(Command command){
 		executeCommand(command,new ArrayList<>(),command.getParameters());
 	}
 	public static void executeCommand(Command command,List<ScmObject> collected,List<Argument> missing){
 		if(missing.isEmpty()){
-			Main.INSTANCE.getNotifier().notifyStarted(command.getDisplayName());
-			ScmObject obj=command.accept(ScmList.toList(collected));
-			if(obj!=null){
-				Main.INSTANCE.getNotifier().notify(obj.toExternalRepresentation());
-			}else{
-				Main.INSTANCE.getNotifier().notifyFinished(command.getDisplayName());
-			}
-			if(!command.getName().equals("command")){
-				Main.INSTANCE.getMiniBuffer().restore();
-			}
+			executeTask(new UserTask<>(command.getName(),()->{
+				if(!command.getName().equals("command")){
+					Main.INSTANCE.getMiniBuffer().restore();
+				}
+				return command.accept(ScmList.toList(collected));
+			}));//FIXME
 		}else{
 			Argument arg=missing.get(0);
 			if(arg.getDef()!=null){
@@ -68,5 +98,16 @@ public class TaskManager{
 				executeCommand(command,collected,missing.subList(1,missing.size()));
 			},null,"",new Label(MessageRegistry.getString(missing.get(0).getName(),command.getModule())),null);
 		}
+	}
+}
+class UserTask<T> extends Task<T>{
+	private final ThrowableSupplier<T> workload;
+	public UserTask(String title,ThrowableSupplier<T> workload){
+		this.workload=workload;
+		updateTitle(title);
+	}
+	@Override
+	protected T call() throws Exception{
+		return workload.get();
 	}
 }

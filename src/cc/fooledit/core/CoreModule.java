@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
 import javafx.collections.*;
+import javafx.concurrent.*;
 import javafx.scene.control.*;
 /**
  *
@@ -59,6 +60,7 @@ public class CoreModule{
 	public static final String PROVIDER_REGISTRY_NAME="provider";
 	public static final String PERSISTENT_REGISTRY_NAME="persistent";
 	public static final String SERIALIZIER_REGISTRY_NAME="serializier";
+	public static final String TASK_REGISTRY_NAME="task";
 	public static final String TEMPLATE_REGISTRY_NAME="template";
 	public static final String TEMPLATE_TYPE_REGISTRY_NAME="template_type";
 	public static final String WINDOW_REGISTRY_NAME="window";
@@ -87,6 +89,7 @@ public class CoreModule{
 	public static RegistryNode<String,RegistryNode<Object,Object,String>,String> PROVIDER_REGISTRY;
 	public static ListRegistryNode<String,String> PERSISTENT_REGISTRY;
 	public static RegistryNode<String,Serializier,String> SERIALIZIER_REGISTRY;
+	public static RegistryNode<String,Task,String> TASK_REGISTRY;
 	public static RegistryNode<String,Object,String> TEMPLATE_REGISTRY;
 	public static RegistryNode<String,Function<Map<Object,Object>,Template>,String> TEMPLATE_TYPE_REGISTRY;
 	public static RegistryNode<String,Object,String> MISC_REGISTRY;
@@ -152,6 +155,7 @@ public class CoreModule{
 		PROVIDER_REGISTRY=(RegistryNode<String,RegistryNode<Object,Object,String>,String>)REGISTRY.getOrCreateChild(PROVIDER_REGISTRY_NAME);
 		PERSISTENT_REGISTRY=(ListRegistryNode<String,String>)REGISTRY.getOrCreateChild(PERSISTENT_REGISTRY_NAME,new ListRegistryNode<>());
 		SERIALIZIER_REGISTRY=(RegistryNode<String,Serializier,String>)REGISTRY.getOrCreateChild(SERIALIZIER_REGISTRY_NAME);
+		TASK_REGISTRY=(RegistryNode<String,Task,String>)REGISTRY.getOrCreateChild(TASK_REGISTRY_NAME);
 		TEMPLATE_REGISTRY=(RegistryNode<String,Object,String>)REGISTRY.getOrCreateChild(TEMPLATE_REGISTRY_NAME);
 		TEMPLATE_TYPE_REGISTRY=(RegistryNode<String,Function<Map<Object,Object>,Template>,String>)REGISTRY.getOrCreateChild(TEMPLATE_TYPE_REGISTRY_NAME);
 		MISC_REGISTRY=(RegistryNode<String,Object,String>)REGISTRY.getOrCreateChild(MISC_REGISTRY_NAME);

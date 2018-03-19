@@ -19,12 +19,10 @@ import cc.fooledit.*;
 import cc.fooledit.control.*;
 import java.util.*;
 import java.util.function.*;
-import java.util.logging.*;
 import java.util.stream.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javax.script.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -60,12 +58,9 @@ public class MiniBuffer extends BorderPane{
 			if(command!=null){
 				TaskManager.executeCommand(command);
 			}else{
-				try{
-					main.getNotifier().notify(Objects.toString(main.getScriptAPI().eval(input.getText())));
-					focusCurrentNode();
-				}catch(ScriptException ex){
-					Logger.getGlobal().log(Level.SEVERE,MessageRegistry.getString("FAILED",CoreModule.NAME),ex);
-				}
+				TaskManager.executeTask(new UserTask<>("script",()->{
+					return Objects.toString(main.getScriptAPI().eval(input.getText()));
+				}));
 			}
 		});
 		focusCurrentNode();
