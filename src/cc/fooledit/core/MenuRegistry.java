@@ -18,7 +18,6 @@ package cc.fooledit.core;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.spi.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.util.function.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
@@ -51,7 +50,7 @@ public class MenuRegistry{
 					}else if(props.hasChild(COMMAND)){
 						String commandName=(String)props.getChild(COMMAND);
 						MenuItem mi=new MenuItem(getName(props));
-						mi.setOnAction((e)->Main.INSTANCE.getCommandRegistry().get(commandName).accept(ScmNil.NIL));
+						mi.setOnAction((e)->TaskManager.executeCommand(Main.INSTANCE.getCommandRegistry().get(commandName)));
 						items.add(mi);
 					}else{
 						items.add(addMenu(props));

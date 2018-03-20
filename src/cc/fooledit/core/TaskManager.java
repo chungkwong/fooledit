@@ -22,6 +22,7 @@ import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
+import javafx.application.*;
 import javafx.concurrent.*;
 import javafx.scene.control.*;
 /**
@@ -78,7 +79,7 @@ public class TaskManager{
 		if(missing.isEmpty()){
 			executeTask(new UserTask<>(command.getName(),()->{
 				if(!command.getName().equals("command")){
-					Main.INSTANCE.getMiniBuffer().restore();
+					Platform.runLater(()->Main.INSTANCE.getMiniBuffer().restore());
 				}
 				return command.accept(ScmList.toList(collected));
 			}));//FIXME
@@ -93,10 +94,10 @@ public class TaskManager{
 					Logger.getGlobal().log(Level.FINE,null,ex);
 				}
 			}
-			Main.INSTANCE.getMiniBuffer().setMode((String p)->{
+			Platform.runLater(()->Main.INSTANCE.getMiniBuffer().setMode((String p)->{
 				collected.add(new ScmString(p));
 				executeCommand(command,collected,missing.subList(1,missing.size()));
-			},null,"",new Label(MessageRegistry.getString(missing.get(0).getName(),command.getModule())),null);
+			},null,"",new Label(MessageRegistry.getString(missing.get(0).getName(),command.getModule())),null));
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2017,2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ package cc.fooledit.core;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
-import java.util.logging.*;
+import javafx.application.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -28,21 +28,32 @@ public class Command{
 	private final String name;
 	private final ThrowableFunction<ScmPairOrNil,ScmObject> action;
 	private final List<Argument> parameters;
+	private final boolean interactive;
 	private static Pair<Command,ScmPairOrNil> lastCommand=new Pair<>(null,null);
 	public Command(String name,Runnable action,String module){
+		this(name,action,module,true);
+	}
+	public Command(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
+		this(name,action,module,true);
+	}
+	public Command(String name,List<Argument> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
+		this(name,parameters,action,module,true);
+	}
+	public Command(String name,Runnable action,String module,boolean interactive){
 		this(name,(t)->{
 			action.run();
 			return null;
-		},module);
+		},module,interactive);
 	}
-	public Command(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
-		this(name,Collections.emptyList(),action,module);
+	public Command(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module,boolean interactive){
+		this(name,Collections.emptyList(),action,module,interactive);
 	}
-	public Command(String name,List<Argument> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
+	public Command(String name,List<Argument> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module,boolean interactive){
 		this.action=action;
 		this.module=module;
 		this.name=name;
 		this.parameters=parameters;
+		this.interactive=interactive;
 		//getDisplayName();
 	}
 	public String getDisplayName(){
@@ -57,18 +68,40 @@ public class Command{
 	public List<Argument> getParameters(){
 		return parameters;
 	}
-	public ScmObject accept(ScmPairOrNil t){
+	public boolean isInteractive(){
+		return interactive;
+	}
+	public ScmObject accept(ScmPairOrNil t)throws Exception{
 		try{
-			return action.accept(t);
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.SEVERE,name+MessageRegistry.getString("FAILED",CoreModule.NAME),ex);
-			return null;
+			if(isInteractive()&&!Platform.isFxApplicationThread()){
+				ScmObject[] result=new ScmObject[1];
+				Exception[] exception=new Exception[1];
+				Platform.runLater(()->{
+					try{
+						result[0]=action.accept(t);
+					}catch(Exception ex){
+						exception[0]=ex;
+					}
+					synchronized(result){
+						result.notifyAll();
+					}
+				});
+				synchronized(result){
+					result.wait();
+				}
+				if(exception[0]==null)
+					return result[0];
+				else
+					throw new Exception(exception[0]);
+			}else{
+				return action.accept(t);
+			}
 		}finally{
 			if(!(name.equals("command")||name.equals("restore")||name.equals("repeat")))
 				lastCommand=new Pair<>(this,t);
 		}
 	}
-	public static ScmObject repeat(int times){
+	public static ScmObject repeat(int times) throws Exception{
 		if(lastCommand!=null){
 			ScmListBuilder buf=new ScmListBuilder();
 			for(int i=0;i<times;i++)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2017,2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,43 +127,43 @@ public class Main extends Application{
 		addCommand("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
 		addCommand("restore",()->getMiniBuffer().restore());
 		addCommand("repeat",(o)->Command.repeat(o instanceof ScmNil?1:SchemeConverter.toInteger(ScmList.first(o))));
-		addCommand("map-mime-to-type",(o)->{
+		addCommandBatch("map-mime-to-type",(o)->{
 			DataObjectTypeRegistry.registerMime(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
-		addCommand("map-suffix-to-mime",(o)->{
+		addCommandBatch("map-suffix-to-mime",(o)->{
 			ContentTypeHelper.getSUFFIX_GUESSER().registerSuffix(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
-		addCommand("map-glob-to-mime",(o)->{
+		addCommandBatch("map-glob-to-mime",(o)->{
 			ContentTypeHelper.getURL_GUESSER().registerPathPattern(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
-		addCommand("mime-alias",(o)->{
+		addCommandBatch("mime-alias",(o)->{
 			CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.addChild(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
-		addCommand("mime-parent",(o)->{
+		addCommandBatch("mime-parent",(o)->{
 			CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.addChild(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
-		addCommand("ensure-loaded",(o)->{
+		addCommandBatch("ensure-loaded",(o)->{
 			ModuleRegistry.ensureLoaded(SchemeConverter.toString(ScmList.first(o)));
 			return ScmNil.NIL;
 		});
-		addCommand("get-registry",(o)->{
+		addCommandBatch("get-registry",(o)->{
 			return SchemeConverter.toScheme(Registry.ROOT.resolve(SchemeConverter.toString(ScmList.first(o))));
 		});
-		addCommand("get-entry",(o)->{
+		addCommandBatch("get-entry",(o)->{
 			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).getChild(SchemeConverter.toString(ScmList.second(o))));
 		});
-		addCommand("set-entry!",(o)->{
+		addCommandBatch("set-entry!",(o)->{
 			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).addChild(SchemeConverter.toString(ScmList.second(o)),SchemeConverter.toJava(ScmList.third(o))));
 		});
-		addCommand("get-or-create-registry",(o)->{
+		addCommandBatch("get-or-create-registry",(o)->{
 			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).getOrCreateChild(SchemeConverter.toString(ScmList.second(o))));
 		});
-		addCommand("inform-jar",(o)->{
+		addCommandBatch("inform-jar",(o)->{
 			String jar=SchemeConverter.toString(ScmList.first(o));
 			String cls=SchemeConverter.toString(ScmList.second(o));
 			String method=SchemeConverter.toString(ScmList.third(o));
@@ -177,6 +177,12 @@ public class Main extends Application{
 	}
 	private void addCommand(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
 		globalCommandRegistry.addChild(name,new Command(name,action,CoreModule.NAME));
+	}
+	private void addCommandBatch(String name,Runnable action){
+		globalCommandRegistry.addChild(name,new Command(name,action,CoreModule.NAME,false));
+	}
+	private void addCommandBatch(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
+		globalCommandRegistry.addChild(name,new Command(name,action,CoreModule.NAME,false));
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
@@ -221,7 +227,7 @@ public class Main extends Application{
 	}
 	private MenuItem createCommandMenuItem(String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase(),CoreModule.NAME));
-		item.setOnAction((e)->globalCommandRegistry.getChild(name).accept(ScmNil.NIL));
+		item.setOnAction((e)->TaskManager.executeCommand(globalCommandRegistry.getChild(name)));
 		return item;
 	}
 	private void updateCurrentNode(Node node){
