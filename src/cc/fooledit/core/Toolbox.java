@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,29 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.spi.*;
-import java.util.*;
 import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface DataEditor<T extends DataObject>{
-	Node edit(T data,Object remark,RegistryNode<String,Object,String> meta);
-	default RegistryNode<String,Command,String> getCommandRegistry(){
-		return new SimpleRegistryNode<>();
-	}
-	default NavigableRegistryNode<String,String,String> getKeymapRegistry(){
-		return new NavigableRegistryNode<>();
-	}
-	default MenuRegistry getMenuRegistry(){
-		return new MenuRegistry();
-	}
-	default Object getRemark(Node node){
-		return null;
-	}
-	default Collection<Toolbox> getToolboxs(){
-		return Collections.emptyList();
-	}
+public interface Toolbox<T extends DataObject<T>>{
 	String getName();
+	String getDisplayName();
+	Node createInstance(T obj);
 }

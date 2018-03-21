@@ -1,0 +1,5 @@
+BorderPane:focused{
+    -fx-background-color: #FC612C;
+    -fx-background-insets: -0.2, 1, 2, -1.4, 2.6;
+    -fx-background-radius: 3, 2, 1, 4, 1;
+}

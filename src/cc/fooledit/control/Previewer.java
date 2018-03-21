@@ -16,7 +16,6 @@
  */
 package cc.fooledit.control;
 import javafx.application.*;
-import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -28,20 +27,32 @@ import javafx.stage.*;
 public class Previewer extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		SplitPane content=new SplitPane(new TextArea(),new TextArea());
-		TabPane left=new TabPane(new Tab("hello",new TextArea()),new Tab("world",new TextArea()));
-		Label box1=new Label("AAAAAAAAAA");
+		BorderPane inner=new BorderPane(new TextArea(),new Label("a"),new Label("b"),new Label("c"),new Label("d"));
+		BorderPane content=new BorderPane(inner,new Label("e"),new Label("f"),new Label("g"),new Label("h"));
+		Button b1=new Button("UP");
+
+		b1.setOnAction((e)->{
+			primaryStage.getScene().focusOwnerProperty();
+			inner.requestFocus();
+		});
+
+
+		VBox box1=new VBox(b1);
 		Label box2=new Label("BBBBBBBBBB");
-		left.setRotateGraphic(true);
-		left.setSide(Side.LEFT);
 		Tab t=new Tab("MMM");
 
 		SideBar bar=new SideBar(SideBar.Side.RIGHT);
 		bar.addItem("AA",null,box1);
 		bar.addItem("BB",null,box2);
-		primaryStage.setScene(new Scene(new BorderPane(content,null,bar,null,left)));
+		Scene scene=new Scene(new BorderPane(content,null,bar,null,null));
+		scene.getStylesheets().add("file:///home/kwong/NetBeansProjects/fooledit/modules/core/stylesheets/dark.css");
+		primaryStage.setScene(scene);
 		//primaryStage.setScene(new Scene(new BorderPane(new BeanViewer(new Date()))));
 		primaryStage.show();
+		primaryStage.getScene().focusOwnerProperty().addListener((e,o,n)->{
+			System.out.println(n);
+		});
+
 	}
 	public static void main(String[] args){
 		launch(args);

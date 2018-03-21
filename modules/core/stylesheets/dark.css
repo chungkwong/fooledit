@@ -466,6 +466,7 @@ is being used to size a border should also be in pixels.
 .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button:pressed {
     -fx-color: -fx-pressed-base;
 }
+BorderPane:focused,
 .button:focused,
 .toggle-button:focused,
 .radio-button:focused > .radio,
