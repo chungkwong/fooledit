@@ -60,7 +60,7 @@ public class Main extends Application{
 	private final ScriptAPI script;
 	private final Scene scene=new Scene(root);
 	private Stage stage;
-	private Node currentNode;
+	private Node currentNode,currentFocus;
 	private List<KeyEvent> macro=new ArrayList<>();
 	private boolean recording=false;
 	private HistoryRing<Map<Object,Object>> worksheets=new HistoryRing<>();
@@ -76,7 +76,7 @@ public class Main extends Application{
 		}
 		Logger.getGlobal().addHandler(notifier);
 		scene.getStylesheets().add(getFile("stylesheets/base.css",CoreModule.NAME).toURI().toString());
-		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
+		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentFocus(n));
 		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		script=new ScriptAPI();
 		registerStandardCommand();
@@ -230,6 +230,18 @@ public class Main extends Application{
 		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase(),CoreModule.NAME));
 		item.setOnAction((e)->TaskManager.executeCommand(globalCommandRegistry.getChild(name)));
 		return item;
+	}
+	private void updateCurrentFocus(Node node){
+		if(node!=null){
+			Node parent=node.getParent();
+			while(parent!=null&&parent.getParent()!=root){
+				parent=parent.getParent();
+			}
+			if(root.getCenter()==parent){
+				currentFocus=node;
+				updateCurrentNode(node);
+			}
+		}
 	}
 	private void updateCurrentNode(Node node){
 		while(!(node instanceof WorkSheet)&&node!=null){
