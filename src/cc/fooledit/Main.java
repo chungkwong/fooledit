@@ -33,6 +33,7 @@ import java.util.function.*;
 import java.util.logging.*;
 import javafx.application.*;
 import javafx.collections.*;
+import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
@@ -77,6 +78,7 @@ public class Main extends Application{
 		Logger.getGlobal().addHandler(notifier);
 		scene.getStylesheets().add(getFile("stylesheets/base.css",CoreModule.NAME).toURI().toString());
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentFocus(n));
+		scene.focusOwnerProperty().addListener((e,o,n)->System.err.println(n));
 		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		script=new ScriptAPI();
 		registerStandardCommand();
@@ -116,6 +118,12 @@ public class Main extends Application{
 		addCommand("always-on-top-frame",()->stage.setAlwaysOnTop(true));
 		addCommand("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		addCommand("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
+		addCommand("focus-right",()->focusRight());
+		addCommand("focus-left",()->focusLeft());
+		addCommand("focus-above",()->focusAbove());
+		addCommand("focus-below",()->focusBelow());
+		addCommand("focus-up",()->focusUp());
+		addCommand("focus-down",()->focusDown());
 		addCommand("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		addCommand("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemObjectType.INSTANCE)));
 		addCommand("registry",()->addAndShow(DataObjectRegistry.create(RegistryEditor.INSTANCE)));
@@ -525,5 +533,152 @@ public class Main extends Application{
 		while(owner!=null&&owner!=currentNode)
 			owner=owner.getParent();
 		return owner!=null;
+	}
+	private void focusUp(){
+		if(currentFocus!=null){
+			Parent currentParent=currentFocus.getParent();
+			if(currentParent!=null)
+				currentParent.requestFocus();
+		}
+	}
+	private void focusDown(){
+		while(currentFocus!=null){
+			if(currentFocus instanceof BorderPane){
+				((BorderPane)currentFocus).getCenter().requestFocus();
+				return;
+			}else if(currentFocus instanceof SplitPane){
+				((SplitPane)currentFocus).getItems().get(0).requestFocus();
+			}else{
+				return;
+			}
+		}
+	}
+	private void focusAbove(){
+		if(currentFocus!=null){
+			Parent currentParent=currentFocus.getParent();
+			while(currentParent!=null){
+				if(currentParent instanceof BorderPane){
+					if(((BorderPane)currentParent).getBottom()==currentFocus){
+						((BorderPane)currentParent).getCenter().requestFocus();
+						return;
+					}else if(((BorderPane)currentParent).getTop()!=null&&((BorderPane)currentParent).getTop()!=currentFocus){
+						((BorderPane)currentParent).getTop().requestFocus();
+						return;
+					}else{
+						currentParent.requestFocus();
+						return;
+					}
+				}else if(currentParent instanceof SplitPane&&((SplitPane)currentParent).getOrientation()==Orientation.VERTICAL){
+					ObservableList<Node> items=((SplitPane)currentParent).getItems();
+					int index=items.indexOf(currentFocus);
+					if(index>0){
+						items.get(index-1).requestFocus();
+						return;
+					}else{
+						currentParent.requestFocus();
+						return;
+					}
+				}else{
+					currentParent.requestFocus();
+					return;
+				}
+			}
+		}
+	}
+	private void focusBelow(){
+		if(currentFocus!=null){
+			Parent currentParent=currentFocus.getParent();
+			while(currentParent!=null){
+				if(currentParent instanceof BorderPane){
+					if(((BorderPane)currentParent).getTop()==currentFocus){
+						((BorderPane)currentParent).getCenter().requestFocus();
+						return;
+					}else if(((BorderPane)currentParent).getBottom()!=null&&((BorderPane)currentParent).getBottom()!=currentFocus){
+						((BorderPane)currentParent).getBottom().requestFocus();
+						return;
+					}else{
+						currentParent.requestFocus();
+						return;
+					}
+				}else if(currentParent instanceof SplitPane&&((SplitPane)currentParent).getOrientation()==Orientation.VERTICAL){
+					ObservableList<Node> items=((SplitPane)currentParent).getItems();
+					int index=items.indexOf(currentFocus);
+					if(index+1<items.size()){
+						items.get(index+1).requestFocus();
+						return;
+					}else{
+						currentParent.requestFocus();
+						return;
+					}
+				}else{
+					currentParent.requestFocus();
+					return;
+				}
+			}
+		}
+	}
+	private void focusLeft(){
+		if(currentFocus!=null){
+			Parent currentParent=currentFocus.getParent();
+			while(currentParent!=null){
+				if(currentParent instanceof BorderPane){
+					if(((BorderPane)currentParent).getRight()==currentFocus){
+						((BorderPane)currentParent).getCenter().requestFocus();
+						return;
+					}else if(((BorderPane)currentParent).getCenter()!=currentFocus&&((BorderPane)currentParent).getLeft()!=null){
+						((BorderPane)currentParent).getLeft().requestFocus();
+						return;
+					}else{
+						currentParent.requestFocus();
+						return;
+					}
+				}else if(currentParent instanceof SplitPane&&((SplitPane)currentParent).getOrientation()==Orientation.HORIZONTAL){
+					ObservableList<Node> items=((SplitPane)currentParent).getItems();
+					int index=items.indexOf(currentFocus);
+					if(index>0){
+						items.get(index-1).requestFocus();
+						return;
+					}else{
+						currentParent.requestFocus();
+						return;
+					}
+				}else{
+					currentParent.requestFocus();
+					return;
+				}
+			}
+		}
+	}
+	private void focusRight(){
+		if(currentFocus!=null){
+			Parent currentParent=currentFocus.getParent();
+			while(currentParent!=null){
+				if(currentParent instanceof BorderPane){
+					if(((BorderPane)currentParent).getLeft()==currentFocus){
+						((BorderPane)currentParent).getCenter().requestFocus();
+						return;
+					}else if(((BorderPane)currentParent).getCenter()!=currentFocus&&((BorderPane)currentParent).getRight()!=null){
+						((BorderPane)currentParent).getRight().requestFocus();
+						return;
+					}else{
+						currentParent.requestFocus();
+						return;
+					}
+				}else if(currentParent instanceof SplitPane&&((SplitPane)currentParent).getOrientation()==Orientation.HORIZONTAL){
+					ObservableList<Node> items=((SplitPane)currentParent).getItems();
+					int index=items.indexOf(currentFocus);
+					if(index+1<items.size()){
+						items.get(index+1).requestFocus();
+						return;
+					}else{
+						currentParent.requestFocus();
+						return;
+					}
+				}else{
+					currentParent.requestFocus();
+					return;
+				}
+			}
+		}
 	}
 }

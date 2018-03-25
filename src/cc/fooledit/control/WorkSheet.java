@@ -81,11 +81,11 @@ public class WorkSheet extends BorderPane{
 			registry.addChild(CURRENT,true);
 		}
 	}
-	@Override
+/*	@Override
 	public void requestFocus(){
 		super.requestFocus();
 		getCenter().requestFocus();
-	}
+	}*/
 	public void splitVertically(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
 		split(data,editor,remark,Orientation.VERTICAL);
 	}
