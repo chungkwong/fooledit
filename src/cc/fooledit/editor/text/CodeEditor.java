@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.text;
-import cc.fooledit.editor.text.parser.ParserBuilder;
 import cc.fooledit.control.*;
 import cc.fooledit.editor.text.LineNumberFactory;
+import cc.fooledit.editor.text.parser.*;
 import cc.fooledit.util.Pair;
 import cc.fooledit.util.*;
 import java.text.*;
@@ -40,8 +40,8 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import org.fxmisc.flowless.*;
-import org.fxmisc.richtext.*;
 import org.fxmisc.richtext.Caret.CaretVisibility;
+import org.fxmisc.richtext.*;
 import org.fxmisc.richtext.model.*;
 import org.reactfx.collection.*;
 import org.reactfx.value.*;
@@ -170,11 +170,6 @@ public class CodeEditor extends BorderPane{
 			}
 		}
 		changing=false;
-	}
-	@Override
-	public void requestFocus(){
-		super.requestFocus();
-		area.requestFocus();
 	}
 	private Runnable destroyCompleteSupport=null;
 	public void setAutoCompleteProvider(AutoCompleteProvider provider,boolean once){

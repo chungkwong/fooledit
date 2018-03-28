@@ -33,7 +33,6 @@ import java.util.function.*;
 import java.util.logging.*;
 import javafx.application.*;
 import javafx.collections.*;
-import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
@@ -61,7 +60,7 @@ public class Main extends Application{
 	private final ScriptAPI script;
 	private final Scene scene=new Scene(root);
 	private Stage stage;
-	private Node currentNode,currentFocus;
+	private Node currentNode;
 	private List<KeyEvent> macro=new ArrayList<>();
 	private boolean recording=false;
 	private HistoryRing<Map<Object,Object>> worksheets=new HistoryRing<>();
@@ -77,7 +76,7 @@ public class Main extends Application{
 		}
 		Logger.getGlobal().addHandler(notifier);
 		scene.getStylesheets().add(getFile("stylesheets/base.css",CoreModule.NAME).toURI().toString());
-		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentFocus(n));
+		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		scene.focusOwnerProperty().addListener((e,o,n)->System.err.println(n));
 		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		script=new ScriptAPI();
@@ -239,26 +238,16 @@ public class Main extends Application{
 		item.setOnAction((e)->TaskManager.executeCommand(globalCommandRegistry.getChild(name)));
 		return item;
 	}
-	private void updateCurrentFocus(Node node){
-		if(node!=null){
-			Node parent=node.getParent();
-			while(parent!=null&&parent.getParent()!=root){
-				parent=parent.getParent();
-			}
-			if(root.getCenter()==parent){
-				currentFocus=node;
-				updateCurrentNode(node);
-			}
-		}
-	}
 	private void updateCurrentNode(Node node){
 		while(!(node instanceof WorkSheet)&&node!=null){
 			node=node.getParent();
 		}
 		if(node!=null){
 			currentNode=((WorkSheet)node).getCenter();
-			commander.getChildren().set(1,((WorkSheet)node).getDataEditor().getMenuRegistry().getMenuBar());
-			commandRegistry.setLocal(getLocalCommandRegistry().toMap());
+			if(!((WorkSheet)node).isSplit()){
+				commander.getChildren().set(1,((WorkSheet)node).getDataEditor().getMenuRegistry().getMenuBar());
+				commandRegistry.setLocal(getLocalCommandRegistry().toMap());
+			}
 		}
 	}
 	public void addAndShow(RegistryNode<String,Object,String> data){
@@ -334,13 +323,23 @@ public class Main extends Application{
 		return globalCommandRegistry;
 	}
 	private RegistryNode<String,Command,String> getLocalCommandRegistry(){
-		return getCurrentWorkSheet().getDataEditor().getCommandRegistry();
+		WorkSheet workSheet=getCurrentWorkSheet();
+		if(workSheet.isSplit()){
+			return (RegistryNode<String,Command,String>)CoreModule.REGISTRY.getOrCreateChild("EMPTY");
+		}else{
+			return workSheet.getDataEditor().getCommandRegistry();
+		}
 	}
 	public NavigableRegistryNode<String,String,String> getGlobalKeymapRegistry(){
 		return keymapRegistry;
 	}
 	private NavigableRegistryNode<String,String,String> getLocalKeymapRegistry(){
-		return getCurrentWorkSheet().getDataEditor().getKeymapRegistry();
+		WorkSheet workSheet=getCurrentWorkSheet();
+		if(workSheet.isSplit()){
+			return (NavigableRegistryNode<String,String,String>)CoreModule.REGISTRY.getOrCreateChild("NAVIFABLE_EMPTY",new NavigableRegistryNode<>());
+		}else{
+			return workSheet.getDataEditor().getKeymapRegistry();
+		}
 	}
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
@@ -534,151 +533,47 @@ public class Main extends Application{
 			owner=owner.getParent();
 		return owner!=null;
 	}
-	private void focusUp(){
-		if(currentFocus!=null){
-			Parent currentParent=currentFocus.getParent();
-			if(currentParent!=null)
-				currentParent.requestFocus();
+	private WorkSheet getParentWorkSheet(){
+		Node parent=getCurrentWorkSheet();
+		if(parent!=null){
+			parent=parent.getParent();
+			while(parent!=null&&!(parent instanceof WorkSheet))
+				parent=parent.getParent();
+
 		}
+		return (WorkSheet)parent;
+	}
+	private void focusUp(){
+		getParentWorkSheet().requestFocus();
 	}
 	private void focusDown(){
-		while(currentFocus!=null){
-			if(currentFocus instanceof BorderPane){
-				((BorderPane)currentFocus).getCenter().requestFocus();
-				return;
-			}else if(currentFocus instanceof SplitPane){
-				((SplitPane)currentFocus).getItems().get(0).requestFocus();
-			}else{
-				return;
-			}
+		WorkSheet workSheet=getCurrentWorkSheet();
+		if(workSheet!=null&&workSheet.isSplit()){
+			workSheet.getFirst().requestFocus();
 		}
 	}
 	private void focusAbove(){
-		if(currentFocus!=null){
-			Parent currentParent=currentFocus.getParent();
-			while(currentParent!=null){
-				if(currentParent instanceof BorderPane){
-					if(((BorderPane)currentParent).getBottom()==currentFocus){
-						((BorderPane)currentParent).getCenter().requestFocus();
-						return;
-					}else if(((BorderPane)currentParent).getTop()!=null&&((BorderPane)currentParent).getTop()!=currentFocus){
-						((BorderPane)currentParent).getTop().requestFocus();
-						return;
-					}else{
-						currentParent.requestFocus();
-						return;
-					}
-				}else if(currentParent instanceof SplitPane&&((SplitPane)currentParent).getOrientation()==Orientation.VERTICAL){
-					ObservableList<Node> items=((SplitPane)currentParent).getItems();
-					int index=items.indexOf(currentFocus);
-					if(index>0){
-						items.get(index-1).requestFocus();
-						return;
-					}else{
-						currentParent.requestFocus();
-						return;
-					}
-				}else{
-					currentParent.requestFocus();
-					return;
-				}
-			}
+		WorkSheet workSheet=getParentWorkSheet();
+		if(workSheet!=null&&workSheet.isSplit()){
+			workSheet.getFirst().requestFocus();
 		}
 	}
 	private void focusBelow(){
-		if(currentFocus!=null){
-			Parent currentParent=currentFocus.getParent();
-			while(currentParent!=null){
-				if(currentParent instanceof BorderPane){
-					if(((BorderPane)currentParent).getTop()==currentFocus){
-						((BorderPane)currentParent).getCenter().requestFocus();
-						return;
-					}else if(((BorderPane)currentParent).getBottom()!=null&&((BorderPane)currentParent).getBottom()!=currentFocus){
-						((BorderPane)currentParent).getBottom().requestFocus();
-						return;
-					}else{
-						currentParent.requestFocus();
-						return;
-					}
-				}else if(currentParent instanceof SplitPane&&((SplitPane)currentParent).getOrientation()==Orientation.VERTICAL){
-					ObservableList<Node> items=((SplitPane)currentParent).getItems();
-					int index=items.indexOf(currentFocus);
-					if(index+1<items.size()){
-						items.get(index+1).requestFocus();
-						return;
-					}else{
-						currentParent.requestFocus();
-						return;
-					}
-				}else{
-					currentParent.requestFocus();
-					return;
-				}
-			}
+		WorkSheet workSheet=getParentWorkSheet();
+		if(workSheet!=null&&workSheet.isSplit()){
+			workSheet.getLast().requestFocus();
 		}
 	}
 	private void focusLeft(){
-		if(currentFocus!=null){
-			Parent currentParent=currentFocus.getParent();
-			while(currentParent!=null){
-				if(currentParent instanceof BorderPane){
-					if(((BorderPane)currentParent).getRight()==currentFocus){
-						((BorderPane)currentParent).getCenter().requestFocus();
-						return;
-					}else if(((BorderPane)currentParent).getCenter()!=currentFocus&&((BorderPane)currentParent).getLeft()!=null){
-						((BorderPane)currentParent).getLeft().requestFocus();
-						return;
-					}else{
-						currentParent.requestFocus();
-						return;
-					}
-				}else if(currentParent instanceof SplitPane&&((SplitPane)currentParent).getOrientation()==Orientation.HORIZONTAL){
-					ObservableList<Node> items=((SplitPane)currentParent).getItems();
-					int index=items.indexOf(currentFocus);
-					if(index>0){
-						items.get(index-1).requestFocus();
-						return;
-					}else{
-						currentParent.requestFocus();
-						return;
-					}
-				}else{
-					currentParent.requestFocus();
-					return;
-				}
-			}
+		WorkSheet workSheet=getParentWorkSheet();
+		if(workSheet!=null&&workSheet.isSplit()){
+			workSheet.getFirst().requestFocus();
 		}
 	}
 	private void focusRight(){
-		if(currentFocus!=null){
-			Parent currentParent=currentFocus.getParent();
-			while(currentParent!=null){
-				if(currentParent instanceof BorderPane){
-					if(((BorderPane)currentParent).getLeft()==currentFocus){
-						((BorderPane)currentParent).getCenter().requestFocus();
-						return;
-					}else if(((BorderPane)currentParent).getCenter()!=currentFocus&&((BorderPane)currentParent).getRight()!=null){
-						((BorderPane)currentParent).getRight().requestFocus();
-						return;
-					}else{
-						currentParent.requestFocus();
-						return;
-					}
-				}else if(currentParent instanceof SplitPane&&((SplitPane)currentParent).getOrientation()==Orientation.HORIZONTAL){
-					ObservableList<Node> items=((SplitPane)currentParent).getItems();
-					int index=items.indexOf(currentFocus);
-					if(index+1<items.size()){
-						items.get(index+1).requestFocus();
-						return;
-					}else{
-						currentParent.requestFocus();
-						return;
-					}
-				}else{
-					currentParent.requestFocus();
-					return;
-				}
-			}
+		WorkSheet workSheet=getParentWorkSheet();
+		if(workSheet!=null&&workSheet.isSplit()){
+			workSheet.getLast().requestFocus();
 		}
 	}
 }

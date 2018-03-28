@@ -27,7 +27,7 @@ import javafx.stage.*;
 public class Previewer extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		BorderPane inner=new BorderPane(new TextArea(),new Label("a"),new Label("b"),new Label("c"),new Label("d"));
+		SplitPane inner=new SplitPane(new TextArea(),new Label("a"),new Label("b"),new Label("c"),new Label("d"));
 		BorderPane content=new BorderPane(inner,new Label("e"),new Label("f"),new Label("g"),new Label("h"));
 		Button b1=new Button("UP");
 
@@ -52,7 +52,7 @@ public class Previewer extends Application{
 		primaryStage.getScene().focusOwnerProperty().addListener((e,o,n)->{
 			System.out.println(n);
 		});
-
+		System.out.println(new BorderPane().isDisable()+":"+new BorderPane().isDisabled());
 	}
 	public static void main(String[] args){
 		launch(args);
