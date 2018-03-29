@@ -18,6 +18,9 @@
 	"Cancel":"restore",
 	"C-U":"repeat",
 	"Again":"repeat",
-	"M-Page Down":"next-buffer",
-	"M-Page Up":"previous-buffer"
+	"C-Page Down":"next-buffer",
+	"C-Page Up":"previous-buffer",
+	"M-Page Up":"focus-up",
+	"M-Page Down":"focus-down",
+	"C-Tab":"focus-switch"
 }

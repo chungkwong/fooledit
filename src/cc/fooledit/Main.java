@@ -60,7 +60,7 @@ public class Main extends Application{
 	private final ScriptAPI script;
 	private final Scene scene=new Scene(root);
 	private Stage stage;
-	private Node currentNode;
+	private WorkSheet currentWorksheet;
 	private List<KeyEvent> macro=new ArrayList<>();
 	private boolean recording=false;
 	private HistoryRing<Map<Object,Object>> worksheets=new HistoryRing<>();
@@ -117,10 +117,7 @@ public class Main extends Application{
 		addCommand("always-on-top-frame",()->stage.setAlwaysOnTop(true));
 		addCommand("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		addCommand("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
-		addCommand("focus-right",()->focusRight());
-		addCommand("focus-left",()->focusLeft());
-		addCommand("focus-above",()->focusAbove());
-		addCommand("focus-below",()->focusBelow());
+		addCommand("focus-switch",()->focusSwitch());
 		addCommand("focus-up",()->focusUp());
 		addCommand("focus-down",()->focusDown());
 		addCommand("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
@@ -243,7 +240,10 @@ public class Main extends Application{
 			node=node.getParent();
 		}
 		if(node!=null){
-			currentNode=((WorkSheet)node).getCenter();
+			if(currentWorksheet!=null)
+				currentWorksheet.getStyleClass().remove("current");
+			node.getStyleClass().add("current");
+			currentWorksheet=(WorkSheet)node;
 			if(!((WorkSheet)node).isSplit()){
 				commander.getChildren().set(1,((WorkSheet)node).getDataEditor().getMenuRegistry().getMenuBar());
 				commandRegistry.setLocal(getLocalCommandRegistry().toMap());
@@ -273,13 +273,13 @@ public class Main extends Application{
 		return getCurrentWorkSheet().getDataEditor();
 	}
 	public Object getCurrentRemark(){
-		return getCurrentDataEditor().getRemark(currentNode);
+		return getCurrentDataEditor().getRemark(getCurrentNode());
 	}
 	public Node getCurrentNode(){
-		return currentNode;
+		return currentWorksheet!=null?currentWorksheet.getCenter():null;
 	}
 	public WorkSheet getCurrentWorkSheet(){
-		return (WorkSheet)currentNode.getParent();
+		return currentWorksheet;
 	}
 	public void setCurrentWorkSheet(WorkSheet workSheet){
 		updateCurrentNode(workSheet.getCenter());
@@ -529,7 +529,7 @@ public class Main extends Application{
 	}
 	private boolean isCurrentNodeFocused(){
 		Node owner=scene.getFocusOwner();
-		while(owner!=null&&owner!=currentNode)
+		while(owner!=null&&owner!=currentWorksheet)
 			owner=owner.getParent();
 		return owner!=null;
 	}
@@ -544,7 +544,10 @@ public class Main extends Application{
 		return (WorkSheet)parent;
 	}
 	private void focusUp(){
-		getParentWorkSheet().requestFocus();
+		WorkSheet workSheet=getParentWorkSheet();
+		if(workSheet!=null){
+			workSheet.requestFocus();
+		}
 	}
 	private void focusDown(){
 		WorkSheet workSheet=getCurrentWorkSheet();
@@ -552,28 +555,13 @@ public class Main extends Application{
 			workSheet.getFirst().requestFocus();
 		}
 	}
-	private void focusAbove(){
+	private void focusSwitch(){
 		WorkSheet workSheet=getParentWorkSheet();
 		if(workSheet!=null&&workSheet.isSplit()){
-			workSheet.getFirst().requestFocus();
-		}
-	}
-	private void focusBelow(){
-		WorkSheet workSheet=getParentWorkSheet();
-		if(workSheet!=null&&workSheet.isSplit()){
-			workSheet.getLast().requestFocus();
-		}
-	}
-	private void focusLeft(){
-		WorkSheet workSheet=getParentWorkSheet();
-		if(workSheet!=null&&workSheet.isSplit()){
-			workSheet.getFirst().requestFocus();
-		}
-	}
-	private void focusRight(){
-		WorkSheet workSheet=getParentWorkSheet();
-		if(workSheet!=null&&workSheet.isSplit()){
-			workSheet.getLast().requestFocus();
+			if(workSheet.getFirst()==currentWorksheet)
+				workSheet.getLast().requestFocus();
+			else
+				workSheet.getFirst().requestFocus();
 		}
 	}
 }

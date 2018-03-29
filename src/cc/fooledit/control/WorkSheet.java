@@ -83,7 +83,6 @@ public class WorkSheet extends BorderPane{
 	}
 	@Override
 	public void requestFocus(){
-		super.requestFocus();
 		getCenter().requestFocus();
 	}
 	public void splitVertically(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){

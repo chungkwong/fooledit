@@ -465,6 +465,10 @@ public class CodeEditor extends BorderPane{
 	public TreeSet<Marker> getMarkers(){
 		return markers;
 	}
+	@Override
+	public void requestFocus(){
+		area.requestFocus();
+	}
 	class InputMethodRequestsObject implements InputMethodRequests{
 		@Override
 		public String getSelectedText(){
