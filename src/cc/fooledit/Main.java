@@ -206,6 +206,14 @@ public class Main extends Application{
 			l.add(new SeparatorMenuItem());
 			l.add(createCommandMenuItem("next_buffer"));
 			l.add(createCommandMenuItem("previous_buffer"));
+			if(!currentWorksheet.isSplit()){
+				l.add(new SeparatorMenuItem());
+				getCurrentDataEditor().getToolboxs().forEach((tool)->{
+					MenuItem item=new MenuItem(((ToolBox)tool).getDisplayName());
+					item.setOnAction((e)->getCurrentWorkSheet().showToolBox((ToolBox)tool));
+					l.add(item);
+				});
+			}
 		};
 	}
 	private Consumer<ObservableList<MenuItem>> getHistoryMenu(){

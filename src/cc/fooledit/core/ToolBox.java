@@ -20,8 +20,8 @@ import javafx.scene.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface Toolbox<T extends DataObject<T>>{
+public interface ToolBox<T extends DataObject<T>>{
 	String getName();
 	String getDisplayName();
-	Node createInstance(T obj);
+	Node createInstance(Node viewer,T obj);
 }

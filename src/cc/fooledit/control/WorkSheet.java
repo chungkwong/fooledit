@@ -117,6 +117,9 @@ public class WorkSheet extends BorderPane{
 		restoreRegistry();
 		getCenter().requestFocus();
 	}
+	public void showToolBox(ToolBox box){
+		
+	}
 	public static final String DIRECTION="direction";
 	public static final String DIVIDER="divider";
 	public static final String FIRST="first";
