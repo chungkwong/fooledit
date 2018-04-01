@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
+import cc.fooledit.control.*;
 import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface ToolBox<T extends DataObject<T>>{
+public interface ToolBox{
 	String getName();
 	String getDisplayName();
-	Node createInstance(Node viewer,T obj);
+	Node createInstance();
+	SideBar.Side[] getPerferedSides();
 }

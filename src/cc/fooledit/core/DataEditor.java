@@ -36,7 +36,7 @@ public interface DataEditor<T extends DataObject<T>>{
 	default Object getRemark(Node node){
 		return null;
 	}
-	default Collection<ToolBox<T>> getToolboxs(){
+	default Collection<ToolBox> getToolboxs(){
 		return Collections.emptyList();
 	}
 	String getName();

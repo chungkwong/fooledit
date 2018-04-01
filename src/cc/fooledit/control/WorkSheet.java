@@ -26,12 +26,11 @@ import javafx.beans.value.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class WorkSheet extends BorderPane{
+public class WorkSheet extends SideBarPane{
 	private final LazyRegistryNode<String,Object,String> registry;
 	private final Function<String,Object> remarkSupplier=(key)->getDataEditor().getRemark(getCenter());
 	public WorkSheet(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
@@ -116,9 +115,6 @@ public class WorkSheet extends BorderPane{
 		setData(data,editor,remark);
 		restoreRegistry();
 		getCenter().requestFocus();
-	}
-	public void showToolBox(ToolBox box){
-		
 	}
 	public static final String DIRECTION="direction";
 	public static final String DIVIDER="divider";
