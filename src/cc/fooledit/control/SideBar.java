@@ -70,6 +70,9 @@ public class SideBar extends BorderPane{
 		icons.getToggles().add(icon);
 		header.getChildren().add(icon);
 	}
+	public int getItemsCount(){
+		return icons.getToggles().size();
+	}
 	public enum Side{
 		TOP,RIGHT,BOTTOM,LEFT
 	}

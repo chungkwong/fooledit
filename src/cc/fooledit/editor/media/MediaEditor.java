@@ -16,8 +16,10 @@
  */
 package cc.fooledit.editor.media;
 import cc.fooledit.*;
+import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
+import java.util.*;
 import java.util.function.*;
 import javafx.application.*;
 import javafx.collections.*;
@@ -79,6 +81,10 @@ public class MediaEditor implements DataEditor<MediaObject>{
 	@Override
 	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
 		return keymapRegistry;
+	}
+	@Override
+	public Collection<ToolBox> getToolboxs(){
+		return Collections.singletonList(new MetaToolBox());
 	}
 }
 class MediaControl extends HBox{
@@ -181,5 +187,27 @@ class MediaControl extends HBox{
 				return String.format("%02d:%02d/%02d:%02d",elapsedMinutes,elapsedSeconds,durationMinutes,durationSeconds);
 			}
 		}
+	}
+}
+class MetaToolBox implements ToolBox{
+	@Override
+	public String getName(){
+		return "META";
+	}
+	@Override
+	public String getDisplayName(){
+		return "META";
+	}
+	@Override
+	public Node createInstance(){
+		return new Label(((MediaObject)Main.INSTANCE.getCurrentData()).getProperty().getValue().getMedia().getMetadata().toString());
+	}
+	@Override
+	public Node getGraphic(){
+		return null;
+	}
+	@Override
+	public SideBar.Side[] getPerferedSides(){
+		return new SideBar.Side[]{SideBar.Side.LEFT,SideBar.Side.LEFT};
 	}
 }

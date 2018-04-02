@@ -32,35 +32,25 @@ public class SideBarPane extends BorderPane{
 		setTop(top);
 		setBottom(bottom);
 	}
-	public SideBar getLeftSideBar(){
-		return left;
-	}
-	public SideBar getRightSideBar(){
-		return right;
-	}
-	public SideBar getTopSideBar(){
-		return top;
-	}
-	public SideBar getBottomSideBar(){
-		return bottom;
+	public SideBar getSideBar(SideBar.Side side){
+		switch(side){
+			case LEFT:return left;
+			case RIGHT:return right;
+			case TOP:return top;
+			case BOTTOM:return bottom;
+			default:return null;
+		}
 	}
 	public void showToolBox(ToolBox box){
 		SideBar.Side[] perfered=box.getPerferedSides();
 		for(SideBar.Side side:perfered){
-			switch(side){
-				case TOP:
-					top.addItem(box.getDisplayName(),null,box.createInstance());
-					return;
-				case BOTTOM:
-					bottom.addItem(box.getDisplayName(),null,box.createInstance());
-					return;
-				case LEFT:
-					left.addItem(box.getDisplayName(),null,box.createInstance());
-					return;
-				case RIGHT:
-					right.addItem(box.getDisplayName(),null,box.createInstance());
-					return;
-			}
+			SideBar bar=getSideBar(side);
+			if(bar.getItemsCount()==0)
+				showToolBox(box,side);
 		}
+		showToolBox(box,perfered.length>0?perfered[0]:SideBar.Side.RIGHT);
+	}
+	public void showToolBox(ToolBox box,SideBar.Side side){
+		getSideBar(side).addItem(box.getDisplayName(),box.getGraphic(),box.createInstance());
 	}
 }

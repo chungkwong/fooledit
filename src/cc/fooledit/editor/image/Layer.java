@@ -14,17 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.core;
-import cc.fooledit.control.*;
-import javafx.scene.*;
+package cc.fooledit.editor.image;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface ToolBox{
-	String getName();
-	String getDisplayName();
-	Node createInstance();
-	Node getGraphic();
-	SideBar.Side[] getPerferedSides();
+public class Layer{
+	
 }
