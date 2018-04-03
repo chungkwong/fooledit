@@ -18,6 +18,7 @@ package cc.fooledit.editor.image;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.net.*;
+import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -41,7 +42,7 @@ public class GraphicsObjectType implements DataObjectType<GraphicsObject>{
 	}
 	@Override
 	public GraphicsObject create(){
-		return new GraphicsObject();
+		return new GraphicsObject(new Node[0]);
 	}
 	@Override
 	public String getDisplayName(){

@@ -15,23 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-import cc.fooledit.core.*;
-import javafx.collections.*;
+import javafx.application.*;
 import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.image.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class GraphicsObject implements DataObject<GraphicsObject>{
-	private final ObservableList<Node> layers=FXCollections.observableArrayList();
-	public GraphicsObject(Node[] layers){
-		this.layers.setAll(layers);
-	}
+public class GraphicsPreviewer extends Application{
 	@Override
-	public DataObjectType<GraphicsObject> getDataObjectType(){
-		return GraphicsObjectType.INSTANCE;
+	public void start(Stage primaryStage) throws Exception{
+		Node[] layers=new Node[]{
+			new ImageView("file:///home/kwong/NetBeansProjects/fooledit/modules/core/icons/folder.png"),
+			new ImageView("file:///home/kwong/NetBeansProjects/fooledit/modules/core/icons/logo.png")
+		};
+		
+		GraphicsObject object=new GraphicsObject(layers);
+		primaryStage.setScene(new Scene(new BorderPane(new ScrollPane(new GraphicsViewer(object)))));
+		primaryStage.show();
 	}
-	public ObservableList<Node> getLayers(){
-		return layers;
+	public static void main(String[] args){
+		launch(args);
 	}
 }

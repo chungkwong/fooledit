@@ -15,11 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-
+import javafx.scene.canvas.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Layer{
-	
+public class Layer extends Canvas{
+	public Layer(){
+	}
+	public Layer(double width,double height){
+		super(width,height);
+	}
 }

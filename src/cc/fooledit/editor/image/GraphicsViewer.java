@@ -15,23 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-import cc.fooledit.core.*;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
 import javafx.collections.*;
 import javafx.scene.*;
+import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class GraphicsObject implements DataObject<GraphicsObject>{
-	private final ObservableList<Node> layers=FXCollections.observableArrayList();
-	public GraphicsObject(Node[] layers){
-		this.layers.setAll(layers);
+public class GraphicsViewer extends StackPane{
+	private final Property<GraphicsObject> graphics=new SimpleObjectProperty<>();
+	public GraphicsViewer(GraphicsObject object){
+		getChildren().setAll(object.getLayers());
+		ListChangeListener<Node> layersChanged=(c)->{
+			getChildren().setAll(c.getList());
+		};
+		graphics.addListener((e,o,n)->{
+			if(o!=null)
+				o.getLayers().removeListener(layersChanged);
+			if(n!=null)
+				n.getLayers().addListener(layersChanged);
+		});
+		graphics.setValue(object);
 	}
-	@Override
-	public DataObjectType<GraphicsObject> getDataObjectType(){
-		return GraphicsObjectType.INSTANCE;
-	}
-	public ObservableList<Node> getLayers(){
-		return layers;
+	public ObservableValue<GraphicsObject> graphicsProperty(){
+		return graphics;
 	}
 }
