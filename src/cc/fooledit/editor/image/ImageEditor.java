@@ -51,10 +51,6 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 		return MessageRegistry.getString("IMAGE_EDITOR",ImageEditorModule.NAME);
 	}
 	@Override
-	public Collection<ToolBox> getToolboxs(){
-		return Collections.singleton(new LayerToolBox());
-	}
-	@Override
 	public void start(Stage stage) throws Exception{
 		stage.setScene(new Scene(new BorderPane(new ImageEditor().edit(new ImageObject(new WritableImage(200,200)),null,null))));
 		stage.show();
@@ -291,27 +287,5 @@ public class ImageEditor  extends Application implements DataEditor<ImageObject>
 			double c=Math.hypot(x0-x2,y0-y2);
 			return c/Math.sqrt(2*(1-Math.cos(angle)));
 		}
-	}
-}
-class LayerToolBox implements ToolBox{
-	@Override
-	public String getName(){
-		return "LAYER";
-	}
-	@Override
-	public String getDisplayName(){
-		return MessageRegistry.getString("LAYER",ImageEditorModule.NAME);
-	}
-	@Override
-	public Node createInstance(){
-		return null;
-	}
-	@Override
-	public Node getGraphic(){
-		return null;
-	}
-	@Override
-	public SideBar.Side[] getPerferedSides(){
-		return new SideBar.Side[]{SideBar.Side.LEFT,SideBar.Side.LEFT};
 	}
 }

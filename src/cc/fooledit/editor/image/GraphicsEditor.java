@@ -15,30 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-import javafx.application.*;
+import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
+import java.util.*;
 import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.effect.*;
-import javafx.scene.image.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class GraphicsPreviewer extends Application{
+public class GraphicsEditor implements DataEditor<GraphicsObject>{
 	@Override
-	public void start(Stage primaryStage) throws Exception{
-		Node[] layers=new Node[]{
-			new ImageView("file:///home/kwong/NetBeansProjects/fooledit/modules/core/icons/folder.png"),
-			new ImageView("file:///home/kwong/NetBeansProjects/fooledit/modules/core/icons/logo.png")
-		};
-		layers[1].setBlendMode(BlendMode.MULTIPLY);
-		GraphicsObject object=new GraphicsObject(layers);
-		primaryStage.setScene(new Scene(new BorderPane(new ScrollPane(new GraphicsViewer(object)),null,LayerToolBox.INSTANCE.createInstance(object),null,null)));
-		primaryStage.show();
+	public Node edit(GraphicsObject data,Object remark,RegistryNode<String,Object,String> meta){
+		return new GraphicsViewer(data);
 	}
-	public static void main(String[] args){
-		launch(args);
+	@Override
+	public String getName(){
+		return MessageRegistry.getString("IMAGE_EDITOR",ImageEditorModule.NAME);
 	}
+	@Override
+	public Collection<ToolBox> getToolboxs(){
+		return Collections.singleton(LayerToolBox.INSTANCE);
+	}
+
 }
