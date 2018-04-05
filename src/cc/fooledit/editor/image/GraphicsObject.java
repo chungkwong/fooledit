@@ -16,7 +16,9 @@
  */
 package cc.fooledit.editor.image;
 import cc.fooledit.core.*;
+import javafx.beans.property.*;
 import javafx.collections.*;
+import javafx.geometry.*;
 import javafx.scene.*;
 /**
  *
@@ -24,6 +26,7 @@ import javafx.scene.*;
  */
 public class GraphicsObject implements DataObject<GraphicsObject>{
 	private final ObservableList<Node> layers=FXCollections.observableArrayList();
+	private final Property<Rectangle2D> viewport=new SimpleObjectProperty<>();
 	public GraphicsObject(Node[] layers){
 		this.layers.setAll(layers);
 	}
@@ -33,5 +36,8 @@ public class GraphicsObject implements DataObject<GraphicsObject>{
 	}
 	public ObservableList<Node> getLayers(){
 		return layers;
+	}
+	public Property<Rectangle2D> viewportProperty(){
+		return viewport;
 	}
 }

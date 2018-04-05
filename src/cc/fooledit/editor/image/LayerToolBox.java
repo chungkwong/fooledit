@@ -20,10 +20,12 @@ import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import javafx.collections.*;
 import javafx.scene.*;
+import javafx.scene.canvas.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.*;
 import javafx.scene.effect.*;
-import javafx.util.*;
+import javafx.scene.layout.*;
+import javafx.util.converter.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -47,19 +49,46 @@ public class LayerToolBox implements ToolBox{
 	}
 	Node createInstance(GraphicsObject object){
 		TableView<Node> layers=new TableView<>();
+		layers.setEditable(true);
+		layers.setSortPolicy((c)->false);
 		layers.getItems().setAll(object.getLayers());
 		ListChangeListener<Node> layersChanged=(c)->{
 			layers.getItems().setAll(c.getList());
 		};
 		object.getLayers().addListener(layersChanged);
 		layers.getColumns().addAll(getVisibleColumn(),getOpacityColumn(),getBlendModeColumn());
-		return layers;
+		Button add=new Button("+");
+		add.setOnAction((e)->{
+			layers.getItems().add(layers.getSelectionModel().getFocusedIndex()+1,new Canvas());
+		});
+		Button delete=new Button("-");
+		delete.setOnAction((e)->{
+			layers.getItems().removeAll(layers.getSelectionModel().getSelectedItems());
+		});
+		Button up=new Button("/\\");
+		up.setOnAction((e)->{
+			int index=layers.getSelectionModel().getFocusedIndex();
+			if(index>0)
+				layers.getItems().add(index-1,layers.getItems().remove(index));
+		});
+		Button down=new Button("\\/");
+		down.setOnAction((e)->{
+			int index=layers.getSelectionModel().getFocusedIndex();
+			if(index+1<layers.getItems().size())
+				layers.getItems().add(index+1,layers.getItems().remove(index));
+		});
+		ToolBar bar=new ToolBar(add,delete,up,down);
+		return new BorderPane(layers,null,null,bar,null);
 	}
 	private TableColumn<Node,BlendMode> getBlendModeColumn(){
 		TableColumn<Node,BlendMode> column=new TableColumn<>(/*MessageRegistry.getString(*/"BLEND_MODE"/*,ImageEditorModule.NAME)*/);
 		column.setCellValueFactory((TableColumn.CellDataFeatures<Node,BlendMode> param)->{
 			return param.getValue().blendModeProperty();
 		});
+
+		ObservableList<BlendMode> options=FXCollections.<BlendMode>observableArrayList(BlendMode.values());
+		options.add(null);
+		column.setCellFactory(ChoiceBoxTableCell.forTableColumn(options));
 		column.setEditable(true);
 		return column;
 	}
@@ -68,6 +97,7 @@ public class LayerToolBox implements ToolBox{
 		column.setCellValueFactory((TableColumn.CellDataFeatures<Node,Number> param)->{
 			return param.getValue().opacityProperty();
 		});
+		column.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
 		column.setEditable(true);
 		return column;
 	}
@@ -76,12 +106,7 @@ public class LayerToolBox implements ToolBox{
 		column.setCellValueFactory((TableColumn.CellDataFeatures<Node,Boolean> param)->{
 			return param.getValue().visibleProperty();
 		});
-		column.setCellFactory(new Callback<TableColumn<Node,Boolean>,TableCell<Node,Boolean>>() {
-			@Override
-			public TableCell<Node,Boolean> call(TableColumn<Node,Boolean> param){
-				return new CheckBoxTableCell();
-			}
-		});
+		column.setCellFactory(CheckBoxTableCell.forTableColumn(column));
 		column.setEditable(true);
 		return column;
 	}

@@ -34,8 +34,9 @@ public class GraphicsViewer extends StackPane{
 		graphics.addListener((e,o,n)->{
 			if(o!=null)
 				o.getLayers().removeListener(layersChanged);
-			if(n!=null)
+			if(n!=null){
 				n.getLayers().addListener(layersChanged);
+			}
 		});
 		graphics.setValue(object);
 	}

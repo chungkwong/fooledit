@@ -17,8 +17,12 @@
 package cc.fooledit.editor.image;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
+import java.awt.image.*;
 import java.net.*;
+import javafx.embed.swing.*;
 import javafx.scene.*;
+import javafx.scene.image.*;
+import javax.imageio.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -50,11 +54,17 @@ public class GraphicsObjectType implements DataObjectType<GraphicsObject>{
 	}
 	@Override
 	public void writeTo(GraphicsObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		GraphicsViewer viewer=new GraphicsViewer(data);
+		SnapshotParameters snapshotParameters=new SnapshotParameters();
+		snapshotParameters.setViewport(data.viewportProperty().getValue());
+		WritableImage snapshot=viewer.snapshot(snapshotParameters,null);
+		String mime=(String)meta.getChildOrDefault(DataObject.MIME,"image/png");
+		ImageIO.write(SwingFXUtils.fromFXImage(snapshot,null),mime.substring(mime.indexOf('/')+1),connection.getOutputStream());
 	}
 	@Override
 	public GraphicsObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		BufferedImage image=ImageIO.read(connection.getInputStream());
+		return new GraphicsObject(new Node[]{new ImageView(SwingFXUtils.toFXImage(image,null))});
 	}
 
 }
