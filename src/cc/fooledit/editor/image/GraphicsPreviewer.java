@@ -29,11 +29,11 @@ public class GraphicsPreviewer extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
 		Node[] layers=new Node[]{
-			new ImageView("file:///home/kwong/图片/lena/lena_std.png")//,
-//			new ImageView("file:///home/kwong/NetBeansProjects/fooledit/modules/core/icons/logo.png")
+			new ImageView("file:///home/kwong/图片/lena/lena_std.png"),
+			new ImageView("file:///home/kwong/NetBeansProjects/fooledit/modules/core/icons/logo.png")
 		};
 //		layers[1].setBlendMode(BlendMode.MULTIPLY);
-		GraphicsObject object=new GraphicsObject(layers);
+		GraphicsObject object=new GraphicsObject(new StackPane(layers));
 		primaryStage.setScene(new Scene(new BorderPane(new ScrollPane(new GraphicsViewer(object)),
 				EffectToolBox.INSTANCE.createInstance(object),LayerToolBox.INSTANCE.createInstance(object),null,null)));
 		primaryStage.show();

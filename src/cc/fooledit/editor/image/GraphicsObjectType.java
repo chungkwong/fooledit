@@ -21,6 +21,7 @@ import java.awt.image.*;
 import java.net.*;
 import javafx.embed.swing.*;
 import javafx.scene.*;
+import javafx.scene.canvas.*;
 import javafx.scene.image.*;
 import javax.imageio.*;
 /**
@@ -46,7 +47,7 @@ public class GraphicsObjectType implements DataObjectType<GraphicsObject>{
 	}
 	@Override
 	public GraphicsObject create(){
-		return new GraphicsObject(new Node[0]);
+		return new GraphicsObject(new Canvas());
 	}
 	@Override
 	public String getDisplayName(){
@@ -64,7 +65,7 @@ public class GraphicsObjectType implements DataObjectType<GraphicsObject>{
 	@Override
 	public GraphicsObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		BufferedImage image=ImageIO.read(connection.getInputStream());
-		return new GraphicsObject(new Node[]{new ImageView(SwingFXUtils.toFXImage(image,null))});
+		return new GraphicsObject(new ImageView(SwingFXUtils.toFXImage(image,null)));
 	}
 
 }

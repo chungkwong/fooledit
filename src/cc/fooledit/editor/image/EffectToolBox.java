@@ -62,7 +62,7 @@ public class EffectToolBox implements ToolBox{
 		};
 		ChoiceBox<Effect> choiceBox=new ChoiceBox<>();
 		choiceBox.getItems().setAll(effects);
-		object.getLayers().get(0).effectProperty().bind(choiceBox.getSelectionModel().selectedItemProperty());
+		object.currentLayerProperty().getValue().effectProperty().bind(choiceBox.getSelectionModel().selectedItemProperty());
 
 		return choiceBox;
 	}

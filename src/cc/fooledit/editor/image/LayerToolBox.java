@@ -18,8 +18,9 @@ package cc.fooledit.editor.image;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
+import java.util.stream.*;
 import javafx.collections.*;
-import javafx.scene.*;
+import javafx.scene.Node;
 import javafx.scene.canvas.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.*;
@@ -48,65 +49,130 @@ public class LayerToolBox implements ToolBox{
 		return createInstance((GraphicsObject)Main.INSTANCE.getCurrentData());
 	}
 	Node createInstance(GraphicsObject object){
-		TableView<Node> layers=new TableView<>();
+		TreeTableView<Node> layers=new TreeTableView<>();
 		layers.setEditable(true);
 		layers.setSortPolicy((c)->false);
-		layers.getItems().setAll(object.getLayers());
-		ListChangeListener<Node> layersChanged=(c)->{
-			layers.getItems().setAll(c.getList());
-		};
-		object.getLayers().addListener(layersChanged);
+		layers.setShowRoot(true);
+		layers.setRoot(getTreeItem(object.getRoot()));
+		layers.getSelectionModel().select(layers.getRoot());
+		layers.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
+			object.currentLayerProperty().setValue(n!=null?n.getValue():null);
+		});
 		layers.getColumns().addAll(getVisibleColumn(),getOpacityColumn(),getBlendModeColumn());
 		Button add=new Button("+");
 		add.setOnAction((e)->{
-			layers.getItems().add(layers.getSelectionModel().getFocusedIndex()+1,new Canvas());
+			TreeItem<Node> selectedItem=layers.getSelectionModel().getSelectedItem();
+			if(selectedItem.getParent()!=null){
+				((StackPane)selectedItem.getParent().getValue()).getChildren().add(getIndexOfParent(selectedItem)+1,new Canvas());
+				((LazyTreeItem)selectedItem.getParent()).refresh();
+			}else{
+				((StackPane)selectedItem.getValue()).getChildren().add(new Canvas());
+				((LazyTreeItem)selectedItem).refresh();
+			}
 		});
 		Button delete=new Button("-");
 		delete.setOnAction((e)->{
-			layers.getItems().removeAll(layers.getSelectionModel().getSelectedItems());
+			TreeItem<Node> selectedItem=layers.getSelectionModel().getSelectedItem();
+			if(selectedItem.getParent()!=null){
+				((StackPane)selectedItem.getParent().getValue()).getChildren().remove(selectedItem.getValue());
+				((LazyTreeItem)selectedItem.getParent()).refresh();
+			}
 		});
 		Button up=new Button("/\\");
 		up.setOnAction((e)->{
-			int index=layers.getSelectionModel().getFocusedIndex();
-			if(index>0)
-				layers.getItems().add(index-1,layers.getItems().remove(index));
+			TreeItem<Node> selectedItem=layers.getSelectionModel().getSelectedItem();
+			if(selectedItem.getParent()!=null){
+				int i=getIndexOfParent(selectedItem);
+				if(i>0){
+					((StackPane)selectedItem.getParent().getValue()).getChildren().remove(i);
+					((StackPane)selectedItem.getParent().getValue()).getChildren().add(i-1,selectedItem.getValue());
+					((LazyTreeItem)selectedItem.getParent()).refresh();
+				}
+			}
 		});
 		Button down=new Button("\\/");
 		down.setOnAction((e)->{
-			int index=layers.getSelectionModel().getFocusedIndex();
-			if(index+1<layers.getItems().size())
-				layers.getItems().add(index+1,layers.getItems().remove(index));
+			TreeItem<Node> selectedItem=layers.getSelectionModel().getSelectedItem();
+			if(selectedItem.getParent()!=null){
+				int i=getIndexOfParent(selectedItem);
+				if(i+1<selectedItem.getParent().getChildren().size()){
+					((StackPane)selectedItem.getParent().getValue()).getChildren().remove(i);
+					((StackPane)selectedItem.getParent().getValue()).getChildren().add(i+1,selectedItem.getValue());
+					((LazyTreeItem)selectedItem.getParent()).refresh();
+				}
+			}
 		});
-		ToolBar bar=new ToolBar(add,delete,up,down);
+		Button indent=new Button(">");
+		indent.setOnAction((e)->{
+			TreeItem<Node> selectedItem=layers.getSelectionModel().getSelectedItem();
+			if(selectedItem.getParent()!=null){
+				int i=getIndexOfParent(selectedItem);
+				((StackPane)selectedItem.getParent().getValue()).getChildren().remove(i);
+				if(i>0&&selectedItem.getParent().getChildren().get(i-1)instanceof LazyTreeItem){
+					((StackPane)selectedItem.getParent().getChildren().get(i-1).getValue()).getChildren().add(selectedItem.getValue());
+				}else{
+					((StackPane)selectedItem.getParent().getValue()).getChildren().add(i,new StackPane(selectedItem.getValue()));
+				}
+				((LazyTreeItem)selectedItem.getParent()).refresh();
+			}
+		});
+		Button unindent=new Button("<");
+		down.setOnAction((e)->{
+			TreeItem<Node> selectedItem=layers.getSelectionModel().getSelectedItem();
+			if(selectedItem.getParent()!=null&&selectedItem.getParent().getParent()!=null){
+				int i=getIndexOfParent(selectedItem);
+				int j=getIndexOfParent(selectedItem.getParent());
+				((StackPane)selectedItem.getParent().getValue()).getChildren().remove(selectedItem.getValue());
+				if(i<selectedItem.getParent().getChildren().size()/2){
+					((StackPane)selectedItem.getParent().getParent().getValue()).getChildren().add(j,selectedItem.getValue());
+				}else{
+					((StackPane)selectedItem.getParent().getParent().getValue()).getChildren().add(j+1,selectedItem.getValue());
+				}
+				((LazyTreeItem)selectedItem.getParent().getParent()).refresh();
+			}
+		});
+		ToolBar bar=new ToolBar(add,delete,up,down,unindent,indent);
 		return new BorderPane(layers,null,null,bar,null);
 	}
-	private TableColumn<Node,BlendMode> getBlendModeColumn(){
-		TableColumn<Node,BlendMode> column=new TableColumn<>(/*MessageRegistry.getString(*/"BLEND_MODE"/*,ImageEditorModule.NAME)*/);
-		column.setCellValueFactory((TableColumn.CellDataFeatures<Node,BlendMode> param)->{
-			return param.getValue().blendModeProperty();
+	private TreeItem getTreeItem(Node layer){
+		if(layer instanceof StackPane){
+			return new LazyTreeItem(layer,()->((StackPane)layer).getChildren().stream().map((l)->getTreeItem(l)).collect(Collectors.toList()));
+		}else{
+			return new TreeItem(layer);
+		}
+	}
+	private int getIndexOfParent(TreeItem<?> item){
+		if(item.getParent()!=null)
+			return item.getParent().getChildren().indexOf(item);
+		else
+			return -1;
+	}
+	private TreeTableColumn<Node,BlendMode> getBlendModeColumn(){
+		TreeTableColumn<Node,BlendMode> column=new TreeTableColumn<>(/*MessageRegistry.getString(*/"BLEND_MODE"/*,ImageEditorModule.NAME)*/);
+		column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Node,BlendMode> param)->{
+			return param.getValue().getValue().blendModeProperty();
 		});
-
 		ObservableList<BlendMode> options=FXCollections.<BlendMode>observableArrayList(BlendMode.values());
 		options.add(null);
-		column.setCellFactory(ChoiceBoxTableCell.forTableColumn(options));
+		column.setCellFactory(ChoiceBoxTreeTableCell.forTreeTableColumn(options));
 		column.setEditable(true);
 		return column;
 	}
-	private TableColumn<Node,Number> getOpacityColumn(){
-		TableColumn<Node,Number> column=new TableColumn<>(/*MessageRegistry.getString(*/"OPACITY"/*,ImageEditorModule.NAME)*/);
-		column.setCellValueFactory((TableColumn.CellDataFeatures<Node,Number> param)->{
-			return param.getValue().opacityProperty();
+	private TreeTableColumn<Node,Number> getOpacityColumn(){
+		TreeTableColumn<Node,Number> column=new TreeTableColumn<>(/*MessageRegistry.getString(*/"OPACITY"/*,ImageEditorModule.NAME)*/);
+		column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Node,Number> param)->{
+			return param.getValue().getValue().opacityProperty();
 		});
-		column.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+		column.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new NumberStringConverter()));
 		column.setEditable(true);
 		return column;
 	}
-	private TableColumn<Node,Boolean> getVisibleColumn(){
-		TableColumn<Node,Boolean> column=new TableColumn<>(/*MessageRegistry.getString(*/"VISIBLE"/*,ImageEditorModule.NAME)*/);
-		column.setCellValueFactory((TableColumn.CellDataFeatures<Node,Boolean> param)->{
-			return param.getValue().visibleProperty();
+	private TreeTableColumn<Node,Boolean> getVisibleColumn(){
+		TreeTableColumn<Node,Boolean> column=new TreeTableColumn<>(/*MessageRegistry.getString(*/"VISIBLE"/*,ImageEditorModule.NAME)*/);
+		column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Node,Boolean> param)->{
+			return param.getValue().getValue().visibleProperty();
 		});
-		column.setCellFactory(CheckBoxTableCell.forTableColumn(column));
+		column.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(column));
 		column.setEditable(true);
 		return column;
 	}

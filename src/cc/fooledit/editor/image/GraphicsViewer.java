@@ -15,32 +15,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-import javafx.beans.property.*;
-import javafx.beans.value.*;
 import javafx.collections.*;
-import javafx.scene.*;
+import javafx.geometry.*;
+import javafx.scene.canvas.*;
 import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class GraphicsViewer extends StackPane{
-	private final Property<GraphicsObject> graphics=new SimpleObjectProperty<>();
+	private final GraphicsObject object;
+	private final Canvas backMatter=new Canvas();
+	private final Canvas frontMatter=new Canvas();
+	private final ObservableList<Number> verticalReferenceLines=FXCollections.observableArrayList();
+	private final ObservableList<Number> horizontalReferenceLines=FXCollections.observableArrayList();
 	public GraphicsViewer(GraphicsObject object){
-		getChildren().setAll(object.getLayers());
-		ListChangeListener<Node> layersChanged=(c)->{
-			getChildren().setAll(c.getList());
-		};
-		graphics.addListener((e,o,n)->{
-			if(o!=null)
-				o.getLayers().removeListener(layersChanged);
-			if(n!=null){
-				n.getLayers().addListener(layersChanged);
-			}
-		});
-		graphics.setValue(object);
+		this.object=object;
+		getChildren().setAll(backMatter,object.getRoot(),frontMatter);
+		horizontalReferenceLines.addListener((ListChangeListener.Change<? extends Number> c)->updateReferenceLines());
+		verticalReferenceLines.addListener((ListChangeListener.Change<? extends Number> c)->updateReferenceLines());
 	}
-	public ObservableValue<GraphicsObject> graphicsProperty(){
-		return graphics;
+	public Canvas getFrontMatter(){
+		return frontMatter;
+	}
+	public Canvas getBackMatter(){
+		return backMatter;
+	}
+	public ObservableList<Number> horizontalReferenceLinesProperty(){
+		return horizontalReferenceLines;
+	}
+	public ObservableList<Number> verticalReferenceLinesProperty(){
+		return verticalReferenceLines;
+	}
+	private void updateReferenceLines(){
+		GraphicsContext g2d=frontMatter.getGraphicsContext2D();
+		Rectangle2D viewport=object.viewportProperty().getValue();
+		g2d.clearRect(viewport.getMinX(),viewport.getMinY(),viewport.getWidth(),viewport.getHeight());
 	}
 }
