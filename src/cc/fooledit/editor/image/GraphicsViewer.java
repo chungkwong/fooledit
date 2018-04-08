@@ -17,6 +17,7 @@
 package cc.fooledit.editor.image;
 import javafx.collections.*;
 import javafx.geometry.*;
+import javafx.scene.*;
 import javafx.scene.canvas.*;
 import javafx.scene.layout.*;
 /**
@@ -34,6 +35,7 @@ public class GraphicsViewer extends StackPane{
 		getChildren().setAll(backMatter,object.getRoot(),frontMatter);
 		horizontalReferenceLines.addListener((ListChangeListener.Change<? extends Number> c)->updateReferenceLines());
 		verticalReferenceLines.addListener((ListChangeListener.Change<? extends Number> c)->updateReferenceLines());
+		setCursor(Cursor.CROSSHAIR);
 	}
 	public Canvas getFrontMatter(){
 		return frontMatter;

@@ -18,9 +18,10 @@ package cc.fooledit.editor.image;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
 import java.util.*;
 import java.util.stream.*;
-import javafx.scene.*;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
@@ -47,28 +48,60 @@ public class DrawToolBox implements ToolBox{
 		return createInstance((GraphicsObject)Main.INSTANCE.getCurrentData());
 	}
 	Node createInstance(GraphicsObject object){
-		return new TabPane(getDrawTab(),getFrontgroundTab(),getBackgroundTab());
+		return new DrawingToolBox((GraphicsViewer)Main.INSTANCE.getCurrentNode());
+	}
+	@Override
+	public Node getGraphic(){
+		return null;
+	}
+	@Override
+	public SideBar.Side[] getPerferedSides(){
+		return new SideBar.Side[]{SideBar.Side.LEFT,SideBar.Side.LEFT};
+	}
+}
+class DrawingToolBox extends TabPane{
+	private final ComboBox<FillRule> fillRuleChooser=new ComboBox<>();
+	private final Spinner alphaChooser=new Spinner(0.0,1.0,1.0,0.1);
+	private final PaintChooser fillChooser=new PaintChooser(Color.TRANSPARENT);
+	private final ComboBox<StrokeLineJoin> joinChooser=new ComboBox<>();
+	private final ComboBox<StrokeLineCap> capChooser=new ComboBox<>();
+	private final TextField dashChooser=new TextField();
+	private final TextField thickChooser=new TextField();
+	private final PaintChooser strokeChooser=new PaintChooser(Color.BLACK);
+	private final GraphicsViewer viewer;
+	public DrawingToolBox(GraphicsViewer viewer){
+		getTabs().setAll(getDrawTab(),getFrontgroundTab(),getBackgroundTab());
+		this.viewer=viewer;
 	}
 	public Tab getDrawTab(){
-		return new Tab("TOOL");
+		FlowPane pane=new FlowPane();
+		ToggleGroup cands=new ToggleGroup();
+		RegistryNode<String,DrawingTool,String> tools=((RegistryNode<String,DrawingTool,String>)Registry.ROOT.getChild(ImageEditorModule.NAME).getChild(DrawingTool.NAME));
+		for(String name:tools.getChildNames()){
+			ToggleButton cand=new ToggleButton(name);
+			DrawingTool child=tools.getChild(name);
+			cand.selectedProperty().addListener((e,o,n)->{
+				if(n==true){
+					viewer.setOnMouseMoved(child);
+					viewer.setOnMousePressed(child);
+					viewer.setOnMouseReleased(child);
+					viewer.setOnMouseEntered(child);
+					viewer.setOnMouseExited(child);
+				}
+			});
+			cands.getToggles().add(cand);
+			pane.getChildren().add(cand);
+		}
+		return new Tab("TOOL",pane);
 	}
 	public Tab getBackgroundTab(){
-		ComboBox<FillRule> fillRuleChooser=new ComboBox<>();
 		fillRuleChooser.setConverter(new EnumStringConvertor<>(FillRule.class,ImageEditorModule.NAME));
 		fillRuleChooser.getItems().setAll(FillRule.values());
 		fillRuleChooser.getSelectionModel().select(FillRule.NON_ZERO);
-		Spinner alphaChooser=new Spinner(0.0,1.0,1.0,0.1);
 		alphaChooser.setEditable(true);
-		PaintChooser fillChooser=new PaintChooser(Color.WHITE);
 		return new Tab("Fill",new FlowPane(fillRuleChooser,alphaChooser,fillChooser));
 	}
 	public Tab getFrontgroundTab(){
-		ComboBox<StrokeLineJoin> joinChooser=new ComboBox<>();
-		ComboBox<StrokeLineCap> capChooser=new ComboBox<>();
-		ComboBox<FillRule> fillRuleChooser=new ComboBox<>();
-		TextField dashChooser=new TextField();
-		TextField thickChooser=new TextField();
-		PaintChooser strokeChooser=new PaintChooser(Color.BLACK);
 		joinChooser.setConverter(new EnumStringConvertor<>(StrokeLineJoin.class,ImageEditorModule.NAME));
 		joinChooser.getItems().setAll(StrokeLineJoin.values());
 		joinChooser.getSelectionModel().select(StrokeLineJoin.MITER);
@@ -87,12 +120,5 @@ public class DrawToolBox implements ToolBox{
 	private String fromDashArray(double[] array){
 		return array==null?"1":Arrays.stream(array).mapToObj((d)->Double.toString(d)).collect(Collectors.joining(":"));
 	}
-	@Override
-	public Node getGraphic(){
-		return null;
-	}
-	@Override
-	public SideBar.Side[] getPerferedSides(){
-		return new SideBar.Side[]{SideBar.Side.LEFT,SideBar.Side.LEFT};
-	}
+
 }
