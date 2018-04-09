@@ -18,9 +18,12 @@ package cc.fooledit.editor.image;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
-import javafx.scene.*;
+import java.util.stream.*;
+import javafx.collections.*;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.*;
+import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -43,28 +46,23 @@ public class EffectToolBox implements ToolBox{
 		return createInstance((GraphicsObject)Main.INSTANCE.getCurrentData());
 	}
 	Node createInstance(GraphicsObject object){
-		Effect[] effects=new Effect[]{
-			new Bloom(),
-			new BoxBlur(),
-			new ColorAdjust(),
-			new ColorInput(),
-			new DisplacementMap(),
-			new DropShadow(),
-			new GaussianBlur(),
-			new Glow(),
-			new ImageInput(),
-			new InnerShadow(),
-			new Lighting(),
-			new MotionBlur(),
-			new PerspectiveTransform(),
-			new SepiaTone(),
-			new Shadow()
-		};
-		ChoiceBox<Effect> choiceBox=new ChoiceBox<>();
-		choiceBox.getItems().setAll(effects);
-		object.currentLayerProperty().getValue().effectProperty().bind(choiceBox.getSelectionModel().selectedItemProperty());
+		ChoiceBox<EffectTool> choiceBox=new ChoiceBox<>(FXCollections.observableArrayList(
+				ImageEditorModule.EFFECT_REGISTRY.getChildNames().stream().
+				map((name)->ImageEditorModule.EFFECT_REGISTRY.getChild(name)).collect(Collectors.toList())));
+		choiceBox.getSelectionModel().select(ImageEditorModule.EFFECT_REGISTRY.getChild("IMAGE_INPUT"));
+		FlowPane option=new FlowPane(choiceBox);
+		ListViewWrapper<Effect> listView=new ListViewWrapper<>(()->choiceBox.getSelectionModel().getSelectedItem().getEffect(null));
+		choiceBox.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
+			listView.getListView().getItems().set(listView.getListView().getSelectionModel().getSelectedIndex(),
+					choiceBox.getSelectionModel().getSelectedItem().getEffect(null));
 
-		return choiceBox;
+		});
+		listView.getListView().getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
+			if(n!=null){
+
+			}
+		});
+		return new BorderPane(listView,null,option,null,null);
 	}
 	@Override
 	public Node getGraphic(){
