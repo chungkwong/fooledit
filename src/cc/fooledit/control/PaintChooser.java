@@ -16,7 +16,7 @@
  */
 package cc.fooledit.control;
 import cc.fooledit.core.MessageRegistry;
-import cc.fooledit.editor.image.ImageEditorModule;
+import cc.fooledit.editor.image.ImageModule;
 import java.io.*;
 import java.util.*;
 import java.util.stream.*;
@@ -63,7 +63,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("COLOR",ImageEditorModule.NAME);
+			return MessageRegistry.getString("COLOR",ImageModule.NAME);
 		}
 	}
 	private class ImageChooser implements MinorChooser{
@@ -88,7 +88,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("IMAGE",ImageEditorModule.NAME);
+			return MessageRegistry.getString("IMAGE",ImageModule.NAME);
 		}
 	}
 	private class LinearChooser implements MinorChooser{
@@ -119,7 +119,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("LINEAR_GRADIENT",ImageEditorModule.NAME);
+			return MessageRegistry.getString("LINEAR_GRADIENT",ImageModule.NAME);
 		}
 		private class StopEditor extends HBox{
 			private final Button remove=new Button("X");
@@ -165,7 +165,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("RADIAL_GRADIENT",ImageEditorModule.NAME);
+			return MessageRegistry.getString("RADIAL_GRADIENT",ImageModule.NAME);
 		}
 		private class StopEditor extends HBox{
 			private final Button remove=new Button("X");

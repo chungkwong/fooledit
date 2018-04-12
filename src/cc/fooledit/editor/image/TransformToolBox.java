@@ -18,40 +18,43 @@ package cc.fooledit.editor.image;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
-import java.util.stream.*;
-import javafx.collections.*;
-import javafx.scene.Node;
+import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class EffectToolBox implements ToolBox{
-	public static final EffectToolBox INSTANCE=new EffectToolBox();
-	private EffectToolBox(){
+public class TransformToolBox implements ToolBox{
+	public static final TransformToolBox INSTANCE=new TransformToolBox();
+	private TransformToolBox(){
 
 	}
 	@Override
 	public String getName(){
-		return "LAYER";
+		return "TRANSFORM";
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("LAYER",ImageModule.NAME);
+		return MessageRegistry.getString("TRANSFORM",ImageModule.NAME);
 	}
 	@Override
 	public Node createInstance(){
 		return createInstance((GraphicsObject)Main.INSTANCE.getCurrentData());
 	}
 	Node createInstance(GraphicsObject object){
-		ChoiceBox<EffectTool> choiceBox=new ChoiceBox<>(FXCollections.observableArrayList(
-				ImageModule.EFFECT_REGISTRY.getChildNames().stream().
-				map((name)->ImageModule.EFFECT_REGISTRY.getChild(name)).collect(Collectors.toList())));
-		choiceBox.getSelectionModel().select(ImageModule.EFFECT_REGISTRY.getChild("IMAGE_INPUT"));
-		choiceBox.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
-			object.currentLayerProperty().getValue().setEffect(n.getEffect(null));
+		Spinner<Double> scaleChooser=new Spinner<>(0.0,4.0,1.0);
+		scaleChooser.valueProperty().addListener((e,o,n)->{
+			Node layer=object.currentLayerProperty().getValue();
+			layer.setScaleX(n);
+			layer.setScaleY(n);
 		});
-		return choiceBox;
+		Spinner<Double> rotateChooser=new Spinner<>(-180.0,180.0,0.0);
+		rotateChooser.valueProperty().addListener((e,o,n)->{
+			Node layer=object.currentLayerProperty().getValue();
+			layer.setRotate(n);
+		});
+		return new HBox(scaleChooser,rotateChooser);
 	}
 	@Override
 	public Node getGraphic(){

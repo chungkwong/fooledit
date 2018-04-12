@@ -27,17 +27,15 @@ import javafx.scene.effect.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ImageEditorModule{
+public class ImageModule{
 	public static final String NAME="editor.image";
 	public static final String EFFECT="effect";
-	public static final RegistryNode<String,?,String> REGISTRY=Registry.ROOT.getChild(NAME);
+	public static final RegistryNode<String,?,String> REGISTRY=Registry.ROOT.getOrCreateChild(NAME);
 	public static final RegistryNode<String,EffectTool,String> EFFECT_REGISTRY=(RegistryNode<String,EffectTool,String>)REGISTRY.getOrCreateChild(EFFECT);
 	public static void onLoad(){
-		addDataObjectType(ImageObjectType.INSTANCE);
-		addDataEditor(new IconEditor(),ImageObject.class);
-		addDataEditor(new ImageEditor(),ImageObject.class);
-		addDataEditor(new GraphicsEditor(),ImageObject.class);
-		CoreModule.TEMPLATE_TYPE_REGISTRY.addChild(ImageTemplate.class.getName(),(obj)->new ImageTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
+		addDataObjectType(GraphicsObjectType.INSTANCE);
+		addDataEditor(new GraphicsEditor(),GraphicsObject.class);
+		CoreModule.TEMPLATE_TYPE_REGISTRY.addChild(GraphicsTemplate.class.getName(),(obj)->new GraphicsTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
 		addEffect("BLOOM",()->new Bloom());
 		addEffect("BOX_BLUR",()->new BoxBlur());
 		addEffect("COLOR_ADJUST",()->new ColorAdjust());
@@ -61,12 +59,10 @@ public class ImageEditorModule{
 
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(ImageObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(ImageEditor.class.getName(),NAME);
-		Registry.providesDataObjectEditor(IconEditor.class.getName(),NAME);
+		Registry.providesDataObjectType(GraphicsObjectType.class.getName(),NAME);
 		Registry.providesDataObjectEditor(GraphicsEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(ImageObject.class.getName(),NAME);
-		Registry.providesTemplateType(ImageTemplate.class.getName(),NAME);
+		Registry.providesTypeToEditor(GraphicsObject.class.getName(),NAME);
+		Registry.providesTemplateType(GraphicsTemplate.class.getName(),NAME);
 		try{
 			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getOrCreateChild("children")).addChild(
 					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Main.INSTANCE.getFile("templates.json",NAME))));

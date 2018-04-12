@@ -34,8 +34,9 @@ public class GraphicsPreviewer extends Application{
 		};
 //		layers[1].setBlendMode(BlendMode.MULTIPLY);
 		GraphicsObject object=new GraphicsObject(new StackPane(layers));
-		primaryStage.setScene(new Scene(new BorderPane(new ScrollPane(new GraphicsViewer(object)),
-				EffectToolBox.INSTANCE.createInstance(object),LayerToolBox.INSTANCE.createInstance(object),null,null)));
+		GraphicsViewer viewer=new GraphicsViewer(object);
+		primaryStage.setScene(new Scene(new BorderPane(new ScrollPane(viewer),
+				DrawToolBox.INSTANCE.createInstance(object,viewer),LayerToolBox.INSTANCE.createInstance(object),null,null)));
 		primaryStage.show();
 	}
 	public static void main(String[] args){

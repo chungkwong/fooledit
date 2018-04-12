@@ -17,19 +17,19 @@
 package cc.fooledit.editor.image;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
-import java.io.*;
+import cc.fooledit.spi.*;
 import java.util.*;
 import java.util.logging.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ImageTemplate implements Template<ImageObject>{
+public class GraphicsTemplate implements Template<GraphicsObject>{
 	private final String name;
 	private final String description;
 	private final String file;
 	private final String mime;
-	public ImageTemplate(String name,String description,String file,String mime){
+	public GraphicsTemplate(String name,String description,String file,String mime){
 		this.name=name;
 		this.description=description;
 		this.file=file;
@@ -48,19 +48,22 @@ public class ImageTemplate implements Template<ImageObject>{
 	}
 	@Override
 	public String getModule(){
-		return ImageEditorModule.NAME;
+		return ImageModule.NAME;
 	}
 	@Override
 	public Collection<String> getParameters(){
 		return Collections.emptySet();
 	}
 	@Override
-	public ImageObject apply(Properties properties){
+	public GraphicsObject apply(Properties properties){
 		try{
-			return ImageObjectType.INSTANCE.readFrom(new FileInputStream(Main.INSTANCE.getFile(file,ImageEditorModule.NAME)));
+			SimpleRegistryNode<String,Object,String> prop=new SimpleRegistryNode<>();
+			prop.addChild(DataObject.MIME,mime);
+			prop.addChild(DataObject.DEFAULT_NAME,name);
+			return GraphicsObjectType.INSTANCE.readFrom(Main.INSTANCE.getFile(file,ImageModule.NAME).toURL().openConnection(),prop);
 		}catch(Exception ex){
-			Logger.getLogger(ImageTemplate.class.getName()).log(Level.SEVERE,null,ex);
-			return ImageObjectType.INSTANCE.create();
+			Logger.getLogger(GraphicsTemplate.class.getName()).log(Level.SEVERE,null,ex);
+			return GraphicsObjectType.INSTANCE.create();
 		}
 	}
 }

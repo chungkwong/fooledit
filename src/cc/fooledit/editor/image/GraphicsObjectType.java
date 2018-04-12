@@ -23,6 +23,7 @@ import javafx.embed.swing.*;
 import javafx.scene.*;
 import javafx.scene.canvas.*;
 import javafx.scene.image.*;
+import javafx.scene.layout.*;
 import javax.imageio.*;
 /**
  *
@@ -47,11 +48,11 @@ public class GraphicsObjectType implements DataObjectType<GraphicsObject>{
 	}
 	@Override
 	public GraphicsObject create(){
-		return new GraphicsObject(new Canvas());
+		return new GraphicsObject(new StackPane(new Canvas()));
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("GRAPHICS",ImageEditorModule.NAME);
+		return MessageRegistry.getString("GRAPHICS",ImageModule.NAME);
 	}
 	@Override
 	public void writeTo(GraphicsObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
@@ -65,7 +66,6 @@ public class GraphicsObjectType implements DataObjectType<GraphicsObject>{
 	@Override
 	public GraphicsObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
 		BufferedImage image=ImageIO.read(connection.getInputStream());
-		return new GraphicsObject(new ImageView(SwingFXUtils.toFXImage(image,null)));
+		return new GraphicsObject(new StackPane(GraphicsObject.imageToCanvas(SwingFXUtils.toFXImage(image,null))));
 	}
-
 }

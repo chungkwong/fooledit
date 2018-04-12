@@ -56,7 +56,7 @@ public class DataObjectTypeRegistry{
 		if(type.equals("video")||type.equals("audio"))
 			cand.add(MediaObjectType.INSTANCE);
 		else if(type.equals("image"))
-			cand.add(ImageObjectType.INSTANCE);
+			cand.add(GraphicsObjectType.INSTANCE);
 		if(type.equals("text")||mime.getParameter("charset")!=null)
 			cand.add(TextObjectType.INSTANCE);
 		cand.add(BinaryObjectType.INSTANCE);

@@ -19,6 +19,7 @@ import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.util.*;
 import javafx.scene.*;
+import javafx.scene.control.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -26,15 +27,15 @@ import javafx.scene.*;
 public class GraphicsEditor implements DataEditor<GraphicsObject>{
 	@Override
 	public Node edit(GraphicsObject data,Object remark,RegistryNode<String,Object,String> meta){
-		return new GraphicsViewer(data);
+		return new ScrollPane(new GraphicsViewer(data));
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("IMAGE_EDITOR",ImageEditorModule.NAME);
+		return MessageRegistry.getString("IMAGE_EDITOR",ImageModule.NAME);
 	}
 	@Override
 	public Collection<ToolBox> getToolboxs(){
-		return Collections.singleton(LayerToolBox.INSTANCE);
+		return Arrays.asList(LayerToolBox.INSTANCE,EffectToolBox.INSTANCE,DrawToolBox.INSTANCE,TransformToolBox.INSTANCE);
 	}
 
 }

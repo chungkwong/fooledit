@@ -19,15 +19,18 @@ import cc.fooledit.core.*;
 import javafx.beans.property.*;
 import javafx.geometry.*;
 import javafx.scene.*;
+import javafx.scene.canvas.*;
+import javafx.scene.image.*;
+import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class GraphicsObject implements DataObject<GraphicsObject>{
-	private final Node root;
+	private final StackPane root;
 	private final Property<Node> currentLayer=new SimpleObjectProperty<>();
 	private final Property<Rectangle2D> viewport=new SimpleObjectProperty<>();
-	public GraphicsObject(Node root){
+	public GraphicsObject(StackPane root){
 		this.root=root;
 		currentLayer.setValue(root);
 	}
@@ -35,7 +38,7 @@ public class GraphicsObject implements DataObject<GraphicsObject>{
 	public DataObjectType<GraphicsObject> getDataObjectType(){
 		return GraphicsObjectType.INSTANCE;
 	}
-	public Node getRoot(){
+	public StackPane getRoot(){
 		return root;
 	}
 	public Property<Rectangle2D> viewportProperty(){
@@ -43,5 +46,10 @@ public class GraphicsObject implements DataObject<GraphicsObject>{
 	}
 	public Property<Node> currentLayerProperty(){
 		return currentLayer;
+	}
+	public static Canvas imageToCanvas(Image image){
+		Canvas canvas=new Canvas(image.getWidth(),image.getWidth());
+		canvas.getGraphicsContext2D().drawImage(image,0,0);
+		return canvas;
 	}
 }
