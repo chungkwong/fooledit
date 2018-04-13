@@ -37,5 +37,4 @@ public class GraphicsEditor implements DataEditor<GraphicsObject>{
 	public Collection<ToolBox> getToolboxs(){
 		return Arrays.asList(LayerToolBox.INSTANCE,EffectToolBox.INSTANCE,DrawToolBox.INSTANCE,TransformToolBox.INSTANCE);
 	}
-
 }

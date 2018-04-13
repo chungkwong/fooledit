@@ -20,6 +20,7 @@ import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import java.util.stream.*;
 import javafx.collections.*;
+import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.canvas.*;
 import javafx.scene.control.*;
@@ -181,7 +182,7 @@ public class LayerToolBox implements ToolBox{
 		return null;
 	}
 	@Override
-	public SideBar.Side[] getPerferedSides(){
-		return new SideBar.Side[]{SideBar.Side.LEFT,SideBar.Side.LEFT};
+	public Side[] getPerferedSides(){
+		return new Side[]{Side.LEFT,Side.RIGHT};
 	}
 }

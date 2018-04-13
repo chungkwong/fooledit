@@ -16,13 +16,13 @@
  */
 package cc.fooledit.editor.media;
 import cc.fooledit.*;
-import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.application.*;
 import javafx.collections.*;
+import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -207,7 +207,7 @@ class MetaToolBox implements ToolBox{
 		return null;
 	}
 	@Override
-	public SideBar.Side[] getPerferedSides(){
-		return new SideBar.Side[]{SideBar.Side.LEFT,SideBar.Side.LEFT};
+	public Side[] getPerferedSides(){
+		return new Side[]{Side.LEFT,Side.RIGHT};
 	}
 }

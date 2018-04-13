@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
+import cc.fooledit.core.*;
 import java.util.function.*;
 import javafx.scene.*;
 import javafx.scene.effect.*;
@@ -42,5 +43,9 @@ public class SimpleEffectTool implements EffectTool{
 	@Override
 	public Node getControl(){
 		return control.get();
+	}
+	@Override
+	public String toString(){
+		return MessageRegistry.getString(name,ImageModule.NAME);
 	}
 }

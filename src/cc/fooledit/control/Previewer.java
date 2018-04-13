@@ -16,6 +16,7 @@
  */
 package cc.fooledit.control;
 import javafx.application.*;
+import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -27,25 +28,14 @@ import javafx.stage.*;
 public class Previewer extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		SplitPane inner=new SplitPane(new TextArea(),new Label("a"),new Label("b"),new Label("c"),new Label("d"));
-		BorderPane content=new BorderPane(inner,new Label("e"),new Label("f"),new Label("g"),new Label("h"));
-		Button b1=new Button("UP");
-
-		b1.setOnAction((e)->{
-			primaryStage.getScene().focusOwnerProperty();
-			inner.requestFocus();
-		});
-
-
-		VBox box1=new VBox(b1);
-		Label box2=new Label("BBBBBBBBBB");
-		Tab t=new Tab("MMM");
-
-		SideBar bar=new SideBar(SideBar.Side.RIGHT);
-		bar.addItem("AA",null,box1);
-		bar.addItem("BB",null,box2);
-		Scene scene=new Scene(new BorderPane(content,null,bar,null,null));
-		scene.getStylesheets().add("file:///home/kwong/NetBeansProjects/fooledit/modules/core/stylesheets/dark.css");
+		SideBarPane root=new SideBarPane();
+		root.getSideBar(Side.TOP).addItem("TOP",null,new Button("AAAA"));
+		root.getSideBar(Side.BOTTOM).addItem("BOTTOM",null,new TextArea());
+		root.getSideBar(Side.LEFT).addItem("LEFT",null,new Button("BBBBB"));
+		root.getSideBar(Side.RIGHT).addItem("RIGHT",null,new TextArea());
+		root.setCenter(new TextArea());
+		Scene scene=new Scene(root);
+		//scene.getStylesheets().add("file:///home/kwong/NetBeansProjects/fooledit/modules/core/stylesheets/dark.css");
 		primaryStage.setScene(scene);
 		//primaryStage.setScene(new Scene(new BorderPane(new BeanViewer(new Date()))));
 		primaryStage.show();

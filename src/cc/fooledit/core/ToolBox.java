@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.control.*;
+import javafx.geometry.*;
 import javafx.scene.*;
 /**
  *
@@ -26,5 +26,5 @@ public interface ToolBox{
 	String getDisplayName();
 	Node createInstance();
 	Node getGraphic();
-	SideBar.Side[] getPerferedSides();
+	Side[] getPerferedSides();
 }

@@ -16,8 +16,8 @@
  */
 package cc.fooledit.editor.image;
 import cc.fooledit.*;
-import cc.fooledit.control.*;
 import cc.fooledit.core.*;
+import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -61,7 +61,7 @@ public class TransformToolBox implements ToolBox{
 		return null;
 	}
 	@Override
-	public SideBar.Side[] getPerferedSides(){
-		return new SideBar.Side[]{SideBar.Side.LEFT,SideBar.Side.LEFT};
+	public Side[] getPerferedSides(){
+		return new Side[]{Side.TOP,Side.BOTTOM};
 	}
 }

@@ -16,10 +16,10 @@
  */
 package cc.fooledit.editor.image;
 import cc.fooledit.*;
-import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import java.util.stream.*;
 import javafx.collections.*;
+import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 /**
@@ -33,11 +33,11 @@ public class EffectToolBox implements ToolBox{
 	}
 	@Override
 	public String getName(){
-		return "LAYER";
+		return "EFFECT";
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("LAYER",ImageModule.NAME);
+		return MessageRegistry.getString("EFFECT",ImageModule.NAME);
 	}
 	@Override
 	public Node createInstance(){
@@ -58,7 +58,7 @@ public class EffectToolBox implements ToolBox{
 		return null;
 	}
 	@Override
-	public SideBar.Side[] getPerferedSides(){
-		return new SideBar.Side[]{SideBar.Side.LEFT,SideBar.Side.LEFT};
+	public Side[] getPerferedSides(){
+		return new Side[]{Side.TOP,Side.BOTTOM};
 	}
 }
