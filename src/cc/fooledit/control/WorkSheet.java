@@ -21,16 +21,19 @@ import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.*;
 import javafx.application.*;
 import javafx.beans.value.*;
 import javafx.geometry.*;
+import javafx.scene.Node;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class WorkSheet extends SideBarPane{
+public class WorkSheet extends BorderPane{
 	private final LazyRegistryNode<String,Object,String> registry;
 	private final Function<String,Object> remarkSupplier=(key)->getDataEditor().getRemark(getCenter());
 	public WorkSheet(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
@@ -67,13 +70,24 @@ public class WorkSheet extends SideBarPane{
 			registry.removeChild(CURRENT);
 			registry.addChild(DIRECTION,getOrientation().name());
 			registry.addChild(DIVIDER,getDivider());
-			registry.addChild(FIRST,getFirst().getRegistry());
-			registry.addChild(LAST,getLast().getRegistry());
+			ListRegistryNode<Object,String> children=new ListRegistryNode<>();
+			children.addChild(getFirst().getRegistry());
+			children.addChild(getLast().getRegistry());
+			registry.addChild(CHILDREN,children);
+		}else if(getCenter() instanceof TabPane){
+			registry.removeChild(BUFFER);
+			registry.removeChild(EDITOR);
+			registry.removeChild(REMARK);
+			registry.removeChild(CURRENT);
+			registry.removeChild(DIRECTION);
+			registry.removeChild(DIVIDER);
+			ListRegistryNode<Object,String> children=new ListRegistryNode<>();
+			getTabs().forEach((w)->children.addChild(w.getRegistry()));
+			registry.addChild(CHILDREN,children);
 		}else{
 			registry.removeChild(DIRECTION);
 			registry.removeChild(DIVIDER);
-			registry.removeChild(FIRST);
-			registry.removeChild(LAST);
+			registry.removeChild(CHILDREN);
 			registry.removeChild(REMARK);
 			registry.addChild(BUFFER,new AliasRegistryNode<>(getDataObject()));
 			registry.addChild(EDITOR,getDataEditor().getClass().getName());
@@ -111,6 +125,18 @@ public class WorkSheet extends SideBarPane{
 		registry.setKeys(Collections.emptySet());
 		splitPane.getDividers().get(0).positionProperty().addListener((e,o,n)->registry.addChild(DIVIDER,n));
 	}
+	private void tab(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
+		Tab newTab=new Tab((String)data.getChild(DataObject.BUFFER_NAME),new WorkSheet(data,editor,remark));
+		if(isTabed()){
+			((TabPane)getCenter()).getTabs().add(newTab);
+		}else{
+			Node first=getCenter();
+			TabPane splitPane=new TabPane(new Tab("",new WorkSheet(first)),newTab);
+			setCenter(splitPane);
+			restoreRegistry();
+			registry.setKeys(Collections.emptySet());
+		}
+	}
 	public void keepOnly(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
 		setData(data,editor,remark);
 		restoreRegistry();
@@ -118,8 +144,7 @@ public class WorkSheet extends SideBarPane{
 	}
 	public static final String DIRECTION="direction";
 	public static final String DIVIDER="divider";
-	public static final String FIRST="first";
-	public static final String LAST="last";
+	public static final String CHILDREN="children";
 	public static final String EDITOR="editor";
 	public static final String BUFFER="buffer";
 	public static final String CURRENT="current";
@@ -142,8 +167,14 @@ public class WorkSheet extends SideBarPane{
 		if(json.hasChild(DIRECTION)){
 			SplitPane pane=new SplitPane();
 			pane.setOrientation(Orientation.valueOf((String)json.getChild(DIRECTION)));
-			pane.getItems().setAll(fromJSON((LazyRegistryNode<String,Object,String>)(RegistryNode<String,Object,String>)json.getChild(FIRST)),fromJSON((LazyRegistryNode<String,Object,String>)(RegistryNode<String,Object,String>)json.getChild(LAST)));
+			ListRegistryNode<LazyRegistryNode<String,Object,String>,String> children=(ListRegistryNode<LazyRegistryNode<String,Object,String>,String>)json.getChild(CHILDREN);
+			pane.getItems().setAll(fromJSON(children.getChild(0)),fromJSON(children.getChild(1)));
 			pane.setDividerPositions(((Number)json.getChild(DIVIDER)).doubleValue());
+			return new WorkSheet(pane,json);
+		}else if(json.hasChild(CHILDREN)){
+			TabPane pane=new TabPane();
+			ListRegistryNode<LazyRegistryNode<String,Object,String>,String> children=(ListRegistryNode<LazyRegistryNode<String,Object,String>,String>)json.getChild(CHILDREN);
+			pane.getTabs().setAll(children.getChildren().stream().map((child)->new Tab((String)child.getChild(DataObject.BUFFER_NAME),fromJSON(child))).collect(Collectors.toList()));
 			return new WorkSheet(pane,json);
 		}else{
 			RegistryNode<String,Object,String> buffer=DataObjectRegistry.get((RegistryNode<String,Object,String>)json.getChild(BUFFER));
@@ -172,6 +203,12 @@ public class WorkSheet extends SideBarPane{
 	}
 	public double getDivider(){
 		return ((SplitPane)getCenter()).getDividerPositions()[0];
+	}
+	public boolean isTabed(){
+		return getCenter() instanceof TabPane;
+	}
+	public Stream<WorkSheet> getTabs(){
+		return ((TabPane)getCenter()).getTabs().stream().map((tab)->(WorkSheet)tab.getContent());
 	}
 	public RegistryNode<String,Object,String> getDataObject(){
 		return ((Pair<RegistryNode<String,Object,String>,DataEditor>)getCenter().getUserData()).getKey();

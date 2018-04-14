@@ -28,17 +28,18 @@ import javafx.stage.*;
 public class Previewer extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		SideBarPane root=new SideBarPane();
+		SideBarPane root=new SideBarPane(new TextArea());
 		root.getSideBar(Side.TOP).addItem("TOP",null,new Button("AAAA"));
-		root.getSideBar(Side.BOTTOM).addItem("BOTTOM",null,new TextArea());
+		root.getSideBar(Side.BOTTOM).addItem("BOTTOM",null,new TextArea("This a a \n good news"));
 		root.getSideBar(Side.LEFT).addItem("LEFT",null,new Button("BBBBB"));
-		root.getSideBar(Side.RIGHT).addItem("RIGHT",null,new TextArea());
-		root.setCenter(new TextArea());
+		root.getSideBar(Side.RIGHT).addItem("RIGHT",null,new TextArea("This a a \n good news"));
+
 		Scene scene=new Scene(root);
 		//scene.getStylesheets().add("file:///home/kwong/NetBeansProjects/fooledit/modules/core/stylesheets/dark.css");
 		primaryStage.setScene(scene);
 		//primaryStage.setScene(new Scene(new BorderPane(new BeanViewer(new Date()))));
 		primaryStage.show();
+		primaryStage.setMaximized(true);
 		primaryStage.getScene().focusOwnerProperty().addListener((e,o,n)->{
 			System.out.println(n);
 		});

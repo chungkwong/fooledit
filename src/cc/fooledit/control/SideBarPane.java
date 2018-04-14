@@ -16,22 +16,30 @@
  */
 package cc.fooledit.control;
 import cc.fooledit.core.*;
+import javafx.beans.property.*;
 import javafx.geometry.*;
-import javafx.scene.layout.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SideBarPane extends BorderPane{
+public class SideBarPane extends SplitPane{
 	private final SideBar top=new SideBar(Side.TOP);
 	private final SideBar bottom=new SideBar(Side.BOTTOM);
 	private final SideBar left=new SideBar(Side.LEFT);
 	private final SideBar right=new SideBar(Side.RIGHT);
-	public SideBarPane(){
-		setLeft(left);
-		setRight(right);
-		setTop(top);
-		setBottom(bottom);
+	private final SplitPane middle=new SplitPane();
+	private final Property<Node> center;
+	public SideBarPane(Node center){
+		middle.setOrientation(Orientation.HORIZONTAL);
+		middle.getItems().setAll(left,center,right);
+		middle.setDividerPositions(0.2,0.8);
+		setOrientation(Orientation.VERTICAL);
+		getItems().setAll(top,middle,bottom);
+		setDividerPositions(0.2,0.8);
+		this.center=new SimpleObjectProperty<Node>(center);
+		this.center.addListener((e,o,n)->middle.getItems().set(1,n));
 	}
 	public SideBar getSideBar(Side side){
 		switch(side){
@@ -55,5 +63,8 @@ public class SideBarPane extends BorderPane{
 	}
 	public void showToolBox(ToolBox box,Side side){
 		getSideBar(side).addItem(box.getDisplayName(),box.getGraphic(),box.createInstance());
+	}
+	public Property<Node> centerProperty(){
+		return center;
 	}
 }

@@ -49,7 +49,7 @@ public class SideBar extends SplitPane{
 	}
 	public void addItem(String title,Node graphic,Node content){
 		Tab tab=new Tab(title,content);
-		tab.setGraphic(content);
+		tab.setGraphic(graphic);
 		header.getTabs().add(tab);
 	}
 	public int getItemsCount(){

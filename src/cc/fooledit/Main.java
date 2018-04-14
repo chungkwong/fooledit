@@ -210,7 +210,7 @@ public class Main extends Application{
 				l.add(new SeparatorMenuItem());
 				getCurrentDataEditor().getToolboxs().forEach((tool)->{
 					MenuItem item=new MenuItem(((ToolBox)tool).getDisplayName());
-					item.setOnAction((e)->getCurrentWorkSheet().showToolBox((ToolBox)tool));
+					//item.setOnAction((e)->getCurrentWorkSheet().showToolBox((ToolBox)tool));//FIXME
 					l.add(item);
 				});
 			}
