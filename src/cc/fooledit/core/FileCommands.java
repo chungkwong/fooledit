@@ -40,7 +40,7 @@ public class FileCommands{
 		data.setAction((paths)->{
 			paths.forEach((p)->{
 				try{
-					Main.INSTANCE.show(DataObjectRegistry.readFrom(p.toUri().toURL()));
+					Main.INSTANCE.showOnCurrentTab(DataObjectRegistry.readFrom(p.toUri().toURL()));
 				}catch(Exception ex){
 					Logger.getGlobal().log(Level.SEVERE,null,ex);
 				}
@@ -49,12 +49,12 @@ public class FileCommands{
 		});
 		files.addChild(DataObject.DEFAULT_NAME,MessageRegistry.getString("OPEN_FILE",CoreModule.NAME));
 		DataObjectRegistry.addDataObject(files);
-		Main.INSTANCE.show(files);
+		Main.INSTANCE.showOnNewTab(files);
 	}
 	public static void openUrl(){
 		Main.INSTANCE.getMiniBuffer().setMode((url)->{
 			try{
-				Main.INSTANCE.show(DataObjectRegistry.readFrom(new URL(url)));
+				Main.INSTANCE.showOnNewTab(DataObjectRegistry.readFrom(new URL(url)));
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
@@ -83,7 +83,7 @@ public class FileCommands{
 		});
 		files.addChild(DataObject.DEFAULT_NAME,MessageRegistry.getString("SAVE",CoreModule.NAME));
 		DataObjectRegistry.addDataObject(files);
-		Main.INSTANCE.show(files);
+		Main.INSTANCE.showOnNewTab(files);
 	}
 	public static void saveAs(Path p){
 		RegistryNode<String,Object,String> object=Main.INSTANCE.getCurrentDataObject();
@@ -112,6 +112,6 @@ public class FileCommands{
 	public static void create(){
 		RegistryNode<String,Object,String> templateEditor=DataObjectRegistry.create(TemplateEditor.INSTANCE);
 		DataObjectRegistry.addDataObject(templateEditor);
-		Main.INSTANCE.show(templateEditor);
+		Main.INSTANCE.showOnNewTab(templateEditor);
 	}
 }

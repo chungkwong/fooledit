@@ -50,7 +50,7 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 		addCommand("create-file",(viewer)->viewer.getCurrentDirectories().forEach((path)->createFile(path)));
 		addCommand("open",(viewer)->viewer.getSelectedPaths().forEach((p)->{
 				try{
-					Main.INSTANCE.show(DataObjectRegistry.readFrom(p.toUri().toURL()));
+					Main.INSTANCE.showOnNewTab(DataObjectRegistry.readFrom(p.toUri().toURL()));
 				}catch(Exception ex){
 					Logger.getGlobal().log(Level.SEVERE,null,ex);
 				}

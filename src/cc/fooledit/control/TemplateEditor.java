@@ -105,7 +105,7 @@ public class TemplateEditor extends Prompt{
 				registry.addChild(DataObject.MIME,template.getMimeType());
 				registry.addChild(DataObject.DEFAULT_NAME,((Template)item).getName());
 				registry.addChild(DataObject.DATA,obj);
-				Main.INSTANCE.addAndShow(registry);
+				Main.INSTANCE.showOnCurrentTab(registry);
 				DataObjectRegistry.removeDataObject(Main.INSTANCE.getCurrentDataObject());
 			}
 		}

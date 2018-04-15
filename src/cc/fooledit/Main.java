@@ -117,7 +117,8 @@ public class Main extends Application{
 		addCommand("always-on-top-frame",()->stage.setAlwaysOnTop(true));
 		addCommand("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
 		addCommand("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
-		addCommand("focus-switch",()->focusSwitch());
+		addCommand("focus-previous",()->focusPrevious());
+		addCommand("focus-next",()->focusNext());
 		addCommand("focus-up",()->focusUp());
 		addCommand("focus-down",()->focusDown());
 		addCommand("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
@@ -125,8 +126,8 @@ public class Main extends Application{
 		addCommand("registry",()->addAndShow(DataObjectRegistry.create(RegistryEditor.INSTANCE)));
 		addCommand("command",()->input.requestFocus());
 		addCommand("cancel",()->getCurrentNode().requestFocus());
-		addCommand("next-buffer",()->showDefault(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
-		addCommand("previous-buffer",()->showDefault(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
+		addCommand("next-buffer",()->showOnCurrentTab(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
+		addCommand("previous-buffer",()->showOnCurrentTab(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
 		addCommand("start-record",()->{macro.clear();recording=true;});
 		addCommand("stop-record",()->{recording=false;macro.remove(0);macro.remove(macro.size()-1);});
 		addCommand("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
@@ -193,7 +194,7 @@ public class Main extends Application{
 		return (l)->{
 			for(String name:DataObjectRegistry.getDataObjectNames()){
 				MenuItem item=new MenuItem(name);
-				item.setOnAction((e)->showDefault(DataObjectRegistry.getDataObject(name)));
+				item.setOnAction((e)->showOnNewTab(DataObjectRegistry.getDataObject(name)));
 				l.add(item);
 			}
 			l.add(new SeparatorMenuItem());
@@ -206,7 +207,7 @@ public class Main extends Application{
 			l.add(new SeparatorMenuItem());
 			l.add(createCommandMenuItem("next_buffer"));
 			l.add(createCommandMenuItem("previous_buffer"));
-			if(!currentWorksheet.isSplit()){
+			if(!currentWorksheet.isCompound()){
 				l.add(new SeparatorMenuItem());
 				getCurrentDataEditor().getToolboxs().forEach((tool)->{
 					MenuItem item=new MenuItem(((ToolBox)tool).getDisplayName());
@@ -226,9 +227,9 @@ public class Main extends Application{
 					try{
 						URL file=new URI((String)prop.getChild(DataObject.URI)).toURL();
 						if(prop.hasChild(DataObject.MIME)){
-							show(DataObjectRegistry.readFrom(file,new MimeType((String)prop.getChild(DataObject.MIME))));
+							showOnNewTab(DataObjectRegistry.readFrom(file,new MimeType((String)prop.getChild(DataObject.MIME))));
 						}else{
-							show(DataObjectRegistry.readFrom(file));
+							showOnNewTab(DataObjectRegistry.readFrom(file));
 						}
 					}catch(Exception ex){
 						Logger.getGlobal().log(Level.SEVERE,null,ex);
@@ -252,7 +253,7 @@ public class Main extends Application{
 				currentWorksheet.getStyleClass().remove("current");
 			node.getStyleClass().add("current");
 			currentWorksheet=(WorkSheet)node;
-			if(!((WorkSheet)node).isSplit()){
+			if(!((WorkSheet)node).isCompound()){
 				commander.getChildren().set(1,((WorkSheet)node).getDataEditor().getMenuRegistry().getMenuBar());
 				commandRegistry.setLocal(getLocalCommandRegistry().toMap());
 			}
@@ -260,13 +261,21 @@ public class Main extends Application{
 	}
 	public void addAndShow(RegistryNode<String,Object,String> data){
 		DataObjectRegistry.addDataObject(data);
-		showDefault(data);
+		showOnNewTab(data);
 	}
-	public void show(RegistryNode<String,Object,String> data){
-		showDefault(data);
-	}
-	private void showDefault(RegistryNode<String,Object,String> data){
+	public void showOnCurrentTab(RegistryNode<String,Object,String> data){
 		getCurrentWorkSheet().keepOnly(data,getDefaultEditor(data),null);
+	}
+	public void showOnNewTab(RegistryNode<String,Object,String> data){
+		getCurrentWorkSheet().tab(data,getDefaultEditor(data),null);
+	}
+	public void showOnNewTabGroup(RegistryNode<String,Object,String> data){
+		WorkSheet currentWorkSheet=getCurrentWorkSheet();
+		if(currentWorkSheet.getWidth()<currentWorkSheet.getHeight()){
+			currentWorkSheet.splitVertically(data,getDefaultEditor(data),null);
+		}else{
+			currentWorkSheet.splitHorizontally(data,getDefaultEditor(data),null);
+		}
 	}
 	public DataEditor getDefaultEditor(RegistryNode<String,Object,String> data){
 		return DataObjectTypeRegistry.getDataEditors((Class<? extends DataObject>)data.getChild(DataObject.DATA).getClass()).get(0);
@@ -318,6 +327,7 @@ public class Main extends Application{
 		}
 		WorkSheet worksheet=WorkSheet.fromJSON(last);
 		root.setCenter(worksheet);
+		currentWorksheet=worksheet;
 		CoreModule.REGISTRY.addChild(CoreModule.WINDOW_REGISTRY_NAME,worksheet.getRegistry());
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
 			try{
@@ -332,7 +342,7 @@ public class Main extends Application{
 	}
 	private RegistryNode<String,Command,String> getLocalCommandRegistry(){
 		WorkSheet workSheet=getCurrentWorkSheet();
-		if(workSheet.isSplit()){
+		if(workSheet.isCompound()){
 			return (RegistryNode<String,Command,String>)CoreModule.REGISTRY.getOrCreateChild("EMPTY");
 		}else{
 			return workSheet.getDataEditor().getCommandRegistry();
@@ -343,7 +353,7 @@ public class Main extends Application{
 	}
 	private NavigableRegistryNode<String,String,String> getLocalKeymapRegistry(){
 		WorkSheet workSheet=getCurrentWorkSheet();
-		if(workSheet.isSplit()){
+		if(workSheet.isCompound()){
 			return (NavigableRegistryNode<String,String,String>)CoreModule.REGISTRY.getOrCreateChild("NAVIFABLE_EMPTY",new NavigableRegistryNode<>());
 		}else{
 			return workSheet.getDataEditor().getKeymapRegistry();
@@ -541,35 +551,46 @@ public class Main extends Application{
 			owner=owner.getParent();
 		return owner!=null;
 	}
-	private WorkSheet getParentWorkSheet(){
-		Node parent=getCurrentWorkSheet();
-		if(parent!=null){
-			parent=parent.getParent();
-			while(parent!=null&&!(parent instanceof WorkSheet))
-				parent=parent.getParent();
-
-		}
-		return (WorkSheet)parent;
-	}
 	private void focusUp(){
-		WorkSheet workSheet=getParentWorkSheet();
+		WorkSheet workSheet=getCurrentWorkSheet().getParentWorkSheet();
 		if(workSheet!=null){
 			workSheet.requestFocus();
 		}
 	}
 	private void focusDown(){
 		WorkSheet workSheet=getCurrentWorkSheet();
-		if(workSheet!=null&&workSheet.isSplit()){
-			workSheet.getFirst().requestFocus();
+		if(workSheet!=null){
+			if(workSheet.isSplit()){
+				workSheet.getFirst().requestFocus();
+			}else if(workSheet.isTabed()){
+				workSheet.getTabs().findFirst().ifPresent((c)->c.requestFocus());
+			}
 		}
 	}
-	private void focusSwitch(){
-		WorkSheet workSheet=getParentWorkSheet();
-		if(workSheet!=null&&workSheet.isSplit()){
-			if(workSheet.getFirst()==currentWorksheet)
-				workSheet.getLast().requestFocus();
-			else
-				workSheet.getFirst().requestFocus();
+	private void focusNext(){
+		WorkSheet workSheet=getCurrentWorkSheet().getParentWorkSheet();
+		if(workSheet!=null){
+			if(workSheet.isSplit()){
+				if(workSheet.getFirst()==currentWorksheet)
+					workSheet.getLast().requestFocus();
+				else
+					workSheet.getFirst().requestFocus();
+			}else if(workSheet.isTabed()){
+				((TabPane)workSheet.getCenter()).getSelectionModel().selectNext();
+			}
+		}
+	}
+	private void focusPrevious(){
+		WorkSheet workSheet=getCurrentWorkSheet().getParentWorkSheet();
+		if(workSheet!=null){
+			if(workSheet.isSplit()){
+				if(workSheet.getFirst()==currentWorksheet)
+					workSheet.getLast().requestFocus();
+				else
+					workSheet.getFirst().requestFocus();
+			}else if(workSheet.isTabed()){
+				((TabPane)workSheet.getCenter()).getSelectionModel().selectPrevious();
+			}
 		}
 	}
 }

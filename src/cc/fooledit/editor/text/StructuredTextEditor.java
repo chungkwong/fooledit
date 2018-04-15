@@ -55,7 +55,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 					try{
 						MimeType mime=new MimeType((String)curr.getChild(DataObject.MIME));
 						mime.setParameter("charset",set.name());
-						Main.INSTANCE.show(DataObjectRegistry.readFrom(new URL(url),TextObjectType.INSTANCE,mime));
+						Main.INSTANCE.showOnCurrentTab(DataObjectRegistry.readFrom(new URL(url),TextObjectType.INSTANCE,mime));
 					}catch(Exception ex){
 						Logger.getLogger(TextEditorModule.class.getName()).log(Level.SEVERE,null,ex);
 					}

@@ -125,10 +125,11 @@ public class WorkSheet extends BorderPane{
 		registry.setKeys(Collections.emptySet());
 		splitPane.getDividers().get(0).positionProperty().addListener((e,o,n)->registry.addChild(DIVIDER,n));
 	}
-	private void tab(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
+	public void tab(RegistryNode<String,Object,String> data,DataEditor editor,Object remark){
 		Tab newTab=new Tab((String)data.getChild(DataObject.BUFFER_NAME),new WorkSheet(data,editor,remark));
 		if(isTabed()){
 			((TabPane)getCenter()).getTabs().add(newTab);
+			((TabPane)getCenter()).getSelectionModel().select(newTab);
 		}else{
 			Node first=getCenter();
 			TabPane splitPane=new TabPane(new Tab("",new WorkSheet(first)),newTab);
@@ -141,6 +142,10 @@ public class WorkSheet extends BorderPane{
 		setData(data,editor,remark);
 		restoreRegistry();
 		getCenter().requestFocus();
+		WorkSheet parent=getParentWorkSheet();
+		if(parent!=null&&parent.isTabed()){
+			((TabPane)parent.getCenter()).getSelectionModel().getSelectedItem().setText((String)data.getChild(DataObject.BUFFER_NAME));
+		}
 	}
 	public static final String DIRECTION="direction";
 	public static final String DIVIDER="divider";
@@ -158,9 +163,27 @@ public class WorkSheet extends BorderPane{
 			Object child=json.getChild(key);
 			if(child instanceof SimpleRegistryNode)
 				reg.addChild(key,toLazy((SimpleRegistryNode<String,Object,String>)child));
-			else
+			else if(child instanceof ListRegistryNode){
+				reg.addChild(key,toLazy((ListRegistryNode<Object,String>)child));
+			}else{
 				reg.addChild(key,child);
+			}
 		});
+		return reg;
+	}
+	private static ListRegistryNode<Object,String> toLazy(ListRegistryNode<Object,String> json){
+		ListRegistryNode<Object,String> reg=new ListRegistryNode<>();
+		int length=reg.getChildNames().size();
+		for(int i=0;i<length;i++){
+			Object child=json.getChild(i);
+			if(child instanceof SimpleRegistryNode)
+				reg.addChild(toLazy((SimpleRegistryNode<String,Object,String>)child));
+			else if(child instanceof ListRegistryNode){
+				reg.addChild(toLazy((ListRegistryNode<Object,String>)child));
+			}else{
+				reg.addChild(child);
+			}
+		}
 		return reg;
 	}
 	private static WorkSheet fromJSON(LazyRegistryNode<String,Object,String> json){
@@ -207,6 +230,9 @@ public class WorkSheet extends BorderPane{
 	public boolean isTabed(){
 		return getCenter() instanceof TabPane;
 	}
+	public boolean isCompound(){
+		return isTabed()||isSplit();
+	}
 	public Stream<WorkSheet> getTabs(){
 		return ((TabPane)getCenter()).getTabs().stream().map((tab)->(WorkSheet)tab.getContent());
 	}
@@ -218,5 +244,12 @@ public class WorkSheet extends BorderPane{
 	}
 	public SimpleRegistryNode<String,Object,String> getRegistry(){
 		return registry;
+	}
+	public WorkSheet getParentWorkSheet(){
+		Node parent=this;
+		parent=parent.getParent();
+		while(parent!=null&&!(parent instanceof WorkSheet))
+			parent=parent.getParent();
+		return (WorkSheet)parent;
 	}
 }
