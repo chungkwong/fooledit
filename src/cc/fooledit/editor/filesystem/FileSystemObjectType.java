@@ -41,15 +41,15 @@ public class FileSystemObjectType implements DataObjectType<FileSystemObject>{
 		return true;
 	}
 	@Override
-	public void writeTo(FileSystemObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(FileSystemObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public FileSystemObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public FileSystemObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		return create();
 	}
 	@Override
-	public FileSystemObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
+	public FileSystemObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object> meta) throws Exception{
 		return create();
 	}
 	@Override

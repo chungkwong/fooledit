@@ -46,7 +46,7 @@ public class ArchiveObjectType implements DataObjectType<ArchiveObject>{
 		return new ArchiveObject(Collections.emptyList(),null);
 	}
 	@Override
-	public ArchiveObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public ArchiveObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		URL url=connection.getURL();
 		try(ArchiveInputStream archive=openStream(connection)){
 			ArchiveEntry entry;
@@ -87,7 +87,7 @@ public class ArchiveObjectType implements DataObjectType<ArchiveObject>{
 		mime2archive.put("application/vnd.rar","RAR");
 	}
 	@Override
-	public void writeTo(ArchiveObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(ArchiveObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

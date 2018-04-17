@@ -23,11 +23,11 @@ import javafx.scene.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface DataEditor<T extends DataObject<T>>{
-	Node edit(T data,Object remark,RegistryNode<String,Object,String> meta);
-	default RegistryNode<String,Command,String> getCommandRegistry(){
+	Node edit(T data,Object remark,RegistryNode<String,Object> meta);
+	default RegistryNode<String,Command> getCommandRegistry(){
 		return new SimpleRegistryNode<>();
 	}
-	default NavigableRegistryNode<String,String,String> getKeymapRegistry(){
+	default NavigableRegistryNode<String,String> getKeymapRegistry(){
 		return new NavigableRegistryNode<>();
 	}
 	default MenuRegistry getMenuRegistry(){

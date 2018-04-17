@@ -36,7 +36,7 @@ import org.eclipse.jgit.treewalk.*;
  */
 public class GitCommands{
 	public static void execute(String command){
-		Main.INSTANCE.getMiniBuffer().executeCommand(GitRepositoryEditor.INSTANCE.getCommandRegistry().getChild(command));
+		TaskManager.executeCommand(GitRepositoryEditor.INSTANCE.getCommandRegistry().get(command));
 	}
 	public static Git init(File file)throws Exception{
 		return Git.init().setDirectory(file).call();

@@ -28,7 +28,7 @@ public class FoolURLStreamHandler implements URLStreamHandlerFactory{
 	}
 	@Override
 	public URLStreamHandler createURLStreamHandler(String protocol){
-		URLStreamHandler handler=CoreModule.getPROTOCOL_REGISTRY().getChild(protocol);
+		URLStreamHandler handler=CoreModule.getPROTOCOL_REGISTRY().get(protocol);
 		if(handler!=null)
 			return handler;
 		String packagePrefix="sun.net.www.protocol";
@@ -45,7 +45,7 @@ public class FoolURLStreamHandler implements URLStreamHandlerFactory{
 			}
 			if(cls!=null){
 				handler=(URLStreamHandler)cls.newInstance();
-				CoreModule.getPROTOCOL_REGISTRY().addChild(clsName,handler);
+				CoreModule.getPROTOCOL_REGISTRY().put(clsName,handler);
 				return handler;
 			}
 		}catch(Exception e){

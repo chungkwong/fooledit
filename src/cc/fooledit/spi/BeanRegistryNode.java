@@ -19,43 +19,59 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
+import javafx.beans.*;
+import javafx.collections.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BeanRegistryNode<T> extends RegistryNode<String,Object,T>{
+public class BeanRegistryNode extends RegistryNode<String,Object>{
 	private final Object object;
 	public BeanRegistryNode(Object object){
 		this.object=object;
 	}
 	@Override
-	protected Collection<String> getChildNamesReal(){
-		return Arrays.stream(object.getClass().getMethods())
-				.filter((m)->m.getParameterCount()==0&&m.getName().startsWith("get"))
-				.map((m)->m.getName().substring(3)).collect(Collectors.toList());
-	}
-	@Override
-	public T getChildReal(String name){
+	protected Object getReal(String name){
 		try{
-			return (T)object.getClass().getMethod("get"+name).invoke(object);
+			return object.getClass().getMethod("get"+name).invoke(object);
 		}catch(ReflectiveOperationException|SecurityException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return null;
 		}
 	}
 	@Override
-	public boolean hasChildReal(String name){
+	public void addListener(MapChangeListener<? super String,? super Object> listener){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public void removeListener(MapChangeListener<? super String,? super Object> listener){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public int size(){
+		return keySet().size();
+	}
+	@Override
+	public boolean isEmpty(){
+		return keySet().size()==0;
+	}
+	@Override
+	public boolean containsKey(Object key){
 		try{
-			object.getClass().getMethod("get"+name);
+			object.getClass().getMethod("get"+key);
 			return true;
 		}catch(NoSuchMethodException|SecurityException ex){
 			return false;
 		}
 	}
 	@Override
-	protected Object addChildReal(String name,Object value){
-		Object oldValue=getChild(name);
-		String methodName="set"+name;
+	public boolean containsValue(Object value){
+		return values().contains(value);
+	}
+	@Override
+	public Object put(String key,Object value){
+		Object oldValue=get(key);
+		String methodName="set"+key;
 		for(Method method:object.getClass().getMethods()){
 			if(method.getName().equals(methodName)&&method.getParameterCount()==1)
 				try{
@@ -65,11 +81,41 @@ public class BeanRegistryNode<T> extends RegistryNode<String,Object,T>{
 
 				}
 		}
-		Logger.getGlobal().log(Level.INFO,"Method {0}is not founded in {1}",new Object[]{methodName,object.getClass()});
+		Logger.getGlobal().log(Level.INFO,"Method {0} is not founded in {1}",new Object[]{methodName,object.getClass()});
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	@Override
-	protected Object removeChildReal(String name){
-		throw new UnsupportedOperationException("Not supported yet.");
+	public Object remove(Object key){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public void putAll(Map<? extends String,? extends Object> m){
+		m.forEach((k,v)->put(k,v));
+	}
+	@Override
+	public void clear(){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public Set<String> keySet(){
+		return Arrays.stream(object.getClass().getMethods())
+				.filter((m)->m.getParameterCount()==0&&m.getName().startsWith("get"))
+				.map((m)->m.getName().substring(3)).collect(Collectors.toSet());
+	}
+	@Override
+	public Collection<Object> values(){
+		return keySet().stream().map((k)->get(k)).collect(Collectors.toList());
+	}
+	@Override
+	public Set<Entry<String,Object>> entrySet(){
+		return keySet().stream().collect(Collectors.toMap((k)->k,(k)->get(k))).entrySet();
+	}
+	@Override
+	public void addListener(InvalidationListener listener){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public void removeListener(InvalidationListener listener){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

@@ -426,9 +426,9 @@ public class SvnCommands{
 	}
 	private static TextObject createAndShowDataObject(String name){
 		TextObject text=new TextObject("");
-		RegistryNode<String,Object,String> obj=new SimpleRegistryNode<>();
-		obj.addChild(DataObject.DEFAULT_NAME,name);
-		obj.addChild(DataObject.DATA,text);
+		RegistryNode<String,Object> obj=new SimpleRegistryNode<>();
+		obj.put(DataObject.DEFAULT_NAME,name);
+		obj.put(DataObject.DATA,text);
 		DataObjectRegistry.addDataObject(obj);
 		Main.INSTANCE.show(obj);
 		return text;

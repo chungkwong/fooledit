@@ -37,7 +37,7 @@ public class ModuleRegistry{
 		//Arrays.stream(preload.split(":")).forEach((name)->ensureLoaded(name));
 	}
 	public static void ensureLoaded(String module){
-		if(!CoreModule.getLOADED_MODULE_REGISTRY().hasChild(module)){
+		if(!CoreModule.getLOADED_MODULE_REGISTRY().containsKey(module)){
 			try{
 				load(getModuleDescriptor(module));
 			}catch(Exception ex){
@@ -45,40 +45,40 @@ public class ModuleRegistry{
 			}
 		}
 	}
-	private static void load(RegistryNode<String,Object,String> moduleDescriptor) throws Exception{
-		String module=(String)moduleDescriptor.getChild(NAME);
+	private static void load(RegistryNode<String,Object> moduleDescriptor) throws Exception{
+		String module=(String)moduleDescriptor.get(NAME);
 		Logger.getGlobal().log(Level.INFO,"Trying to load {0}",new Object[]{module});
-		if(CoreModule.getLOADING_MODULE_REGISTRY().hasChildLoaded(module))
+		if(CoreModule.getLOADING_MODULE_REGISTRY().containsKey(module))
 			return;
-		CoreModule.getLOADING_MODULE_REGISTRY().addChild(module,moduleDescriptor);
+		CoreModule.getLOADING_MODULE_REGISTRY().put(module,moduleDescriptor);
 		ensureInstalled(module);
-		((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureLoaded(s));
+		((ListRegistryNode<String>)moduleDescriptor.get(DEPENDENCY)).values().forEach((s)->ensureLoaded(s));
 		onLoad(module);
-		CoreModule.getLOADING_MODULE_REGISTRY().removeChild(module);
-		CoreModule.getLOADED_MODULE_REGISTRY().addChild(module,moduleDescriptor);
+		CoreModule.getLOADING_MODULE_REGISTRY().remove(module);
+		CoreModule.getLOADED_MODULE_REGISTRY().put(module,moduleDescriptor);
 	}
 	public static void ensureInstalled(String module){
-		if(!CoreModule.getINSTALLED_MODULE_REGISTRY().hasChild(module))
+		if(!CoreModule.getINSTALLED_MODULE_REGISTRY().containsKey(module))
 			try{
 				install(getModuleDescriptor(module));
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
 	}
-	private static void install(RegistryNode<String,Object,String> moduleDescriptor) throws Exception{
-		String module=(String)moduleDescriptor.getChild(NAME);
+	private static void install(RegistryNode<String,Object> moduleDescriptor) throws Exception{
+		String module=(String)moduleDescriptor.get(NAME);
 		Logger.getGlobal().log(Level.INFO,"Trying to install {0}",new Object[]{module});
-		if(CoreModule.getINSTALLING_MODULE_REGISTRY().hasChildLoaded(module))
+		if(CoreModule.getINSTALLING_MODULE_REGISTRY().containsKey(module))
 			return;
-		CoreModule.getINSTALLING_MODULE_REGISTRY().addChild(module,null);
-		((ListRegistryNode<String,String>)moduleDescriptor.getChild(DEPENDENCY)).toMap().values().forEach((s)->ensureInstalled(s));
+		CoreModule.getINSTALLING_MODULE_REGISTRY().put(module,null);
+		((ListRegistryNode<String>)moduleDescriptor.get(DEPENDENCY)).values().forEach((s)->ensureInstalled(s));
 		onInstall(module);
-		CoreModule.getINSTALLING_MODULE_REGISTRY().removeChild(module);
-		CoreModule.getINSTALLED_MODULE_REGISTRY().addChild(module,null);
+		CoreModule.getINSTALLING_MODULE_REGISTRY().remove(module);
+		CoreModule.getINSTALLED_MODULE_REGISTRY().put(module,null);
 	}
-	public static RegistryNode<String,Object,String> getModuleDescriptor(String name) throws Exception{
-		RegistryNode<String,Object,String> moduleDescriptor=(RegistryNode<String,Object,String>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getModulePath(name),"descriptor.json")));
-		if(!moduleDescriptor.getChild(NAME).equals(name))
+	public static RegistryNode<String,Object> getModuleDescriptor(String name) throws Exception{
+		RegistryNode<String,Object> moduleDescriptor=(RegistryNode<String,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getModulePath(name),"descriptor.json")));
+		if(!moduleDescriptor.get(NAME).equals(name))
 			throw new RuntimeException("Bad module format: "+name);
 		return moduleDescriptor;
 	}
@@ -86,18 +86,18 @@ public class ModuleRegistry{
 		return Arrays.stream(Main.INSTANCE.getDataPath().listFiles((File file)->file.isDirectory())).
 				map((f)->f.getName()).collect(Collectors.toSet());
 	}
-	public static ListRegistryNode<RegistryNode<String,Object,String>,String> listDownloadable(){
-		String url=(String)CoreModule.REGISTRY.getChild(REPOSITORY);
+	public static ListRegistryNode<RegistryNode<String,Object>> listDownloadable(){
+		String url=(String)CoreModule.REGISTRY.get(REPOSITORY);
 		try(BufferedReader in=new BufferedReader(new InputStreamReader(new URL(url).openStream(),StandardCharsets.UTF_8))){
-			return (ListRegistryNode<RegistryNode<String,Object,String>,String>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(in));
+			return (ListRegistryNode<RegistryNode<String,Object>>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(in));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
 			return new ListRegistryNode<>();
 		}
 	}
-	public File download(RegistryNode<String,Object,String> module) throws IOException{
-		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL((String)module.getChild(URL)).openStream()),StandardCharsets.UTF_8)){
-			File base=Main.INSTANCE.getModulePath((String)module.getChild(NAME));
+	public File download(RegistryNode<String,Object> module) throws IOException{
+		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL((String)module.get(URL)).openStream()),StandardCharsets.UTF_8)){
+			File base=Main.INSTANCE.getModulePath((String)module.get(NAME));
 			base.mkdirs();
 			ZipEntry entry;
 			byte[] buf=new byte[4096];

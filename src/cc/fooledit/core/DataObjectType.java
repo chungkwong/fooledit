@@ -28,9 +28,9 @@ public interface DataObjectType<T extends DataObject>{
 	boolean canCreate();
 	T create();
 	String getDisplayName();
-	void writeTo(T data,URLConnection connection,RegistryNode<String,Object,String> meta)throws Exception;
-	T readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception;
-	default T readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
+	void writeTo(T data,URLConnection connection,RegistryNode<String,Object> meta)throws Exception;
+	T readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception;
+	default T readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object> meta) throws Exception{
 		return readFrom(connection,meta);
 	}
 }

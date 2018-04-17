@@ -26,7 +26,7 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class TreeTableHelper{
-	public static <T> void installCommonCommands(Supplier<TreeTableView<T>> widget,RegistryNode<String,Command,String> commands,String module){
+	public static <T> void installCommonCommands(Supplier<TreeTableView<T>> widget,RegistryNode<String,Command> commands,String module){
 		addCommand("focus-previous",(view)->view.getFocusModel().focusPrevious(),widget,commands,module);
 		addCommand("focus-next",(view)->view.getFocusModel().focusNext(),widget,commands,module);
 		addCommand("focus-first",(view)->view.getFocusModel().focus(0),widget,commands,module);
@@ -45,8 +45,8 @@ public class TreeTableHelper{
 		addCommand("expand",(view)->view.getTreeItem(view.getSelectionModel().getFocusedIndex()).setExpanded(true),widget,commands,module);
 		addCommand("fold",(view)->view.getTreeItem(view.getSelectionModel().getFocusedIndex()).setExpanded(false),widget,commands,module);
 	}
-	private static <T> void addCommand(String name,Consumer<TreeTableView<T>> action,Supplier<TreeTableView<T>> widget,RegistryNode<String,Command,String> commands,String module){
-		commands.addChild(name,new Command(name,()->action.accept(widget.get()),module));
+	private static <T> void addCommand(String name,Consumer<TreeTableView<T>> action,Supplier<TreeTableView<T>> widget,RegistryNode<String,Command> commands,String module){
+		commands.put(name,new Command(name,()->action.accept(widget.get()),module));
 	}
 	private static <T> void moveToPreviousPage(TreeTableView<T> tree){
 		int newIndex=((TreeTableViewSkin)tree.getSkin()).onScrollPageUp(true);

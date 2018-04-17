@@ -48,11 +48,11 @@ public class PdfObjectType implements DataObjectType<PdfObject>{
 		return MessageRegistry.getString("PDF_DOCUMENT",PdfModule.NAME);
 	}
 	@Override
-	public void writeTo(PdfObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(PdfObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		data.getDocument().save(connection.getOutputStream());
 	}
 	@Override
-	public PdfObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public PdfObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		return new PdfObject(PDDocument.load(connection.getInputStream()));
 	}
 }

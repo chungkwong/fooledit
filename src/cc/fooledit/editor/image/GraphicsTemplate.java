@@ -57,9 +57,9 @@ public class GraphicsTemplate implements Template<GraphicsObject>{
 	@Override
 	public GraphicsObject apply(Properties properties){
 		try{
-			SimpleRegistryNode<String,Object,String> prop=new SimpleRegistryNode<>();
-			prop.addChild(DataObject.MIME,mime);
-			prop.addChild(DataObject.DEFAULT_NAME,name);
+			SimpleRegistryNode<String,Object> prop=new SimpleRegistryNode<>();
+			prop.put(DataObject.MIME,mime);
+			prop.put(DataObject.DEFAULT_NAME,name);
 			return GraphicsObjectType.INSTANCE.readFrom(Main.INSTANCE.getFile(file,ImageModule.NAME).toURL().openConnection(),prop);
 		}catch(Exception ex){
 			Logger.getLogger(GraphicsTemplate.class.getName()).log(Level.SEVERE,null,ex);

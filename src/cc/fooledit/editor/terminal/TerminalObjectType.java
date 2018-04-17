@@ -49,15 +49,15 @@ public class TerminalObjectType implements DataObjectType<TerminalObject>{
 		return "terminal";
 	}
 	@Override
-	public void writeTo(TerminalObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(TerminalObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public TerminalObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public TerminalObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		return create();
 	}
 	@Override
-	public TerminalObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
+	public TerminalObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object> meta) throws Exception{
 		return create();
 	}
 

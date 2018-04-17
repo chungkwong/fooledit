@@ -49,10 +49,10 @@ public class Main extends Application{
 	private final File SYSTEM_PATH=computePath();
 	private final File MODULE_PATH=new File(SYSTEM_PATH,"modules");
 	private final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
-	private final RegistryNode<String,Command,String> globalCommandRegistry=new SimpleRegistryNode<>();
-	private final BiMap<String,Command> commandRegistry=new BiMap<>(globalCommandRegistry.toMap(),new HashMap<>());
+	private final RegistryNode<String,Command> globalCommandRegistry=new SimpleRegistryNode<>();
+	private final BiMap<String,Command> commandRegistry=new BiMap<>(globalCommandRegistry,new HashMap<>());
 	private MenuRegistry menuRegistry;
-	private final NavigableRegistryNode<String,String,String> keymapRegistry;
+	private final NavigableRegistryNode<String,String> keymapRegistry;
 	private final Notifier notifier=new Notifier();
 	private final BorderPane root=new BorderPane();
 	private MiniBuffer input;
@@ -83,8 +83,8 @@ public class Main extends Application{
 		registerStandardCommand();
 		Registry.ROOT.loadPreference();
 		ModuleRegistry.loadDefault();
-		CoreModule.PROTOCOL_REGISTRY.addChild("application",new ApplicationRegistry());
-		CoreModule.PROTOCOL_REGISTRY.addChild("data",new DataStreamHandler());
+		CoreModule.PROTOCOL_REGISTRY.put("application",new ApplicationRegistry());
+		CoreModule.PROTOCOL_REGISTRY.put("data",new DataStreamHandler());
 		keymapRegistry=Registry.ROOT.registerKeymap(CoreModule.NAME);
 		new KeymapSupport();
 		initMenuBar();
@@ -146,11 +146,11 @@ public class Main extends Application{
 			return null;
 		});
 		addCommandBatch("mime-alias",(o)->{
-			CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.addChild(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
 		addCommandBatch("mime-parent",(o)->{
-			CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.addChild(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.put(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
 			return null;
 		});
 		addCommandBatch("ensure-loaded",(o)->{
@@ -161,10 +161,10 @@ public class Main extends Application{
 			return SchemeConverter.toScheme(Registry.ROOT.resolve(SchemeConverter.toString(ScmList.first(o))));
 		});
 		addCommandBatch("get-entry",(o)->{
-			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).getChild(SchemeConverter.toString(ScmList.second(o))));
+			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).get(SchemeConverter.toString(ScmList.second(o))));
 		});
 		addCommandBatch("set-entry!",(o)->{
-			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).addChild(SchemeConverter.toString(ScmList.second(o)),SchemeConverter.toJava(ScmList.third(o))));
+			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).put(SchemeConverter.toString(ScmList.second(o)),SchemeConverter.toJava(ScmList.third(o))));
 		});
 		addCommandBatch("get-or-create-registry",(o)->{
 			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).getOrCreateChild(SchemeConverter.toString(ScmList.second(o))));
@@ -179,16 +179,16 @@ public class Main extends Application{
 		});
 	}
 	private void addCommand(String name,Runnable action){
-		globalCommandRegistry.addChild(name,new Command(name,action,CoreModule.NAME));
+		globalCommandRegistry.put(name,new Command(name,action,CoreModule.NAME));
 	}
 	private void addCommand(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
-		globalCommandRegistry.addChild(name,new Command(name,action,CoreModule.NAME));
+		globalCommandRegistry.put(name,new Command(name,action,CoreModule.NAME));
 	}
 	private void addCommandBatch(String name,Runnable action){
-		globalCommandRegistry.addChild(name,new Command(name,action,CoreModule.NAME,false));
+		globalCommandRegistry.put(name,new Command(name,action,CoreModule.NAME,false));
 	}
 	private void addCommandBatch(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
-		globalCommandRegistry.addChild(name,new Command(name,action,CoreModule.NAME,false));
+		globalCommandRegistry.put(name,new Command(name,action,CoreModule.NAME,false));
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
@@ -219,15 +219,15 @@ public class Main extends Application{
 	}
 	private Consumer<ObservableList<MenuItem>> getHistoryMenu(){
 		return (l)->{
-			ListRegistryNode<RegistryNode<String,Object,String>,String> history=CoreModule.HISTORY_REGISTRY;
+			ListRegistryNode<RegistryNode<String,Object>> history=CoreModule.HISTORY_REGISTRY;
 			for(int i=0;i<history.size();i++){
-				RegistryNode<String,Object,String> prop=history.getChild(i);
-				MenuItem item=new MenuItem((String)prop.getChild(DataObject.BUFFER_NAME));
+				RegistryNode<String,Object> prop=history.get(i);
+				MenuItem item=new MenuItem((String)prop.get(DataObject.BUFFER_NAME));
 				item.setOnAction((e)->{
 					try{
-						URL file=new URI((String)prop.getChild(DataObject.URI)).toURL();
-						if(prop.hasChild(DataObject.MIME)){
-							showOnNewTab(DataObjectRegistry.readFrom(file,new MimeType((String)prop.getChild(DataObject.MIME))));
+						URL file=new URI((String)prop.get(DataObject.URI)).toURL();
+						if(prop.containsKey(DataObject.MIME)){
+							showOnNewTab(DataObjectRegistry.readFrom(file,new MimeType((String)prop.get(DataObject.MIME))));
 						}else{
 							showOnNewTab(DataObjectRegistry.readFrom(file));
 						}
@@ -241,7 +241,7 @@ public class Main extends Application{
 	}
 	private MenuItem createCommandMenuItem(String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase(),CoreModule.NAME));
-		item.setOnAction((e)->TaskManager.executeCommand(globalCommandRegistry.getChild(name)));
+		item.setOnAction((e)->TaskManager.executeCommand(globalCommandRegistry.get(name)));
 		return item;
 	}
 	private void updateCurrentNode(Node node){
@@ -255,21 +255,21 @@ public class Main extends Application{
 			currentWorksheet=(WorkSheet)node;
 			if(!((WorkSheet)node).isCompound()){
 				commander.getChildren().set(1,((WorkSheet)node).getDataEditor().getMenuRegistry().getMenuBar());
-				commandRegistry.setLocal(getLocalCommandRegistry().toMap());
+				commandRegistry.setLocal(getLocalCommandRegistry());
 			}
 		}
 	}
-	public void addAndShow(RegistryNode<String,Object,String> data){
+	public void addAndShow(RegistryNode<String,Object> data){
 		DataObjectRegistry.addDataObject(data);
 		showOnNewTab(data);
 	}
-	public void showOnCurrentTab(RegistryNode<String,Object,String> data){
+	public void showOnCurrentTab(RegistryNode<String,Object> data){
 		getCurrentWorkSheet().keepOnly(data,getDefaultEditor(data),null);
 	}
-	public void showOnNewTab(RegistryNode<String,Object,String> data){
+	public void showOnNewTab(RegistryNode<String,Object> data){
 		getCurrentWorkSheet().tab(data,getDefaultEditor(data),null);
 	}
-	public void showOnNewTabGroup(RegistryNode<String,Object,String> data){
+	public void showOnNewTabGroup(RegistryNode<String,Object> data){
 		WorkSheet currentWorkSheet=getCurrentWorkSheet();
 		if(currentWorkSheet.getWidth()<currentWorkSheet.getHeight()){
 			currentWorkSheet.splitVertically(data,getDefaultEditor(data),null);
@@ -277,13 +277,13 @@ public class Main extends Application{
 			currentWorkSheet.splitHorizontally(data,getDefaultEditor(data),null);
 		}
 	}
-	public DataEditor getDefaultEditor(RegistryNode<String,Object,String> data){
-		return DataObjectTypeRegistry.getDataEditors((Class<? extends DataObject>)data.getChild(DataObject.DATA).getClass()).get(0);
+	public DataEditor getDefaultEditor(RegistryNode<String,Object> data){
+		return DataObjectTypeRegistry.getDataEditors((Class<? extends DataObject>)data.get(DataObject.DATA).getClass()).get(0);
 	}
 	public DataObject getCurrentData(){
-		return (DataObject)getCurrentDataObject().getChild(DataObject.DATA);
+		return (DataObject)getCurrentDataObject().get(DataObject.DATA);
 	}
-	public RegistryNode<String,Object,String> getCurrentDataObject(){
+	public RegistryNode<String,Object> getCurrentDataObject(){
 		return getCurrentWorkSheet().getDataObject();
 	}
 	public DataEditor getCurrentDataEditor(){
@@ -308,53 +308,53 @@ public class Main extends Application{
 		/*PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
 		root.setCenter((WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
 		String msg=MessageRegistry.getString("WELCOME",CoreModule.NAME);
-		RegistryNode<String,Object,String> welcome=DataObjectRegistry.create(TextObjectType.INSTANCE);
-		welcome.addChild(DataObject.DATA,new TextObject(msg));
+		RegistryNode<String,Object> welcome=DataObjectRegistry.create(TextObjectType.INSTANCE);
+		welcome.put(DataObject.DATA,new TextObject(msg));
 		DataObjectRegistry.addDataObject(welcome);
 		WorkSheet workSheet=new WorkSheet(welcome,getDefaultEditor(welcome),null);
 		setCurrentWorkSheet(workSheet);
 		return workSheet;
 		}));*/
-		SimpleRegistryNode<String,Object,String> last;
+		SimpleRegistryNode<String,Object> last;
 		try{
-			last=(SimpleRegistryNode<String,Object,String>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getUserPath(),"layout.json")));
+			last=(SimpleRegistryNode<String,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getUserPath(),"layout.json")));
 		}catch(Exception ex){
 			last=new SimpleRegistryNode<>();
-			last.addChild(WorkSheet.BUFFER,DataObjectRegistry.create(TextObjectType.INSTANCE));
-			last.addChild(WorkSheet.EDITOR,StructuredTextEditor.class.getName());
-			last.addChild(WorkSheet.CURRENT,true);
-			last.addChild(WorkSheet.REMARK,null);
+			last.put(WorkSheet.BUFFER,DataObjectRegistry.create(TextObjectType.INSTANCE));
+			last.put(WorkSheet.EDITOR,StructuredTextEditor.class.getName());
+			last.put(WorkSheet.CURRENT,true);
+			last.put(WorkSheet.REMARK,null);
 		}
 		WorkSheet worksheet=WorkSheet.fromJSON(last);
 		root.setCenter(worksheet);
 		currentWorksheet=worksheet;
-		CoreModule.REGISTRY.addChild(CoreModule.WINDOW_REGISTRY_NAME,worksheet.getRegistry());
+		CoreModule.REGISTRY.put(CoreModule.WINDOW_REGISTRY_NAME,worksheet.getRegistry());
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
 			try{
-				Helper.writeText(StandardSerializiers.JSON_SERIALIZIER.encode(REGISTRY.getChild(CoreModule.WINDOW_REGISTRY_NAME)),new File(Main.INSTANCE.getUserPath(),"layout.json"));
+				Helper.writeText(StandardSerializiers.JSON_SERIALIZIER.encode(REGISTRY.get(CoreModule.WINDOW_REGISTRY_NAME)),new File(Main.INSTANCE.getUserPath(),"layout.json"));
 			}catch(Exception ex){
 				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
 			}
 		});
 	}
-	public RegistryNode<String,Command,String> getGlobalCommandRegistry(){
+	public RegistryNode<String,Command> getGlobalCommandRegistry(){
 		return globalCommandRegistry;
 	}
-	private RegistryNode<String,Command,String> getLocalCommandRegistry(){
+	private RegistryNode<String,Command> getLocalCommandRegistry(){
 		WorkSheet workSheet=getCurrentWorkSheet();
 		if(workSheet.isCompound()){
-			return (RegistryNode<String,Command,String>)CoreModule.REGISTRY.getOrCreateChild("EMPTY");
+			return (RegistryNode<String,Command>)CoreModule.REGISTRY.getOrCreateChild("EMPTY");
 		}else{
 			return workSheet.getDataEditor().getCommandRegistry();
 		}
 	}
-	public NavigableRegistryNode<String,String,String> getGlobalKeymapRegistry(){
+	public NavigableRegistryNode<String,String> getGlobalKeymapRegistry(){
 		return keymapRegistry;
 	}
-	private NavigableRegistryNode<String,String,String> getLocalKeymapRegistry(){
+	private NavigableRegistryNode<String,String> getLocalKeymapRegistry(){
 		WorkSheet workSheet=getCurrentWorkSheet();
 		if(workSheet.isCompound()){
-			return (NavigableRegistryNode<String,String,String>)CoreModule.REGISTRY.getOrCreateChild("NAVIFABLE_EMPTY",new NavigableRegistryNode<>());
+			return (NavigableRegistryNode<String,String>)CoreModule.REGISTRY.getOrCreateChild("NAVIFABLE_EMPTY",new NavigableRegistryNode<>());
 		}else{
 			return workSheet.getDataEditor().getKeymapRegistry();
 		}
@@ -474,7 +474,7 @@ public class Main extends Application{
 			}
 			@Override
 			public String getContentType(){
-				return CoreModule.APPLICATION_REGISTRY.getChild(getURL().getPath());
+				return CoreModule.APPLICATION_REGISTRY.get(getURL().getPath());
 			}
 		}
 	}

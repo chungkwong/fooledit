@@ -40,20 +40,20 @@ import org.fxmisc.richtext.*;
  */
 public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(TextEditorModule.NAME);
-	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(TextEditorModule.NAME);
-	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(TextEditorModule.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(TextEditorModule.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(TextEditorModule.NAME);
 	private final Map<String,Language> languages=new HashMap<>();
 	private final HistoryRing<String> clips=new HistoryRing<>();
 	public StructuredTextEditor(){
 		menuRegistry.registerDynamicMenu("reload",(items)->{
-			RegistryNode<String,Object,String> curr=Main.INSTANCE.getCurrentDataObject();
-			String url=(String)curr.getChild(DataObject.URI);
-			String currCharset=(String)curr.getChildOrDefault("CHARSET","UTF-8");
+			RegistryNode<String,Object> curr=Main.INSTANCE.getCurrentDataObject();
+			String url=(String)curr.get(DataObject.URI);
+			String currCharset=(String)curr.getOrDefault("CHARSET","UTF-8");
 			if(url!=null){
 				ToggleGroup group=new ToggleGroup();
 				Consumer<Charset> reload=(set)->{
 					try{
-						MimeType mime=new MimeType((String)curr.getChild(DataObject.MIME));
+						MimeType mime=new MimeType((String)curr.get(DataObject.MIME));
 						mime.setParameter("charset",set.name());
 						Main.INSTANCE.showOnCurrentTab(DataObjectRegistry.readFrom(new URL(url),TextObjectType.INSTANCE,mime));
 					}catch(Exception ex){
@@ -71,12 +71,12 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			}
 		});
 		menuRegistry.registerDynamicMenu("charset",(items)->{
-			RegistryNode<String,Object,String> curr=Main.INSTANCE.getCurrentDataObject();
-			String currCharset=(String)curr.getChildOrDefault("CHARSET","UTF-8");
+			RegistryNode<String,Object> curr=Main.INSTANCE.getCurrentDataObject();
+			String currCharset=(String)curr.getOrDefault("CHARSET","UTF-8");
 			ToggleGroup group=new ToggleGroup();
 			items.setAll(Charset.availableCharsets().values().stream()
 					.map((set)->createCharsetItem(set,(s)->{
-						curr.addChild("CHARSET",s.name());
+						curr.put("CHARSET",s.name());
 					},group,currCharset)).collect(Collectors.toList()));
 		});
 
@@ -226,10 +226,10 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		json.stream().map((m)->Language.fromJSON(m)).forEach((l)->Arrays.stream(l.getMimeTypes()).forEach((mime)->languages.put(mime,l)));
 	}
 	private void addCommand(String name,Consumer<CodeEditor> action){
-		commandRegistry.addChild(name,new Command(name,()->action.accept(getCurrentEditor()),TextEditorModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept(getCurrentEditor()),TextEditorModule.NAME));
 	}
 	private void addCommand(String name,List<Argument> parameters,BiFunction<ScmPairOrNil,CodeEditor,ScmObject> action){
-		commandRegistry.addChild(name,new Command(name,parameters,(args)->action.apply(args,getCurrentEditor()),TextEditorModule.NAME));
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,getCurrentEditor()),TextEditorModule.NAME));
 	}
 	private CodeEditor getCurrentEditor(){
 		return (CodeEditor)Main.INSTANCE.getCurrentNode();
@@ -239,7 +239,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		return menuRegistry;
 	}
 	@Override
-	public RegistryNode<String,Command,String> getCommandRegistry(){
+	public RegistryNode<String,Command> getCommandRegistry(){
 		return commandRegistry;
 	}
 	@Override
@@ -255,15 +255,15 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		return new ListRegistryNode<>(remark);
 	}
 	@Override
-	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
+	public NavigableRegistryNode<String,String> getKeymapRegistry(){
 		return keymapRegistry;
 	}
 	@Override
-	public Node edit(TextObject data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(TextObject data,Object remark,RegistryNode<String,Object> meta){
 		MetaLexer lex=null;
 		Language language;
 		try{
-			language=languages.get(new MimeType((String)meta.getChildOrDefault(DataObject.MIME,"text/plain")).getBaseType());
+			language=languages.get(new MimeType((String)meta.getOrDefault(DataObject.MIME,"text/plain")).getBaseType());
 		}catch(MimeTypeParseException ex){
 			language=null;
 		}
@@ -272,7 +272,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		CodeEditor codeEditor=new CodeEditor(parserBuilder,highlighter);
 		codeEditor.textProperty().bindBidirectional(data.getText());
 		if(remark instanceof ListRegistryNode){
-			List<Number> pair=((ListRegistryNode<Number,String>)remark).getChildren();
+			List<Number> pair=((ListRegistryNode<Number>)remark).getChildren();
 			int len=codeEditor.getArea().getLength();
 			codeEditor.getArea().selectRange(Math.min(pair.get(0).intValue(),len),Math.min(pair.get(1).intValue(),len));
 			for(int i=2;i<pair.size();i+=2)

@@ -109,10 +109,10 @@ class DrawingToolBox extends TabPane{
 		});
 		pane.getChildren().add(new Separator());
 		pane.getChildren().add(draw);
-		//RegistryNode<String,DrawingTool,String> tools=((RegistryNode<String,DrawingTool,String>)Registry.ROOT.getChild(ImageEditorModule.NAME).getChild(DrawingTool.NAME));
+		//RegistryNode<String,DrawingTool,String> tools=((RegistryNode<String,DrawingTool,String>)Registry.ROOT.get(ImageEditorModule.NAME).get(DrawingTool.NAME));
 		/*for(String name:tools.getChildNames()){
 			ToggleButton cand=new ToggleButton(name);
-			DrawingTool child=tools.getChild(name);
+			DrawingTool child=tools.get(name);
 			cand.selectedProperty().addListener((e,o,n)->{
 				if(n==true){
 					viewer.setOnMouseMoved(child);

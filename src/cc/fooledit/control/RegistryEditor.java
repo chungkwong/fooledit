@@ -33,7 +33,7 @@ public class RegistryEditor extends Prompt{
 		return MessageRegistry.getString("REGISTRY",CoreModule.NAME);
 	}
 	@Override
-	public Node edit(Prompt data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(Prompt data,Object remark,RegistryNode<String,Object> meta){
 		return new RegistryViewer(Registry.ROOT);
 	}
 	@Override

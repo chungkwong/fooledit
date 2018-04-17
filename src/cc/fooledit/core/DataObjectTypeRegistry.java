@@ -29,29 +29,29 @@ import javax.activation.*;
  */
 public class DataObjectTypeRegistry{
 	public static void addDataObjectType(DataObjectType type){
-		CoreModule.DATA_OBJECT_TYPE_REGISTRY.addChild(type.getClass().getName(),type);
+		CoreModule.DATA_OBJECT_TYPE_REGISTRY.put(type.getClass().getName(),type);
 	}
 	public static void addDataEditor(DataEditor editor,Class<? extends DataObject> objectClass){
-		CoreModule.DATA_OBJECT_EDITOR_REGISTRY.addChild(editor.getClass().getName(),editor);
-		if(!CoreModule.TYPE_TO_EDITOR_REGISTRY.hasChildLoaded(objectClass.getName())){
-			CoreModule.TYPE_TO_EDITOR_REGISTRY.addChild(objectClass.getName(),new ListRegistryNode<>());
+		CoreModule.DATA_OBJECT_EDITOR_REGISTRY.put(editor.getClass().getName(),editor);
+		if(!CoreModule.TYPE_TO_EDITOR_REGISTRY.containsKey(objectClass.getName())){
+			CoreModule.TYPE_TO_EDITOR_REGISTRY.put(objectClass.getName(),new ListRegistryNode<>());
 		}
-		CoreModule.TYPE_TO_EDITOR_REGISTRY.getChild(objectClass.getName()).addChild(0,editor.getClass().getName());
+		CoreModule.TYPE_TO_EDITOR_REGISTRY.get(objectClass.getName()).put(editor.getClass().getName());
 	}
 	public static List<DataEditor> getDataEditors(Class<? extends DataObject> cls){
-		if(CoreModule.TYPE_TO_EDITOR_REGISTRY.hasChild(cls.getName()))
-			return CoreModule.TYPE_TO_EDITOR_REGISTRY.getChild(cls.getName()).toMap().values().stream().map((c)->CoreModule.DATA_OBJECT_EDITOR_REGISTRY.getChild(c)).collect(Collectors.toList());
+		if(CoreModule.TYPE_TO_EDITOR_REGISTRY.containsKey(cls.getName()))
+			return CoreModule.TYPE_TO_EDITOR_REGISTRY.get(cls.getName()).values().stream().map((c)->CoreModule.DATA_OBJECT_EDITOR_REGISTRY.get(c)).collect(Collectors.toList());
 		return Collections.emptyList();
 	}
 	public static void registerMime(String mime,String type){
-		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.addChild(mime,type);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(mime,type);
 	}
 	public static List<DataObjectType> getPreferedDataObjectType(MimeType mime){
 		LinkedList<DataObjectType> cand=new LinkedList<DataObjectType>();
-		String t=CoreModule.CONTENT_TYPE_LOADER_REGISTRY.getChild(mime.getBaseType());
+		String t=CoreModule.CONTENT_TYPE_LOADER_REGISTRY.get(mime.getBaseType());
 		//System.err.println(mime.toString());
 		if(t!=null)
-			cand.add(CoreModule.DATA_OBJECT_TYPE_REGISTRY.getChild(t));
+			cand.add(CoreModule.DATA_OBJECT_TYPE_REGISTRY.get(t));
 		String type=mime.getPrimaryType();
 		if(type.equals("video")||type.equals("audio"))
 			cand.add(MediaObjectType.INSTANCE);

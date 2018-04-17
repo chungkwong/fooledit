@@ -38,7 +38,7 @@ public class MidiEditor implements DataEditor<MidiObject>{
 	public MidiEditor(){
 	}
 	@Override
-	public Node edit(MidiObject data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(MidiObject data,Object remark,RegistryNode<String,Object> meta){
 		try{
 			return new MidiViewer(data.getSequence());
 		}catch(Exception ex){

@@ -30,8 +30,8 @@ public class ZipModule{
 		DataObjectTypeRegistry.addDataEditor(ArchiveEditor.INSTANCE,ArchiveObject.class);
 		DataObjectTypeRegistry.addDataObjectType(ZipObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(ZipEditor.INSTANCE,ZipObject.class);
-		PROTOCOL_REGISTRY.addChild("archive",new ArchiveStreamHandler());
-		PROTOCOL_REGISTRY.addChild("compressed",new ZipStreamHandler());
+		PROTOCOL_REGISTRY.put("archive",new ArchiveStreamHandler());
+		PROTOCOL_REGISTRY.put("compressed",new ZipStreamHandler());
 	}
 	public static void onUnLoad(){
 

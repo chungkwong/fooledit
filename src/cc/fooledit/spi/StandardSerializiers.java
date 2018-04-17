@@ -61,11 +61,11 @@ public class StandardSerializiers{
 		}
 		@Override
 		public void onEntry(Object value,Object key,SimpleRegistryNode registry){
-			registry.addChild(key.toString(),value);
+			registry.put(key.toString(),value);
 		}
 		@Override
 		public void onComponent(Object value,int index,ListRegistryNode registry){
-			registry.addChild(index,value);
+			registry.put(index,value);
 		}
 		@Override
 		public boolean isMap(Object o){
@@ -77,7 +77,7 @@ public class StandardSerializiers{
 		}
 		@Override
 		public Iterator<Map.Entry<?,?>> getEntryIterator(Object o){
-			return ((RegistryNode)o).toMap().entrySet().iterator();
+			return ((RegistryNode)o).entrySet().iterator();
 		}
 		@Override
 		public Iterator<?> getComponentIterator(Object o){

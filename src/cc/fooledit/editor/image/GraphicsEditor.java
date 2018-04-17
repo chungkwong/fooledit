@@ -26,7 +26,7 @@ import javafx.scene.control.*;
  */
 public class GraphicsEditor implements DataEditor<GraphicsObject>{
 	@Override
-	public Node edit(GraphicsObject data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(GraphicsObject data,Object remark,RegistryNode<String,Object> meta){
 		return new ScrollPane(new GraphicsViewer(data));
 	}
 	@Override

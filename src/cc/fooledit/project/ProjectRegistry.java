@@ -30,9 +30,9 @@ public class ProjectRegistry{
 	public static void register(Project project){
 		projects.add(project);
 	}
-	public static Project getProject(RegistryNode<String,Object,String> obj){
+	public static Project getProject(RegistryNode<String,Object> obj){
 		try{
-			Optional<Project> project=ProjectTypeManager.gaussProject(new File(new URI((String)obj.getChild(DataObject.URI))));
+			Optional<Project> project=ProjectTypeManager.gaussProject(new File(new URI((String)obj.get(DataObject.URI))));
 			if(project.isPresent()){
 				projects.add(project.get());
 				return project.get();

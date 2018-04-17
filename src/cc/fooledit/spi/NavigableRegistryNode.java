@@ -20,50 +20,32 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class NavigableRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
-	private final NavigableMap<K,V> children;
+public class NavigableRegistryNode<K,V> extends SimpleRegistryNode<K,V>{
 	public NavigableRegistryNode(){
-		this.children=new TreeMap<>();
+		super(new TreeMap<>());
 	}
 	public NavigableRegistryNode(NavigableMap<K,V> children){
-		this.children=children;
-	}
-	@Override
-	public V getChildReal(K name){
-		return children.get(name);
-	}
-	@Override
-	public boolean hasChildReal(K name){
-		return children.containsKey(name);
-	}
-	@Override
-	protected V addChildReal(K name,V value){
-		return children.put(name,value);
-	}
-	@Override
-	protected V removeChildReal(K name){
-		return children.remove(name);
-	}
-	@Override
-	protected Collection<K> getChildNamesReal(){
-		return children.keySet();
+		super(children);
 	}
 	public Map.Entry<K,V> firstEntry(){
-		return children.firstEntry();
+		return getBase().firstEntry();
 	}
 	public Map.Entry<K,V> lastEntry(){
-		return children.lastEntry();
+		return getBase().lastEntry();
 	}
 	public Map.Entry<K,V> ceilingEntry(K key){
-		return children.ceilingEntry(key);
+		return getBase().ceilingEntry(key);
 	}
 	public Map.Entry<K,V> floorEntry(K key){
-		return children.floorEntry(key);
+		return getBase().floorEntry(key);
 	}
 	public Map.Entry<K,V> higherEntry(K key){
-		return children.higherEntry(key);
+		return getBase().higherEntry(key);
 	}
 	public Map.Entry<K,V> lowerEntry(K key){
-		return children.lowerEntry(key);
+		return getBase().lowerEntry(key);
+	}
+	private NavigableMap<K,V> getBase(){
+		return (NavigableMap<K,V>)base;
 	}
 }

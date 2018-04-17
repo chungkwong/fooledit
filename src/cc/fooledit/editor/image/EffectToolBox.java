@@ -17,7 +17,6 @@
 package cc.fooledit.editor.image;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
-import java.util.stream.*;
 import javafx.collections.*;
 import javafx.geometry.*;
 import javafx.scene.Node;
@@ -44,10 +43,8 @@ public class EffectToolBox implements ToolBox{
 		return createInstance((GraphicsObject)Main.INSTANCE.getCurrentData());
 	}
 	Node createInstance(GraphicsObject object){
-		ChoiceBox<EffectTool> choiceBox=new ChoiceBox<>(FXCollections.observableArrayList(
-				ImageModule.EFFECT_REGISTRY.getChildNames().stream().
-				map((name)->ImageModule.EFFECT_REGISTRY.getChild(name)).collect(Collectors.toList())));
-		choiceBox.getSelectionModel().select(ImageModule.EFFECT_REGISTRY.getChild("IMAGE_INPUT"));
+		ChoiceBox<EffectTool> choiceBox=new ChoiceBox<>(FXCollections.observableArrayList(ImageModule.EFFECT_REGISTRY.values()));
+		choiceBox.getSelectionModel().select(ImageModule.EFFECT_REGISTRY.get("IMAGE_INPUT"));
 		choiceBox.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
 			object.currentLayerProperty().getValue().setEffect(n.getEffect(null));
 		});

@@ -33,8 +33,8 @@ import org.apache.commons.compress.archivers.*;
 public class ArchiveEditor implements DataEditor<ArchiveObject>{
 	public static final ArchiveEditor INSTANCE=new ArchiveEditor();
 	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(ZipModule.NAME);
-	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(ZipModule.NAME);
-	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(ZipModule.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(ZipModule.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(ZipModule.NAME);
 	private ArchiveEditor(){
 		addCommand("focus-previous",(viewer)->viewer.getTree().getFocusModel().focusPrevious());
 		addCommand("focus-next",(viewer)->viewer.getTree().getFocusModel().focusNext());
@@ -55,17 +55,17 @@ public class ArchiveEditor implements DataEditor<ArchiveObject>{
 		addCommand("submit",(viewer)->viewer.fireAction());
 	}
 	private void addCommand(String name,Consumer<ArchiveViewer> action){
-		commandRegistry.addChild(name,new Command(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),ZipModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),ZipModule.NAME));
 	}
 	@Override
-	public Node edit(ArchiveObject data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(ArchiveObject data,Object remark,RegistryNode<String,Object> meta){
 		ArchiveViewer viewer=new ArchiveViewer(data.getEntries());
 		viewer.setAction((entries)->{
 			entries.forEach((entry)->{
 				URL url=null;
 				try{
 					url=new URL("archive","",data.getUrl().toString()+"!/"+entry.getName());
-					Main.INSTANCE.show(DataObjectRegistry.readFrom(url));
+					Main.INSTANCE.showOnNewTab(DataObjectRegistry.readFrom(url));
 				}catch(Exception ex){
 					Logger.getGlobal().log(Level.SEVERE,null,ex);
 				}
@@ -129,11 +129,11 @@ public class ArchiveEditor implements DataEditor<ArchiveObject>{
 			tree.getSelectionModel().select(curr);
 	}
 	@Override
-	public RegistryNode<String,Command,String> getCommandRegistry(){
+	public RegistryNode<String,Command> getCommandRegistry(){
 		return commandRegistry;
 	}
 	@Override
-	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
+	public NavigableRegistryNode<String,String> getKeymapRegistry(){
 		return keymapRegistry;
 	}
 	@Override

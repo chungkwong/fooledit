@@ -33,8 +33,8 @@ public class SvnModule{
 	public static final String NAME="vcs.svn";
 	public static final String APPLICATION_NAME="svn";
 	public static final String SETTINGS_REGISTRY_NAME="settings";
-	public static final RegistryNode<String,Object,String> SETTINGS_REGISTRY=
-			(RegistryNode<String,Object,String>)Registry.ROOT.getOrCreateChild(SvnModule.NAME).getOrCreateChild(SETTINGS_REGISTRY_NAME);
+	public static final RegistryNode<String,Object> SETTINGS_REGISTRY=
+			(RegistryNode<String,Object>)Registry.ROOT.getOrCreateChild(SvnModule.NAME).getOrCreateChild(SETTINGS_REGISTRY_NAME);
 	public static void onLoad() throws ClassNotFoundException, MalformedURLException{
 
 		Argument allowMixedRevisions=createArgument("ALLOW_MIXED_REVISIONS");
@@ -249,7 +249,7 @@ public class SvnModule{
 			return null;
 		});
 
-		CoreModule.PROTOCOL_REGISTRY.addChild("svn",new SvnStreamHandler());
+		CoreModule.PROTOCOL_REGISTRY.put("svn",new SvnStreamHandler());
 		ContentTypeHelper.getURL_GUESSER().registerPathPattern("^.*[/\\\\]\\.svn$","directory/svn");
 	}
 	private static MenuItem createMenuItem(String command,String name){
@@ -263,7 +263,7 @@ public class SvnModule{
 	public static void onInstall(){
 		providesFileCommands();
 		Registry.providesProtocol("svn",NAME);
-		CoreModule.PERSISTENT_REGISTRY.addChild("vcs.svn/"+SETTINGS_REGISTRY_NAME);
+		CoreModule.PERSISTENT_REGISTRY.put("vcs.svn/"+SETTINGS_REGISTRY_NAME);
 		providesDefaultValues();
 	}
 	private static void providesFileCommands(){
@@ -365,10 +365,10 @@ public class SvnModule{
 
 	}
 	private static Argument createArgument(String name){
-		return new Argument(MessageRegistry.getString(name,NAME),()->SETTINGS_REGISTRY.getChild(name));
+		return new Argument(MessageRegistry.getString(name,NAME),()->SETTINGS_REGISTRY.get(name));
 	}
 	private static void addCommand(String name,List<Argument> args,ThrowableFunction<Object[],Object> proc){
-		FileSystemEditor.INSTANCE.getCommandRegistry().addChild(name,new Command(name,args,(a)->SchemeConverter.toScheme(proc.accept(toArgumentList(a))),FileSystemModule.NAME));
+		FileSystemEditor.INSTANCE.getCommandRegistry().put(name,new Command(name,args,(a)->SchemeConverter.toScheme(proc.accept(toArgumentList(a))),FileSystemModule.NAME));
 	}
 	private static Object[] toArgumentList(ScmPairOrNil args){
 		return ScmList.asStream(args).map(SchemeConverter::toJava).toArray();

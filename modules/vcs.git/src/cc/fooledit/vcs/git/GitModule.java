@@ -36,25 +36,25 @@ public class GitModule{
 	public static void onLoad() throws ClassNotFoundException, MalformedURLException{
 		DataObjectTypeRegistry.addDataObjectType(GitRepositoryObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(GitRepositoryEditor.INSTANCE,GitRepositoryObject.class);
-		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("git-init",GitRepositoryEditor.INSTANCE.getCommandRegistry().getChild("git-init"));
-		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("git-clone",GitRepositoryEditor.INSTANCE.getCommandRegistry().getChild("git-clone"));
+		FileSystemEditor.INSTANCE.getCommandRegistry().put("git-init",GitRepositoryEditor.INSTANCE.getCommandRegistry().get("git-init"));
+		FileSystemEditor.INSTANCE.getCommandRegistry().put("git-clone",GitRepositoryEditor.INSTANCE.getCommandRegistry().get("git-clone"));
 		Argument dir=new Argument("DIRECTORY",GitRepositoryEditor::getGitDirectory);
-		FileSystemEditor.INSTANCE.getCommandRegistry().addChild("git-browse",new Command("git-browse",Arrays.asList(dir),(params)->{
+		FileSystemEditor.INSTANCE.getCommandRegistry().put("git-browse",new Command("git-browse",Arrays.asList(dir),(params)->{
 			Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(((File)SchemeConverter.toJava(ScmList.first(params))).toURI().toURL()));
 			return null;
 		},NAME));
-		CoreModule.DYNAMIC_MENU_REGISTRY.addChild(APPLICATION_NAME,(items)->{
+		CoreModule.DYNAMIC_MENU_REGISTRY.put(APPLICATION_NAME,(items)->{
 			ObservableList<Path> paths=((FileSystemObject)Main.INSTANCE.getCurrentData()).getPaths();
 			items.add(createMenuItem("git-init","INIT"));
 			items.add(createMenuItem("git-clone","CLONE"));
 			items.add(createMenuItem("git-browse","BROWSE"));
 		});
-		CoreModule.PROTOCOL_REGISTRY.addChild("git",new GitStreamHandler());
+		CoreModule.PROTOCOL_REGISTRY.put("git",new GitStreamHandler());
 		ContentTypeHelper.getURL_GUESSER().registerPathPattern("^.*[/\\\\]\\.git$","directory/git");
 	}
 	private static MenuItem createMenuItem(String command,String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name,NAME));
-		item.setOnAction((e)->{Main.INSTANCE.getCommandRegistry().get(command).accept(ScmNil.NIL);});
+		item.setOnAction((e)->TaskManager.executeCommand(Main.INSTANCE.getCommandRegistry().get(command)));
 		return item;
 	}
 	public static void onUnLoad(){
@@ -69,6 +69,6 @@ public class GitModule{
 		Registry.providesDataObjectEditor(GitRepositoryEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(GitRepositoryObject.class.getName(),NAME);
 		Registry.providesProtocol("git",NAME);
-		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.addChild("directory/git",GitRepositoryObjectType.class.getName());
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("directory/git",GitRepositoryObjectType.class.getName());
 	}
 }

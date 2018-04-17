@@ -16,36 +16,85 @@
  */
 package cc.fooledit.spi;
 import java.util.*;
+import javafx.beans.*;
+import javafx.collections.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SimpleRegistryNode<K,V,T> extends RegistryNode<K,V,T>{
-	private final Map<K,V> children;
+public class SimpleRegistryNode<K,V> extends RegistryNode<K,V>{
+	protected final ObservableMap<K,V> base;
 	public SimpleRegistryNode(){
-		this.children=new HashMap<>();
+		this.base=FXCollections.observableHashMap();
 	}
-	public SimpleRegistryNode(Map<K,V> children){
-		this.children=children;
-	}
-	@Override
-	public V getChildReal(K name){
-		return children.get(name);
+	public SimpleRegistryNode(Map<K,V> base){
+		this.base=FXCollections.observableMap(base);
 	}
 	@Override
-	public boolean hasChildReal(K name){
-		return children.containsKey(name);
+	protected V getReal(K name){
+		return base.get(name);
 	}
 	@Override
-	protected V addChildReal(K name,V value){
-		return children.put(name,value);
+	public void addListener(MapChangeListener<? super K,? super V> listener){
+		base.addListener(listener);
 	}
 	@Override
-	protected V removeChildReal(K name){
-		return children.remove(name);
+	public void removeListener(MapChangeListener<? super K,? super V> listener){
+		base.removeListener(listener);
 	}
 	@Override
-	protected Collection<K> getChildNamesReal(){
-		return children.keySet();
+	public int size(){
+		return base.size();
+	}
+	@Override
+	public boolean isEmpty(){
+		return base.isEmpty();
+	}
+	@Override
+	public boolean containsKey(Object key){
+		return base.containsKey(key);
+	}
+	@Override
+	public boolean containsValue(Object value){
+		realizedAll();
+		return base.containsValue(value);
+	}
+	@Override
+	public V put(K key,V value){
+		return base.put(key,value);
+	}
+	@Override
+	public V remove(Object key){
+		return base.remove(key);
+	}
+	@Override
+	public void putAll(Map<? extends K,? extends V> m){
+		base.putAll(m);
+	}
+	@Override
+	public void clear(){
+		base.clear();
+	}
+	@Override
+	public Set<K> keySet(){
+		return base.keySet();
+	}
+	@Override
+	public Collection<V> values(){
+		realizedAll();
+		return base.values();
+	}
+	@Override
+	public Set<Entry<K,V>> entrySet(){
+		realizedAll();
+		return base.entrySet();
+	}
+	@Override
+	public void addListener(InvalidationListener listener){
+		base.addListener(listener);
+	}
+	@Override
+	public void removeListener(InvalidationListener listener){
+		base.removeListener(listener);
 	}
 }

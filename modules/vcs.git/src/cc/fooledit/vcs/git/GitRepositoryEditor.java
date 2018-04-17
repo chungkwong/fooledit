@@ -35,8 +35,8 @@ import org.eclipse.jgit.revwalk.*;
  */
 public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(GitModule.NAME);
-	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(GitModule.NAME);
-	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(GitModule.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(GitModule.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(GitModule.NAME);
 	public static GitRepositoryEditor INSTANCE=new GitRepositoryEditor();
 	private GitRepositoryEditor(){
 		Argument git=new Argument("GIT",GitRepositoryEditor::getGit);
@@ -123,14 +123,14 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		TreeTableHelper.installCommonCommands(()->((GitRepositoryViewer)Main.INSTANCE.getCurrentNode()).getTree(),commandRegistry,GitModule.NAME);
 	}
 	private void addCommand(String name,List<Argument> args,ThrowableFunction<ScmPairOrNil,ScmObject> proc){
-		commandRegistry.addChild(name,new Command(name,args,proc,GitModule.NAME));
+		commandRegistry.put(name,new Command(name,args,proc,GitModule.NAME));
 	}
 	@Override
-	public Node edit(GitRepositoryObject data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(GitRepositoryObject data,Object remark,RegistryNode<String,Object> meta){
 		return new GitRepositoryViewer(data.getRepository());
 	}
 	@Override
-	public RegistryNode<String,Command,String> getCommandRegistry(){
+	public RegistryNode<String,Command> getCommandRegistry(){
 		return commandRegistry;
 	}
 	@Override
@@ -138,7 +138,7 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		return menuRegistry;
 	}
 	@Override
-	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
+	public NavigableRegistryNode<String,String> getKeymapRegistry(){
 		return keymapRegistry;
 	}
 	@Override

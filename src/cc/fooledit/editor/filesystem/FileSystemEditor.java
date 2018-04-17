@@ -34,8 +34,8 @@ import javafx.scene.control.*;
 public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	public static final FileSystemEditor INSTANCE=new FileSystemEditor();
 	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(FileSystemModule.NAME);
-	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(FileSystemModule.NAME);
-	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(FileSystemModule.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(FileSystemModule.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(FileSystemModule.NAME);
 	private FileSystemEditor(){
 		TreeTableHelper.installCommonCommands(()->((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getTree(),commandRegistry,FileSystemModule.NAME);
 		addCommand("delete",(viewer)->viewer.getSelectedPaths().forEach((path)->delete(path)));
@@ -57,7 +57,7 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 		}));
 	}
 	private void addCommand(String name,Consumer<FileSystemViewer> action){
-		commandRegistry.addChild(name,new Command(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),FileSystemModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),FileSystemModule.NAME));
 	}
 	private static final void delete(Path path){
 		try{
@@ -174,9 +174,9 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 		Main.INSTANCE.getCurrentNode().requestFocus();
 	}
 	@Override
-	public Node edit(FileSystemObject data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(FileSystemObject data,Object remark,RegistryNode<String,Object> meta){
 		if(remark!=null&&remark instanceof ListRegistryNode){
-			((ListRegistryNode<String,String>)remark).getChildren().forEach((path)->{
+			((ListRegistryNode<String>)remark).getChildren().forEach((path)->{
 				if(path!=null){
 					File file=new File(path);
 					if(file.exists())
@@ -197,11 +197,11 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 		return new ListRegistryNode<>(selected);
 	}
 	@Override
-	public RegistryNode<String,Command,String> getCommandRegistry(){
+	public RegistryNode<String,Command> getCommandRegistry(){
 		return commandRegistry;
 	}
 	@Override
-	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
+	public NavigableRegistryNode<String,String> getKeymapRegistry(){
 		return keymapRegistry;
 	}
 	@Override

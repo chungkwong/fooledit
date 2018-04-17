@@ -46,11 +46,11 @@ public class ZipObjectType implements DataObjectType<ZipObject>{
 		return new ZipObject(null);
 	}
 	@Override
-	public ZipObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
-		return new ZipObject((DataObject)DataObjectRegistry.readFrom(toURL(connection)).getChild(DataObject.DATA));
+	public ZipObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
+		return new ZipObject((DataObject)DataObjectRegistry.readFrom(toURL(connection)).get(DataObject.DATA));
 	}
 	@Override
-	public void writeTo(ZipObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(ZipObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		data.getContent().getDataObjectType().writeTo(data,FoolURLConnection.open(toURL(connection)),meta);
 	}
 	private URL toURL(URLConnection connection) throws MalformedURLException{

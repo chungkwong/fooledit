@@ -35,8 +35,8 @@ import javafx.util.*;
 public class MediaEditor implements DataEditor<MediaObject>{
 	public static final MediaEditor INSTANCE=new MediaEditor();
 	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(MediaEditorModule.NAME);
-	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(MediaEditorModule.NAME);
-	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(MediaEditorModule.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(MediaEditorModule.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(MediaEditorModule.NAME);
 	private MediaEditor(){
 		addCommand("play",(player)->player.play());
 		addCommand("pause",(player)->player.pause());
@@ -54,7 +54,7 @@ public class MediaEditor implements DataEditor<MediaObject>{
 		});
 	}
 	@Override
-	public Node edit(MediaObject data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(MediaObject data,Object remark,RegistryNode<String,Object> meta){
 		MediaView editor=new MediaView();
 		MediaPlayer player=data.getProperty().getValue();
 		player.statusProperty().addListener((e,o,n)->Main.INSTANCE.getNotifier().notify(MessageRegistry.getString(n.toString(),MediaEditorModule.NAME)));
@@ -68,18 +68,18 @@ public class MediaEditor implements DataEditor<MediaObject>{
 		return MessageRegistry.getString("MEDIA_PLAYER",MediaEditorModule.NAME);
 	}
 	private void addCommand(String name,Consumer<MediaPlayer> action){
-		commandRegistry.addChild(name,new Command(name,()->action.accept(((MediaObject)Main.INSTANCE.getCurrentData()).getProperty().getValue()),MediaEditorModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept(((MediaObject)Main.INSTANCE.getCurrentData()).getProperty().getValue()),MediaEditorModule.NAME));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
 	}
 	@Override
-	public RegistryNode<String,Command,String> getCommandRegistry(){
+	public RegistryNode<String,Command> getCommandRegistry(){
 		return commandRegistry;
 	}
 	@Override
-	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
+	public NavigableRegistryNode<String,String> getKeymapRegistry(){
 		return keymapRegistry;
 	}
 	@Override

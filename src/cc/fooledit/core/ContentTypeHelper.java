@@ -77,7 +77,7 @@ public class ContentTypeHelper{
 	}
 	public static String normalize(String type){
 		String con;
-		while((con=CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.getChild(type))!=null){
+		while((con=CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.get(type))!=null){
 			type=con;
 		}
 		return type;
@@ -89,7 +89,7 @@ public class ContentTypeHelper{
 			if(type.equals(ancestor)){
 				return true;
 			}
-			type=normalize(CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.getChild(type));
+			type=normalize(CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.get(type));
 		}
 		return false;
 	}
@@ -98,7 +98,7 @@ public class ContentTypeHelper{
 		while(type!=null){
 			type=normalize(type);
 			list.add(type);
-			type=CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.getChild(type);
+			type=CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.get(type);
 		}
 		return list;
 	}

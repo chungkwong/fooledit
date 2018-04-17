@@ -16,71 +16,148 @@
  */
 package cc.fooledit.spi;
 import java.util.*;
+import java.util.stream.*;
+import javafx.beans.*;
+import javafx.collections.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ListRegistryNode<V,T> extends RegistryNode<Integer,V,T>{
-	private final List<V> children;
+public class ListRegistryNode<V> extends RegistryNode<Integer,V>{
+	private final ObservableList<V> children;
 	public ListRegistryNode(){
-		this.children=new LinkedList<>();
+		this.children=FXCollections.observableArrayList();
 	}
 	public ListRegistryNode(List<V> base){
-		this.children=base;
-	}
-	@Override
-	public V getChildReal(Integer index){
-		return children.get(index);
-	}
-	@Override
-	public boolean hasChildReal(Integer index){
-		return index>=0&&index<children.size();
-	}
-	@Override
-	protected V addChildReal(Integer index,V value){
-		children.add(index,value);
-		return null;
-	}
-	@Override
-	protected V removeChildReal(Integer index){
-		return children.remove((int)index);
-	}
-	@Override
-	protected Collection<Integer> getChildNamesReal(){
-		ArrayList<Integer> names=new ArrayList<>();
-		int len=size();
-		for(int i=0;i<len;i++)
-			names.add(i);
-		return names;
-	}
-	public void addChild(V value){
-		if(!children.contains(value))
-			addChild(size(),value);
-	}
-	public int size(){
-		return children.size();
-	}
-	public void limit(int limit){
-		addListener(new CountListener(limit));
+		this.children=FXCollections.observableArrayList(base);
 	}
 	public List<V> getChildren(){
 		return children;
 	}
-	private class CountListener implements RegistryChangeListener<Integer,V,T>{
-		private int limit=Integer.MAX_VALUE;
-		public CountListener(int limit){
-			this.limit=limit;
-			if(limit<0)
-				throw new IllegalArgumentException();
+	@Override
+	protected V getReal(Integer name){
+		return children.get(name);
+	}
+	@Override
+	public void addListener(MapChangeListener<? super Integer,? super V> listener){
+		children.addListener(new MapListChangeListener(listener,this));
+	}
+	@Override
+	public void removeListener(MapChangeListener<? super Integer,? super V> listener){
+		children.removeListener(new MapListChangeListener(listener,this));
+	}
+	@Override
+	public boolean isEmpty(){
+		return children.isEmpty();
+	}
+	@Override
+	public boolean containsKey(Object key){
+		return key instanceof Integer&&(Integer)key>=0&&(Integer)key<children.size();
+	}
+	@Override
+	public boolean containsValue(Object value){
+		return children.contains(value);
+	}
+	@Override
+	public V put(Integer key,V value){
+		children.add(key,value);
+		return null;
+	}
+	public void put(V value){
+		children.add(value);
+	}
+	@Override
+	public V remove(Object key){
+		return children.remove(((Number)key).intValue());
+	}
+	@Override
+	public void putAll(Map<? extends Integer,? extends V> m){
+		m.forEach((k,v)->put(k,v));
+	}
+	@Override
+	public void clear(){
+		children.clear();
+	}
+	@Override
+	public Set<Integer> keySet(){
+		return Stream.iterate(0,(i)->i+1).limit(children.size()).collect(Collectors.toSet());
+	}
+	@Override
+	public Collection<V> values(){
+		return children;
+	}
+	@Override
+	public Set<Entry<Integer,V>> entrySet(){
+		return Stream.iterate(0,(i)->i+1).limit(children.size()).collect(Collectors.toMap((i)->i,(i)->children.get(i))).entrySet();
+	}
+	@Override
+	public void addListener(InvalidationListener listener){
+		children.addListener(listener);
+	}
+	@Override
+	public void removeListener(InvalidationListener listener){
+		children.removeListener(listener);
+	}
+	@Override
+	public int size(){
+		return children.size();
+	}
+}
+class MapListChangeListener<V> implements ListChangeListener<V>{
+	private final MapChangeListener<? super Integer,? super V> base;
+	private final ListRegistryNode<V> list;
+	public MapListChangeListener(MapChangeListener<? super Integer,? super V> base,ListRegistryNode<V> list){
+		this.base=base;
+		this.list=list;
+	}
+	@Override
+	public void onChanged(ListChangeListener.Change<? extends V> c){
+		int from=c.getFrom();
+		for(V value:c.getRemoved())
+			base.onChanged(new ListChange(from++,value,false));
+		from=c.getFrom();
+		for(V value:c.getAddedSubList())
+			base.onChanged(new ListChange(from++,value,true));
+	}
+	@Override
+	public boolean equals(Object obj){
+		return (obj instanceof MapListChangeListener)&&((MapListChangeListener)obj).base.equals(base);
+	}
+	@Override
+	public int hashCode(){
+		int hash=7;
+		hash=23*hash+Objects.hashCode(this.base);
+		return hash;
+	}
+	private class ListChange extends MapChangeListener.Change<Integer,V>{
+		private final Integer key;
+		private final V value;
+		private final boolean added;
+		public ListChange(Integer key,V value,boolean added){
+			super(list);
+			this.key=key;
+			this.value=value;
+			this.added=added;
 		}
 		@Override
-		public void itemRemoved(Integer key,V oldValue,RegistryNode<Integer,V,T> node){
-
+		public boolean wasAdded(){
+			return added;
 		}
 		@Override
-		public void itemAdded(Integer key,V newValue,RegistryNode<Integer,V,T> node){
-			while(children.size()>limit)
-				removeChild(0);
+		public boolean wasRemoved(){
+			return !added;
+		}
+		@Override
+		public Integer getKey(){
+			return key;
+		}
+		@Override
+		public V getValueAdded(){
+			return added?value:null;
+		}
+		@Override
+		public V getValueRemoved(){
+			return added?null:value;
 		}
 	}
 }

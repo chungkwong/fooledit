@@ -28,7 +28,7 @@ import javafx.util.*;
 public class BinaryEditor implements DataEditor<BinaryObject>{
 	private static final HexConvertor CONVERTOR=new HexConvertor();
 	@Override
-	public Node edit(BinaryObject data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(BinaryObject data,Object remark,RegistryNode<String,Object> meta){
 		TextArea node=new TextArea();
 		node.setWrapText(true);
 		node.textProperty().bindBidirectional(data.dataProperty(),CONVERTOR);

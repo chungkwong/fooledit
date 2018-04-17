@@ -34,8 +34,8 @@ public class FileCommands{
 
 	}
 	public static void open(){
-		RegistryNode<String,Object,String> files=DataObjectRegistry.create(FileSystemObjectType.INSTANCE);
-		FileSystemObject data=(FileSystemObject)files.getChild(DataObject.DATA);
+		RegistryNode<String,Object> files=DataObjectRegistry.create(FileSystemObjectType.INSTANCE);
+		FileSystemObject data=(FileSystemObject)files.get(DataObject.DATA);
 		data.getPaths().setAll(guessDefaultPath());
 		data.setAction((paths)->{
 			paths.forEach((p)->{
@@ -47,7 +47,7 @@ public class FileCommands{
 			});
 			DataObjectRegistry.removeDataObject(files);
 		});
-		files.addChild(DataObject.DEFAULT_NAME,MessageRegistry.getString("OPEN_FILE",CoreModule.NAME));
+		files.put(DataObject.DEFAULT_NAME,MessageRegistry.getString("OPEN_FILE",CoreModule.NAME));
 		DataObjectRegistry.addDataObject(files);
 		Main.INSTANCE.showOnNewTab(files);
 	}
@@ -62,8 +62,8 @@ public class FileCommands{
 		},null,"",new Label("URL:"),null);
 	}
 	public static void save(){
-		RegistryNode<String,Object,String> data=Main.INSTANCE.getCurrentDataObject();
-		String url=(String)data.getChild(DataObject.URI);
+		RegistryNode<String,Object> data=Main.INSTANCE.getCurrentDataObject();
+		String url=(String)data.get(DataObject.URI);
 		if(url==null)
 			saveAs();
 		else
@@ -74,30 +74,30 @@ public class FileCommands{
 			}
 	}
 	public static void saveAs(){
-		RegistryNode<String,Object,String> files=DataObjectRegistry.create(FileSystemObjectType.INSTANCE);
-		FileSystemObject data=(FileSystemObject)files.getChild(DataObject.DATA);
+		RegistryNode<String,Object> files=DataObjectRegistry.create(FileSystemObjectType.INSTANCE);
+		FileSystemObject data=(FileSystemObject)files.get(DataObject.DATA);
 		data.getPaths().setAll(guessDefaultPath());
 		data.setAction((paths)->{
 			paths.forEach((p)->saveAs(p));
 			DataObjectRegistry.removeDataObject(files);
 		});
-		files.addChild(DataObject.DEFAULT_NAME,MessageRegistry.getString("SAVE",CoreModule.NAME));
+		files.put(DataObject.DEFAULT_NAME,MessageRegistry.getString("SAVE",CoreModule.NAME));
 		DataObjectRegistry.addDataObject(files);
 		Main.INSTANCE.showOnNewTab(files);
 	}
 	public static void saveAs(Path p){
-		RegistryNode<String,Object,String> object=Main.INSTANCE.getCurrentDataObject();
+		RegistryNode<String,Object> object=Main.INSTANCE.getCurrentDataObject();
 		DataObject data=Main.INSTANCE.getCurrentData();
 		try{
 			data.getDataObjectType().writeTo(data,p.toUri().toURL().openConnection(),object);
-			object.addChild(DataObject.URI,p.toUri().toString());
+			object.put(DataObject.URI,p.toUri().toString());
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
 	private static Collection<Path> guessDefaultPath(){
 		try{
-			return Collections.singletonList(new File(new URI((String)Main.INSTANCE.getCurrentDataObject().getChild(DataObject.URI))).toPath());
+			return Collections.singletonList(new File(new URI((String)Main.INSTANCE.getCurrentDataObject().get(DataObject.URI))).toPath());
 		}catch(Exception ex){
 			return Collections.emptyList();
 		}
@@ -110,7 +110,7 @@ public class FileCommands{
 		return path;
 	}
 	public static void create(){
-		RegistryNode<String,Object,String> templateEditor=DataObjectRegistry.create(TemplateEditor.INSTANCE);
+		RegistryNode<String,Object> templateEditor=DataObjectRegistry.create(TemplateEditor.INSTANCE);
 		DataObjectRegistry.addDataObject(templateEditor);
 		Main.INSTANCE.showOnNewTab(templateEditor);
 	}

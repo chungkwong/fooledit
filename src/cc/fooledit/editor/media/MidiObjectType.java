@@ -52,11 +52,11 @@ public class MidiObjectType implements DataObjectType<MidiObject>{
 		return MessageRegistry.getString("MIDI",MediaEditorModule.NAME);
 	}
 	@Override
-	public void writeTo(MidiObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(MidiObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		MidiSystem.write(data.getSequence(),1,connection.getOutputStream());
 	}
 	@Override
-	public MidiObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public MidiObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		return new MidiObject(MidiSystem.getSequence(connection.getInputStream()));
 	}
 }

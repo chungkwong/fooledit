@@ -25,15 +25,15 @@ import java.util.logging.*;
  */
 public class TextEditorModule{
 	public static final String NAME="editor.text";
-	public static final RegistryNode<String,Object,String> REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,Command,String> COMMAND_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,String,String> KEYMAP_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,String,String> LOCALE_REGISTRY=new SimpleRegistryNode<>();
-	public static final RegistryNode<String,Object,String> MENU_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,Object> REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,Command> COMMAND_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,String> KEYMAP_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,String> LOCALE_REGISTRY=new SimpleRegistryNode<>();
+	public static final RegistryNode<String,Object> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(TextObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(new StructuredTextEditor(),TextObject.class);
-		CoreModule.TEMPLATE_TYPE_REGISTRY.addChild(TextTemplate.class.getName(),(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime"),(String)obj.get("module")));
+		CoreModule.TEMPLATE_TYPE_REGISTRY.put(TextTemplate.class.getName(),(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime"),(String)obj.get("module")));
 	}
 	public static void onInstall(){
 		Registry.providesDataObjectType(TextObjectType.class.getName(),NAME);
@@ -41,7 +41,7 @@ public class TextEditorModule{
 		Registry.providesTypeToEditor(TextObject.class.getName(),NAME);
 		Registry.providesTemplateType(TextTemplate.class.getName(),NAME);
 		try{
-			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getOrCreateChild("children")).addChild(
+			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getOrCreateChild("children")).put(
 					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Main.INSTANCE.getFile("templates.json",NAME))));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.INFO,null,ex);

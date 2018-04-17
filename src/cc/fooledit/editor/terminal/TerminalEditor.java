@@ -30,7 +30,7 @@ public class TerminalEditor implements DataEditor<TerminalObject>{
 
 	}
 	@Override
-	public Node edit(TerminalObject data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(TerminalObject data,Object remark,RegistryNode<String,Object> meta){
 		SwingNode node=new SwingNode();
 		node.setContent(data.getTerminal());
 		return node;

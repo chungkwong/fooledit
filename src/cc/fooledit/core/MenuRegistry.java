@@ -34,21 +34,21 @@ public class MenuRegistry{
 	}
 	public MenuRegistry(String module){
 		this.module=module;
-		setMenus(((RegistryNode<String,ListRegistryNode<RegistryNode<String,Object,String>,String>,String>)Registry.ROOT.getOrCreateChild(module)).getChild(CoreModule.MENU_REGISTRY_NAME));
+		setMenus(((RegistryNode<String,ListRegistryNode<RegistryNode<String,Object>>>)Registry.ROOT.getOrCreateChild(module)).get(CoreModule.MENU_REGISTRY_NAME));
 		HBox.setHgrow(bar,Priority.NEVER);
 	}
-	private void setMenus(ListRegistryNode<RegistryNode<String,Object,String>,String> json){
-		bar.getMenus().setAll(json.toMap().values().stream().map((e)->addMenu(e)).toArray(Menu[]::new));
+	private void setMenus(ListRegistryNode<RegistryNode<String,Object>> json){
+		bar.getMenus().setAll(json.values().stream().map((e)->addMenu(e)).toArray(Menu[]::new));
 	}
-	public Menu addMenu(RegistryNode<String,Object,String> json){
+	public Menu addMenu(RegistryNode<String,Object> json){
 		return new OnDemandMenu(getName(json),(items)->{
-			if(json.hasChild(CHILDREN)){
-				ListRegistryNode<RegistryNode<String,Object,String>,String> children=(ListRegistryNode<RegistryNode<String,Object,String>,String>)json.getChild(CHILDREN);
-				for(RegistryNode<String,Object,String> props:children.toMap().values()){
-					if(!props.hasChild(NAME)){
+			if(json.containsKey(CHILDREN)){
+				ListRegistryNode<RegistryNode<String,Object>> children=(ListRegistryNode<RegistryNode<String,Object>>)json.get(CHILDREN);
+				for(RegistryNode<String,Object> props:children.values()){
+					if(!props.containsKey(NAME)){
 						items.add(new SeparatorMenuItem());
-					}else if(props.hasChild(COMMAND)){
-						String commandName=(String)props.getChild(COMMAND);
+					}else if(props.containsKey(COMMAND)){
+						String commandName=(String)props.get(COMMAND);
 						MenuItem mi=new MenuItem(getName(props));
 						mi.setOnAction((e)->TaskManager.executeCommand(Main.INSTANCE.getCommandRegistry().get(commandName)));
 						items.add(mi);
@@ -57,15 +57,15 @@ public class MenuRegistry{
 					}
 				}
 			}else{
-				CoreModule.DYNAMIC_MENU_REGISTRY.getChild((String)json.getChild(PROVIDER)).accept(items);
+				CoreModule.DYNAMIC_MENU_REGISTRY.get((String)json.get(PROVIDER)).accept(items);
 			}
 		});
 	}
-	private String getName(RegistryNode<String,Object,String> json){
-		return MessageRegistry.getString((String)json.getChild(NAME),module);
+	private String getName(RegistryNode<String,Object> json){
+		return MessageRegistry.getString((String)json.get(NAME),module);
 	}
 	public void registerDynamicMenu(String id,Consumer<ObservableList<MenuItem>> provider){
-		CoreModule.DYNAMIC_MENU_REGISTRY.addChild(id,provider);
+		CoreModule.DYNAMIC_MENU_REGISTRY.put(id,provider);
 	}
 	public MenuBar getMenuBar(){
 		return bar;

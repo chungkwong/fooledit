@@ -33,19 +33,19 @@ public class TemplateEditor extends Prompt{
 
 	}
 	@Override
-	public javafx.scene.Node edit(Prompt data,Object remark,RegistryNode<String,Object,String> meta){
+	public javafx.scene.Node edit(Prompt data,Object remark,RegistryNode<String,Object> meta){
 		return new TemplateChooser();
 	}
 	@Override
-	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
-		NavigableRegistryNode<String,String,String> keymap=new NavigableRegistryNode<>();
-		keymap.addChild("Enter","create");
+	public NavigableRegistryNode<String,String> getKeymapRegistry(){
+		NavigableRegistryNode<String,String> keymap=new NavigableRegistryNode<>();
+		keymap.put("Enter","create");
 		return keymap;
 	}
 	@Override
-	public RegistryNode<String,Command,String> getCommandRegistry(){
-		RegistryNode<String,Command,String> commands=new SimpleRegistryNode<>();
-		commands.addChild("create",new Command("create",()->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose(),CoreModule.NAME));//FIXME
+	public RegistryNode<String,Command> getCommandRegistry(){
+		RegistryNode<String,Command> commands=new SimpleRegistryNode<>();
+		commands.put("create",new Command("create",()->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose(),CoreModule.NAME));//FIXME
 		return commands;
 	}
 	@Override
@@ -72,12 +72,12 @@ public class TemplateEditor extends Prompt{
 		}
 		private TreeItem buildTree(RegistryNode obj){
 			TreeItem item;
-			if(obj.hasChild("children")){
-				item=new TreeItem(MessageRegistry.getString((String)obj.getChild("name"),(String)obj.getChild("module")));
-				ListRegistryNode<RegistryNode,Object> children=(ListRegistryNode<RegistryNode,Object>)obj.getChild("children");
-				item.getChildren().setAll(children.toMap().values().stream().map(this::buildTree).collect(Collectors.toList()));
-			}else if(CoreModule.TEMPLATE_TYPE_REGISTRY.hasChild((String)obj.getChild("type"))){
-				item=new TreeItem(CoreModule.TEMPLATE_TYPE_REGISTRY.getChild((String)obj.getChild("type")).apply(obj.toMap()));
+			if(obj.containsKey("children")){
+				item=new TreeItem(MessageRegistry.getString((String)obj.get("name"),(String)obj.get("module")));
+				ListRegistryNode<RegistryNode> children=(ListRegistryNode<RegistryNode>)obj.get("children");
+				item.getChildren().setAll(children.values().stream().map(this::buildTree).collect(Collectors.toList()));
+			}else if(CoreModule.TEMPLATE_TYPE_REGISTRY.containsKey((String)obj.get("type"))){
+				item=new TreeItem(CoreModule.TEMPLATE_TYPE_REGISTRY.get((String)obj.get("type")).apply(obj));
 			}else{
 				item=new TreeItem("");
 			}
@@ -100,11 +100,11 @@ public class TemplateEditor extends Prompt{
 				props.put("date","2017-6-29");
 				props.put("user","kwong");
 				DataObject obj=template.apply(props);
-				SimpleRegistryNode<String,Object,String> registry=new SimpleRegistryNode<>();
-				registry.addChild(DataObject.TYPE,obj.getDataObjectType().getClass().getName());
-				registry.addChild(DataObject.MIME,template.getMimeType());
-				registry.addChild(DataObject.DEFAULT_NAME,((Template)item).getName());
-				registry.addChild(DataObject.DATA,obj);
+				SimpleRegistryNode<String,Object> registry=new SimpleRegistryNode<>();
+				registry.put(DataObject.TYPE,obj.getDataObjectType().getClass().getName());
+				registry.put(DataObject.MIME,template.getMimeType());
+				registry.put(DataObject.DEFAULT_NAME,((Template)item).getName());
+				registry.put(DataObject.DATA,obj);
 				Main.INSTANCE.showOnCurrentTab(registry);
 				DataObjectRegistry.removeDataObject(Main.INSTANCE.getCurrentDataObject());
 			}

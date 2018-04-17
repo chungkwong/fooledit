@@ -30,8 +30,8 @@ import javafx.scene.web.*;
 public class BrowserEditor implements DataEditor<BrowserObject>{
 	public static final BrowserEditor INSTANCE=new BrowserEditor();
 	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(BrowserModule.NAME);
-	private final RegistryNode<String,Command,String> commandRegistry=Registry.ROOT.registerCommand(BrowserModule.NAME);
-	private final NavigableRegistryNode<String,String,String> keymapRegistry=Registry.ROOT.registerKeymap(BrowserModule.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(BrowserModule.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(BrowserModule.NAME);
 	private BrowserEditor(){
 		addCommand("move-to-previous-page",(viewer)->viewer.backward());
 		addCommand("move-to-next-page",(viewer)->viewer.forward());
@@ -67,10 +67,10 @@ public class BrowserEditor implements DataEditor<BrowserObject>{
 		});
 	}
 	private void addCommand(String name,Consumer<BrowserViewer> action){
-		commandRegistry.addChild(name,new Command(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()),BrowserModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()),BrowserModule.NAME));
 	}
 	@Override
-	public Node edit(BrowserObject data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(BrowserObject data,Object remark,RegistryNode<String,Object> meta){
 		if(remark!=null)
 			data.getWebView().getEngine().load((String)remark);
 		return data.getEditor();
@@ -84,11 +84,11 @@ public class BrowserEditor implements DataEditor<BrowserObject>{
 		return MessageRegistry.getString("BROWSER",BrowserModule.NAME);
 	}
 	@Override
-	public RegistryNode<String,Command,String> getCommandRegistry(){
+	public RegistryNode<String,Command> getCommandRegistry(){
 		return commandRegistry;
 	}
 	@Override
-	public NavigableRegistryNode<String,String,String> getKeymapRegistry(){
+	public NavigableRegistryNode<String,String> getKeymapRegistry(){
 		return keymapRegistry;
 	}
 	@Override

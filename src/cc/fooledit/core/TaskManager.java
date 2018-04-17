@@ -33,7 +33,7 @@ public class TaskManager{
 	private static final ExecutorService executor=Executors.newCachedThreadPool();
 	public static void executeTask(Task<?> task){
 		String id=getTitle(task);
-		CoreModule.TASK_REGISTRY.addChild(id,task);
+		CoreModule.TASK_REGISTRY.put(id,task);
 		task.setOnRunning((e)->{
 			Logger.getGlobal().log(Level.INFO,
 					MessageFormat.format(MessageRegistry.getString("EXECUTING",CoreModule.NAME),id));
@@ -42,17 +42,17 @@ public class TaskManager{
 			Logger.getGlobal().log(Level.SEVERE,
 					MessageFormat.format(MessageRegistry.getString("FAILED",CoreModule.NAME),id),
 					task.getException());
-			CoreModule.TASK_REGISTRY.removeChild(id);
+			CoreModule.TASK_REGISTRY.remove(id);
 		});
 		task.setOnCancelled((e)->{
 			Logger.getGlobal().log(Level.INFO,
 					MessageFormat.format(MessageRegistry.getString("CANCELLED",CoreModule.NAME),id));
-			CoreModule.TASK_REGISTRY.removeChild(id);
+			CoreModule.TASK_REGISTRY.remove(id);
 		});
 		task.setOnSucceeded((e)->{
 			Logger.getGlobal().log(Level.INFO,
 					MessageFormat.format(MessageRegistry.getString("EXECUTED",CoreModule.NAME),id,task.getValue()));
-			CoreModule.TASK_REGISTRY.removeChild(id);
+			CoreModule.TASK_REGISTRY.remove(id);
 		});
 		executor.submit(task);
 
@@ -61,10 +61,10 @@ public class TaskManager{
 		String name=task.getTitle();
 		if(name==null)
 			name="";
-		if(CoreModule.TASK_REGISTRY.hasChildLoaded(name)){
+		if(CoreModule.TASK_REGISTRY.containsKey(name)){
 			for(int i=1;;i++){
 				String tmp=name+":"+i;
-				if(!CoreModule.TASK_REGISTRY.hasChildLoaded(tmp)){
+				if(!CoreModule.TASK_REGISTRY.containsKey(tmp)){
 					name=tmp;
 					break;
 				}

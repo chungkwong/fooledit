@@ -55,16 +55,16 @@ public class GraphicsObjectType implements DataObjectType<GraphicsObject>{
 		return MessageRegistry.getString("GRAPHICS",ImageModule.NAME);
 	}
 	@Override
-	public void writeTo(GraphicsObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(GraphicsObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		GraphicsViewer viewer=new GraphicsViewer(data);
 		SnapshotParameters snapshotParameters=new SnapshotParameters();
 		snapshotParameters.setViewport(data.viewportProperty().getValue());
 		WritableImage snapshot=viewer.snapshot(snapshotParameters,null);
-		String mime=(String)meta.getChildOrDefault(DataObject.MIME,"image/png");
+		String mime=(String)meta.getOrDefault(DataObject.MIME,"image/png");
 		ImageIO.write(SwingFXUtils.fromFXImage(snapshot,null),mime.substring(mime.indexOf('/')+1),connection.getOutputStream());
 	}
 	@Override
-	public GraphicsObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public GraphicsObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		BufferedImage image=ImageIO.read(connection.getInputStream());
 		return new GraphicsObject(new StackPane(GraphicsObject.imageToCanvas(SwingFXUtils.toFXImage(image,null))));
 	}

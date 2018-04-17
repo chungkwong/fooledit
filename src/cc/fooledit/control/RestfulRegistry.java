@@ -44,7 +44,7 @@ public class RestfulRegistry extends Prompt{
 		return "OAUTH";
 	}
 	@Override
-	public Node edit(Prompt data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(Prompt data,Object remark,RegistryNode<String,Object> meta){
 		WebView webView=new WebView();
 		webView.getEngine().load(URI);
 		webView.getEngine().locationProperty().addListener((e,o,n)->{

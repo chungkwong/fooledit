@@ -52,11 +52,11 @@ public class GitRepositoryObjectType implements DataObjectType<GitRepositoryObje
 		return MessageRegistry.getString("GIT_REPOSITORY",GitModule.NAME);
 	}
 	@Override
-	public void writeTo(GitRepositoryObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(GitRepositoryObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public GitRepositoryObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public GitRepositoryObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		Git git;
 		if(connection.getURL().getProtocol().equals("file")){
 			git=Git.open(new File(connection.getURL().toURI()));

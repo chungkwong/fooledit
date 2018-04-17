@@ -32,7 +32,7 @@ public class ProjectChooser extends Prompt{
 		return "project";
 	}
 	@Override
-	public Node edit(Prompt data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(Prompt data,Object remark,RegistryNode<String,Object> meta){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

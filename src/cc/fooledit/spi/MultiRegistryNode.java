@@ -21,14 +21,14 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MultiRegistryNode{
-	public static <K,V,T> void addChildElement(K name,V value,RegistryNode<K,ListRegistryNode<V,K>,T> registry){
-		if(!registry.hasChildReal(name)){
-			registry.addChild(name,new ListRegistryNode<>());
+	public static <K,V> void addChildElement(K name,V value,RegistryNode<K,ListRegistryNode<V>> registry){
+		if(!registry.containsKey(name)){
+			registry.put(name,new ListRegistryNode<>());
 		}
-		((ListRegistryNode<V,T>)registry.getChild(name)).addChild(0,value);
+		((ListRegistryNode<V>)registry.get(name)).put(value);
 	}
-	public static <K,V,T> List<V> getChildElements(K name,RegistryNode<K,ListRegistryNode<V,K>,T> registry){
-		ListRegistryNode<V,K> child=registry.getChild(name);
+	public static <K,V> List<V> getChildElements(K name,RegistryNode<K,ListRegistryNode<V>> registry){
+		ListRegistryNode<V> child=registry.get(name);
 		return child!=null?child.getChildren():Collections.emptyList();
 	}
 }

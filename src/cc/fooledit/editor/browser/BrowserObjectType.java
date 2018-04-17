@@ -37,7 +37,7 @@ public class BrowserObjectType implements DataObjectType<BrowserObject>{
 		return false;
 	}
 	@Override
-	public void writeTo(BrowserObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(BrowserObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
@@ -49,11 +49,11 @@ public class BrowserObjectType implements DataObjectType<BrowserObject>{
 		return true;
 	}
 	@Override
-	public BrowserObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public BrowserObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		return create();
 	}
 	@Override
-	public BrowserObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
+	public BrowserObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object> meta) throws Exception{
 		return create();
 	}
 	@Override

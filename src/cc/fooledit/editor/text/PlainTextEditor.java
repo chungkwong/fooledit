@@ -34,7 +34,7 @@ public class PlainTextEditor implements DataEditor<TextObject>{
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
 	}
-	public Node edit(TextObject obj,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(TextObject obj,Object remark,RegistryNode<String,Object> meta){
 		TextArea textArea=new TextArea();
 		textArea.textProperty().bindBidirectional(obj.getText());
 		return textArea;

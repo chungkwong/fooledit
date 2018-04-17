@@ -44,15 +44,15 @@ public abstract class Prompt implements DataObject<Prompt>,DataObjectType<Prompt
 		return this;
 	}
 	@Override
-	public void writeTo(Prompt data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(Prompt data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public Prompt readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public Prompt readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		return this;
 	}
 	@Override
-	public Prompt readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object,String> meta) throws Exception{
+	public Prompt readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object> meta) throws Exception{
 		return this;
 	}
 }

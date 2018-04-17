@@ -15,234 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
-import cc.fooledit.core.*;
 import java.util.*;
+import java.util.stream.*;
+import javafx.collections.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class RegistryNode<K,V,T>{
-	private final LinkedList<RegistryChangeListener<K,V,T>>  listeners=new LinkedList<>();
-	private T name;
-	private RegistryNode<T,?,?> parent;
-	protected RegistryNode<K,?,T> provider;
+public abstract class RegistryNode<K,V> implements ObservableMap<K,V>{
 	protected RegistryNode(){
 
 	}
-	public void addListener(RegistryChangeListener<K,V,T> listener){
-		listeners.addFirst(listener);
-	}
-	public void removeListener(RegistryChangeListener<K,V,T> listener){
-		listeners.remove(listener);
-	}
-	public RegistryNode<?,?,?> getParent(){
-		return parent;
-	}
 	public V getOrCreateChild(K name){
-		if(!hasChild(name))
-			addChild(name,(V)new SimpleRegistryNode());
-		return getChild(name);
+		return getOrCreateChild(name,(V)new SimpleRegistryNode());
 	}
 	public V getOrCreateChild(K name,V def){
-		if(!hasChild(name))
-			addChild(name,def);
-		return getChild(name);
+		if(!containsKey(name))
+			put(name,def);
+		return get(name);
 	}
-	public V getChildOrDefault(K name,V def){
-		return hasChild(name)?getChild(name):def;
+	@Override
+	public V get(Object name){
+		V value=getReal((K)name);
+		if(value instanceof ValueLoader){
+			((ValueLoader)value).loadValue();
+			value=getReal((K)name);
+		}
+		return value;
 	}
-	public V getChild(K name){
-		if(!hasChildReal(name)){
-			String module=getProviderModule(name);
-			if(module!=null)
-				ModuleRegistry.ensureLoaded(module);
-		}
-		return getChildReal(name);
-	}
-	public boolean hasChild(K name){
-		return hasChildReal(name)||hasChildVirtual(name);
-	}
-	public boolean hasChildLoaded(K name){
-		return hasChildReal(name);//FIXME:Bad hack
-	}
-	private boolean hasChildVirtual(K name){
-		ensureProviderLoaded();
-		return (provider!=null&&provider.hasChildReal(name))||hasChildReal(name);
-	}
-	private String getProviderModule(K name){
-		ensureProviderLoaded();
-		if(provider!=null){
-			Object child=provider.getChildReal(name);
-			if(child instanceof String){
-				return (String)child;
-			}else if(child instanceof RegistryNode){
-				addChild(name,(V)new SimpleRegistryNode());
-			}
-		}
-		return null;
-	}
-	private void ensureProviderLoaded(){
-		if(provider==null){
-			if(parent!=null&&this!=CoreModule.PROVIDER_REGISTRY){
-				parent.ensureProviderLoaded();
-				if(parent.provider!=null){
-					Object providers=parent.provider.getChildReal(getName());
-					if(providers instanceof RegistryNode)
-						provider=(RegistryNode<K,?,T>)providers;
-					else if(providers instanceof String)
-						ModuleRegistry.ensureLoaded((String)providers);
-				}
-			}
-		}
-	}
-	protected abstract V getChildReal(K name);
-	protected abstract boolean hasChildReal(K name);
-	public void addChildIfNotPresent(K name,V value){
-		if(!hasChild(name))
-			addChild(name,value);
-	}
-	public V addChild(K name,V value){
-		if(value instanceof RegistryNode){
-			RegistryNode child=(RegistryNode)value;
-			//if(child.name!=null)
-			//	Logger.getGlobal().log(Level.INFO,"Child {0} already added to {1}",new Object[]{name,child.name});
-			child.parent=this;
-			child.name=name;
-		}
-		boolean exist=hasChild(name);
-		V oldValue=addChildReal(name,value);
-		if(exist)
-			listeners.forEach((l)->l.itemChanged(name,oldValue,value,this));
-		else
-			listeners.forEach((l)->l.itemAdded(name,value,this));
-		return oldValue;
-	}
-	protected abstract V addChildReal(K name,V value);
-	public V removeChild(K name){
-		V oldValue=removeChildReal(name);
-		listeners.forEach((l)->l.itemRemoved(name,oldValue,this));
-		return oldValue;
-	}
-	protected abstract V removeChildReal(K name);
-	public Collection<K> getChildNames(){
-		HashSet<K> keys=new HashSet<>(getChildNamesReal());
-		keys.addAll(getChildNamesVirtual());
-		return keys;
-	}
-	protected abstract Collection<K> getChildNamesReal();
-	public Collection<K> getChildNamesVirtual(){
-		ensureProviderLoaded();
-		return provider!=null?provider.getChildNames():Collections.EMPTY_LIST;
-	}
-	public T getName(){
-		return name;
-	}
-	public Map<K,V> toMap(){
-		return new RegistryNodeMap();
-	}
-	private class RegistryNodeMap implements Map<K,V>{
-		@Override
-		public int size(){
-			return getChildNames().size();
-		}
-		@Override
-		public boolean isEmpty(){
-			return getChildNames().isEmpty();
-		}
-		@Override
-		public boolean containsKey(Object key){
-			return getChildNames().contains(key);
-		}
-		@Override
-		public boolean containsValue(Object value){
-			return values().contains(value);
-		}
-		@Override
-		public V get(Object key){
-			return getChild((K)key);
-		}
-		@Override
-		public V put(K key,V value){
-			return addChild(key,value);
-		}
-		@Override
-		public V remove(Object key){
-			return removeChild((K)key);
-		}
-		@Override
-		public void putAll(Map<? extends K,? extends V> m){
-			m.forEach((k,v)->addChild(k,v));
-		}
-		@Override
-		public void clear(){
-			getChildNames().forEach((k)->removeChild(k));
-		}
-		@Override
-		public Set<K> keySet(){
-			return new AbstractSet<K>(){
-				@Override
-				public Iterator<K> iterator(){
-					return getChildNames().iterator();
-				}
-				@Override
-				public int size(){
-					return getChildNames().size();
-				}
-			};
-		}
-		@Override
-		public Collection<V> values(){
-			return new AbstractList<V>(){
-				@Override
-				public int size(){
-					return getChildNames().size();
-				}
-				@Override
-				public V get(int index){
-					Iterator<K> iter=getChildNames().iterator();
-					while(--index>=0){
-						iter.next();
-					}
-					return getChild(iter.next());
-				}
-			};
-		}
-		@Override
-		public Set<Entry<K,V>> entrySet(){
-			return new AbstractSet<Entry<K,V>>(){
-				@Override
-				public Iterator<Entry<K,V>> iterator(){
-					return new Iterator<Entry<K,V>>(){
-						Iterator<K> base=getChildNames().iterator();
-						@Override
-						public boolean hasNext(){
-							return base.hasNext();
-						}
-						@Override
-						public Entry<K,V> next(){
-							K key=base.next();
-							return new Map.Entry<K,V>(){
-								@Override
-								public K getKey(){
-									return key;
-								}
-								@Override
-								public V getValue(){
-									return getChild(key);
-								}
-								@Override
-								public V setValue(V value){
-									return addChild(key,value);
-								}
-							};
-						}
-					};
-				}
-				@Override
-				public int size(){
-					return getChildNames().size();
-				}
-			};
+	protected abstract V getReal(K name);
+	protected void realizedAll(){
+		List<V> loaders=keySet().stream().map((k)->getReal(k)).filter((v)->v instanceof ValueLoader).collect(Collectors.toList());
+		while(!loaders.isEmpty()){
+			loaders.forEach((loader)->((ValueLoader)loader).loadValue());
+			loaders=keySet().stream().map((k)->getReal(k)).filter((v)->v instanceof ValueLoader).collect(Collectors.toList());
 		}
 	}
 }

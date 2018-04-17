@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2018 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
-
+import cc.fooledit.core.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface RegistryChangeListener<K,V,T>{
-	void itemRemoved(K key,V oldValue,RegistryNode<K,V,T> node);
-	void itemAdded(K key,V newValue,RegistryNode<K,V,T> node);
-	default void itemChanged(K key,V oldValue,V newValue,RegistryNode node){
-		itemRemoved(key,oldValue,node);
-		itemAdded(key,newValue,node);
+public class ValueLoader{
+	private final String module;
+	public ValueLoader(String module){
+		this.module=module;
+	}
+	public void loadValue(){
+		ModuleRegistry.ensureLoaded(module);
 	}
 }

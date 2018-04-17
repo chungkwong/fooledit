@@ -28,7 +28,7 @@ public class ZipEditor implements DataEditor<ZipObject>{
 	private ZipEditor(){
 	}
 	@Override
-	public Node edit(ZipObject data,Object remark,RegistryNode<String,Object,String> meta){
+	public Node edit(ZipObject data,Object remark,RegistryNode<String,Object> meta){
 		List<DataEditor> editors=DataObjectTypeRegistry.getDataEditors(data.getContent().getClass());
 		if(!editors.isEmpty())
 			return editors.get(0).edit(data.getContent(),remark,meta);

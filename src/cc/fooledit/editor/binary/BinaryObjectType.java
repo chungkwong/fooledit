@@ -45,7 +45,7 @@ public class BinaryObjectType implements DataObjectType<BinaryObject>{
 		return new BinaryObject(new byte[0]);
 	}
 	@Override
-	public void writeTo(BinaryObject data,URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public void writeTo(BinaryObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		try(OutputStream out=connection.getOutputStream()){
 			writeTo(data,out);
 		}
@@ -54,7 +54,7 @@ public class BinaryObjectType implements DataObjectType<BinaryObject>{
 		out.write(data.dataProperty().getValue());
 	}
 	@Override
-	public BinaryObject readFrom(URLConnection connection,RegistryNode<String,Object,String> meta) throws Exception{
+	public BinaryObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		try(InputStream in=connection.getInputStream()){
 			return readFrom(in);
 		}

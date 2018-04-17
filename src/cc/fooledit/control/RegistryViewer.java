@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.stream.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
+import javafx.collections.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.*;
@@ -30,28 +31,24 @@ import javafx.util.*;
  */
 public class RegistryViewer extends BorderPane{
 	public RegistryViewer(RegistryNode root){
-		TreeTableView<Object> tree=new TreeTableView<>(createTreeNode(root));
+		TreeTableView<Pair<Object,Object>> tree=new TreeTableView<>(createTreeNode("",root));
 		tree.setEditable(true);
 		tree.setShowRoot(false);
-		TreeTableColumn<Object,String> key=new TreeTableColumn<>(MessageRegistry.getString("KEY",CoreModule.NAME));
+		TreeTableColumn<Pair<Object,Object>,String> key=new TreeTableColumn<>(MessageRegistry.getString("KEY",CoreModule.NAME));
 		key.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
-		key.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
+		key.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Pair<Object,Object>,String>,ObservableValue<String>>(){
 			@Override
-			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
-				if(p.getValue().getValue() instanceof RegistryNode)
-					return new ReadOnlyStringWrapper(Objects.toString(((RegistryNode)p.getValue().getValue()).getName()));
-				else
-					return new ReadOnlyStringWrapper(Objects.toString(((Pair<?,?>)p.getValue().getValue()).getKey()));
+			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Pair<Object,Object>,String> p){
+				return new ReadOnlyStringWrapper(Objects.toString(p.getValue().getValue().getKey()));
 			}
 		});
-		TreeTableColumn<Object,String> value=new TreeTableColumn<>(MessageRegistry.getString("KEY",CoreModule.NAME));
+		TreeTableColumn<Pair<Object,Object>,String> value=new TreeTableColumn<>(MessageRegistry.getString("KEY",CoreModule.NAME));
 		value.setEditable(true);
 		value.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
-
-		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>(){
+		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Pair<Object,Object>,String>,ObservableValue<String>>(){
 			@Override
-			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
-				if(p.getValue().getValue() instanceof RegistryNode)
+			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Pair<Object,Object>,String> p){
+				if(p.getValue().getValue().getValue() instanceof RegistryNode)
 					return new ReadOnlyStringWrapper("");
 				else
 					return new ReadOnlyStringWrapper(Objects.toString(((Pair<?,?>)p.getValue().getValue()).getValue()));
@@ -61,25 +58,15 @@ public class RegistryViewer extends BorderPane{
 		tree.getColumns().addAll(key,value);
 		setCenter(tree);
 	}
-	private static TreeItem<Object> createTreeNode(RegistryNode pref){
-		LazyTreeItem item=new LazyTreeItem(pref,()->{
-			return pref.getChildNames().stream().map((child)->{
-				return pref.getChild(child)instanceof RegistryNode?
-						createTreeNode((RegistryNode)pref.getChild(child)):
-						new TreeItem<Object>(new Pair<>(child,pref.getChild(child)));
-			}).collect(Collectors.<Object>toList());
+	private static TreeItem<Pair<Object,Object>> createTreeNode(Object name,RegistryNode pref){
+		LazyTreeItem item=new LazyTreeItem(new Pair<>(name,pref),()->{
+			return pref.keySet().stream().map((child)->{
+				return pref.get(child)instanceof RegistryNode?
+						createTreeNode(child,(RegistryNode)pref.get(child)):
+						new TreeItem<>(new Pair<>(child,pref.get(child)));
+			}).collect(Collectors.toList());
 		});
-		RegistryChangeListener listener=new RegistryChangeListener() {
-			@Override
-			public void itemRemoved(Object key,Object oldValue,RegistryNode node){
-				item.refresh();
-			}
-			@Override
-			public void itemAdded(Object key,Object newValue,RegistryNode node){
-				item.refresh();
-			}
-		};
-		pref.addListener(listener);
+		pref.addListener((MapChangeListener.Change e)->item.refresh());
 		return item;
 	}
 }
