@@ -23,7 +23,7 @@ import javafx.collections.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class SimpleRegistryNode<K,V> extends RegistryNode<K,V>{
-	protected final ObservableMap<K,V> base;
+	private final ObservableMap<K,V> base;
 	public SimpleRegistryNode(){
 		this.base=FXCollections.observableHashMap();
 	}

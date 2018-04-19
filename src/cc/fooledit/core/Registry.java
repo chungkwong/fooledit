@@ -52,12 +52,26 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 				String[] comp=splitPath(path);
 				resolve(comp[0]).put(comp[1],toLoad.get(path));
 			}
+			fixProvider();
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.INFO,"Failed to load registry cache",ex);
 			for(String mod:Main.INSTANCE.getDataPath().list()){
 				ModuleRegistry.ensureInstalled(mod);
 			}
 		}
+	}
+	public void fixProvider(){
+		RegistryNode providers=((RegistryNode)ROOT.get(CoreModule.NAME).getOrCreateChild(CoreModule.PROVIDER_REGISTRY_NAME));
+		fixProvider(providers,ROOT);
+	}
+	private void fixProvider(RegistryNode provider,RegistryNode actual){
+		provider.forEach((key,value)->{
+			if(value instanceof RegistryNode){
+				fixProvider((RegistryNode)value,(RegistryNode)actual.getOrCreateChild(key));
+			}else if(value instanceof String){
+				actual.putIfAbsent(key,ValueLoader.create((String)value));
+			}
+		});
 	}
 	public void syncPersistent(){
 		File tmp=new File(Main.INSTANCE.getUserPath(),".registry.json");
@@ -172,6 +186,8 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 		provides(type,module,registry,CoreModule.NAME);
 	}
 	public static void provides(String type,String module,String registry,String target){
-		((RegistryNode)ROOT.getOrCreateChild(module).getOrCreateChild(registry)).put(type,target);
+		RegistryNode<Object,Object> core=CoreModule.PROVIDER_REGISTRY.getOrCreateChild(target);
+		((RegistryNode)core.getOrCreateChild(registry)).put(type,module);
+		((RegistryNode)ROOT.get(target).getOrCreateChild(registry)).put(type,ValueLoader.create(module));
 	}
 }

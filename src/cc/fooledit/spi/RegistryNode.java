@@ -16,7 +16,6 @@
  */
 package cc.fooledit.spi;
 import java.util.*;
-import java.util.stream.*;
 import javafx.collections.*;
 /**
  *
@@ -38,6 +37,7 @@ public abstract class RegistryNode<K,V> implements ObservableMap<K,V>{
 	public V get(Object name){
 		V value=getReal((K)name);
 		if(value instanceof ValueLoader){
+			remove(name);
 			((ValueLoader)value).loadValue();
 			value=getReal((K)name);
 		}
@@ -45,10 +45,22 @@ public abstract class RegistryNode<K,V> implements ObservableMap<K,V>{
 	}
 	protected abstract V getReal(K name);
 	protected void realizedAll(){
-		List<V> loaders=keySet().stream().map((k)->getReal(k)).filter((v)->v instanceof ValueLoader).collect(Collectors.toList());
+		Collection<ValueLoader> loaders=collectLoader();
 		while(!loaders.isEmpty()){
-			loaders.forEach((loader)->((ValueLoader)loader).loadValue());
-			loaders=keySet().stream().map((k)->getReal(k)).filter((v)->v instanceof ValueLoader).collect(Collectors.toList());
+			loaders.forEach((loader)->loader.loadValue());
+			loaders=collectLoader();
 		}
+	}
+	private Collection<ValueLoader> collectLoader(){
+		HashSet<K> keys=new HashSet<>();
+		HashSet<ValueLoader> loaders=new HashSet<>();
+		forEach((k,v)->{
+			if(v instanceof ValueLoader){
+				keys.add(k);
+				loaders.add((ValueLoader)v);
+			}
+		});
+		keys.forEach((k)->remove(k));
+		return loaders;
 	}
 }

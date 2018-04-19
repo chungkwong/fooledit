@@ -21,31 +21,30 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class NavigableRegistryNode<K,V> extends SimpleRegistryNode<K,V>{
+	private final NavigableMap<K,V> underlying;
 	public NavigableRegistryNode(){
-		super(new TreeMap<>());
+		this(new TreeMap<>());
 	}
 	public NavigableRegistryNode(NavigableMap<K,V> children){
 		super(children);
+		this.underlying=children;
 	}
 	public Map.Entry<K,V> firstEntry(){
-		return getBase().firstEntry();
+		return underlying.firstEntry();
 	}
 	public Map.Entry<K,V> lastEntry(){
-		return getBase().lastEntry();
+		return underlying.lastEntry();
 	}
 	public Map.Entry<K,V> ceilingEntry(K key){
-		return getBase().ceilingEntry(key);
+		return underlying.ceilingEntry(key);
 	}
 	public Map.Entry<K,V> floorEntry(K key){
-		return getBase().floorEntry(key);
+		return underlying.floorEntry(key);
 	}
 	public Map.Entry<K,V> higherEntry(K key){
-		return getBase().higherEntry(key);
+		return underlying.higherEntry(key);
 	}
 	public Map.Entry<K,V> lowerEntry(K key){
-		return getBase().lowerEntry(key);
-	}
-	private NavigableMap<K,V> getBase(){
-		return (NavigableMap<K,V>)base;
+		return underlying.lowerEntry(key);
 	}
 }

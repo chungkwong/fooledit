@@ -16,16 +16,30 @@
  */
 package cc.fooledit.spi;
 import cc.fooledit.core.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ValueLoader{
 	private final String module;
-	public ValueLoader(String module){
+	private ValueLoader(String module){
 		this.module=module;
 	}
 	public void loadValue(){
 		ModuleRegistry.ensureLoaded(module);
+	}
+	public static ValueLoader create(String module){
+		return new ValueLoader(module);
+	}
+	@Override
+	public boolean equals(Object obj){
+		return obj instanceof ValueLoader&&((ValueLoader)obj).module.equals(module);
+	}
+	@Override
+	public int hashCode(){
+		int hash=5;
+		hash=53*hash+Objects.hashCode(this.module);
+		return hash;
 	}
 }
