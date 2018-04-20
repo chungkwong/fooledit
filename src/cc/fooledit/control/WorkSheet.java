@@ -129,8 +129,8 @@ public class WorkSheet extends BorderPane{
 			Node first=getCenter();
 			TabPane splitPane=new TabPane(new Tab("",new WorkSheet(first)),newTab);
 			setCenter(splitPane);
-			restoreRegistry();
 		}
+		restoreRegistry();
 	}
 	public void keepOnly(RegistryNode<String,Object> data,DataEditor editor,Object remark){
 		setData(data,editor,remark);

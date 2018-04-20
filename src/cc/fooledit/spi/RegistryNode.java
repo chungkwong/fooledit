@@ -54,7 +54,8 @@ public abstract class RegistryNode<K,V> implements ObservableMap<K,V>{
 	private Collection<ValueLoader> collectLoader(){
 		HashSet<K> keys=new HashSet<>();
 		HashSet<ValueLoader> loaders=new HashSet<>();
-		forEach((k,v)->{
+		keySet().forEach((k)->{
+			V v=getReal(k);
 			if(v instanceof ValueLoader){
 				keys.add(k);
 				loaders.add((ValueLoader)v);

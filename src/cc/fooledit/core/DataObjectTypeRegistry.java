@@ -33,10 +33,12 @@ public class DataObjectTypeRegistry{
 	}
 	public static void addDataEditor(DataEditor editor,Class<? extends DataObject> objectClass){
 		CoreModule.DATA_OBJECT_EDITOR_REGISTRY.put(editor.getClass().getName(),editor);
-		if(!CoreModule.TYPE_TO_EDITOR_REGISTRY.containsKey(objectClass.getName())){
-			CoreModule.TYPE_TO_EDITOR_REGISTRY.put(objectClass.getName(),new ListRegistryNode<>());
+		ListRegistryNode<String> t2e=CoreModule.TYPE_TO_EDITOR_REGISTRY.get(objectClass.getName());
+		if(t2e==null){
+			t2e=new ListRegistryNode<>();
+			CoreModule.TYPE_TO_EDITOR_REGISTRY.put(objectClass.getName(),t2e);
 		}
-		CoreModule.TYPE_TO_EDITOR_REGISTRY.get(objectClass.getName()).put(editor.getClass().getName());
+		t2e.put(editor.getClass().getName());
 	}
 	public static List<DataEditor> getDataEditors(Class<? extends DataObject> cls){
 		if(CoreModule.TYPE_TO_EDITOR_REGISTRY.containsKey(cls.getName()))
