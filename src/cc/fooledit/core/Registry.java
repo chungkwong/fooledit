@@ -69,7 +69,7 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 			if(value instanceof RegistryNode){
 				fixProvider((RegistryNode)value,(RegistryNode)actual.getOrCreateChild(key));
 			}else if(value instanceof String){
-				actual.putIfAbsent(key,ValueLoader.create((String)value));
+				actual.putIfAbsent(key,LoaderValue.create((String)value));
 			}
 		});
 	}
@@ -188,6 +188,6 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 	public static void provides(String type,String module,String registry,String target){
 		RegistryNode<Object,Object> core=CoreModule.PROVIDER_REGISTRY.getOrCreateChild(target);
 		((RegistryNode)core.getOrCreateChild(registry)).put(type,module);
-		((RegistryNode)ROOT.get(target).getOrCreateChild(registry)).put(type,ValueLoader.create(module));
+		((RegistryNode)ROOT.get(target).getOrCreateChild(registry)).put(type,LoaderValue.create(module));
 	}
 }

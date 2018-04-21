@@ -115,8 +115,20 @@ public class Main extends Application{
 		addCommand("maximize-frame",()->stage.setMaximized(true));
 		addCommand("iconify-frame",()->stage.setIconified(true));
 		addCommand("always-on-top-frame",()->stage.setAlwaysOnTop(true));
-		addCommand("split-vertically",()->getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
-		addCommand("split-horizontally",()->getCurrentWorkSheet().splitHorizontally(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
+		addCommand("split-vertically",()->{
+			WorkSheet workSheet=getCurrentWorkSheet();
+			if(workSheet.isCompound())
+				workSheet.splitVertically();
+			else
+				getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark());
+		});
+		addCommand("split-horizontally",()->{
+			WorkSheet workSheet=getCurrentWorkSheet();
+			if(workSheet.isCompound())
+				workSheet.splitHorizontally();
+			else
+				getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark());
+		});
 		addCommand("focus-previous",()->focusPrevious());
 		addCommand("focus-next",()->focusNext());
 		addCommand("focus-up",()->focusUp());

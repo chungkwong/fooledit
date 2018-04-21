@@ -15,31 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
-import cc.fooledit.core.*;
-import java.util.*;
+import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ValueLoader{
-	private final String module;
-	private ValueLoader(String module){
-		this.module=module;
+public class LazyValue<V>{
+	private final Supplier<V> supplier;
+	public LazyValue(Supplier<V> supplier){
+		this.supplier=supplier;
 	}
-	public void loadValue(){
-		ModuleRegistry.ensureLoaded(module);
-	}
-	public static ValueLoader create(String module){
-		return new ValueLoader(module);
-	}
-	@Override
-	public boolean equals(Object obj){
-		return obj instanceof ValueLoader&&((ValueLoader)obj).module.equals(module);
-	}
-	@Override
-	public int hashCode(){
-		int hash=5;
-		hash=53*hash+Objects.hashCode(this.module);
-		return hash;
+	public V getValue(){
+		return supplier.get();
 	}
 }

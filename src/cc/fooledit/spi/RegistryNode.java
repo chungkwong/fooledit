@@ -36,29 +36,31 @@ public abstract class RegistryNode<K,V> implements ObservableMap<K,V>{
 	@Override
 	public V get(Object name){
 		V value=getReal((K)name);
-		if(value instanceof ValueLoader){
+		if(value instanceof LoaderValue){
 			remove(name);
-			((ValueLoader)value).loadValue();
+			((LoaderValue)value).loadValue();
 			value=getReal((K)name);
+		}else if(value instanceof LazyValue){
+			value=((LazyValue<V>)value).getValue();
 		}
 		return value;
 	}
 	protected abstract V getReal(K name);
 	protected void realizedAll(){
-		Collection<ValueLoader> loaders=collectLoader();
+		Collection<LoaderValue> loaders=collectLoader();
 		while(!loaders.isEmpty()){
 			loaders.forEach((loader)->loader.loadValue());
 			loaders=collectLoader();
 		}
 	}
-	private Collection<ValueLoader> collectLoader(){
+	private Collection<LoaderValue> collectLoader(){
 		HashSet<K> keys=new HashSet<>();
-		HashSet<ValueLoader> loaders=new HashSet<>();
+		HashSet<LoaderValue> loaders=new HashSet<>();
 		keySet().forEach((k)->{
 			V v=getReal(k);
-			if(v instanceof ValueLoader){
+			if(v instanceof LoaderValue){
 				keys.add(k);
-				loaders.add((ValueLoader)v);
+				loaders.add((LoaderValue)v);
 			}
 		});
 		keys.forEach((k)->remove(k));

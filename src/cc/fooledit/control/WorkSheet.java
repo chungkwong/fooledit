@@ -18,7 +18,6 @@ package cc.fooledit.control;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import cc.fooledit.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 import javafx.application.*;
@@ -33,8 +32,10 @@ import javafx.scene.layout.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class WorkSheet extends BorderPane{
+	private static final String DATA_EDITOR_NAME="editor";
+	private static final String DATA_OBJECT_NAME="object";
 	private final RegistryNode<String,Object> registry;
-	private final Function<String,Object> remarkSupplier=(key)->getDataEditor().getRemark(getCenter());
+	private final Supplier<Object> remarkSupplier=()->getDataEditor().getRemark(getCenter());
 	public WorkSheet(RegistryNode<String,Object> data,DataEditor editor,Object remark){
 		registry=new SimpleRegistryNode<>();
 		setData(data,editor,remark);
@@ -48,14 +49,17 @@ public class WorkSheet extends BorderPane{
 	private WorkSheet(Node node,RegistryNode<String,Object> registry){
 		this.registry=registry;
 		setCenter(node);
+		restoreRegistry();
 	}
 	private WorkSheet(RegistryNode<String,Object> data,DataEditor editor,Object remark,RegistryNode<String,Object> registry){
 		this.registry=registry;
 		setData(data,editor,remark);
+		restoreRegistry();
 	}
 	private void setData(RegistryNode<String,Object> data,DataEditor editor,Object remark){
 		Node node=editor.edit((DataObject)data.get(DataObject.DATA),remark,data);
-		node.setUserData(new Pair<>(data,editor));
+		node.getProperties().put(DATA_OBJECT_NAME,data);
+		node.getProperties().put(DATA_EDITOR_NAME,data);
 		setCenter(node);
 	}
 	private void restoreRegistry(){
@@ -84,7 +88,7 @@ public class WorkSheet extends BorderPane{
 			registry.remove(DIRECTION);
 			registry.remove(DIVIDER);
 			registry.remove(CHILDREN);
-			registry.remove(REMARK);
+			registry.put(REMARK,remarkSupplier);
 			registry.put(BUFFER,getDataObject());
 			registry.put(EDITOR,getDataEditor().getClass().getName());
 			registry.put(CURRENT,true);
@@ -94,6 +98,12 @@ public class WorkSheet extends BorderPane{
 	public void requestFocus(){
 		getCenter().requestFocus();
 	}
+	public void splitVertically(){
+		split(new WorkSheet(new TabPane()),Orientation.VERTICAL);
+	}
+	public void splitHorizontally(){
+		split(new WorkSheet(new TabPane()),Orientation.HORIZONTAL);
+	}
 	public void splitVertically(RegistryNode<String,Object> data,DataEditor editor,Object remark){
 		split(data,editor,remark,Orientation.VERTICAL);
 	}
@@ -101,8 +111,11 @@ public class WorkSheet extends BorderPane{
 		split(data,editor,remark,Orientation.HORIZONTAL);
 	}
 	private void split(RegistryNode<String,Object> data,DataEditor editor,Object remark,Orientation orientation){
+		split(new WorkSheet(data,editor,remark),orientation);
+	}
+	private void split(WorkSheet subWorkSheet,Orientation orientation){
 		Node first=getCenter();
-		SplitPane splitPane=new SplitPane(new WorkSheet(first),new WorkSheet(data,editor,remark));
+		SplitPane splitPane=new SplitPane(new WorkSheet(first),subWorkSheet);
 		splitPane.setOrientation(orientation);
 		splitPane.setDividerPositions(0.5,0.5);
 		setCenter(splitPane);
@@ -199,10 +212,10 @@ public class WorkSheet extends BorderPane{
 		return ((TabPane)getCenter()).getTabs().stream().map((tab)->(WorkSheet)tab.getContent());
 	}
 	public RegistryNode<String,Object> getDataObject(){
-		return ((Pair<RegistryNode<String,Object>,DataEditor>)getCenter().getUserData()).getKey();
+		return (RegistryNode<String,Object>)getCenter().getProperties().get(DATA_OBJECT_NAME);
 	}
 	public DataEditor getDataEditor(){
-		return ((Pair<RegistryNode<String,Object>,DataEditor>)getCenter().getUserData()).getValue();
+		return (DataEditor)getCenter().getProperties().get(DATA_EDITOR_NAME);
 	}
 	public RegistryNode<String,Object> getRegistry(){
 		return registry;
