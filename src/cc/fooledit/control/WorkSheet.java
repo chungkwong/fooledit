@@ -18,10 +18,12 @@ package cc.fooledit.control;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 import javafx.application.*;
 import javafx.beans.value.*;
+import javafx.collections.*;
 import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.*;
@@ -36,6 +38,10 @@ public class WorkSheet extends BorderPane{
 	private static final String DATA_OBJECT_NAME="object";
 	private final RegistryNode<String,Object> registry;
 	private final Supplier<Object> remarkSupplier=()->getDataEditor().getRemark(getCenter());
+	private final ListChangeListener<Tab> tabChanged=(e)->restoreRegistry();
+	public WorkSheet(){
+		this(new TabPane());
+	}
 	public WorkSheet(RegistryNode<String,Object> data,DataEditor editor,Object remark){
 		registry=new SimpleRegistryNode<>();
 		setData(data,editor,remark);
@@ -59,7 +65,7 @@ public class WorkSheet extends BorderPane{
 	private void setData(RegistryNode<String,Object> data,DataEditor editor,Object remark){
 		Node node=editor.edit((DataObject)data.get(DataObject.DATA),remark,data);
 		node.getProperties().put(DATA_OBJECT_NAME,data);
-		node.getProperties().put(DATA_EDITOR_NAME,data);
+		node.getProperties().put(DATA_EDITOR_NAME,editor);
 		setCenter(node);
 	}
 	private void restoreRegistry(){
@@ -75,6 +81,8 @@ public class WorkSheet extends BorderPane{
 			children.put(getLast().getRegistry());
 			registry.put(CHILDREN,children);
 		}else if(getCenter() instanceof TabPane){
+			((TabPane)getCenter()).getTabs().removeListener(tabChanged);
+			((TabPane)getCenter()).getTabs().addListener(tabChanged);
 			registry.remove(BUFFER);
 			registry.remove(EDITOR);
 			registry.remove(REMARK);
@@ -88,7 +96,7 @@ public class WorkSheet extends BorderPane{
 			registry.remove(DIRECTION);
 			registry.remove(DIVIDER);
 			registry.remove(CHILDREN);
-			registry.put(REMARK,remarkSupplier);
+			registry.put(REMARK,new LazyValue<>(remarkSupplier));
 			registry.put(BUFFER,getDataObject());
 			registry.put(EDITOR,getDataEditor().getClass().getName());
 			registry.put(CURRENT,true);
@@ -98,22 +106,7 @@ public class WorkSheet extends BorderPane{
 	public void requestFocus(){
 		getCenter().requestFocus();
 	}
-	public void splitVertically(){
-		split(new WorkSheet(new TabPane()),Orientation.VERTICAL);
-	}
-	public void splitHorizontally(){
-		split(new WorkSheet(new TabPane()),Orientation.HORIZONTAL);
-	}
-	public void splitVertically(RegistryNode<String,Object> data,DataEditor editor,Object remark){
-		split(data,editor,remark,Orientation.VERTICAL);
-	}
-	public void splitHorizontally(RegistryNode<String,Object> data,DataEditor editor,Object remark){
-		split(data,editor,remark,Orientation.HORIZONTAL);
-	}
-	private void split(RegistryNode<String,Object> data,DataEditor editor,Object remark,Orientation orientation){
-		split(new WorkSheet(data,editor,remark),orientation);
-	}
-	private void split(WorkSheet subWorkSheet,Orientation orientation){
+	public void split(WorkSheet subWorkSheet,Orientation orientation){
 		Node first=getCenter();
 		SplitPane splitPane=new SplitPane(new WorkSheet(first),subWorkSheet);
 		splitPane.setOrientation(orientation);
@@ -133,25 +126,25 @@ public class WorkSheet extends BorderPane{
 		restoreRegistry();
 		splitPane.getDividers().get(0).positionProperty().addListener((e,o,n)->registry.put(DIVIDER,n));
 	}
-	public void tab(RegistryNode<String,Object> data,DataEditor editor,Object remark){
-		Tab newTab=new Tab((String)data.get(DataObject.BUFFER_NAME),new WorkSheet(data,editor,remark));
+	public void tab(WorkSheet worksheet){
+		Tab newTab=new Tab(worksheet.getName(),worksheet);
 		if(isTabed()){
 			((TabPane)getCenter()).getTabs().add(newTab);
 			((TabPane)getCenter()).getSelectionModel().select(newTab);
 		}else{
 			Node first=getCenter();
-			TabPane splitPane=new TabPane(new Tab("",new WorkSheet(first)),newTab);
+			TabPane splitPane=new TabPane(new Tab(getName(),new WorkSheet(first)),newTab);
 			setCenter(splitPane);
+			restoreRegistry();
 		}
-		restoreRegistry();
 	}
-	public void keepOnly(RegistryNode<String,Object> data,DataEditor editor,Object remark){
-		setData(data,editor,remark);
+	public void keepOnly(WorkSheet sheet){
+		setCenter(sheet.getCenter());
 		restoreRegistry();
 		getCenter().requestFocus();
 		WorkSheet parent=getParentWorkSheet();
 		if(parent!=null&&parent.isTabed()){
-			((TabPane)parent.getCenter()).getSelectionModel().getSelectedItem().setText((String)data.get(DataObject.BUFFER_NAME));
+			((TabPane)parent.getCenter()).getSelectionModel().getSelectedItem().setText(getName());
 		}
 	}
 	public static final String DIRECTION="direction";
@@ -172,14 +165,13 @@ public class WorkSheet extends BorderPane{
 		}else if(json.containsKey(CHILDREN)){
 			TabPane pane=new TabPane();
 			ListRegistryNode<RegistryNode<String,Object>> children=(ListRegistryNode<RegistryNode<String,Object>>)json.get(CHILDREN);
-			pane.getTabs().setAll(children.getChildren().stream().map((child)->new Tab((String)child.get(DataObject.BUFFER_NAME),fromJSON(child))).collect(Collectors.toList()));
+			pane.getTabs().setAll(children.getChildren().stream().map((child)->fromJSON(child)).map((child)->new Tab(child.getName(),child)).collect(Collectors.toList()));
 			return new WorkSheet(pane,json);
 		}else{
 			RegistryNode<String,Object> buffer=DataObjectRegistry.get((RegistryNode<String,Object>)json.get(BUFFER));
 			String editorName=(String)json.get(EDITOR);
 			DataEditor editor=CoreModule.DATA_OBJECT_EDITOR_REGISTRY.get(editorName);
 			WorkSheet workSheet=new WorkSheet(buffer,editor,json.get(REMARK),json);
-			json.remove(REMARK);
 			if((Boolean)json.get(CURRENT)){
 				Main.INSTANCE.setCurrentWorkSheet(workSheet);
 				Platform.runLater(()->workSheet.requestFocus());
@@ -216,6 +208,15 @@ public class WorkSheet extends BorderPane{
 	}
 	public DataEditor getDataEditor(){
 		return (DataEditor)getCenter().getProperties().get(DATA_EDITOR_NAME);
+	}
+	public String getName(){
+		if(isTabed()){
+			return getTabs().findFirst().map((s)->s.getName()).orElse("...");
+		}else if(isSplit()){
+			return getFirst().getName()+"...";
+		}else{
+			return Objects.toString(getDataObject().get(DataObject.BUFFER_NAME));
+		}
 	}
 	public RegistryNode<String,Object> getRegistry(){
 		return registry;

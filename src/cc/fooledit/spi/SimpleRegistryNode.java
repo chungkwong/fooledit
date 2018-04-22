@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
+import cc.fooledit.util.*;
 import java.util.*;
+import java.util.stream.*;
 import javafx.beans.*;
 import javafx.collections.*;
 /**
@@ -56,8 +58,7 @@ public class SimpleRegistryNode<K,V> extends RegistryNode<K,V>{
 	}
 	@Override
 	public boolean containsValue(Object value){
-		realizedAll();
-		return base.containsValue(value);
+		return values().contains(value);
 	}
 	@Override
 	public V put(K key,V value){
@@ -81,13 +82,11 @@ public class SimpleRegistryNode<K,V> extends RegistryNode<K,V>{
 	}
 	@Override
 	public Collection<V> values(){
-		realizedAll();
-		return base.values();
+		return base.keySet().stream().map((k)->get(k)).collect(Collectors.toSet());
 	}
 	@Override
 	public Set<Entry<K,V>> entrySet(){
-		realizedAll();
-		return base.entrySet();
+		return base.keySet().stream().map((k)->new Pair<K,V>(k,get(k))).collect(Collectors.toSet());
 	}
 	@Override
 	public void addListener(InvalidationListener listener){

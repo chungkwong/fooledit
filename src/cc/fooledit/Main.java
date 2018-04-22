@@ -33,6 +33,7 @@ import java.util.function.*;
 import java.util.logging.*;
 import javafx.application.*;
 import javafx.collections.*;
+import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
@@ -118,22 +119,23 @@ public class Main extends Application{
 		addCommand("split-vertically",()->{
 			WorkSheet workSheet=getCurrentWorkSheet();
 			if(workSheet.isCompound())
-				workSheet.splitVertically();
+				workSheet.split(new WorkSheet(),Orientation.VERTICAL);
 			else
-				getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark());
+				getCurrentWorkSheet().split(new WorkSheet(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()),Orientation.VERTICAL);
 		});
 		addCommand("split-horizontally",()->{
 			WorkSheet workSheet=getCurrentWorkSheet();
 			if(workSheet.isCompound())
-				workSheet.splitHorizontally();
+				workSheet.split(new WorkSheet(),Orientation.HORIZONTAL);
 			else
-				getCurrentWorkSheet().splitVertically(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark());
+				getCurrentWorkSheet().split(new WorkSheet(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()),Orientation.HORIZONTAL);
 		});
 		addCommand("focus-previous",()->focusPrevious());
 		addCommand("focus-next",()->focusNext());
 		addCommand("focus-up",()->focusUp());
 		addCommand("focus-down",()->focusDown());
-		addCommand("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()));
+		addCommand("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentWorkSheet()));
+		addCommand("add-empty-tab",()->((WorkSheet)root.getCenter()).tab(new WorkSheet()));
 		addCommand("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemObjectType.INSTANCE)));
 		addCommand("registry",()->addAndShow(DataObjectRegistry.create(RegistryEditor.INSTANCE)));
 		addCommand("command",()->input.requestFocus());
@@ -213,7 +215,7 @@ public class Main extends Application{
 			DataObject curr=getCurrentData();
 			DataObjectTypeRegistry.getDataEditors(curr.getClass()).forEach((editor)->{
 				MenuItem item=new MenuItem(editor.getName());
-				item.setOnAction((e)->getCurrentWorkSheet().keepOnly(getCurrentDataObject(),editor,null));
+				item.setOnAction((e)->getCurrentWorkSheet().keepOnly(new WorkSheet(getCurrentDataObject(),editor,null)));
 				l.add(item);
 			});
 			l.add(new SeparatorMenuItem());
@@ -276,17 +278,17 @@ public class Main extends Application{
 		showOnNewTab(data);
 	}
 	public void showOnCurrentTab(RegistryNode<String,Object> data){
-		getCurrentWorkSheet().keepOnly(data,getDefaultEditor(data),null);
+		getCurrentWorkSheet().keepOnly(new WorkSheet(data,getDefaultEditor(data),null));
 	}
 	public void showOnNewTab(RegistryNode<String,Object> data){
-		getCurrentWorkSheet().tab(data,getDefaultEditor(data),null);
+		getCurrentWorkSheet().tab(new WorkSheet(data,getDefaultEditor(data),null));
 	}
 	public void showOnNewTabGroup(RegistryNode<String,Object> data){
 		WorkSheet currentWorkSheet=getCurrentWorkSheet();
 		if(currentWorkSheet.getWidth()<currentWorkSheet.getHeight()){
-			currentWorkSheet.splitVertically(data,getDefaultEditor(data),null);
+			currentWorkSheet.split(new WorkSheet(data,getDefaultEditor(data),null),Orientation.VERTICAL);
 		}else{
-			currentWorkSheet.splitHorizontally(data,getDefaultEditor(data),null);
+			currentWorkSheet.split(new WorkSheet(data,getDefaultEditor(data),null),Orientation.HORIZONTAL);
 		}
 	}
 	public DataEditor getDefaultEditor(RegistryNode<String,Object> data){

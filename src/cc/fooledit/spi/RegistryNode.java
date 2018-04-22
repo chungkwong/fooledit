@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
-import java.util.*;
 import javafx.collections.*;
 /**
  *
@@ -46,7 +45,7 @@ public abstract class RegistryNode<K,V> implements ObservableMap<K,V>{
 		return value;
 	}
 	protected abstract V getReal(K name);
-	protected void realizedAll(){
+	/*protected void realizedAll(){
 		Collection<LoaderValue> loaders=collectLoader();
 		while(!loaders.isEmpty()){
 			loaders.forEach((loader)->loader.loadValue());
@@ -65,5 +64,5 @@ public abstract class RegistryNode<K,V> implements ObservableMap<K,V>{
 		});
 		keys.forEach((k)->remove(k));
 		return loaders;
-	}
+	}*/
 }
