@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
+import cc.fooledit.*;
 import static cc.fooledit.core.CoreModule.DATA_OBJECT_REGISTRY;
 import cc.fooledit.spi.*;
+import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.logging.*;
@@ -28,6 +30,7 @@ import javax.activation.*;
 public class DataObjectRegistry{
 	private static final String UNTITLED=MessageRegistry.getString("UNTITLED",CoreModule.NAME);
 	private static final String KEY="file_history.json";
+	private static final String TRASH="trash";
 	public static RegistryNode getDataObject(String name){
 		return DATA_OBJECT_REGISTRY.get(name);
 	}
@@ -160,6 +163,19 @@ public class DataObjectRegistry{
 		int i=path.lastIndexOf('/');
 		return i==-1?path:path.substring(i+1);
 	}
+	public static void clean(RegistryNode<String,Object> data){
+		if((Boolean)data.getOrDefault(DataObject.MODIFIED,false))
+			try{
+				write(data);
+			}catch(Exception e){
+				try{
+					String origName=(String)data.getOrDefault(DataObject.DEFAULT_NAME,UNTITLED);
+					writeTo(data,File.createTempFile("bak_",origName,getTrashDirectory()).toURI().toURL());
+				}catch(Exception ex){
+					Logger.getGlobal().log(Level.SEVERE,null,ex);
+				}
+			}
+	}
 	public static void write(RegistryNode<String,Object> data) throws Exception{
 		writeTo(data,new URL((String)data.get(DataObject.URI)));
 	}
@@ -167,5 +183,8 @@ public class DataObjectRegistry{
 		DataObject data=((DataObject)object.get(DataObject.DATA));
 		data.getDataObjectType().writeTo(data,FoolURLConnection.open(url),object);
 		object.put(DataObject.URI,url.toString());
+	}
+	private static File getTrashDirectory(){
+		return new File(Main.INSTANCE.getUserPath(),TRASH);
 	}
 }

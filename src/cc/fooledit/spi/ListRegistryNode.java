@@ -66,6 +66,9 @@ public class ListRegistryNode<V> extends RegistryNode<Integer,V>{
 	public void put(V value){
 		children.add(value);
 	}
+	public void removeValue(V value){
+		children.remove(value);
+	}
 	@Override
 	public V remove(Object key){
 		return children.remove(((Number)key).intValue());

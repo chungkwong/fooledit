@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
+import cc.fooledit.spi.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
@@ -24,25 +25,14 @@ import java.util.logging.*;
  */
 public class EventManager{
 	public static final String SHUTDOWN="shutdown";
-	private static final Map<String,LinkedList<Consumer<Object>>> table=new HashMap<>();
 	public static void addEventListener(String event,Consumer<Object> action){
-		LinkedList<Consumer<Object>> list=table.get(event);
-		if(list==null){
-			list=new LinkedList<>();
-			table.put(event,list);
-		}
-		list.addFirst(action);
+		MultiRegistryNode.addChildElement(event,action,CoreModule.getEVENT_REGISTRY());
 	}
-	public static void removeEventListener(String event,Runnable action){
-		LinkedList<Consumer<Object>> list=table.get(event);
-		if(list!=null){
-			list.remove(action);
-			if(list.isEmpty())
-				table.remove(event);
-		}
+	public static void removeEventListener(String event,Consumer<Object> action){
+		MultiRegistryNode.removeChildElement(event,action,CoreModule.getEVENT_REGISTRY());
 	}
 	public static void fire(String event,Object parameter){
-		LinkedList<Consumer<Object>> list=table.get(event);
+		List<Consumer> list=MultiRegistryNode.getChildElements(event,CoreModule.getEVENT_REGISTRY());
 		if(list!=null){
 			try{
 				for(Consumer<Object> action:list)

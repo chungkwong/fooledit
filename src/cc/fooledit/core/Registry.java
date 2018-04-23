@@ -31,7 +31,7 @@ import java.util.logging.*;
 public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 	public static final Registry ROOT=new Registry();
 	private Registry(){
-		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());
+
 	}
 	public <K,V> RegistryNode<K,V> resolve(String path){
 		RegistryNode node=this;
@@ -59,6 +59,7 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 				ModuleRegistry.ensureInstalled(mod);
 			}
 		}
+		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());
 	}
 	public void fixProvider(){
 		RegistryNode providers=((RegistryNode)ROOT.get(CoreModule.NAME).getOrCreateChild(CoreModule.PROVIDER_REGISTRY_NAME));

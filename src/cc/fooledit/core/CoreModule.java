@@ -79,7 +79,7 @@ public class CoreModule{
 	public static RegistryNode<String,DataEditor> DATA_OBJECT_EDITOR_REGISTRY;
 	public static RegistryNode<String,Consumer<ObservableList<MenuItem>>> DYNAMIC_MENU_REGISTRY;
 	public static RegistryNode<String,ListRegistryNode<String>> TYPE_TO_EDITOR_REGISTRY;
-	public static RegistryNode<String,List<Consumer>> EVENT_REGISTRY;
+	public static RegistryNode<String,ListRegistryNode<Consumer>> EVENT_REGISTRY;
 	public static ListRegistryNode<RegistryNode<String,Object>> HISTORY_REGISTRY;
 	public static RegistryNode<String,RegistryNode<String,Object>> LOADED_MODULE_REGISTRY;
 	public static RegistryNode<String,RegistryNode<String,Object>> LOADING_MODULE_REGISTRY;
@@ -106,6 +106,14 @@ public class CoreModule{
 			}catch(Exception ex){
 				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
 			}
+		});
+		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
+			try{
+				Helper.writeText(serializier.encode(HISTORY_REGISTRY),new File(Main.INSTANCE.getUserPath(),"file_history.json"));
+			}catch(Exception ex){
+				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
+			}
+			DATA_OBJECT_REGISTRY.values().forEach((data)->DataObjectRegistry.clean(data));
 		});
 	}
 	public static void onUnLoad(){
@@ -145,7 +153,7 @@ public class CoreModule{
 		DATA_OBJECT_EDITOR_REGISTRY=(RegistryNode<String,DataEditor>)REGISTRY.getOrCreateChild(DATA_OBJECT_EDITOR_REGISTRY_NAME);
 		DYNAMIC_MENU_REGISTRY=(RegistryNode<String,Consumer<ObservableList<MenuItem>>>)REGISTRY.getOrCreateChild(DYNAMIC_MENU_REGISTRY_NAME);
 		TYPE_TO_EDITOR_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(TYPE_TO_EDITOR_REGISTRY_NAME);
-		EVENT_REGISTRY=(RegistryNode<String,List<Consumer>>)REGISTRY.getOrCreateChild(EVENT_REGISTRY_NAME);
+		EVENT_REGISTRY=(RegistryNode<String,ListRegistryNode<Consumer>>)REGISTRY.getOrCreateChild(EVENT_REGISTRY_NAME);
 		HISTORY_REGISTRY=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
 		LOADED_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object>>)REGISTRY.getOrCreateChild(LOADED_MODULE_REGISTRY_NAME);
 		LOADING_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object>>)REGISTRY.getOrCreateChild(LOADING_MODULE_REGISTRY_NAME);
@@ -192,6 +200,11 @@ public class CoreModule{
 		if(PROTOCOL_REGISTRY==null)
 			PROTOCOL_REGISTRY=(RegistryNode<String,URLStreamHandler>)getREGISTRY().getOrCreateChild(PROTOCOL_REGISTRY_NAME);
 		return PROTOCOL_REGISTRY;
+	}
+	static RegistryNode<String,ListRegistryNode<Consumer>> getEVENT_REGISTRY(){
+		if(EVENT_REGISTRY==null)
+			EVENT_REGISTRY=(RegistryNode<String,ListRegistryNode<Consumer>>)getREGISTRY().getOrCreateChild(EVENT_REGISTRY_NAME);
+		return EVENT_REGISTRY;
 	}
 	static RegistryNode<String,Object> getREGISTRY(){
 		if(REGISTRY==null)

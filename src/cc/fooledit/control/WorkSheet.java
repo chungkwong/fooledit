@@ -171,6 +171,7 @@ public class WorkSheet extends BorderPane{
 			RegistryNode<String,Object> buffer=DataObjectRegistry.get((RegistryNode<String,Object>)json.get(BUFFER));
 			String editorName=(String)json.get(EDITOR);
 			DataEditor editor=CoreModule.DATA_OBJECT_EDITOR_REGISTRY.get(editorName);
+			json.put(BUFFER,buffer);
 			WorkSheet workSheet=new WorkSheet(buffer,editor,json.get(REMARK),json);
 			if((Boolean)json.get(CURRENT)){
 				Main.INSTANCE.setCurrentWorkSheet(workSheet);

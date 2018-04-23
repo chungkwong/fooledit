@@ -27,6 +27,14 @@ public class MultiRegistryNode{
 		}
 		((ListRegistryNode<V>)registry.get(name)).put(value);
 	}
+	public static <K,V> void removeChildElement(K name,V value,RegistryNode<K,ListRegistryNode<V>> registry){
+		ListRegistryNode<V> list=registry.get(name);
+		if(list!=null){
+			list.removeValue(value);
+			if(list.isEmpty())
+				registry.remove(name);
+		}
+	}
 	public static <K,V> List<V> getChildElements(K name,RegistryNode<K,ListRegistryNode<V>> registry){
 		ListRegistryNode<V> child=registry.get(name);
 		return child!=null?child.getChildren():Collections.emptyList();
