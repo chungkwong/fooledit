@@ -36,6 +36,8 @@ import javafx.scene.layout.*;
 public class WorkSheet extends BorderPane{
 	private static final String DATA_EDITOR_NAME="editor";
 	private static final String DATA_OBJECT_NAME="object";
+	private static final String COMMANDS_NAME="commands";
+	private static final String KEYMAP_NAME="keymap";
 	private final RegistryNode<String,Object> registry;
 	private final Supplier<Object> remarkSupplier=()->getDataEditor().getRemark(getCenter());
 	private final ListChangeListener<Tab> tabChanged=(e)->restoreRegistry();
@@ -66,6 +68,8 @@ public class WorkSheet extends BorderPane{
 		Node node=editor.edit((DataObject)data.get(DataObject.DATA),remark,data);
 		node.getProperties().put(DATA_OBJECT_NAME,data);
 		node.getProperties().put(DATA_EDITOR_NAME,editor);
+		node.getProperties().put(COMMANDS_NAME,editor.getCommandRegistry());
+		node.getProperties().put(KEYMAP_NAME,editor.getKeymapRegistry());
 		setCenter(node);
 	}
 	private void restoreRegistry(){
@@ -209,6 +213,12 @@ public class WorkSheet extends BorderPane{
 	}
 	public DataEditor getDataEditor(){
 		return (DataEditor)getCenter().getProperties().get(DATA_EDITOR_NAME);
+	}
+	public RegistryNode<String,Command> getCommandRegistry(){
+		return (RegistryNode<String,Command>)getCenter().getProperties().get(COMMANDS_NAME);
+	}
+	public NavigableRegistryNode<String,String> getKeymapRegistry(){
+		return (NavigableRegistryNode<String,String>)getCenter().getProperties().get(KEYMAP_NAME);
 	}
 	public String getName(){
 		if(isTabed()){

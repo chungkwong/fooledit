@@ -25,23 +25,26 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class SideBarPane extends SplitPane{
-	private final SideBar top=new SideBar(Side.TOP);
-	private final SideBar bottom=new SideBar(Side.BOTTOM);
-	private final SideBar left=new SideBar(Side.LEFT);
-	private final SideBar right=new SideBar(Side.RIGHT);
+	private final TabPane top=new DraggableTabPane();
+	private final TabPane bottom=new DraggableTabPane();
+	private final TabPane left=new DraggableTabPane();
+	private final TabPane right=new DraggableTabPane();
 	private final SplitPane middle=new SplitPane();
 	private final Property<Node> center;
 	public SideBarPane(Node center){
+		top.setSide(Side.TOP);
+		bottom.setSide(Side.BOTTOM);
+		left.setSide(Side.LEFT);
+		right.setSide(Side.RIGHT);
 		middle.setOrientation(Orientation.HORIZONTAL);
 		middle.getItems().setAll(left,center,right);
-		middle.setDividerPositions(0.2,0.8);
 		setOrientation(Orientation.VERTICAL);
 		getItems().setAll(top,middle,bottom);
-		setDividerPositions(0.2,0.8);
 		this.center=new SimpleObjectProperty<Node>(center);
 		this.center.addListener((e,o,n)->middle.getItems().set(1,n));
+		updateDivider();
 	}
-	public SideBar getSideBar(Side side){
+	public TabPane getSideBar(Side side){
 		switch(side){
 			case LEFT:return left;
 			case RIGHT:return right;
@@ -53,16 +56,33 @@ public class SideBarPane extends SplitPane{
 	public void showToolBox(ToolBox box){
 		Side[] perfered=box.getPerferedSides();
 		for(Side side:perfered){
-			SideBar bar=getSideBar(side);
-			if(bar.getItemsCount()==0){
+			TabPane bar=getSideBar(side);
+			if(bar.getTabs().size()==0){
 				showToolBox(box,side);
 				return;
 			}
 		}
 		showToolBox(box,perfered.length>0?perfered[0]:Side.RIGHT);
 	}
+	void updateDivider(){
+		double width=getWidth();
+		double leftWidth=left.prefWidth(width);
+		double rightWidth=right.prefWidth(width);
+		double hd0=leftWidth/(width+2);
+		double hd1=1-rightWidth/(width+2);
+		middle.setDividerPositions(hd0,hd1);
+		double height=getHeight();
+		double topHeight=top.prefHeight(height);
+		double bottomHeight=bottom.prefHeight(height);
+		double vd0=topHeight/(height+2);
+		double vd1=1-bottomHeight/(height+2);
+		setDividerPositions(vd0,vd1);
+	}
 	public void showToolBox(ToolBox box,Side side){
-		getSideBar(side).addItem(box.getDisplayName(),box.getGraphic(),box.createInstance());
+		Tab tab=new Tab(box.getDisplayName(),box.createInstance());
+		tab.setGraphic(box.getGraphic());
+		getSideBar(side).getTabs().add(tab);
+		updateDivider();
 	}
 	public Property<Node> centerProperty(){
 		return center;

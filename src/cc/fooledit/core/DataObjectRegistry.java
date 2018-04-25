@@ -185,6 +185,8 @@ public class DataObjectRegistry{
 		object.put(DataObject.URI,url.toString());
 	}
 	private static File getTrashDirectory(){
-		return new File(Main.INSTANCE.getUserPath(),TRASH);
+		File file=new File(Main.INSTANCE.getUserPath(),TRASH);
+		file.mkdirs();
+		return file;
 	}
 }
