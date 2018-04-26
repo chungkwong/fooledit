@@ -33,6 +33,7 @@ import java.util.function.*;
 import java.util.logging.*;
 import javafx.application.*;
 import javafx.collections.*;
+import javafx.event.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -87,7 +88,7 @@ public class Main extends Application{
 		CoreModule.PROTOCOL_REGISTRY.put("application",new ApplicationRegistry());
 		CoreModule.PROTOCOL_REGISTRY.put("data",new DataStreamHandler());
 		keymapRegistry=Registry.ROOT.registerKeymap(CoreModule.NAME);
-		new KeymapSupport();
+		root.addEventFilter(KeyEvent.ANY,getKeyFilter());
 		initMenuBar();
 		root.setBottom(notifier.getStatusBar());
 		loadDefaultWorkSheet();
@@ -362,17 +363,6 @@ public class Main extends Application{
 			return workSheet.getDataEditor().getCommandRegistry();
 		}
 	}
-	public NavigableRegistryNode<String,String> getGlobalKeymapRegistry(){
-		return keymapRegistry;
-	}
-	private NavigableRegistryNode<String,String> getLocalKeymapRegistry(){
-		WorkSheet workSheet=getCurrentWorkSheet();
-		if(workSheet.isCompound()){
-			return (NavigableRegistryNode<String,String>)CoreModule.REGISTRY.getOrCreateChild("NAVIFABLE_EMPTY",new NavigableRegistryNode<>());
-		}else{
-			return workSheet.getDataEditor().getKeymapRegistry();
-		}
-	}
 	public MenuRegistry getMenuRegistry(){
 		return menuRegistry;
 	}
@@ -454,6 +444,63 @@ public class Main extends Application{
 		}
 		return obj;
 	}
+	private String currKey=null;
+	private boolean ignoreKey=false;
+	private EventHandler<KeyEvent> getKeyFilter(){
+		return (KeyEvent e)->{
+			if(recording)
+				macro.add(e.copyFor(e.getSource(),e.getTarget()));
+			if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
+				if(ignoreKey){
+					e.consume();
+				}
+			}else if(e.getEventType().equals(KeyEvent.KEY_RELEASED)){
+				if(ignoreKey){
+					e.consume();
+				}
+			}else if(e.getEventType().equals(KeyEvent.KEY_PRESSED)){
+				if(e.getCode().isModifierKey()){
+					e.consume();
+					return;
+				}
+				String code=currKey==null?encode(e):currKey+'+'+encode(e);
+				Node node=scene.getFocusOwner();
+				while(node!=null){
+					Object local=node.getProperties().get("keymap");
+					System.err.println(local+":"+(local instanceof NavigableRegistryNode));
+					if(local instanceof NavigableRegistryNode&&checkForKey(code,(NavigableRegistryNode<String,String>)local)){
+						e.consume();
+						return;
+					}
+					node=node.getParent();
+				}
+				if(checkForKey(code,keymapRegistry)){
+					e.consume();
+				}else{
+					currKey=null;
+					getNotifier().notify("");
+					ignoreKey=false;
+				}
+			}
+		};
+	}
+	private boolean checkForKey(String code,NavigableRegistryNode<String,String> keymapRegistryNode){
+		Map.Entry<String,String> entry=keymapRegistry.ceilingEntry(code);
+		if(entry!=null){
+			if(code.equals(entry.getKey())){
+				currKey=null;
+				TaskManager.executeCommand(getCommandRegistry().get(entry.getValue()));
+				ignoreKey=true;
+				return true;
+			}else if(entry.getKey().startsWith(code+' ')){
+				currKey=code;
+				getNotifier().notify(MessageRegistry.getString("ENTERED",CoreModule.NAME)+code);
+				ignoreKey=true;
+				return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 * @param args the command line arguments
 	 */
@@ -492,72 +539,17 @@ public class Main extends Application{
 			}
 		}
 	}
-	class KeymapSupport{
-		private String curr=null;
-		boolean ignore=false;
-		public KeymapSupport(){
-			root.addEventFilter(KeyEvent.ANY,(KeyEvent e)->{
-				if(recording)
-					macro.add(e.copyFor(e.getSource(),e.getTarget()));
-				if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
-					if(ignore){
-						e.consume();
-					}
-				}else if(e.getEventType().equals(KeyEvent.KEY_RELEASED)){
-					if(ignore){
-						e.consume();
-					}
-				}else if(e.getEventType().equals(KeyEvent.KEY_PRESSED)){
-					if(e.getCode().isModifierKey()){
-						e.consume();
-						return;
-					}
-					String code=curr==null?encode(e):curr+'+'+encode(e);
-					Map.Entry<String,String> localEntry=getLocalKeymapRegistry().ceilingEntry(code);
-					Map.Entry<String,String> globalEntry=getGlobalKeymapRegistry().ceilingEntry(code);
-					String next;
-					String commandName;
-					if(localEntry!=null&&isCurrentNodeFocused()){
-						if(globalEntry!=null&&globalEntry.getKey().compareTo(localEntry.getKey())<0){
-							next=globalEntry.getKey();commandName=globalEntry.getValue();
-						}else{
-							next=localEntry.getKey();commandName=localEntry.getValue();
-						}
-					}else if(globalEntry!=null){
-						next=globalEntry.getKey();commandName=globalEntry.getValue();
-					}else{
-						next=null;commandName=null;
-					}
-					if(code.equals(next)){
-						e.consume();
-						curr=null;
-						TaskManager.executeCommand(getCommandRegistry().get(commandName));
-						ignore=true;
-					}else if(next!=null&&next.startsWith(code+' ')){
-						e.consume();
-						curr=code;
-						getNotifier().notify(MessageRegistry.getString("ENTERED",CoreModule.NAME)+code);
-						ignore=true;
-					}else{
-						curr=null;
-						getNotifier().notify("");
-						ignore=false;
-					}
-				}
-			});
-		}
-		private final StringBuilder buf=new StringBuilder();
-		private String encode(KeyEvent evt){
-			buf.setLength(0);
-			if(evt.isControlDown()||evt.isShortcutDown())
-				buf.append("C-");
-			if(evt.isAltDown())
-				buf.append("M-");
-			if(evt.isShiftDown())
-				buf.append("S-");
-			buf.append(evt.getCode().getName());
-			return buf.toString();
-		}
+	private final StringBuilder buf=new StringBuilder();
+	private String encode(KeyEvent evt){
+		buf.setLength(0);
+		if(evt.isControlDown()||evt.isShortcutDown())
+			buf.append("C-");
+		if(evt.isAltDown())
+			buf.append("M-");
+		if(evt.isShiftDown())
+			buf.append("S-");
+		buf.append(evt.getCode().getName());
+		return buf.toString();
 	}
 	private boolean isCurrentNodeFocused(){
 		Node owner=scene.getFocusOwner();
