@@ -29,12 +29,10 @@ import javafx.scene.layout.*;
  */
 public class MiniBuffer extends BorderPane{
 	private final TextField input=new TextField();
-	private final Main main;
 	private final AutoCompleteProvider commandHints=new CommandComplete();
 	private final AutoCompleteService completeService;
 	private AutoCompleteProvider hints;
-	public MiniBuffer(Main main){
-		this.main=main;
+	public MiniBuffer(){
 		setFocusTraversable(false);
 		completeService=new AutoCompleteService(input,(text,pos)->hints==null?Stream.empty():hints.checkForHints(text,pos));
 		setCenter(input);
@@ -54,12 +52,12 @@ public class MiniBuffer extends BorderPane{
 		setRight(null);
 		input.setText("");
 		input.setOnAction((e)->{
-			Command command=main.getCommandRegistry().get(input.getText());
+			Command command=Main.INSTANCE.getCommand(input.getText());
 			if(command!=null){
 				TaskManager.executeCommand(command);
 			}else{
 				TaskManager.executeTask(new UserTask<>("script",()->{
-					return Objects.toString(main.getScriptAPI().eval(input.getText()));
+					return Objects.toString(Main.INSTANCE.getScriptAPI().eval(input.getText()));
 				}));
 			}
 		});
@@ -78,7 +76,7 @@ public class MiniBuffer extends BorderPane{
 		@Override
 		public Stream<AutoCompleteHint> checkForHints(String text,int pos){
 			String prefix=text.substring(0,pos);
-			return main.getCommandRegistry().keySet().stream().filter((name)->name.startsWith(prefix)&&name.length()>pos)
+			return Main.INSTANCE.getCommandNames().stream().filter((name)->name.startsWith(prefix)&&name.length()>pos)
 					.sorted().map((name)->AutoCompleteHint.create(name,name.substring(pos),""));
 		}
 	}

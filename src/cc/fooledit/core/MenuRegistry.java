@@ -50,7 +50,7 @@ public class MenuRegistry{
 					}else if(props.containsKey(COMMAND)){
 						String commandName=(String)props.get(COMMAND);
 						MenuItem mi=new MenuItem(getName(props));
-						mi.setOnAction((e)->TaskManager.executeCommand(Main.INSTANCE.getCommandRegistry().get(commandName)));
+						mi.setOnAction((e)->TaskManager.executeCommand(Main.INSTANCE.getCommand(commandName)));
 						items.add(mi);
 					}else{
 						items.add(addMenu(props));

@@ -52,7 +52,6 @@ public class Main extends Application{
 	private final File MODULE_PATH=new File(SYSTEM_PATH,"modules");
 	private final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
 	private final RegistryNode<String,Command> globalCommandRegistry=new SimpleRegistryNode<>();
-	private final BiMap<String,Command> commandRegistry=new BiMap<>(globalCommandRegistry,new HashMap<>());
 	private MenuRegistry menuRegistry;
 	private final NavigableRegistryNode<String,String> keymapRegistry;
 	private final Notifier notifier=new Notifier();
@@ -79,7 +78,6 @@ public class Main extends Application{
 		Logger.getGlobal().addHandler(notifier);
 		scene.getStylesheets().add(getFile("stylesheets/base.css",CoreModule.NAME).toURI().toString());
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
-		scene.focusOwnerProperty().addListener((e,o,n)->System.err.println(n));
 		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		script=new ScriptAPI();
 		registerStandardCommand();
@@ -99,7 +97,7 @@ public class Main extends Application{
 		menuRegistry=Registry.ROOT.registerMenu(CoreModule.NAME);
 		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
 		menuRegistry.registerDynamicMenu("file_history",getHistoryMenu());
-		input=new MiniBuffer(this);
+		input=new MiniBuffer();
 		MenuBar bar=menuRegistry.getMenuBar();
 		commander=new HBox(bar,new Label(),input);
 		HBox.setHgrow(input,Priority.ALWAYS);
@@ -213,6 +211,8 @@ public class Main extends Application{
 				l.add(item);
 			}
 			l.add(new SeparatorMenuItem());
+			if(getCurrentWorkSheet().isCompound())
+				return;
 			DataObject curr=getCurrentData();
 			DataObjectTypeRegistry.getDataEditors(curr.getClass()).forEach((editor)->{
 				MenuItem item=new MenuItem(editor.getName());
@@ -270,7 +270,6 @@ public class Main extends Application{
 			currentWorksheet=(WorkSheet)node;
 			if(!((WorkSheet)node).isCompound()){
 				commander.getChildren().set(1,((WorkSheet)node).getDataEditor().getMenuRegistry().getMenuBar());
-				commandRegistry.setLocal(getLocalCommandRegistry());
 			}
 		}
 	}
@@ -467,7 +466,6 @@ public class Main extends Application{
 				Node node=scene.getFocusOwner();
 				while(node!=null){
 					Object local=node.getProperties().get("keymap");
-					System.err.println(local+":"+(local instanceof NavigableRegistryNode));
 					if(local instanceof NavigableRegistryNode&&checkForKey(code,(NavigableRegistryNode<String,String>)local)){
 						e.consume();
 						return;
@@ -485,11 +483,11 @@ public class Main extends Application{
 		};
 	}
 	private boolean checkForKey(String code,NavigableRegistryNode<String,String> keymapRegistryNode){
-		Map.Entry<String,String> entry=keymapRegistry.ceilingEntry(code);
+		Map.Entry<String,String> entry=keymapRegistryNode.ceilingEntry(code);
 		if(entry!=null){
 			if(code.equals(entry.getKey())){
 				currKey=null;
-				TaskManager.executeCommand(getCommandRegistry().get(entry.getValue()));
+				TaskManager.executeCommand(getCommand(entry.getValue()));
 				ignoreKey=true;
 				return true;
 			}else if(entry.getKey().startsWith(code+' ')){
@@ -500,6 +498,31 @@ public class Main extends Application{
 			}
 		}
 		return false;
+	}
+	public Command getCommand(String name){
+		Node node=scene.getFocusOwner();
+		while(node!=null){
+			Object local=node.getProperties().get("commands");
+			if(local instanceof RegistryNode){
+				Command command=((RegistryNode<String,Command>)local).get(name);
+				if(command!=null)
+					return command;
+			}
+			node=node.getParent();
+		}
+		return globalCommandRegistry.get(name);
+	}
+	public Set<String> getCommandNames(){
+		Node node=scene.getFocusOwner();
+		Set<String> set=new HashSet<>(globalCommandRegistry.keySet());
+		while(node!=null){
+			Object local=node.getProperties().get("commands");
+			if(local instanceof RegistryNode){
+				set.addAll(((RegistryNode<String,Command>)local).keySet());
+			}
+			node=node.getParent();
+		}
+		return set;
 	}
 	/**
 	 * @param args the command line arguments
@@ -516,9 +539,6 @@ public class Main extends Application{
 	}
 	public ScriptAPI getScriptAPI(){
 		return script;
-	}
-	public BiMap<String,Command> getCommandRegistry(){
-		return commandRegistry;
 	}
 	class ApplicationRegistry extends URLStreamHandler{
 		@Override
