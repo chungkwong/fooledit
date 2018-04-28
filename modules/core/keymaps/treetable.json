@@ -1,0 +1,16 @@
+{
+	"Page Up":"move-to-previous-page",
+	"Page Down":"move-to-next-page",
+	"Up":"focus-previous",
+	"Down":"focus-next",
+	"Left":"focus-up",
+	"Right":"focus-down",
+	"C-Home":"focus-first",
+	"C-End":"focus-last",
+	"Home":"focus-first-in-directory",
+	"End":"focus-last-in-directory",
+	"S-Space":"select-to",
+	"M-Space":"deselect",
+	"C-S-A":"clear-selection",
+	"Space":"toggle-selection"
+}

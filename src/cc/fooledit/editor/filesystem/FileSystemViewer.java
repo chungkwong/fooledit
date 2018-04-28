@@ -37,7 +37,7 @@ import javafx.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class FileSystemViewer extends BorderPane{
-	private final TreeTableView<Path> tree=new TreeTableView<>();
+	private final TreeTableView<Path> tree=new TreeTableWrapper<>();
 	private WatchService watchService;
 	private final Thread updateThread=new Thread(()->refresh());
 	private boolean active=true;

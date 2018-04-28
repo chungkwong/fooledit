@@ -31,7 +31,7 @@ import javafx.util.*;
  */
 public class RegistryViewer extends BorderPane{
 	public RegistryViewer(RegistryNode root){
-		TreeTableView<Pair<Object,Object>> tree=new TreeTableView<>(createTreeNode("",root));
+		TreeTableView<Pair<Object,Object>> tree=new TreeTableWrapper<>(createTreeNode("",root));
 		tree.setEditable(true);
 		tree.setShowRoot(false);
 		TreeTableColumn<Pair<Object,Object>,String> key=new TreeTableColumn<>(MessageRegistry.getString("KEY",CoreModule.NAME));

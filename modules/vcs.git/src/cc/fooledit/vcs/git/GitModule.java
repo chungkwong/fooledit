@@ -54,7 +54,7 @@ public class GitModule{
 	}
 	private static MenuItem createMenuItem(String command,String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name,NAME));
-		item.setOnAction((e)->TaskManager.executeCommand(Main.INSTANCE.getCommandRegistry().get(command)));
+		item.setOnAction((e)->TaskManager.executeCommand(Main.INSTANCE.getCommand(command)));
 		return item;
 	}
 	public static void onUnLoad(){

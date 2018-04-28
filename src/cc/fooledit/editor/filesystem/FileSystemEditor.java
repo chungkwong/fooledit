@@ -37,7 +37,6 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(FileSystemModule.NAME);
 	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(FileSystemModule.NAME);
 	private FileSystemEditor(){
-		TreeTableHelper.installCommonCommands(()->((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getTree(),commandRegistry,FileSystemModule.NAME);
 		addCommand("delete",(viewer)->viewer.getSelectedPaths().forEach((path)->delete(path)));
 		addCommand("mark",(viewer)->viewer.markPaths());
 		addCommand("submit",(viewer)->viewer.fireAction());

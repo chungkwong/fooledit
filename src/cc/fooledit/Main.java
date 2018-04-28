@@ -134,7 +134,7 @@ public class Main extends Application{
 		addCommand("focus-up",()->focusUp());
 		addCommand("focus-down",()->focusDown());
 		addCommand("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentWorkSheet()));
-		addCommand("add-empty-tab",()->((WorkSheet)root.getCenter()).tab(new WorkSheet()));
+		addCommand("add-empty-tab",()->getCurrentWorkSheet().tab(new WorkSheet()));
 		addCommand("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemObjectType.INSTANCE)));
 		addCommand("registry",()->addAndShow(DataObjectRegistry.create(RegistryEditor.INSTANCE)));
 		addCommand("command",()->input.requestFocus());

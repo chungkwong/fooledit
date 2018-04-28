@@ -16,7 +16,6 @@
  */
 package cc.fooledit.vcs.git;
 import cc.fooledit.*;
-import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.spi.*;
@@ -120,7 +119,6 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		});
 		addCommand("git-config",Arrays.asList(),(args)->{return null;});//TODO
 		addCommand("git-blame",Arrays.asList(),(args)->{return null;});//TODO
-		TreeTableHelper.installCommonCommands(()->((GitRepositoryViewer)Main.INSTANCE.getCurrentNode()).getTree(),commandRegistry,GitModule.NAME);
 	}
 	private void addCommand(String name,List<Argument> args,ThrowableFunction<ScmPairOrNil,ScmObject> proc){
 		commandRegistry.put(name,new Command(name,args,proc,GitModule.NAME));

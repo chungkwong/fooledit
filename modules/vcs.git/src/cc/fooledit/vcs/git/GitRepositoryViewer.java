@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
+import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.vcs.git.MenuItemBuilder;
 import java.text.*;
@@ -39,7 +40,7 @@ public class GitRepositoryViewer extends BorderPane{
 	private final TreeTableView<Object> nav;
 	public GitRepositoryViewer(Git git){
 		this.git=git;
-		nav=new TreeTableView<>(createGitTreeItem());
+		nav=new TreeTableWrapper<>(createGitTreeItem());
 		nav.setShowRoot(false);
 		ContextMenu contextMenu=new ContextMenu();
 		nav.setOnContextMenuRequested((e)->contextMenu.getItems().setAll(((NavigationTreeItem)nav.getSelectionModel().getSelectedItem()).getContextMenuItems()));

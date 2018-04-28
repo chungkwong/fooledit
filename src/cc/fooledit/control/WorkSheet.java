@@ -36,8 +36,8 @@ import javafx.scene.layout.*;
 public class WorkSheet extends BorderPane{
 	private static final String DATA_EDITOR_NAME="editor";
 	private static final String DATA_OBJECT_NAME="object";
-	private static final String COMMANDS_NAME="commands";
-	private static final String KEYMAP_NAME="keymap";
+	public static final String COMMANDS_NAME="commands";
+	public static final String KEYMAP_NAME="keymap";
 	private final RegistryNode<String,Object> registry;
 	private final Supplier<Object> remarkSupplier=()->getDataEditor().getRemark(getCenter());
 	private final ListChangeListener<Tab> tabChanged=(e)->restoreRegistry();
