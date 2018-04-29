@@ -20,7 +20,6 @@ import cc.fooledit.control.*;
 import static cc.fooledit.core.CoreModule.REGISTRY;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
-import cc.fooledit.editor.text.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
@@ -120,21 +119,21 @@ public class Main extends Application{
 			if(workSheet.isCompound())
 				workSheet.split(new WorkSheet(),Orientation.VERTICAL);
 			else
-				getCurrentWorkSheet().split(new WorkSheet(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()),Orientation.VERTICAL);
+				workSheet.split(new WorkSheet(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()),Orientation.VERTICAL);
 		});
 		addCommand("split-horizontally",()->{
 			WorkSheet workSheet=getCurrentWorkSheet();
 			if(workSheet.isCompound())
 				workSheet.split(new WorkSheet(),Orientation.HORIZONTAL);
 			else
-				getCurrentWorkSheet().split(new WorkSheet(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()),Orientation.HORIZONTAL);
+				workSheet.split(new WorkSheet(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()),Orientation.HORIZONTAL);
 		});
-		addCommand("focus-previous",()->focusPrevious());
-		addCommand("focus-next",()->focusNext());
-		addCommand("focus-up",()->focusUp());
-		addCommand("focus-down",()->focusDown());
-		addCommand("keep-only",()->((WorkSheet)root.getCenter()).keepOnly(getCurrentWorkSheet()));
-		addCommand("add-empty-tab",()->getCurrentWorkSheet().tab(new WorkSheet()));
+		addCommand("focus-left",()->focusLeft());
+		addCommand("focus-right",()->focusRight());
+		addCommand("focus-outer",()->focusOuter());
+		addCommand("focus-inner",()->focusInner());
+		addCommand("close-current-worksheet",()->closeCurrentWorkSheet());
+		addCommand("add-empty-tab",()->addNewTab(new WorkSheet()));
 		addCommand("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemObjectType.INSTANCE)));
 		addCommand("registry",()->addAndShow(DataObjectRegistry.create(RegistryEditor.INSTANCE)));
 		addCommand("command",()->input.requestFocus());
@@ -281,7 +280,7 @@ public class Main extends Application{
 		getCurrentWorkSheet().keepOnly(new WorkSheet(data,getDefaultEditor(data),null));
 	}
 	public void showOnNewTab(RegistryNode<String,Object> data){
-		getCurrentWorkSheet().tab(new WorkSheet(data,getDefaultEditor(data),null));
+		addNewTab(new WorkSheet(data,getDefaultEditor(data),null));
 	}
 	public void showOnNewTabGroup(RegistryNode<String,Object> data){
 		WorkSheet currentWorkSheet=getCurrentWorkSheet();
@@ -316,33 +315,13 @@ public class Main extends Application{
 		updateCurrentNode(workSheet.getCenter());
 	}
 	private void loadDefaultWorkSheet(){
-		//worksheets.registerComamnds("worksheet",()->((WorkSheet)root.getCenter()).toJSON(),(json)->{
-		//	root.setCenter(WorkSheet.fromJSON(json));
-		//},globalCommandRegistry,CoreModule.NAME);
-		/*PersistenceStatusManager.registerConvertor("layout.json",WorkSheet.CONVERTOR);
-		root.setCenter((WorkSheet)PersistenceStatusManager.USER.getOrDefault("layout.json",()->{
-		String msg=MessageRegistry.getString("WELCOME",CoreModule.NAME);
-		RegistryNode<String,Object> welcome=DataObjectRegistry.create(TextObjectType.INSTANCE);
-		welcome.put(DataObject.DATA,new TextObject(msg));
-		DataObjectRegistry.addDataObject(welcome);
-		WorkSheet workSheet=new WorkSheet(welcome,getDefaultEditor(welcome),null);
-		setCurrentWorkSheet(workSheet);
-		return workSheet;
-		}));*/
 		SimpleRegistryNode<String,Object> last;
 		try{
 			last=(SimpleRegistryNode<String,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getUserPath(),"layout.json")));
+			resetRootWorkSheet(WorkSheet.fromJSON(last));
 		}catch(Exception ex){
-			last=new SimpleRegistryNode<>();
-			last.put(WorkSheet.BUFFER,DataObjectRegistry.create(TextObjectType.INSTANCE));
-			last.put(WorkSheet.EDITOR,StructuredTextEditor.class.getName());
-			last.put(WorkSheet.CURRENT,true);
-			last.put(WorkSheet.REMARK,null);
+			resetRootWorkSheet(new WorkSheet());
 		}
-		WorkSheet worksheet=WorkSheet.fromJSON(last);
-		root.setCenter(worksheet);
-		currentWorksheet=worksheet;
-		CoreModule.REGISTRY.put(CoreModule.WINDOW_REGISTRY_NAME,worksheet.getRegistry());
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
 			try{
 				Helper.writeText(StandardSerializiers.JSON_SERIALIZIER.encode(REGISTRY.get(CoreModule.WINDOW_REGISTRY_NAME)),new File(Main.INSTANCE.getUserPath(),"layout.json"));
@@ -577,13 +556,13 @@ public class Main extends Application{
 			owner=owner.getParent();
 		return owner!=null;
 	}
-	private void focusUp(){
+	private void focusOuter(){
 		WorkSheet workSheet=getCurrentWorkSheet().getParentWorkSheet();
 		if(workSheet!=null){
 			workSheet.requestFocus();
 		}
 	}
-	private void focusDown(){
+	private void focusInner(){
 		WorkSheet workSheet=getCurrentWorkSheet();
 		if(workSheet!=null){
 			if(workSheet.isSplit()){
@@ -593,7 +572,7 @@ public class Main extends Application{
 			}
 		}
 	}
-	private void focusNext(){
+	private void focusRight(){
 		WorkSheet workSheet=getCurrentWorkSheet().getParentWorkSheet();
 		if(workSheet!=null){
 			if(workSheet.isSplit()){
@@ -606,7 +585,7 @@ public class Main extends Application{
 			}
 		}
 	}
-	private void focusPrevious(){
+	private void focusLeft(){
 		WorkSheet workSheet=getCurrentWorkSheet().getParentWorkSheet();
 		if(workSheet!=null){
 			if(workSheet.isSplit()){
@@ -618,5 +597,35 @@ public class Main extends Application{
 				((TabPane)workSheet.getCenter()).getSelectionModel().selectPrevious();
 			}
 		}
+	}
+	private void addNewTab(WorkSheet sheet){
+		WorkSheet workSheet=getCurrentWorkSheet();
+		if(workSheet==null){
+			workSheet=new WorkSheet();
+			workSheet.addTab((WorkSheet)root.getCenter());
+			resetRootWorkSheet(workSheet);
+		}else{
+			workSheet.addTab(sheet);
+		}
+	}
+	private void closeCurrentWorkSheet(){
+		WorkSheet workSheet=getCurrentWorkSheet();
+		WorkSheet parentWorkSheet=workSheet.getParentWorkSheet();
+		if(parentWorkSheet==null){
+			resetRootWorkSheet(new WorkSheet());
+		}else if(parentWorkSheet.isTabed()){
+			parentWorkSheet.removeTab(workSheet);
+		}else if(parentWorkSheet.isSplit()){
+			if(parentWorkSheet.getFirst()==workSheet){
+				parentWorkSheet.keepOnly(parentWorkSheet.getLast());
+			}else{
+				parentWorkSheet.keepOnly(parentWorkSheet.getFirst());
+			}
+		}
+	}
+	private void resetRootWorkSheet(WorkSheet workSheet){
+		currentWorksheet=workSheet;
+		root.setCenter(workSheet);
+		CoreModule.REGISTRY.put(CoreModule.WINDOW_REGISTRY_NAME,workSheet.getRegistry());
 	}
 }

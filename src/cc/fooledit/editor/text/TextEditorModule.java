@@ -32,7 +32,7 @@ public class TextEditorModule{
 	public static final RegistryNode<String,Object> MENU_REGISTRY=new SimpleRegistryNode<>();
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(TextObjectType.INSTANCE);
-		DataObjectTypeRegistry.addDataEditor(new StructuredTextEditor(),TextObject.class);
+		DataObjectTypeRegistry.addDataEditor(StructuredTextEditor.INSTANCE,TextObject.class);
 		CoreModule.TEMPLATE_TYPE_REGISTRY.put(TextTemplate.class.getName(),(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime"),(String)obj.get("module")));
 	}
 	public static void onInstall(){

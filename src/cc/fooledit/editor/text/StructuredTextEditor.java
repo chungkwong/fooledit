@@ -44,7 +44,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(TextEditorModule.NAME);
 	private final Map<String,Language> languages=new HashMap<>();
 	private final HistoryRing<String> clips=new HistoryRing<>();
-	public StructuredTextEditor(){
+	public static final StructuredTextEditor INSTANCE=new StructuredTextEditor();
+	private StructuredTextEditor(){
 		menuRegistry.registerDynamicMenu("reload",(items)->{
 			RegistryNode<String,Object> curr=Main.INSTANCE.getCurrentDataObject();
 			String url=(String)curr.get(DataObject.URI);

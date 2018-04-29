@@ -17,6 +17,7 @@
 package cc.fooledit.control;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.text.*;
 import cc.fooledit.spi.*;
 import java.util.*;
 import java.util.function.*;
@@ -42,7 +43,10 @@ public class WorkSheet extends BorderPane{
 	private final Supplier<Object> remarkSupplier=()->getDataEditor().getRemark(getCenter());
 	private final ListChangeListener<Tab> tabChanged=(e)->restoreRegistry();
 	public WorkSheet(){
-		this(new TabPane());
+		WorkSheet child=new WorkSheet(DataObjectRegistry.create(TextObjectType.INSTANCE),StructuredTextEditor.INSTANCE,null);
+		registry=new SimpleRegistryNode<>();
+		setCenter(new TabPane(new Tab(child.getName(),child)));
+		restoreRegistry();
 	}
 	public WorkSheet(RegistryNode<String,Object> data,DataEditor editor,Object remark){
 		registry=new SimpleRegistryNode<>();
@@ -112,7 +116,7 @@ public class WorkSheet extends BorderPane{
 	}
 	public void split(WorkSheet subWorkSheet,Orientation orientation){
 		Node first=getCenter();
-		SplitPane splitPane=new SplitPane(new WorkSheet(first),subWorkSheet);
+		SplitPane splitPane=new SplitPane(wrap(new WorkSheet(first)),wrap(subWorkSheet));
 		splitPane.setOrientation(orientation);
 		splitPane.setDividerPositions(0.5,0.5);
 		setCenter(splitPane);
@@ -130,7 +134,13 @@ public class WorkSheet extends BorderPane{
 		restoreRegistry();
 		splitPane.getDividers().get(0).positionProperty().addListener((e,o,n)->registry.put(DIVIDER,n));
 	}
-	public void tab(WorkSheet worksheet){
+	private WorkSheet wrap(WorkSheet sheet){
+		if(sheet.isCompound())
+			return sheet;
+		else
+			return new WorkSheet(new TabPane(new Tab(sheet.getName(),sheet)));
+	}
+	public void addTab(WorkSheet worksheet){
 		Tab newTab=new Tab(worksheet.getName(),worksheet);
 		if(isTabed()){
 			((TabPane)getCenter()).getTabs().add(newTab);
@@ -142,8 +152,17 @@ public class WorkSheet extends BorderPane{
 			restoreRegistry();
 		}
 	}
+	public void removeTab(WorkSheet worksheet){
+		if(isTabed()){
+			((TabPane)getCenter()).getTabs().removeIf((tab)->tab.getContent()==worksheet);
+		}
+	}
 	public void keepOnly(WorkSheet sheet){
-		setCenter(sheet.getCenter());
+		if((!sheet.isCompound())&&(getParentWorkSheet()==null||!getParentWorkSheet().isTabed())){
+			setCenter(new TabPane(new Tab(sheet.getName(),sheet)));
+		}else{
+			setCenter(sheet.getCenter());
+		}
 		restoreRegistry();
 		getCenter().requestFocus();
 		WorkSheet parent=getParentWorkSheet();
