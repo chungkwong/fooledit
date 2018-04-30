@@ -133,7 +133,6 @@ public class Main extends Application{
 		addCommand("focus-outer",()->focusOuter());
 		addCommand("focus-inner",()->focusInner());
 		addCommand("close-current-worksheet",()->closeCurrentWorkSheet());
-		addCommand("add-empty-tab",()->addNewTab(new WorkSheet()));
 		addCommand("file-system",()->addAndShow(DataObjectRegistry.create(FileSystemObjectType.INSTANCE)));
 		addCommand("registry",()->addAndShow(DataObjectRegistry.create(RegistryEditor.INSTANCE)));
 		addCommand("command",()->input.requestFocus());
@@ -599,10 +598,11 @@ public class Main extends Application{
 		}
 	}
 	private void addNewTab(WorkSheet sheet){
-		WorkSheet workSheet=getCurrentWorkSheet();
+		WorkSheet workSheet=getCurrentWorkSheet().getParentWorkSheet();
 		if(workSheet==null){
 			workSheet=new WorkSheet();
 			workSheet.addTab((WorkSheet)root.getCenter());
+			workSheet.addTab(sheet);
 			resetRootWorkSheet(workSheet);
 		}else{
 			workSheet.addTab(sheet);
@@ -616,11 +616,7 @@ public class Main extends Application{
 		}else if(parentWorkSheet.isTabed()){
 			parentWorkSheet.removeTab(workSheet);
 		}else if(parentWorkSheet.isSplit()){
-			if(parentWorkSheet.getFirst()==workSheet){
-				parentWorkSheet.keepOnly(parentWorkSheet.getLast());
-			}else{
-				parentWorkSheet.keepOnly(parentWorkSheet.getFirst());
-			}
+			parentWorkSheet.keepOnly(parentWorkSheet.getAnother(workSheet));
 		}
 	}
 	private void resetRootWorkSheet(WorkSheet workSheet){

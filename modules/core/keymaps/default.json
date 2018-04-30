@@ -18,7 +18,6 @@
 	"C-U":"repeat",
 	"Again":"repeat",
 	"C-F4":"close-current-worksheet",
-	"C-T":"add-empty-tab",
 	"C-Page Down":"focus-right",
 	"C-Page Up":"focus-left",
 	"M-Page Up":"focus-outer",

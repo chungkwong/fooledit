@@ -98,6 +98,18 @@ public class WorkSheet extends BorderPane{
 			registry.remove(DIRECTION);
 			registry.remove(DIVIDER);
 			ListRegistryNode<Object> children=new ListRegistryNode<>();
+			if(!getTabs().findAny().isPresent()){
+				WorkSheet parentWorkSheet=getParentWorkSheet();
+				if(parentWorkSheet==null){
+					addTab(new WorkSheet(DataObjectRegistry.create(TextObjectType.INSTANCE),StructuredTextEditor.INSTANCE,null));
+				}else if(parentWorkSheet.isTabed()){
+					parentWorkSheet.removeTab(this);
+					return;
+				}else if(parentWorkSheet.isSplit()){
+					parentWorkSheet.keepOnly(parentWorkSheet.getAnother(this));
+					return;
+				}
+			}
 			getTabs().forEach((w)->children.put(w.getRegistry()));
 			registry.put(CHILDREN,children);
 		}else{
@@ -147,8 +159,8 @@ public class WorkSheet extends BorderPane{
 			((TabPane)getCenter()).getSelectionModel().select(newTab);
 		}else{
 			Node first=getCenter();
-			TabPane splitPane=new TabPane(new Tab(getName(),new WorkSheet(first)),newTab);
-			setCenter(splitPane);
+			TabPane tabPane=new TabPane(new Tab(getName(),new WorkSheet(first)),newTab);
+			setCenter(tabPane);
 			restoreRegistry();
 		}
 	}
@@ -214,6 +226,10 @@ public class WorkSheet extends BorderPane{
 	}
 	public WorkSheet getLast(){
 		return (WorkSheet)((SplitPane)getCenter()).getItems().get(1);
+	}
+	public WorkSheet getAnother(WorkSheet workSheet){
+		WorkSheet first=getFirst();
+		return first==workSheet?getLast():first;
 	}
 	public double getDivider(){
 		return ((SplitPane)getCenter()).getDividerPositions()[0];
