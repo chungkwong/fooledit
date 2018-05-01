@@ -25,6 +25,7 @@ import javafx.scene.input.*;
 public class DraggableTabPane extends TabPane{
 	private static final DataFormat TAB_FORMAT=new DataFormat("application/javafx.tab");
 	private static Tab draged;
+	private Object tag;
 	public DraggableTabPane(){
 		initEventHandlers();
 	}
@@ -32,17 +33,23 @@ public class DraggableTabPane extends TabPane{
 		super(tabs);
 		initEventHandlers();
 	}
+	public Object getTag(){
+		return tag;
+	}
+	public void setTag(Object tag){
+		this.tag=tag;
+	}
 	private void initEventHandlers(){
 		setOnDragDetected((e)->{
 			Dragboard src=startDragAndDrop(TransferMode.MOVE);
 			Map<DataFormat,Object> objects=new HashMap<>();
-			objects.put(TAB_FORMAT,"");
+			objects.put(TAB_FORMAT,tag);
 			draged=getSelectionModel().getSelectedItem();
 			src.setContent(objects);
 			e.consume();
 		});
 		setOnDragOver((e)->{
-			if(e.getDragboard().hasContent(TAB_FORMAT)){
+			if(e.getDragboard().hasContent(TAB_FORMAT)&&Objects.equals(tag,e.getDragboard().getContent(TAB_FORMAT))){
 				e.acceptTransferModes(TransferMode.MOVE);
 				e.consume();
 			}

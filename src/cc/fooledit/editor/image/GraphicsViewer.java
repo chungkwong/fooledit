@@ -36,6 +36,7 @@ public class GraphicsViewer extends StackPane{
 		horizontalReferenceLines.addListener((ListChangeListener.Change<? extends Number> c)->updateReferenceLines());
 		verticalReferenceLines.addListener((ListChangeListener.Change<? extends Number> c)->updateReferenceLines());
 		setCursor(Cursor.CROSSHAIR);
+		setFocusTraversable(true);
 	}
 	public Canvas getFrontMatter(){
 		return frontMatter;

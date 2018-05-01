@@ -224,7 +224,7 @@ public class Main extends Application{
 				l.add(new SeparatorMenuItem());
 				getCurrentDataEditor().getToolboxs().forEach((tool)->{
 					MenuItem item=new MenuItem(((ToolBox)tool).getDisplayName());
-					//item.setOnAction((e)->getCurrentWorkSheet().showToolBox((ToolBox)tool));//FIXME
+					item.setOnAction((e)->getCurrentWorkSheet().showToolBox((ToolBox)tool));
 					l.add(item);
 				});
 			}
@@ -305,7 +305,7 @@ public class Main extends Application{
 		return getCurrentDataEditor().getRemark(getCurrentNode());
 	}
 	public Node getCurrentNode(){
-		return currentWorksheet!=null?currentWorksheet.getCenter():null;
+		return currentWorksheet!=null?currentWorksheet.getNode():null;
 	}
 	public WorkSheet getCurrentWorkSheet(){
 		return currentWorksheet;

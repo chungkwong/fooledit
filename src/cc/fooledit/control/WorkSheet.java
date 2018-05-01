@@ -45,7 +45,7 @@ public class WorkSheet extends BorderPane{
 	public WorkSheet(){
 		WorkSheet child=new WorkSheet(DataObjectRegistry.create(TextObjectType.INSTANCE),StructuredTextEditor.INSTANCE,null);
 		registry=new SimpleRegistryNode<>();
-		setCenter(new TabPane(new Tab(child.getName(),child)));
+		setCenter(new DraggableTabPane(new Tab(child.getName(),child)));
 		restoreRegistry();
 	}
 	public WorkSheet(RegistryNode<String,Object> data,DataEditor editor,Object remark){
@@ -70,24 +70,22 @@ public class WorkSheet extends BorderPane{
 	}
 	private void setData(RegistryNode<String,Object> data,DataEditor editor,Object remark){
 		Node node=editor.edit((DataObject)data.get(DataObject.DATA),remark,data);
-		node.getProperties().put(DATA_OBJECT_NAME,data);
-		node.getProperties().put(DATA_EDITOR_NAME,editor);
-		node.getProperties().put(COMMANDS_NAME,editor.getCommandRegistry());
-		node.getProperties().put(KEYMAP_NAME,editor.getKeymapRegistry());
-		setCenter(node);
+		SideBarPane nodeWithSideBar=new SideBarPane(node);
+		nodeWithSideBar.getProperties().put(DATA_OBJECT_NAME,data);
+		nodeWithSideBar.getProperties().put(DATA_EDITOR_NAME,editor);
+		nodeWithSideBar.getProperties().put(COMMANDS_NAME,editor.getCommandRegistry());
+		nodeWithSideBar.getProperties().put(KEYMAP_NAME,editor.getKeymapRegistry());
+		setCenter(nodeWithSideBar);
 	}
 	private void restoreRegistry(){
-		if(getCenter()instanceof SplitPane){
-			registry.remove(BUFFER);
-			registry.remove(EDITOR);
-			registry.remove(REMARK);
-			registry.remove(CURRENT);
-			registry.put(DIRECTION,getOrientation().name());
-			registry.put(DIVIDER,getDivider());
-			ListRegistryNode<Object> children=new ListRegistryNode<>();
-			children.put(getFirst().getRegistry());
-			children.put(getLast().getRegistry());
-			registry.put(CHILDREN,children);
+		if(getCenter()instanceof SideBarPane){
+			registry.remove(DIRECTION);
+			registry.remove(DIVIDER);
+			registry.remove(CHILDREN);
+			registry.put(REMARK,new LazyValue<>(remarkSupplier));
+			registry.put(BUFFER,getDataObject());
+			registry.put(EDITOR,getDataEditor().getClass().getName());
+			registry.put(CURRENT,true);
 		}else if(getCenter() instanceof TabPane){
 			((TabPane)getCenter()).getTabs().removeListener(tabChanged);
 			((TabPane)getCenter()).getTabs().addListener(tabChanged);
@@ -113,13 +111,16 @@ public class WorkSheet extends BorderPane{
 			getTabs().forEach((w)->children.put(w.getRegistry()));
 			registry.put(CHILDREN,children);
 		}else{
-			registry.remove(DIRECTION);
-			registry.remove(DIVIDER);
-			registry.remove(CHILDREN);
-			registry.put(REMARK,new LazyValue<>(remarkSupplier));
-			registry.put(BUFFER,getDataObject());
-			registry.put(EDITOR,getDataEditor().getClass().getName());
-			registry.put(CURRENT,true);
+			registry.remove(BUFFER);
+			registry.remove(EDITOR);
+			registry.remove(REMARK);
+			registry.remove(CURRENT);
+			registry.put(DIRECTION,getOrientation().name());
+			registry.put(DIVIDER,getDivider());
+			ListRegistryNode<Object> children=new ListRegistryNode<>();
+			children.put(getFirst().getRegistry());
+			children.put(getLast().getRegistry());
+			registry.put(CHILDREN,children);
 		}
 	}
 	@Override
@@ -150,7 +151,7 @@ public class WorkSheet extends BorderPane{
 		if(sheet.isCompound())
 			return sheet;
 		else
-			return new WorkSheet(new TabPane(new Tab(sheet.getName(),sheet)));
+			return new WorkSheet(new DraggableTabPane(new Tab(sheet.getName(),sheet)));
 	}
 	public void addTab(WorkSheet worksheet){
 		Tab newTab=new Tab(worksheet.getName(),worksheet);
@@ -159,7 +160,7 @@ public class WorkSheet extends BorderPane{
 			((TabPane)getCenter()).getSelectionModel().select(newTab);
 		}else{
 			Node first=getCenter();
-			TabPane tabPane=new TabPane(new Tab(getName(),new WorkSheet(first)),newTab);
+			TabPane tabPane=new DraggableTabPane(new Tab(getName(),new WorkSheet(first)),newTab);
 			setCenter(tabPane);
 			restoreRegistry();
 		}
@@ -171,7 +172,7 @@ public class WorkSheet extends BorderPane{
 	}
 	public void keepOnly(WorkSheet sheet){
 		if((!sheet.isCompound())&&(getParentWorkSheet()==null||!getParentWorkSheet().isTabed())){
-			setCenter(new TabPane(new Tab(sheet.getName(),sheet)));
+			setCenter(new DraggableTabPane(new Tab(sheet.getName(),sheet)));
 		}else{
 			setCenter(sheet.getCenter());
 		}
@@ -181,6 +182,9 @@ public class WorkSheet extends BorderPane{
 		if(parent!=null&&parent.isTabed()){
 			((TabPane)parent.getCenter()).getSelectionModel().getSelectedItem().setText(getName());
 		}
+	}
+	public void showToolBox(ToolBox toolBox){
+		((SideBarPane)getCenter()).showToolBox(toolBox);
 	}
 	public static final String DIRECTION="direction";
 	public static final String DIVIDER="divider";
@@ -198,7 +202,7 @@ public class WorkSheet extends BorderPane{
 			pane.setDividerPositions(((Number)json.get(DIVIDER)).doubleValue());
 			return new WorkSheet(pane,json);
 		}else if(json.containsKey(CHILDREN)){
-			TabPane pane=new TabPane();
+			TabPane pane=new DraggableTabPane();
 			ListRegistryNode<RegistryNode<String,Object>> children=(ListRegistryNode<RegistryNode<String,Object>>)json.get(CHILDREN);
 			pane.getTabs().setAll(children.getChildren().stream().map((child)->fromJSON(child)).map((child)->new Tab(child.getName(),child)).collect(Collectors.toList()));
 			return new WorkSheet(pane,json);
@@ -216,7 +220,7 @@ public class WorkSheet extends BorderPane{
 		}
 	}
 	public boolean isSplit(){
-		return getCenter() instanceof SplitPane;
+		return getCenter() instanceof SplitPane&&!(getCenter() instanceof SideBarPane);
 	}
 	public Orientation getOrientation(){
 		return ((SplitPane)getCenter()).getOrientation();
@@ -226,6 +230,9 @@ public class WorkSheet extends BorderPane{
 	}
 	public WorkSheet getLast(){
 		return (WorkSheet)((SplitPane)getCenter()).getItems().get(1);
+	}
+	public Node getNode(){
+		return ((SideBarPane)getCenter()).centerProperty().getValue();
 	}
 	public WorkSheet getAnother(WorkSheet workSheet){
 		WorkSheet first=getFirst();
@@ -238,7 +245,7 @@ public class WorkSheet extends BorderPane{
 		return getCenter() instanceof TabPane;
 	}
 	public boolean isCompound(){
-		return isTabed()||isSplit();
+		return !(getCenter()instanceof SideBarPane);
 	}
 	public Stream<WorkSheet> getTabs(){
 		return ((TabPane)getCenter()).getTabs().stream().map((tab)->(WorkSheet)tab.getContent());

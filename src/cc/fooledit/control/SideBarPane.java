@@ -17,6 +17,7 @@
 package cc.fooledit.control;
 import cc.fooledit.core.*;
 import javafx.beans.property.*;
+import javafx.collections.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -25,10 +26,10 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class SideBarPane extends SplitPane{
-	private final TabPane top=new DraggableTabPane();
-	private final TabPane bottom=new DraggableTabPane();
-	private final TabPane left=new DraggableTabPane();
-	private final TabPane right=new DraggableTabPane();
+	private final DraggableTabPane top=new DraggableTabPane();
+	private final DraggableTabPane bottom=new DraggableTabPane();
+	private final DraggableTabPane left=new DraggableTabPane();
+	private final DraggableTabPane right=new DraggableTabPane();
 	private final SplitPane middle=new SplitPane();
 	private final Property<Node> center;
 	public SideBarPane(Node center){
@@ -36,13 +37,34 @@ public class SideBarPane extends SplitPane{
 		bottom.setSide(Side.BOTTOM);
 		left.setSide(Side.LEFT);
 		right.setSide(Side.RIGHT);
+		top.setTag(center);
+		bottom.setTag(center);
+		left.setTag(center);
+		right.setTag(center);
 		middle.setOrientation(Orientation.HORIZONTAL);
 		middle.getItems().setAll(left,center,right);
 		setOrientation(Orientation.VERTICAL);
 		getItems().setAll(top,middle,bottom);
+		top.getTabs().addListener((ListChangeListener.Change<? extends Tab> c)->{
+			if(c.getList().isEmpty())
+				setDividerPosition(0,0.0);
+		});
+		bottom.getTabs().addListener((ListChangeListener.Change<? extends Tab> c)->{
+			if(c.getList().isEmpty())
+				setDividerPosition(1,1.0);
+		});
+		left.getTabs().addListener((ListChangeListener.Change<? extends Tab> c)->{
+			if(c.getList().isEmpty())
+				middle.setDividerPosition(0,0.0);
+		});
+		right.getTabs().addListener((ListChangeListener.Change<? extends Tab> c)->{
+			if(c.getList().isEmpty())
+				middle.setDividerPosition(1,1.0);
+		});
 		this.center=new SimpleObjectProperty<Node>(center);
 		this.center.addListener((e,o,n)->middle.getItems().set(1,n));
-		updateDivider();
+		setDividerPositions(0,1.0);
+		middle.setDividerPositions(0,1.0);
 	}
 	public TabPane getSideBar(Side side){
 		switch(side){
@@ -64,27 +86,33 @@ public class SideBarPane extends SplitPane{
 		}
 		showToolBox(box,perfered.length>0?perfered[0]:Side.RIGHT);
 	}
-	void updateDivider(){
-		double width=getWidth();
-		double leftWidth=left.prefWidth(width);
-		double rightWidth=right.prefWidth(width);
-		double hd0=leftWidth/(width+2);
-		double hd1=1-rightWidth/(width+2);
-		middle.setDividerPositions(hd0,hd1);
-		double height=getHeight();
-		double topHeight=top.prefHeight(height);
-		double bottomHeight=bottom.prefHeight(height);
-		double vd0=topHeight/(height+2);
-		double vd1=1-bottomHeight/(height+2);
-		setDividerPositions(vd0,vd1);
-	}
 	public void showToolBox(ToolBox box,Side side){
 		Tab tab=new Tab(box.getDisplayName(),box.createInstance());
 		tab.setGraphic(box.getGraphic());
-		getSideBar(side).getTabs().add(tab);
-		updateDivider();
+		TabPane sideBar=getSideBar(side);
+		sideBar.getTabs().add(tab);
+		if(sideBar.getTabs().size()==0){
+			switch(side){
+				case LEFT:
+					middle.setDividerPosition(0,sideBar.getPrefWidth()/(getWidth()+1));
+					break;
+				case RIGHT:
+					middle.setDividerPosition(1,sideBar.getPrefWidth()/(getWidth()+1));
+					break;
+				case TOP:
+					setDividerPosition(0,sideBar.getPrefHeight()/(getHeight()+1));
+					break;
+				case BOTTOM:
+					setDividerPosition(1,sideBar.getPrefHeight()/(getHeight()+1));
+					break;
+			}
+		}
 	}
 	public Property<Node> centerProperty(){
 		return center;
+	}
+	@Override
+	public void requestFocus(){
+		center.getValue().requestFocus();
 	}
 }
