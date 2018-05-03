@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
+import cc.fooledit.spi.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 /**
@@ -24,7 +25,10 @@ import javafx.scene.*;
 public interface ToolBox{
 	String getName();
 	String getDisplayName();
-	Node createInstance();
+	Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta);
 	Node getGraphic();
 	Side[] getPerferedSides();
+	default Object getRemark(Node box){
+		return null;
+	}
 }

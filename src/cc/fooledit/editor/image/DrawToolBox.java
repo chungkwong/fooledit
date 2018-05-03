@@ -18,6 +18,7 @@ package cc.fooledit.editor.image;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -47,8 +48,8 @@ public class DrawToolBox implements ToolBox{
 		return MessageRegistry.getString("DRAW",ImageModule.NAME);
 	}
 	@Override
-	public Node createInstance(){
-		return createInstance((GraphicsObject)Main.INSTANCE.getCurrentData(),(GraphicsViewer)((ScrollPane)Main.INSTANCE.getCurrentNode()).getContent());
+	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
+		return createInstance((GraphicsObject)meta.get(DataObject.DATA),(GraphicsViewer)viewer);
 	}
 	public Node createInstance(GraphicsObject object,GraphicsViewer viewer){
 		return new DrawingToolBox(object,viewer);

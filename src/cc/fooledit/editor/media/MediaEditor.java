@@ -199,15 +199,15 @@ class MetaToolBox implements ToolBox{
 		return "META";
 	}
 	@Override
-	public Node createInstance(){
-		return new Label(((MediaObject)Main.INSTANCE.getCurrentData()).getProperty().getValue().getMedia().getMetadata().toString());
-	}
-	@Override
 	public Node getGraphic(){
 		return null;
 	}
 	@Override
 	public Side[] getPerferedSides(){
 		return new Side[]{Side.LEFT,Side.RIGHT};
+	}
+	@Override
+	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
+		return new Label(((MediaObject)meta.get(DataObject.DATA)).getProperty().getValue().getMedia().getMetadata().toString());
 	}
 }

@@ -40,7 +40,7 @@ public class WorkSheet extends BorderPane{
 	public static final String COMMANDS_NAME="commands";
 	public static final String KEYMAP_NAME="keymap";
 	private final RegistryNode<String,Object> registry;
-	private final Supplier<Object> remarkSupplier=()->getDataEditor().getRemark(getCenter());
+	private final Supplier<Object> remarkSupplier=()->getDataEditor().getRemark(getNode());
 	private final ListChangeListener<Tab> tabChanged=(e)->restoreRegistry();
 	public WorkSheet(){
 		WorkSheet child=new WorkSheet(DataObjectRegistry.create(TextObjectType.INSTANCE),StructuredTextEditor.INSTANCE,null);
@@ -78,23 +78,15 @@ public class WorkSheet extends BorderPane{
 		setCenter(nodeWithSideBar);
 	}
 	private void restoreRegistry(){
+		registry.clear();
 		if(getCenter()instanceof SideBarPane){
-			registry.remove(DIRECTION);
-			registry.remove(DIVIDER);
-			registry.remove(CHILDREN);
 			registry.put(REMARK,new LazyValue<>(remarkSupplier));
 			registry.put(BUFFER,getDataObject());
 			registry.put(EDITOR,getDataEditor().getClass().getName());
-			registry.put(CURRENT,true);
+			registry.put(CURRENT,new LazyValue<>(()->Main.INSTANCE.getCurrentWorkSheet()==WorkSheet.this));
 		}else if(getCenter() instanceof TabPane){
 			((TabPane)getCenter()).getTabs().removeListener(tabChanged);
 			((TabPane)getCenter()).getTabs().addListener(tabChanged);
-			registry.remove(BUFFER);
-			registry.remove(EDITOR);
-			registry.remove(REMARK);
-			registry.remove(CURRENT);
-			registry.remove(DIRECTION);
-			registry.remove(DIVIDER);
 			ListRegistryNode<Object> children=new ListRegistryNode<>();
 			if(!getTabs().findAny().isPresent()){
 				WorkSheet parentWorkSheet=getParentWorkSheet();
@@ -111,10 +103,6 @@ public class WorkSheet extends BorderPane{
 			getTabs().forEach((w)->children.put(w.getRegistry()));
 			registry.put(CHILDREN,children);
 		}else{
-			registry.remove(BUFFER);
-			registry.remove(EDITOR);
-			registry.remove(REMARK);
-			registry.remove(CURRENT);
 			registry.put(DIRECTION,getOrientation().name());
 			registry.put(DIVIDER,getDivider());
 			ListRegistryNode<Object> children=new ListRegistryNode<>();
@@ -184,7 +172,8 @@ public class WorkSheet extends BorderPane{
 		}
 	}
 	public void showToolBox(ToolBox toolBox){
-		((SideBarPane)getCenter()).showToolBox(toolBox);
+		((SideBarPane)getCenter()).showToolBox(toolBox.getDisplayName(),toolBox.getGraphic(),
+				toolBox.createInstance(getNode(),null,getDataObject()),toolBox.getPerferedSides());
 	}
 	public static final String DIRECTION="direction";
 	public static final String DIVIDER="divider";

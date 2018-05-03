@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
 import java.util.stream.*;
 import javafx.collections.*;
 import javafx.geometry.*;
@@ -46,8 +46,8 @@ public class LayerToolBox implements ToolBox{
 		return MessageRegistry.getString("LAYER",ImageModule.NAME);
 	}
 	@Override
-	public Node createInstance(){
-		return createInstance((GraphicsObject)Main.INSTANCE.getCurrentData());
+	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
+		return createInstance((GraphicsObject)meta.get(DataObject.DATA));
 	}
 	Node createInstance(GraphicsObject object){
 		TreeTableView<Node> layers=new TreeTableView<>();

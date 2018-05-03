@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -39,8 +39,8 @@ public class TransformToolBox implements ToolBox{
 		return MessageRegistry.getString("TRANSFORM",ImageModule.NAME);
 	}
 	@Override
-	public Node createInstance(){
-		return createInstance((GraphicsObject)Main.INSTANCE.getCurrentData());
+	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
+		return createInstance((GraphicsObject)meta.get(DataObject.DATA));
 	}
 	Node createInstance(GraphicsObject object){
 		Spinner<Double> scaleChooser=new Spinner<>(0.0,4.0,1.0);

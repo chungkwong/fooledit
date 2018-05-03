@@ -17,7 +17,6 @@
 package cc.fooledit;
 
 import cc.fooledit.control.*;
-import static cc.fooledit.core.CoreModule.REGISTRY;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.spi.*;
@@ -323,7 +322,7 @@ public class Main extends Application{
 		}
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
 			try{
-				Helper.writeText(StandardSerializiers.JSON_SERIALIZIER.encode(REGISTRY.get(CoreModule.WINDOW_REGISTRY_NAME)),new File(Main.INSTANCE.getUserPath(),"layout.json"));
+				Helper.writeText(StandardSerializiers.JSON_SERIALIZIER.encode(CoreModule.REGISTRY.get(CoreModule.WINDOW_REGISTRY_NAME)),new File(Main.INSTANCE.getUserPath(),"layout.json"));
 			}catch(Exception ex){
 				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
 			}
