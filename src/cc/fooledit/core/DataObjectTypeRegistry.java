@@ -33,17 +33,17 @@ public class DataObjectTypeRegistry{
 	}
 	public static void addDataEditor(DataEditor editor,Class<? extends DataObject> objectClass){
 		CoreModule.DATA_OBJECT_EDITOR_REGISTRY.put(editor.getClass().getName(),editor);
-		ListRegistryNode<String> t2e=CoreModule.TYPE_TO_EDITOR_REGISTRY.get(objectClass.getName());
-		if(t2e==null){
-			t2e=new ListRegistryNode<>();
-			CoreModule.TYPE_TO_EDITOR_REGISTRY.put(objectClass.getName(),t2e);
-		}
-		t2e.put(editor.getClass().getName());
+		MultiRegistryNode.addChildElement(objectClass.getName(),editor.getClass().getName(),CoreModule.TYPE_TO_EDITOR_REGISTRY);
 	}
 	public static List<DataEditor> getDataEditors(Class<? extends DataObject> cls){
-		if(CoreModule.TYPE_TO_EDITOR_REGISTRY.containsKey(cls.getName()))
-			return CoreModule.TYPE_TO_EDITOR_REGISTRY.get(cls.getName()).values().stream().map((c)->CoreModule.DATA_OBJECT_EDITOR_REGISTRY.get(c)).collect(Collectors.toList());
-		return Collections.emptyList();
+		return MultiRegistryNode.getChildElements(cls.getName(),CoreModule.TYPE_TO_EDITOR_REGISTRY).stream().map((c)->CoreModule.DATA_OBJECT_EDITOR_REGISTRY.get(c)).collect(Collectors.toList());
+	}
+	public static void addToolBox(ToolBox toolBox,Class<? extends DataEditor> editorClass){
+		CoreModule.TOOLBOX_REGISTRY.put(toolBox.getClass().getName(),toolBox);
+		MultiRegistryNode.addChildElement(editorClass.getName(),toolBox.getClass().getName(),CoreModule.EDITOR_TO_TOOLBOX_REGISTRY);
+	}
+	public static List<ToolBox> getDataToolBoxs(Class<? extends DataEditor> cls){
+		return MultiRegistryNode.getChildElements(cls.getName(),CoreModule.EDITOR_TO_TOOLBOX_REGISTRY).stream().map((c)->CoreModule.TOOLBOX_REGISTRY.get(c)).collect(Collectors.toList());
 	}
 	public static void registerMime(String mime,String type){
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(mime,type);

@@ -165,8 +165,14 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 	public static void providesDataObjectEditor(String type,String module){
 		providesCore(type,module,CoreModule.DATA_OBJECT_EDITOR_REGISTRY_NAME);
 	}
+	public static void providesToolBox(String type,String module){
+		providesCore(type,module,CoreModule.TOOLBOX_REGISTRY_NAME);
+	}
 	public static void providesTypeToEditor(String type,String module){
 		providesCore(type,module,CoreModule.TYPE_TO_EDITOR_REGISTRY_NAME);
+	}
+	public static void providesEditorToToolbox(String type,String module){
+		providesCore(type,module,CoreModule.EDITOR_TO_TOOLBOX_REGISTRY_NAME);
 	}
 	public static void providesTemplateType(String type,String module){
 		providesCore(type,module,CoreModule.TEMPLATE_TYPE_REGISTRY_NAME);

@@ -84,19 +84,17 @@ public class SideBarPane extends SplitPane{
 			default:return null;
 		}
 	}
-	public void showToolBox(String name,Node graphic,Node box,Side[] perfered){
+	public void showToolBox(Tab tab,Side[] perfered){
 		for(Side side:perfered){
 			TabPane bar=getSideBar(side);
 			if(bar.getTabs().size()==0){
-				showToolBox(name,graphic,box,side);
+				showToolBox(tab,side);
 				return;
 			}
 		}
-		showToolBox(name,graphic,box,perfered.length>0?perfered[0]:Side.RIGHT);
+		showToolBox(tab,perfered.length>0?perfered[0]:Side.RIGHT);
 	}
-	public void showToolBox(String name,Node graphic,Node box,Side side){
-		Tab tab=new Tab(name,box);
-		tab.setGraphic(graphic);
+	public void showToolBox(Tab tab,Side side){
 		TabPane sideBar=getSideBar(side);
 		sideBar.getTabs().add(tab);
 		if(sideBar.getTabs().size()==1){

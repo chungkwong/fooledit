@@ -35,6 +35,10 @@ public class ImageModule{
 	public static void onLoad(){
 		addDataObjectType(GraphicsObjectType.INSTANCE);
 		addDataEditor(new GraphicsEditor(),GraphicsObject.class);
+		DataObjectTypeRegistry.addToolBox(LayerToolBox.INSTANCE,GraphicsEditor.class);
+		DataObjectTypeRegistry.addToolBox(DrawToolBox.INSTANCE,GraphicsEditor.class);
+		DataObjectTypeRegistry.addToolBox(EffectToolBox.INSTANCE,GraphicsEditor.class);
+		DataObjectTypeRegistry.addToolBox(SelectionToolBox.INSTANCE,GraphicsEditor.class);
 		CoreModule.TEMPLATE_TYPE_REGISTRY.put(GraphicsTemplate.class.getName(),(obj)->new GraphicsTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime")));
 		addEffect("BLOOM",()->new Bloom());
 		addEffect("BOX_BLUR",()->new BoxBlur());
@@ -63,6 +67,11 @@ public class ImageModule{
 		Registry.providesDataObjectEditor(GraphicsEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(GraphicsObject.class.getName(),NAME);
 		Registry.providesTemplateType(GraphicsTemplate.class.getName(),NAME);
+		Registry.providesToolBox(LayerToolBox.class.getName(),NAME);
+		Registry.providesToolBox(DrawToolBox.class.getName(),NAME);
+		Registry.providesToolBox(EffectToolBox.class.getName(),NAME);
+		Registry.providesToolBox(SelectionToolBox.class.getName(),NAME);
+		Registry.providesEditorToToolbox(GraphicsEditor.class.getName(),NAME);
 		try{
 			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getOrCreateChild("children")).put(
 					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Main.INSTANCE.getFile("templates.json",NAME))));

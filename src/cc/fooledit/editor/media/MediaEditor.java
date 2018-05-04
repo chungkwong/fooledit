@@ -18,11 +18,9 @@ package cc.fooledit.editor.media;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import java.util.*;
 import java.util.function.*;
 import javafx.application.*;
 import javafx.collections.*;
-import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -81,10 +79,6 @@ public class MediaEditor implements DataEditor<MediaObject>{
 	@Override
 	public NavigableRegistryNode<String,String> getKeymapRegistry(){
 		return keymapRegistry;
-	}
-	@Override
-	public Collection<ToolBox> getToolboxs(){
-		return Collections.singletonList(new MetaToolBox());
 	}
 }
 class MediaControl extends HBox{
@@ -187,27 +181,5 @@ class MediaControl extends HBox{
 				return String.format("%02d:%02d/%02d:%02d",elapsedMinutes,elapsedSeconds,durationMinutes,durationSeconds);
 			}
 		}
-	}
-}
-class MetaToolBox implements ToolBox{
-	@Override
-	public String getName(){
-		return "META";
-	}
-	@Override
-	public String getDisplayName(){
-		return "META";
-	}
-	@Override
-	public Node getGraphic(){
-		return null;
-	}
-	@Override
-	public Side[] getPerferedSides(){
-		return new Side[]{Side.LEFT,Side.RIGHT};
-	}
-	@Override
-	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
-		return new Label(((MediaObject)meta.get(DataObject.DATA)).getProperty().getValue().getMedia().getMetadata().toString());
 	}
 }

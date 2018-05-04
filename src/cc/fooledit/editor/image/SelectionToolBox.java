@@ -15,11 +15,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-
+import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.canvas.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SelectionToolBox{
+public class SelectionToolBox implements ToolBox{
+	public static final SelectionToolBox INSTANCE=new SelectionToolBox();
+	private SelectionToolBox(){
 
+	}
+	@Override
+	public String getName(){
+		return "SELECTION";
+	}
+	@Override
+	public String getDisplayName(){
+		return MessageRegistry.getString("SELECTION",ImageModule.NAME);
+	}
+	@Override
+	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
+		return createInstance((GraphicsObject)meta.get(DataObject.DATA));
+	}
+	Node createInstance(GraphicsObject object){
+		return new Canvas();
+	}
+	@Override
+	public Node getGraphic(){
+		return null;
+	}
+	@Override
+	public Side[] getPerferedSides(){
+		return new Side[]{Side.TOP,Side.BOTTOM};
+	}
 }

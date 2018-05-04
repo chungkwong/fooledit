@@ -17,7 +17,6 @@
 package cc.fooledit.editor.image;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import java.util.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 /**
@@ -32,9 +31,5 @@ public class GraphicsEditor implements DataEditor<GraphicsObject>{
 	@Override
 	public String getName(){
 		return MessageRegistry.getString("IMAGE_EDITOR",ImageModule.NAME);
-	}
-	@Override
-	public Collection<ToolBox> getToolboxs(){
-		return Arrays.asList(LayerToolBox.INSTANCE,EffectToolBox.INSTANCE,DrawToolBox.INSTANCE,TransformToolBox.INSTANCE);
 	}
 }

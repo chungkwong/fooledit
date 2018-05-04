@@ -22,10 +22,12 @@ import java.util.*;
  */
 public class MultiRegistryNode{
 	public static <K,V> void addChildElement(K name,V value,RegistryNode<K,ListRegistryNode<V>> registry){
-		if(!registry.containsKey(name)){
-			registry.put(name,new ListRegistryNode<>());
+		ListRegistryNode<V> list=registry.get(name);
+		if(list==null){
+			list=new ListRegistryNode<>();
+			registry.put(name,list);
 		}
-		((ListRegistryNode<V>)registry.get(name)).put(value);
+		list.put(value);
 	}
 	public static <K,V> void removeChildElement(K name,V value,RegistryNode<K,ListRegistryNode<V>> registry){
 		ListRegistryNode<V> list=registry.get(name);

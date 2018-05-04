@@ -21,6 +21,7 @@ import cc.fooledit.editor.text.*;
 import cc.fooledit.spi.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.logging.*;
 import java.util.stream.*;
 import javafx.application.*;
 import javafx.beans.value.*;
@@ -84,6 +85,10 @@ public class WorkSheet extends BorderPane{
 			registry.put(BUFFER,getDataObject());
 			registry.put(EDITOR,getDataEditor().getClass().getName());
 			registry.put(CURRENT,new LazyValue<>(()->Main.INSTANCE.getCurrentWorkSheet()==WorkSheet.this));
+			registry.put(LEFT,new LazyValue<>(()->getSideBarRegistry(Side.LEFT)));
+			registry.put(RIGHT,new LazyValue<>(()->getSideBarRegistry(Side.RIGHT)));
+			registry.put(TOP,new LazyValue<>(()->getSideBarRegistry(Side.TOP)));
+			registry.put(BOTTOM,new LazyValue<>(()->getSideBarRegistry(Side.BOTTOM)));
 		}else if(getCenter() instanceof TabPane){
 			((TabPane)getCenter()).getTabs().removeListener(tabChanged);
 			((TabPane)getCenter()).getTabs().addListener(tabChanged);
@@ -110,6 +115,10 @@ public class WorkSheet extends BorderPane{
 			children.put(getLast().getRegistry());
 			registry.put(CHILDREN,children);
 		}
+	}
+	private ListRegistryNode<RegistryNode<String,Object>> getSideBarRegistry(Side side){
+		return new ListRegistryNode<>(((SideBarPane)getCenter()).getSideBar(side).getTabs().stream().
+				map((tab)->(RegistryNode<String,Object>)tab.getProperties().get(TOOLBOX)).collect(Collectors.toList()));
 	}
 	@Override
 	public void requestFocus(){
@@ -171,9 +180,32 @@ public class WorkSheet extends BorderPane{
 			((TabPane)parent.getCenter()).getSelectionModel().getSelectedItem().setText(getName());
 		}
 	}
-	public void showToolBox(ToolBox toolBox){
-		((SideBarPane)getCenter()).showToolBox(toolBox.getDisplayName(),toolBox.getGraphic(),
-				toolBox.createInstance(getNode(),null,getDataObject()),toolBox.getPerferedSides());
+	private void showToolBox(ListRegistryNode<RegistryNode<String,Object>> boxs,Side side){
+		if(boxs!=null)
+			boxs.values().forEach((box)->{
+				try{
+					ToolBox toolbox=CoreModule.TOOLBOX_REGISTRY.get(box.get(TOOLBOX));
+					showToolBox(toolbox,box.get(REMARK),side);
+				}catch(Exception ex){
+					Logger.getGlobal().log(Level.INFO,null,ex);
+				}
+			});
+	}
+	public void showToolBox(ToolBox toolBox,Object remark){
+		((SideBarPane)getCenter()).showToolBox(getToolTab(toolBox,remark),toolBox.getPerferedSides());
+	}
+	public void showToolBox(ToolBox toolBox,Object remark,Side side){
+		((SideBarPane)getCenter()).showToolBox(getToolTab(toolBox,remark),side);
+	}
+	private Tab getToolTab(ToolBox toolBox,Object remark){
+		Node box=toolBox.createInstance(getNode(),remark,getDataObject());
+		Tab tab=new Tab(toolBox.getDisplayName(),box);
+		tab.setGraphic(toolBox.getGraphic());
+		SimpleRegistryNode<String,Object> toolboxRegistry=new SimpleRegistryNode<>();
+		toolboxRegistry.put(TOOLBOX,toolBox.getClass().getName());
+		toolboxRegistry.put(REMARK,new LazyValue<>(()->toolBox.getRemark(box)));
+		tab.getProperties().put(TOOLBOX,toolboxRegistry);
+		return tab;
 	}
 	public static final String DIRECTION="direction";
 	public static final String DIVIDER="divider";
@@ -182,6 +214,11 @@ public class WorkSheet extends BorderPane{
 	public static final String BUFFER="buffer";
 	public static final String CURRENT="current";
 	public static final String REMARK="remark";
+	public static final String TOOLBOX="toolbox";
+	public static final String LEFT="left";
+	public static final String RIGHT="right";
+	public static final String TOP="top";
+	public static final String BOTTOM="bottom";
 	public static WorkSheet fromJSON(RegistryNode<String,Object> json){
 		if(json.containsKey(DIRECTION)){
 			SplitPane pane=new SplitPane();
@@ -201,6 +238,10 @@ public class WorkSheet extends BorderPane{
 			DataEditor editor=CoreModule.DATA_OBJECT_EDITOR_REGISTRY.get(editorName);
 			json.put(BUFFER,buffer);
 			WorkSheet workSheet=new WorkSheet(buffer,editor,json.get(REMARK),json);
+			workSheet.showToolBox((ListRegistryNode<RegistryNode<String,Object>>)json.get(LEFT),Side.LEFT);
+			workSheet.showToolBox((ListRegistryNode<RegistryNode<String,Object>>)json.get(RIGHT),Side.RIGHT);
+			workSheet.showToolBox((ListRegistryNode<RegistryNode<String,Object>>)json.get(TOP),Side.TOP);
+			workSheet.showToolBox((ListRegistryNode<RegistryNode<String,Object>>)json.get(BOTTOM),Side.BOTTOM);
 			if((Boolean)json.get(CURRENT)){
 				Main.INSTANCE.setCurrentWorkSheet(workSheet);
 				Platform.runLater(()->workSheet.requestFocus());
@@ -208,6 +249,7 @@ public class WorkSheet extends BorderPane{
 			return workSheet;
 		}
 	}
+
 	public boolean isSplit(){
 		return getCenter() instanceof SplitPane&&!(getCenter() instanceof SideBarPane);
 	}

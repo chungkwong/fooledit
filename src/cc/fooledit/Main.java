@@ -221,9 +221,9 @@ public class Main extends Application{
 			l.add(createCommandMenuItem("previous_buffer"));
 			if(!currentWorksheet.isCompound()){
 				l.add(new SeparatorMenuItem());
-				getCurrentDataEditor().getToolboxs().forEach((tool)->{
+				DataObjectTypeRegistry.getDataToolBoxs(getCurrentDataEditor().getClass()).forEach((tool)->{
 					MenuItem item=new MenuItem(((ToolBox)tool).getDisplayName());
-					item.setOnAction((e)->getCurrentWorkSheet().showToolBox((ToolBox)tool));
+					item.setOnAction((e)->getCurrentWorkSheet().showToolBox((ToolBox)tool,null));
 					l.add(item);
 				});
 			}

@@ -16,7 +16,6 @@
  */
 package cc.fooledit.core;
 import cc.fooledit.spi.*;
-import java.util.*;
 import javafx.scene.*;
 /**
  *
@@ -35,9 +34,6 @@ public interface DataEditor<T extends DataObject<T>>{
 	}
 	default Object getRemark(Node node){
 		return null;
-	}
-	default Collection<ToolBox> getToolboxs(){
-		return Collections.emptyList();
 	}
 	String getName();
 }

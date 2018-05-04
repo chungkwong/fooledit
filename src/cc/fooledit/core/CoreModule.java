@@ -47,6 +47,7 @@ public class CoreModule{
 	public static final String DATA_OBJECT_EDITOR_REGISTRY_NAME="data_object_editor";
 	public static final String DYNAMIC_MENU_REGISTRY_NAME="dynamic_menu";
 	public static final String TYPE_TO_EDITOR_REGISTRY_NAME="type_to_editor";
+	public static final String EDITOR_TO_TOOLBOX_REGISTRY_NAME="editor_to_toolbox";
 	public static final String EVENT_REGISTRY_NAME="event";
 	public static final String HISTORY_REGISTRY_NAME="history";
 	public static final String LOADED_MODULE_REGISTRY_NAME="loaded_module";
@@ -63,6 +64,7 @@ public class CoreModule{
 	public static final String TASK_REGISTRY_NAME="task";
 	public static final String TEMPLATE_REGISTRY_NAME="template";
 	public static final String TEMPLATE_TYPE_REGISTRY_NAME="template_type";
+	public static final String TOOLBOX_REGISTRY_NAME="toolbox";
 	public static final String WINDOW_REGISTRY_NAME="window";
 	public static final String MISC_REGISTRY_NAME="misc";
 	public static RegistryNode<String,Object> REGISTRY;
@@ -79,6 +81,7 @@ public class CoreModule{
 	public static RegistryNode<String,DataEditor> DATA_OBJECT_EDITOR_REGISTRY;
 	public static RegistryNode<String,Consumer<ObservableList<MenuItem>>> DYNAMIC_MENU_REGISTRY;
 	public static RegistryNode<String,ListRegistryNode<String>> TYPE_TO_EDITOR_REGISTRY;
+	public static RegistryNode<String,ListRegistryNode<String>> EDITOR_TO_TOOLBOX_REGISTRY;
 	public static RegistryNode<String,ListRegistryNode<Consumer>> EVENT_REGISTRY;
 	public static ListRegistryNode<RegistryNode<String,Object>> HISTORY_REGISTRY;
 	public static RegistryNode<String,RegistryNode<String,Object>> LOADED_MODULE_REGISTRY;
@@ -92,6 +95,7 @@ public class CoreModule{
 	public static RegistryNode<String,Task> TASK_REGISTRY;
 	public static RegistryNode<String,Object> TEMPLATE_REGISTRY;
 	public static RegistryNode<String,Function<Map<Object,Object>,Template>> TEMPLATE_TYPE_REGISTRY;
+	public static RegistryNode<String,ToolBox> TOOLBOX_REGISTRY;
 	public static RegistryNode<String,Object> MISC_REGISTRY;
 	public static void onLoad(){
 		onInit();
@@ -153,6 +157,7 @@ public class CoreModule{
 		DATA_OBJECT_EDITOR_REGISTRY=(RegistryNode<String,DataEditor>)REGISTRY.getOrCreateChild(DATA_OBJECT_EDITOR_REGISTRY_NAME);
 		DYNAMIC_MENU_REGISTRY=(RegistryNode<String,Consumer<ObservableList<MenuItem>>>)REGISTRY.getOrCreateChild(DYNAMIC_MENU_REGISTRY_NAME);
 		TYPE_TO_EDITOR_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(TYPE_TO_EDITOR_REGISTRY_NAME);
+		EDITOR_TO_TOOLBOX_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(EDITOR_TO_TOOLBOX_REGISTRY_NAME);
 		EVENT_REGISTRY=(RegistryNode<String,ListRegistryNode<Consumer>>)REGISTRY.getOrCreateChild(EVENT_REGISTRY_NAME);
 		HISTORY_REGISTRY=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
 		LOADED_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object>>)REGISTRY.getOrCreateChild(LOADED_MODULE_REGISTRY_NAME);
@@ -166,6 +171,7 @@ public class CoreModule{
 		TASK_REGISTRY=(RegistryNode<String,Task>)REGISTRY.getOrCreateChild(TASK_REGISTRY_NAME);
 		TEMPLATE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(TEMPLATE_REGISTRY_NAME);
 		TEMPLATE_TYPE_REGISTRY=(RegistryNode<String,Function<Map<Object,Object>,Template>>)REGISTRY.getOrCreateChild(TEMPLATE_TYPE_REGISTRY_NAME);
+		TOOLBOX_REGISTRY=(RegistryNode<String,ToolBox>)REGISTRY.getOrCreateChild(TOOLBOX_REGISTRY_NAME);
 		MISC_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(MISC_REGISTRY_NAME);
 	}
 	private static <T> T fromJSON(String file,Supplier<T> def){
