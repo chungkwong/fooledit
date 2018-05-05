@@ -67,6 +67,28 @@ public class WorkSheet extends BorderPane{
 	private WorkSheet(RegistryNode<String,Object> data,DataEditor editor,Object remark,RegistryNode<String,Object> registry){
 		this.registry=registry;
 		setData(data,editor,remark);
+		showToolBox((ListRegistryNode<RegistryNode<String,Object>>)registry.get(LEFT),Side.LEFT);
+		showToolBox((ListRegistryNode<RegistryNode<String,Object>>)registry.get(RIGHT),Side.RIGHT);
+		showToolBox((ListRegistryNode<RegistryNode<String,Object>>)registry.get(TOP),Side.TOP);
+		showToolBox((ListRegistryNode<RegistryNode<String,Object>>)registry.get(BOTTOM),Side.BOTTOM);
+		((SideBarPane)getCenter()).setRatios((ListRegistryNode<Number>)registry.get(DIVIDER));
+		if((Boolean)registry.get(CURRENT)){
+			Main.INSTANCE.setCurrentWorkSheet(this);
+			Platform.runLater(()->{
+				WorkSheet node=this;
+				WorkSheet parent=getParentWorkSheet();
+				while(parent!=null){
+					if(parent.isTabed()){
+						TabPane tabPane=((TabPane)parent.getCenter());
+						WorkSheet curr=node;
+						tabPane.getSelectionModel().select(tabPane.getTabs().stream().filter((tab)->tab.getContent()==curr).findFirst().get());
+					}
+					node=parent;
+					parent=parent.getParentWorkSheet();
+				}
+				requestFocus();
+			});
+		}
 		restoreRegistry();
 	}
 	private void setData(RegistryNode<String,Object> data,DataEditor editor,Object remark){
@@ -89,6 +111,7 @@ public class WorkSheet extends BorderPane{
 			registry.put(RIGHT,new LazyValue<>(()->getSideBarRegistry(Side.RIGHT)));
 			registry.put(TOP,new LazyValue<>(()->getSideBarRegistry(Side.TOP)));
 			registry.put(BOTTOM,new LazyValue<>(()->getSideBarRegistry(Side.BOTTOM)));
+			registry.put(DIVIDER,new LazyValue<>(()->((SideBarPane)getCenter()).getRatios()));
 		}else if(getCenter() instanceof TabPane){
 			((TabPane)getCenter()).getTabs().removeListener(tabChanged);
 			((TabPane)getCenter()).getTabs().addListener(tabChanged);
@@ -237,19 +260,9 @@ public class WorkSheet extends BorderPane{
 			String editorName=(String)json.get(EDITOR);
 			DataEditor editor=CoreModule.DATA_OBJECT_EDITOR_REGISTRY.get(editorName);
 			json.put(BUFFER,buffer);
-			WorkSheet workSheet=new WorkSheet(buffer,editor,json.get(REMARK),json);
-			workSheet.showToolBox((ListRegistryNode<RegistryNode<String,Object>>)json.get(LEFT),Side.LEFT);
-			workSheet.showToolBox((ListRegistryNode<RegistryNode<String,Object>>)json.get(RIGHT),Side.RIGHT);
-			workSheet.showToolBox((ListRegistryNode<RegistryNode<String,Object>>)json.get(TOP),Side.TOP);
-			workSheet.showToolBox((ListRegistryNode<RegistryNode<String,Object>>)json.get(BOTTOM),Side.BOTTOM);
-			if((Boolean)json.get(CURRENT)){
-				Main.INSTANCE.setCurrentWorkSheet(workSheet);
-				Platform.runLater(()->workSheet.requestFocus());
-			}
-			return workSheet;
+			return new WorkSheet(buffer,editor,json.get(REMARK),json);
 		}
 	}
-
 	public boolean isSplit(){
 		return getCenter() instanceof SplitPane&&!(getCenter() instanceof SideBarPane);
 	}

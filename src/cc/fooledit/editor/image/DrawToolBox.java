@@ -49,7 +49,7 @@ public class DrawToolBox implements ToolBox{
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
-		return createInstance((GraphicsObject)meta.get(DataObject.DATA),(GraphicsViewer)viewer);
+		return createInstance((GraphicsObject)meta.get(DataObject.DATA),(GraphicsViewer)((ScrollPane)viewer).getContent());
 	}
 	public Node createInstance(GraphicsObject object,GraphicsViewer viewer){
 		return new DrawingToolBox(object,viewer);

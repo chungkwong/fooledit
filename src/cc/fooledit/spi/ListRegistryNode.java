@@ -105,6 +105,10 @@ public class ListRegistryNode<V> extends RegistryNode<Integer,V>{
 	public int size(){
 		return children.size();
 	}
+	@Override
+	public String toString(){
+		return Objects.toString(children);
+	}
 }
 class MapListChangeListener<V> implements ListChangeListener<V>{
 	private final MapChangeListener<? super Integer,? super V> base;

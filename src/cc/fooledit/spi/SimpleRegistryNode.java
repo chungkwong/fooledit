@@ -96,4 +96,8 @@ public class SimpleRegistryNode<K,V> extends RegistryNode<K,V>{
 	public void removeListener(InvalidationListener listener){
 		base.removeListener(listener);
 	}
+	@Override
+	public String toString(){
+		return Objects.toString(base);
+	}
 }

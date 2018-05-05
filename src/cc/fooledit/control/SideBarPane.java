@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
+import cc.fooledit.spi.*;
+import java.util.*;
 import javafx.beans.property.*;
 import javafx.collections.*;
 import javafx.geometry.*;
@@ -67,13 +69,27 @@ public class SideBarPane extends SplitPane{
 		middle.setDividerPositions(0,0.0);
 		middle.setDividerPositions(1,1.0);
 		heightProperty().addListener((e,o,n)->{
-			setDividerPosition(0,o.doubleValue()*getDividerPositions()[0]/n.doubleValue());
-			setDividerPosition(1,1-o.doubleValue()*(1-getDividerPositions()[1])/n.doubleValue());
-		});;
-		middle.widthProperty().addListener((e,o,n)->{
-			middle.setDividerPosition(0,o.doubleValue()*middle.getDividerPositions()[0]/n.doubleValue());
-			middle.setDividerPosition(1,1-o.doubleValue()*(1-middle.getDividerPositions()[1])/n.doubleValue());
+			if(o.doubleValue()!=0){
+				setDividerPosition(0,o.doubleValue()*getDividerPositions()[0]/n.doubleValue());
+				setDividerPosition(1,1-o.doubleValue()*(1-getDividerPositions()[1])/n.doubleValue());
+			}
 		});
+		middle.widthProperty().addListener((e,o,n)->{
+			if(o.doubleValue()!=0){
+				middle.setDividerPosition(0,o.doubleValue()*middle.getDividerPositions()[0]/n.doubleValue());
+				middle.setDividerPosition(1,1-o.doubleValue()*(1-middle.getDividerPositions()[1])/n.doubleValue());
+			}
+		});
+	}
+	public ListRegistryNode<Number> getRatios(){
+		return new ListRegistryNode<>(Arrays.asList(getDividerPositions()[0],getDividerPositions()[1],
+				middle.getDividerPositions()[0],middle.getDividerPositions()[1]));
+	}
+	public void setRatios(ListRegistryNode<Number> positions){
+		setDividerPosition(0,positions.getOrDefault(0,0.0).doubleValue());
+		setDividerPosition(1,positions.getOrDefault(1,1.0).doubleValue());
+		middle.setDividerPosition(0,positions.getOrDefault(2,0.0).doubleValue());
+		middle.setDividerPosition(1,positions.getOrDefault(3,1.0).doubleValue());
 	}
 	public TabPane getSideBar(Side side){
 		switch(side){
