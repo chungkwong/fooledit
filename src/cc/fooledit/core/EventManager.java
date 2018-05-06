@@ -25,6 +25,7 @@ import java.util.logging.*;
  */
 public class EventManager{
 	public static final String SHUTDOWN="shutdown";
+	public static final String SHOWN="shown";
 	public static void addEventListener(String event,Consumer<Object> action){
 		MultiRegistryNode.addChildElement(event,action,CoreModule.getEVENT_REGISTRY());
 	}
@@ -33,14 +34,16 @@ public class EventManager{
 	}
 	public static void fire(String event,Object parameter){
 		List<Consumer> list=MultiRegistryNode.getChildElements(event,CoreModule.getEVENT_REGISTRY());
-		if(list!=null){
-			try{
-				for(Consumer<Object> action:list)
+		if(list!=null)
+			for(Consumer<Object> action:list)
+				try{
 					action.accept(parameter);
-			}catch(BreakException ex){
-				Logger.getGlobal().log(Level.FINEST,null,ex);
-			}
-		}
+				}catch(BreakException ex){
+					Logger.getGlobal().log(Level.FINEST,null,ex);
+					break;
+				}catch(Exception ex){
+					Logger.getGlobal().log(Level.INFO,null,ex);
+				}
 	}
 	public static class BreakException extends RuntimeException{
 		public BreakException(){

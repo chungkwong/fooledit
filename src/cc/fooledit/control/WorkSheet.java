@@ -23,7 +23,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
 import java.util.stream.*;
-import javafx.application.*;
 import javafx.beans.value.*;
 import javafx.collections.*;
 import javafx.geometry.*;
@@ -74,7 +73,7 @@ public class WorkSheet extends BorderPane{
 		((SideBarPane)getCenter()).setRatios((ListRegistryNode<Number>)registry.get(DIVIDER));
 		if((Boolean)registry.get(CURRENT)){
 			Main.INSTANCE.setCurrentWorkSheet(this);
-			Platform.runLater(()->{
+			EventManager.addEventListener(EventManager.SHOWN,(obj)->{
 				WorkSheet node=this;
 				WorkSheet parent=getParentWorkSheet();
 				while(parent!=null){
@@ -151,7 +150,7 @@ public class WorkSheet extends BorderPane{
 		Node first=getCenter();
 		SplitPane splitPane=new SplitPane(wrap(new WorkSheet(first)),wrap(subWorkSheet));
 		splitPane.setOrientation(orientation);
-		splitPane.setDividerPositions(0.5,0.5);
+		splitPane.setDividerPositions(0.5);
 		setCenter(splitPane);
 		ChangeListener<Scene> listener=new ChangeListener<Scene>(){
 			@Override

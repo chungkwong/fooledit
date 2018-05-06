@@ -69,13 +69,13 @@ public class SideBarPane extends SplitPane{
 		middle.setDividerPositions(0,0.0);
 		middle.setDividerPositions(1,1.0);
 		heightProperty().addListener((e,o,n)->{
-			if(o.doubleValue()!=0){
+			if(isVisible()){
 				setDividerPosition(0,o.doubleValue()*getDividerPositions()[0]/n.doubleValue());
 				setDividerPosition(1,1-o.doubleValue()*(1-getDividerPositions()[1])/n.doubleValue());
 			}
 		});
 		middle.widthProperty().addListener((e,o,n)->{
-			if(o.doubleValue()!=0){
+			if(isVisible()){
 				middle.setDividerPosition(0,o.doubleValue()*middle.getDividerPositions()[0]/n.doubleValue());
 				middle.setDividerPosition(1,1-o.doubleValue()*(1-middle.getDividerPositions()[1])/n.doubleValue());
 			}

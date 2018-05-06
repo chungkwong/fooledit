@@ -367,6 +367,7 @@ public class Main extends Application{
 		primaryStage.setMaximized(true);
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		primaryStage.show();
+		Platform.runLater(()->EventManager.fire(EventManager.SHOWN,primaryStage));
 	}
 	@Override
 	public void stop() throws Exception{
