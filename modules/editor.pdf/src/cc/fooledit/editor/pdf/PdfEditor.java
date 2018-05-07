@@ -20,9 +20,11 @@ import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
+import com.sun.javafx.scene.control.skin.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.scene.*;
+import javafx.scene.control.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -39,6 +41,38 @@ public class PdfEditor implements DataEditor<PdfObject>{
 		addCommand("move-to-page",Arrays.asList(new Argument("PAGE_NUMBER")),(args,viewer)->{
 			viewer.moveToPage(SchemeConverter.toInteger(ScmList.first(args)));
 			return null;
+		});
+		addCommand("move-to-first-page",(viewer)->{
+			viewer.moveToPage(0);
+		});
+		addCommand("move-to-last-page",(viewer)->{
+			viewer.moveToPage(viewer.getDocument().getNumberOfPages()-1);
+		});
+		addCommand("move-to-next-page",(viewer)->{
+			viewer.moveToPage(viewer.getPageIndex()+1);
+		});
+		addCommand("move-to-previous-page",(viewer)->{
+			viewer.moveToPage(viewer.getPageIndex()-1);
+		});
+		addCommand("move-to-top",(viewer)->{
+			ScrollPane pane=((ScrollPane)viewer.getCenter());
+			pane.setVvalue(pane.getVmin());
+		});
+		addCommand("move-to-bottom",(viewer)->{
+			ScrollPane pane=((ScrollPane)viewer.getCenter());
+			pane.setVvalue(pane.getVmax());
+		});
+		addCommand("scroll-up",(viewer)->{
+			((ScrollPaneSkin)((ScrollPane)viewer.getCenter()).getSkin()).vsbDecrement();
+		});
+		addCommand("scroll-down",(viewer)->{
+			((ScrollPaneSkin)((ScrollPane)viewer.getCenter()).getSkin()).vsbIncrement();
+		});
+		addCommand("scroll-left",(viewer)->{
+			((ScrollPaneSkin)((ScrollPane)viewer.getCenter()).getSkin()).hsbDecrement();
+		});
+		addCommand("scroll-right",(viewer)->{
+			((ScrollPaneSkin)((ScrollPane)viewer.getCenter()).getSkin()).hsbIncrement();
 		});
 		addCommand("zoom",Arrays.asList(new Argument("SCALE")),(args,viewer)->{
 			viewer.setScale((float)((ScmComplex)SchemeConverter.toScheme(ScmList.first(args))).toScmReal().toDouble());

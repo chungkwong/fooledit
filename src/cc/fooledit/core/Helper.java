@@ -25,6 +25,9 @@ import java.util.stream.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Helper{
+	public static double truncate(double value,double min,double max){
+		return value<min?min:(value>max?max:value);
+	}
 	public static HashMap hashMap(Object... val){
 		HashMap map=new HashMap();
 		for(int i=0;i<val.length;i+=2)

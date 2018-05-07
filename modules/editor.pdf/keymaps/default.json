@@ -2,18 +2,12 @@
 
 	"Page Up":"move-to-previous-page",
 	"Page Down":"move-to-next-page",
-	"Up":"focus-previous",
-	"Down":"focus-next",
-	"Left":"focus-up",
-	"Right":"focus-down",
-	"C-Home":"focus-first",
-	"C-End":"focus-last",
-	"Home":"focus-first-in-directory",
-	"End":"focus-last-in-directory",
-	"S-Space":"select-to",
-	"M-Space":"deselect",
-	"C-A":"clear-selection",
-	"Space":"toggle-selection",
-	"C-C":"mark",
-	"Enter":"submit"
+	"C-Home":"move-to-first-page",
+	"C-End":"move-to-last-page",
+	"Up":"scroll-up",
+	"Down":"scroll-down",
+	"Left":"scroll-left",
+	"Right":"scroll-right",
+	"Home":"scroll-to-top",
+	"End":"scroll-to-bottom"
 }
