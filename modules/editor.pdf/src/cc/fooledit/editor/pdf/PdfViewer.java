@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.pdf;
-import cc.fooledit.control.*;
 import java.io.*;
 import java.util.logging.*;
+import javafx.beans.property.*;
 import javafx.embed.swing.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -34,26 +34,20 @@ public class PdfViewer extends BorderPane{
 	private final PDFRenderer renderer;
 	private final Pagination pagination;
 	private final ImageView view=new ImageView();
-	private final Spinner<Number> zoom;
+	private final FloatProperty zoom=new SimpleFloatProperty(1.0f);
 	public PdfViewer(PDDocument document){
 		this.document=document;
 		this.renderer=new PDFRenderer(document);
 		this.pagination=new Pagination(document.getNumberOfPages(),0);
-		zoom=new Spinner<>(0,Double.MAX_VALUE,1.0,0.5);
 		pagination.setPageFactory((index)->new ImageView(getPage(index,zoom.getValue().floatValue())));
+		zoom.addListener((e,o,n)->pagination.setCurrentPageIndex(pagination.getCurrentPageIndex()));
 		setCenter(new ScrollPane(pagination));
 		setRight(getInfoPane());
 		setTop(getPagePane());
 		setLeft(getOutlinePane());
 	}
 	private Node getPagePane(){
-		zoom.setEditable(true);
-		zoom.valueProperty().addListener((e,o,n)->{
-			pagination.setCurrentPageIndex(pagination.getCurrentPageIndex());
-		});
-		Label total=new Label("/"+document.getNumberOfPages());
-		Label percent=new Label("×");
-		return new HBox(zoom,percent);
+		return new PageToolBox.PageToolBar(this,document);
 	}
 	public Image getPage(int index,float dpi){
 		try{
@@ -67,21 +61,27 @@ public class PdfViewer extends BorderPane{
 		return null;
 	}
 	private Node getInfoPane(){
-		return new BeanViewer(document);
+		return new ContentsToolBox.ContentsViewer(this,document);
 	}
 	public PDDocument getDocument(){
 		return document;
 	}
-	public void moveToPage(int page){
-		pagination.setCurrentPageIndex(page);
-	}
-	public void setScale(float scale){
-		zoom.getEditor().setText(Float.toString(scale));
-	}
 	public int getPageIndex(){
 		return pagination.getCurrentPageIndex();
 	}
+	public void setPageIndex(int page){
+		pagination.setCurrentPageIndex(page);
+	}
+	public IntegerProperty pageIndexProperty(){
+		return pagination.currentPageIndexProperty();
+	}
+	public void setScale(float scale){
+		zoom.setValue(scale);
+	}
 	public float getScale(){
-		return zoom.getValue().floatValue();
+		return zoom.getValue();
+	}
+	public FloatProperty scaleProperty(){
+		return zoom;
 	}
 }

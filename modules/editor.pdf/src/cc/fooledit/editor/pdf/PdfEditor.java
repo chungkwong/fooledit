@@ -39,20 +39,20 @@ public class PdfEditor implements DataEditor<PdfObject>{
 		addCommand("current-scale",Collections.emptyList(),(args,viewer)->ScmFloatingPointNumber.valueOf(viewer.getScale()));
 		addCommand("number-of-pages",Collections.emptyList(),(args,viewer)->ScmInteger.valueOf(viewer.getDocument().getNumberOfPages()));
 		addCommand("move-to-page",Arrays.asList(new Argument("PAGE_NUMBER")),(args,viewer)->{
-			viewer.moveToPage(SchemeConverter.toInteger(ScmList.first(args)));
+			viewer.setPageIndex(SchemeConverter.toInteger(ScmList.first(args)));
 			return null;
 		});
 		addCommand("move-to-first-page",(viewer)->{
-			viewer.moveToPage(0);
+			viewer.setPageIndex(0);
 		});
 		addCommand("move-to-last-page",(viewer)->{
-			viewer.moveToPage(viewer.getDocument().getNumberOfPages()-1);
+			viewer.setPageIndex(viewer.getDocument().getNumberOfPages()-1);
 		});
 		addCommand("move-to-next-page",(viewer)->{
-			viewer.moveToPage(viewer.getPageIndex()+1);
+			viewer.setPageIndex(viewer.getPageIndex()+1);
 		});
 		addCommand("move-to-previous-page",(viewer)->{
-			viewer.moveToPage(viewer.getPageIndex()-1);
+			viewer.setPageIndex(viewer.getPageIndex()-1);
 		});
 		addCommand("move-to-top",(viewer)->{
 			ScrollPane pane=((ScrollPane)viewer.getCenter());

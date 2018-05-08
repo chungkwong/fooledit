@@ -25,6 +25,10 @@ public class PdfModule{
 		public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(PdfObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(PdfEditor.INSTANCE,PdfObject.class);
+		DataObjectTypeRegistry.addToolBox(PageToolBox.INSTANCE,PdfEditor.class);
+		DataObjectTypeRegistry.addToolBox(ContentsToolBox.INSTANCE,PdfEditor.class);
+		DataObjectTypeRegistry.addToolBox(PropertiesToolBox.INSTANCE,PdfEditor.class);
+
 	}
 	public static void onUnLoad(){
 
@@ -33,5 +37,9 @@ public class PdfModule{
 		Registry.providesDataObjectType(PdfObjectType.class.getName(),NAME);
 		Registry.providesDataObjectEditor(PdfEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(PdfObject.class.getName(),NAME);
+		Registry.providesToolBox(PageToolBox.class.getName(),NAME);
+		Registry.providesToolBox(ContentsToolBox.class.getName(),NAME);
+		Registry.providesToolBox(PropertiesToolBox.class.getName(),NAME);
+		Registry.providesEditorToToolbox(PdfEditor.class.getName(),NAME);
 	}
 }

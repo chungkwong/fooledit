@@ -28,7 +28,7 @@ import org.apache.pdfbox.pdmodel.*;
 public class PdfTest extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		primaryStage.setScene(new Scene(new BorderPane(new PdfViewer(PDDocument.load(new File("/home/kwong/下载/1710.05830.pdf"))))));
+		primaryStage.setScene(new Scene(new BorderPane(new PdfViewer(PDDocument.load(new File("/home/kwong/下载/1612.08052(1).pdf"))))));
 		primaryStage.show();
 	}
 	public static void main(String[] args) throws Exception{
