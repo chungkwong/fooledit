@@ -56,7 +56,7 @@ public class ContentsToolBox implements ToolBox{
 	public Side[] getPerferedSides(){
 		return new Side[]{Side.LEFT};
 	}
-	static class ContentsViewer extends TreeView<PDOutlineNode>{
+	static class ContentsViewer extends TreeViewWrapper<PDOutlineNode>{
 		private final PDDocument document;
 		private final PdfViewer viewer;
 		public ContentsViewer(PdfViewer viewer,PDDocument document){

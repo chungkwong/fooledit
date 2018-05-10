@@ -46,9 +46,9 @@ import javax.activation.*;
  */
 public class Main extends Application{
 	public static Main INSTANCE;
-	private final File SYSTEM_PATH=computePath();
-	private final File MODULE_PATH=new File(SYSTEM_PATH,"modules");
-	private final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
+	private static final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
+	private static final File SYSTEM_PATH=computePath();
+	private static final File MODULE_PATH=new File(SYSTEM_PATH,"modules");
 	private final RegistryNode<String,Command> globalCommandRegistry=new SimpleRegistryNode<>();
 	private MenuRegistry menuRegistry;
 	private final NavigableRegistryNode<String,String> keymapRegistry;
@@ -374,22 +374,22 @@ public class Main extends Application{
 		super.stop();
 		System.exit(0);
 	}
-	public File getSystemPath(){
+	public static File getSystemPath(){
 		return SYSTEM_PATH;
 	}
-	public File getDataPath(){
+	public static File getDataPath(){
 		return MODULE_PATH;
 	}
-	public File getUserPath(){
+	public static File getUserPath(){
 		return USER_PATH;
 	}
-	public File getFile(String path,String module){
+	public static File getFile(String path,String module){
 		return new File(getModulePath(module),path);
 	}
-	public File getModulePath(String module){
+	public static File getModulePath(String module){
 		return new File(MODULE_PATH,module);
 	}
-	private File computePath(){
+	private static File computePath(){
 		URL url=Main.class.getResource("");
 		if(url.getProtocol().equals("file")){
 			File file=new File(url.getFile());
@@ -408,10 +408,10 @@ public class Main extends Application{
 			}
 		}
 	}
-	public Map<Object,Object> loadJSON(String name){
+	public static Map<Object,Object> loadJSON(String name){
 		return loadJSON(new File(getDataPath(),name));
 	}
-	public Map<Object,Object> loadJSON(File file){
+	public static Map<Object,Object> loadJSON(File file){
 		Map<Object,Object> obj;
 		try{
 			obj=(Map<Object,Object>)JSONDecoder.decode(new InputStreamReader(new FileInputStream(file),StandardCharsets.UTF_8));

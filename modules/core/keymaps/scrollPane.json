@@ -1,0 +1,8 @@
+{
+	"Up":"scroll-up",
+	"Down":"scroll-down",
+	"Left":"scroll-left",
+	"Right":"scroll-right",
+	"Home":"scroll-to-top",
+	"End":"scroll-to-bottom"
+}

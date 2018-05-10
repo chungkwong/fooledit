@@ -39,9 +39,9 @@ public class TreeTableWrapper<T> extends TreeTableView<T>{
 	}
 	private void installKeymap(){
 		TreeMap<String,String> mapping=new TreeMap<>();
-		File src=Main.INSTANCE.getFile("keymaps/treetable.json",CoreModule.NAME);
+		File src=Main.getFile("keymaps/treetable.json",CoreModule.NAME);
 		if(src!=null)
-			mapping.putAll((Map<String,String>)(Object)Main.INSTANCE.loadJSON(src));
+			mapping.putAll((Map<String,String>)(Object)Main.loadJSON(src));
 		NavigableRegistryNode<String,String> registry=new NavigableRegistryNode<>(mapping);
 		getProperties().put(WorkSheet.KEYMAP_NAME,registry);
 	}

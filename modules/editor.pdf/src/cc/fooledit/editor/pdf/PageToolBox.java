@@ -65,9 +65,15 @@ public class PageToolBox implements ToolBox{
 			zoom.setEditable(true);
 			viewer.scaleProperty().bind(zoom.valueProperty());
 
+			Spinner<Number> rotate=new Spinner<>(-180,180,0.0,1.0);
+			rotate.setEditable(true);
+			viewer.pageRotateProperty().bind(rotate.valueProperty());
+
+
 			Label total=new Label("/"+document.getNumberOfPages());
 			Label percent=new Label("×");
-			getChildren().addAll(page,total,zoom,percent);
+			Label degree=new Label("deg");
+			getChildren().addAll(page,total,zoom,percent,rotate,degree);
 		}
 	}
 }

@@ -51,7 +51,8 @@ public class ScriptEnvironment implements Bindings{
 	}
 	@Override
 	public Object get(Object key){
-		return Main.INSTANCE.getCommand(Objects.toString(key));
+		Command command=Main.INSTANCE.getCommand(Objects.toString(key));
+		return command==null?null:pack(command);
 	}
 	@Override
 	public Object remove(Object key){

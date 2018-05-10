@@ -1,0 +1,7 @@
+{
+	"C-G":"move-to-page",
+	"Page Up":"move-to-previous-page",
+	"Page Down":"move-to-next-page",
+	"C-Home":"move-to-first-page",
+	"C-End":"move-to-last-page"
+}

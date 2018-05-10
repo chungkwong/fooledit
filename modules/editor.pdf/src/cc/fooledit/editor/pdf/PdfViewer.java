@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.pdf;
+import cc.fooledit.control.*;
 import java.io.*;
 import java.util.logging.*;
 import javafx.beans.property.*;
 import javafx.embed.swing.*;
-import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
@@ -35,19 +35,25 @@ public class PdfViewer extends BorderPane{
 	private final Pagination pagination;
 	private final ImageView view=new ImageView();
 	private final FloatProperty zoom=new SimpleFloatProperty(1.0f);
+	private final DoubleProperty rotate=new SimpleDoubleProperty(0.0);
+	private ImageView currentPage;
 	public PdfViewer(PDDocument document){
 		this.document=document;
 		this.renderer=new PDFRenderer(document);
-		this.pagination=new Pagination(document.getNumberOfPages(),0);
-		pagination.setPageFactory((index)->new ImageView(getPage(index,zoom.getValue().floatValue())));
-		zoom.addListener((e,o,n)->pagination.setCurrentPageIndex(pagination.getCurrentPageIndex()));
-		setCenter(new ScrollPane(pagination));
-		setRight(getInfoPane());
-		setTop(getPagePane());
-		setLeft(getOutlinePane());
-	}
-	private Node getPagePane(){
-		return new PageToolBox.PageToolBar(this,document);
+		this.pagination=new PaginationWrapper(document.getNumberOfPages(),0);
+		pagination.setPageFactory((index)->{
+			currentPage=new ImageView(getPage(index,zoom.getValue().floatValue()));
+			return currentPage;
+		});
+		zoom.addListener((e,o,n)->{
+			if(currentPage!=null)
+				currentPage.setImage(getPage(getPageIndex(),n.floatValue()));
+		});
+		rotate.addListener((e,o,n)->{
+			if(currentPage!=null)
+				currentPage.setRotate(n.doubleValue());
+		});
+		setCenter(new ScrollPaneWrapper(pagination));
 	}
 	public Image getPage(int index,float dpi){
 		try{
@@ -56,12 +62,6 @@ public class PdfViewer extends BorderPane{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return new WritableImage(0,0);
 		}
-	}
-	private Node getOutlinePane(){
-		return null;
-	}
-	private Node getInfoPane(){
-		return new ContentsToolBox.ContentsViewer(this,document);
 	}
 	public PDDocument getDocument(){
 		return document;
@@ -83,5 +83,14 @@ public class PdfViewer extends BorderPane{
 	}
 	public FloatProperty scaleProperty(){
 		return zoom;
+	}
+	public void setPageRotate(double degree){
+		zoom.setValue(degree);
+	}
+	public double getPageRotate(){
+		return rotate.getValue();
+	}
+	public DoubleProperty pageRotateProperty(){
+		return rotate;
 	}
 }
