@@ -82,11 +82,13 @@ public class SimpleRegistryNode<K,V> extends RegistryNode<K,V>{
 	}
 	@Override
 	public Collection<V> values(){
-		return base.keySet().stream().map((k)->get(k)).collect(Collectors.toSet());
+		HashSet<K> keySet=new HashSet<>(base.keySet());
+		return keySet.stream().map((k)->get(k)).collect(Collectors.toSet());
 	}
 	@Override
 	public Set<Entry<K,V>> entrySet(){
-		return base.keySet().stream().map((k)->new Pair<K,V>(k,get(k))).collect(Collectors.toSet());
+		HashSet<K> keySet=new HashSet<>(base.keySet());
+		return keySet.stream().map((k)->new Pair<K,V>(k,get(k))).collect(Collectors.toSet());
 	}
 	@Override
 	public void addListener(InvalidationListener listener){

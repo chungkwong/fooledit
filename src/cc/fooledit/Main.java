@@ -76,6 +76,7 @@ public class Main extends Application{
 		Logger.getGlobal().addHandler(notifier);
 		scene.getStylesheets().add(getFile("stylesheets/base.css",CoreModule.NAME).toURI().toString());
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
+		scene.focusOwnerProperty().addListener((e,o,n)->System.out.println(n));
 		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		script=new ScriptAPI();
 		registerStandardCommand();

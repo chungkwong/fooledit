@@ -58,16 +58,16 @@ public class TreeViewWrapper<T> extends TreeView<T>{
 		addCommand("focus-down",()->focusDown(),registry);
 		addCommand("focus-previous-page",()->focusToPreviousPage(),registry);
 		addCommand("focus-next-page",()->focusToNextPage(),registry);
-		addCommand("select-previous",()->{getSelectionModel().clearSelection();getSelectionModel().selectPrevious();},registry);
-		addCommand("select-next",()->{getSelectionModel().clearSelection();getSelectionModel().selectNext();},registry);
+		addCommand("select-previous",()->{clearSelection();getSelectionModel().selectPrevious();},registry);
+		addCommand("select-next",()->{clearSelection();getSelectionModel().selectNext();},registry);
 		addCommand("select-first",()->getSelectionModel().clearAndSelect(0),registry);
 		addCommand("select-last",()->getSelectionModel().clearAndSelect(getExpandedItemCount()-1),registry);
-		addCommand("select-first-in-directory",()->{getSelectionModel().clearSelection();selectBeginOfDirectory();},registry);
-		addCommand("select-last-in-directory",()->{getSelectionModel().clearSelection();selectEndOfDirectory();},registry);
+		addCommand("select-first-in-directory",()->{clearSelection();selectBeginOfDirectory();},registry);
+		addCommand("select-last-in-directory",()->{clearSelection();selectEndOfDirectory();},registry);
 		addCommand("select-up",()->{getSelectionModel().clearSelection();selectUp();},registry);
 		addCommand("select-down",()->{getSelectionModel().clearSelection();selectDown();},registry);
-		addCommand("select-previous-page",()->{getSelectionModel().clearSelection();selectToPreviousPage();},registry);
-		addCommand("select-next-page",()->{getSelectionModel().clearSelection();selectToNextPage();},registry);
+		addCommand("select-previous-page",()->{clearSelection();selectToPreviousPage();},registry);
+		addCommand("select-next-page",()->{clearSelection();selectToNextPage();},registry);
 		addCommand("select",()->getSelectionModel().clearAndSelect(getFocusModel().getFocusedIndex()),registry);
 		addCommand("select-also-previous",()->getSelectionModel().selectPrevious(),registry);
 		addCommand("select-also-next",()->getSelectionModel().selectNext(),registry);
@@ -90,6 +90,11 @@ public class TreeViewWrapper<T> extends TreeView<T>{
 		addCommand("toggle-selection",()->toggleSelection(),registry);
 		addCommand("expand",()->getTreeItem(getFocusModel().getFocusedIndex()).setExpanded(true),registry);
 		addCommand("fold",()->getTreeItem(getFocusModel().getFocusedIndex()).setExpanded(false),registry);
+		getSelectionModel().selectedIndexProperty().addListener((e,o,n)->{
+			if(n!=null)
+				getFocusModel().focus(n.intValue());
+		});
+
 	}
 	private void addCommand(String name,Runnable action,ObservableMap<String,Command> registry){
 		registry.put(name,new Command(name,action,CoreModule.NAME));
@@ -181,6 +186,11 @@ public class TreeViewWrapper<T> extends TreeView<T>{
 			getSelectionModel().clearSelection(curr);
 		else
 			getSelectionModel().select(curr);
+	}
+	private void clearSelection(){
+		if(getSelectionModel().getSelectionMode()==SelectionMode.MULTIPLE){
+			getSelectionModel().clearSelection();
+		}
 	}
 	private void selectTo(){
 		int last=getSelectionModel().getSelectedIndex();

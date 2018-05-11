@@ -91,6 +91,7 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 			out.flush();
 			Files.move(tmp.toPath(),getPersistentFile().toPath(),StandardCopyOption.REPLACE_EXISTING);
 		}catch(Exception ex){
+			ex.printStackTrace();
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
@@ -195,6 +196,6 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 	public static void provides(String type,String module,String registry,String target){
 		RegistryNode<Object,Object> core=CoreModule.PROVIDER_REGISTRY.getOrCreateChild(target);
 		((RegistryNode)core.getOrCreateChild(registry)).put(type,module);
-		((RegistryNode)ROOT.get(target).getOrCreateChild(registry)).put(type,LoaderValue.create(module));
+		((RegistryNode)ROOT.getOrCreateChild(target).getOrCreateChild(registry)).put(type,LoaderValue.create(module));
 	}
 }

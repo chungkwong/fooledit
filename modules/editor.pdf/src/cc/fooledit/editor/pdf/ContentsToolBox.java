@@ -65,17 +65,15 @@ public class ContentsToolBox implements ToolBox{
 			setCellFactory((param)->new OutlineCell());
 			setShowRoot(false);
 			getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
-				if(n.getValue() instanceof PDOutlineItem){
+				if(n!=null&&n.getValue() instanceof PDOutlineItem){
 					PDDestination destination;
 					try{
 						destination=((PDOutlineItem)n.getValue()).getDestination();
-						if(destination instanceof PDNamedDestination){
+						while(destination instanceof PDNamedDestination){
 							String label=((PDNamedDestination)destination).getNamedDestination();
 							destination=document.getDocumentCatalog().getDests().getDestination(label);
 						}
 						if(destination instanceof PDPageDestination){
-							System.err.println(destination);
-							System.err.println(((PDPageXYZDestination)destination).retrievePageNumber());
 							viewer.setPageIndex(((PDPageDestination)destination).retrievePageNumber());
 						}
 					}catch(IOException ex){
@@ -83,7 +81,6 @@ public class ContentsToolBox implements ToolBox{
 					}
 				}
 			});
-
 			setRoot(createTreeItem(document.getDocumentCatalog().getDocumentOutline()));
 		}
 		private static TreeItem<PDOutlineNode> createTreeItem(PDOutlineNode node){

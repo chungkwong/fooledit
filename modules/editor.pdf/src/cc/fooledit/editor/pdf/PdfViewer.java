@@ -93,4 +93,8 @@ public class PdfViewer extends BorderPane{
 	public DoubleProperty pageRotateProperty(){
 		return rotate;
 	}
+	@Override
+	public void requestFocus(){
+		pagination.requestFocus();
+	}
 }

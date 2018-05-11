@@ -121,7 +121,7 @@ public class SvnCommands{
 		File root=file.getKey();
 		String loc=file.getValue();
 		SVNRevision r=toRevision(rev);
-		Main.INSTANCE.show(DataObjectRegistry.readFrom(new SvnConnection(root,loc,r).getURL()));
+		Main.INSTANCE.showOnCurrentTab(DataObjectRegistry.readFrom(new SvnConnection(root,loc,r).getURL()));
 	}
 	private static Pair<File,String> splitWorkingCopy(File file) throws SVNException{
 		File root=SVNWCUtil.getWorkingCopyRoot(file,false);
@@ -430,7 +430,7 @@ public class SvnCommands{
 		obj.put(DataObject.DEFAULT_NAME,name);
 		obj.put(DataObject.DATA,text);
 		DataObjectRegistry.addDataObject(obj);
-		Main.INSTANCE.show(obj);
+		Main.INSTANCE.showOnCurrentTab(obj);
 		return text;
 	}
 }
