@@ -31,7 +31,7 @@ public class Previewer extends Application{
 
 		SideBarPane root=new SideBarPane(new TextArea());
 		Button button=new Button("AAAA");
-		
+
 		root.getSideBar(Side.TOP).getTabs().add(new Tab("TOP",button));
 		root.getSideBar(Side.BOTTOM).getTabs().add(new Tab("BOTTOM",new TextArea("This a a \n good news")));
 		root.getSideBar(Side.LEFT).getTabs().add(new Tab("LEFT",new Button("BBBBB")));

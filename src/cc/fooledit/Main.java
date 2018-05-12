@@ -262,8 +262,10 @@ public class Main extends Application{
 			node=node.getParent();
 		}
 		if(node!=null){
-			if(currentWorksheet!=null)
+			if(currentWorksheet!=null){
 				currentWorksheet.getStyleClass().remove("current");
+				currentWorksheet.applyCss();
+			}
 			node.getStyleClass().add("current");
 			currentWorksheet=(WorkSheet)node;
 			if(!((WorkSheet)node).isCompound()){

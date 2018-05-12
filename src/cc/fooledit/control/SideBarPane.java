@@ -47,32 +47,33 @@ public class SideBarPane extends SplitPane{
 		middle.getItems().setAll(left,center,right);
 		setOrientation(Orientation.VERTICAL);
 		getItems().setAll(top,middle,bottom);
+		getDividers().get(0).setPosition(0.0);
+		getDividers().get(1).setPosition(1.0);
+		middle.getDividers().get(0).setPosition(0.0);
+		middle.getDividers().get(1).setPosition(1.0);
 		top.getTabs().addListener((ListChangeListener.Change<? extends Tab> c)->{
 			if(c.getList().isEmpty())
-				setDividerPosition(0,0.0);
+				getDividers().get(0).setPosition(0.0);
 		});
 		bottom.getTabs().addListener((ListChangeListener.Change<? extends Tab> c)->{
 			if(c.getList().isEmpty())
-				setDividerPosition(1,1.0);
+				getDividers().get(1).setPosition(1.0);
 		});
 		left.getTabs().addListener((ListChangeListener.Change<? extends Tab> c)->{
 			if(c.getList().isEmpty())
-				middle.setDividerPosition(0,0.0);
+				middle.getDividers().get(0).setPosition(0.0);
 		});
 		right.getTabs().addListener((ListChangeListener.Change<? extends Tab> c)->{
 			if(c.getList().isEmpty())
-				middle.setDividerPosition(1,1.0);
+				middle.getDividers().get(1).setPosition(1.0);
 		});
 		this.center=new SimpleObjectProperty<Node>(center);
 		this.center.addListener((e,o,n)->middle.getItems().set(1,n));
-		setDividerPositions(0,0.0);
-		setDividerPositions(1,1.0);
-		middle.setDividerPositions(0,0.0);
-		middle.setDividerPositions(1,1.0);
 		SplitPane.setResizableWithParent(top,false);
 		SplitPane.setResizableWithParent(bottom,false);
 		SplitPane.setResizableWithParent(left,false);
 		SplitPane.setResizableWithParent(right,false);
+
 	}
 	public ListRegistryNode<Number> getRatios(){
 		return new ListRegistryNode<>(Arrays.asList(getDividerPositions()[0],getDividerPositions()[1],
@@ -80,10 +81,10 @@ public class SideBarPane extends SplitPane{
 	}
 	public void setRatios(ListRegistryNode<Number> positions){
 		EventManager.addEventListener(EventManager.SHOWN,(obj)->{
-			setDividerPosition(0,positions.getOrDefault(0,0.0).doubleValue());
-			setDividerPosition(1,positions.getOrDefault(1,1.0).doubleValue());
-			middle.setDividerPosition(0,positions.getOrDefault(2,0.0).doubleValue());
-			middle.setDividerPosition(1,positions.getOrDefault(3,1.0).doubleValue());
+			getDividers().get(0).setPosition(positions.getOrDefault(0,0.0).doubleValue());
+			getDividers().get(1).setPosition(positions.getOrDefault(1,1.0).doubleValue());
+			middle.getDividers().get(0).setPosition(positions.getOrDefault(2,0.0).doubleValue());
+			middle.getDividers().get(1).setPosition(positions.getOrDefault(3,1.0).doubleValue());
 		});
 	}
 	public TabPane getSideBar(Side side){
@@ -111,16 +112,16 @@ public class SideBarPane extends SplitPane{
 		if(sideBar.getTabs().size()==1){
 			switch(side){
 				case LEFT:
-					middle.setDividerPosition(0,Helper.truncate(sideBar.getTabMinWidth()/(getWidth()+1),0,middle.getDividerPositions()[1]));
+					middle.getDividers().get(0).setPosition(Helper.truncate(sideBar.getTabMinWidth()/(getWidth()+1),0,middle.getDividerPositions()[1]));
 					break;
 				case RIGHT:
-					middle.setDividerPosition(1,Helper.truncate(1-sideBar.getTabMinWidth()/(getWidth()+1),middle.getDividerPositions()[0],1));
+					middle.getDividers().get(1).setPosition(Helper.truncate(1-sideBar.getTabMinWidth()/(getWidth()+1),middle.getDividerPositions()[0],1));
 					break;
 				case TOP:
-					setDividerPosition(0,Helper.truncate(sideBar.getTabMinHeight()/(getHeight()+1),0,getDividerPositions()[1]));
+					getDividers().get(0).setPosition(Helper.truncate(sideBar.getTabMinHeight()/(getHeight()+1),0,getDividerPositions()[1]));
 					break;
 				case BOTTOM:
-					setDividerPosition(1,Helper.truncate(1-sideBar.getTabMinHeight()/(getHeight()+1),getDividerPositions()[0],1));
+					getDividers().get(1).setPosition(Helper.truncate(1-sideBar.getTabMinHeight()/(getHeight()+1),getDividerPositions()[0],1));
 					break;
 			}
 		}
