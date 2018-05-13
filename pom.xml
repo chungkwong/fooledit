@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.chungkwong</groupId>
+	<artifactId>opener</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>fooledit</name>
+	<description>The editor for fool</description>
+	<url>https://fooledit.cc</url>
+	<inceptionYear>2017</inceptionYear>
+	<licenses>
+		<license>
+			<name>GNU General Public License, Version 3</name>
+			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>chungkwong</id>
+			<name>陈颂光</name>
+			<email>admin@fooledit.cc</email>
+			<url>https://chungkwong.cc</url>
+			<timezone>+8</timezone>
+		</developer>
+	</developers>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<scm>
+		<url>https://github.com/chungkwong/fooledit</url>
+		<tag>HEAD</tag>
+		<connection>scm:git:https://github.com/chungkwong/fooledit.git</connection>
+	</scm>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/chungkwong/fooledit/issues</url>
+	</issueManagement>
+	<modules>
+		<module>core</module>
+		<module>editor.zip</module>
+		<module>editor.pdf</module>
+		<module>vcs.svn</module>
+		<module>vcs.git</module>
+		<module>editor.msoffice</module>
+	 <module>distribution</module>
+	 <module>editor.binary</module>
+	 <module>editor.browser</module>
+	 <module>editor.filesystem</module>
+	 <module>editor.text</module>
+	 <module>editor.media</module>
+	 <module>editor.terminal</module>
+	 <module>editor.image</module>
+	</modules>
+</project>

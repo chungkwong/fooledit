@@ -130,13 +130,14 @@ __文明就是通过让人们能不动脑子地完成越来越多工作而进步
 
 现已支持播放MP3、AIFF（未压缩PCM）、WAV（未压缩PCM）、MPEG-4（AAC）格式的音频。
 
-#### 文档
-
-现已通过Apache PDFbox支持查看PDF文档，即将支持OpenDocument和Microsoft office文档的查看，稍后可能支持修改。
-
 #### 压缩和归档文件
 
-现已借助Apache Common Compress库支持支持AR、ARJ、CPIO、DUMP、JAR、7Z、TAR、ZIP等归档格式，支持Brotli、BZip2、DEFLATE、GZip、LZ4、LZ77、LZMA、LZW、PACK200、Snappy、XZ、Z等压缩方式。同时通过junrar库支持解压RAR文件。
+现已借助Apache Common Compress库支持支持AR、ARJ、CPIO、DUMP、JAR、7Z、TAR、ZIP等归档格式，支持Brotli、BZip2、DEFLATE、GZip、LZ4、LZ77、LZMA、LZW、PACK200、Snappy、XZ、Z等压缩方式。
+
+#### 准备支持的格式
+
+- PDF
+- OpenDocument
 
 ### 辅助工具
 
