@@ -76,9 +76,9 @@ public class Main extends Application{
 		scene.focusOwnerProperty().addListener((e,o,n)->System.out.println(n));
 		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		script=new ScriptAPI();
-		Registry.ROOT.loadPreference();
 		CoreModule.onInit();
 		registerStandardCommand();
+		Registry.ROOT.loadPreference();
 		ModuleRegistry.loadDefault();
 		CoreModule.PROTOCOL_REGISTRY.put("application",new ApplicationRegistry());
 		CoreModule.PROTOCOL_REGISTRY.put("data",new DataStreamHandler());
@@ -393,7 +393,8 @@ public class Main extends Application{
 			return file;
 		}else{
 			try{
-				return new File(URLDecoder.decode(url.toString().substring(9,url.toString().indexOf('!')),"UTF-8")).getParentFile().getParentFile();
+				File jarFile=new File(URLDecoder.decode(url.toString().substring(9,url.toString().indexOf('!')),"UTF-8"));
+				return new File(jarFile.getParentFile().getParentFile(),"modules");
 			}catch(UnsupportedEncodingException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 				return USER_PATH;

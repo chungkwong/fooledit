@@ -23,6 +23,7 @@ import cc.fooledit.editor.text.parser.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
+import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
@@ -33,6 +34,7 @@ import java.util.stream.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javax.activation.*;
+import org.antlr.v4.tool.*;
 import org.fxmisc.richtext.*;
 /**
  *
@@ -42,7 +44,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(TextEditorModule.NAME);
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(TextEditorModule.NAME);
 	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(TextEditorModule.NAME);
-	private final Map<String,Language> languages=new HashMap<>();
+	private final Map<String,Language> languages=(Map<String,Language>)Registry.ROOT.getOrCreateChild(TextEditorModule.NAME).getOrCreateChild("highlighter");
 	private final HistoryRing<String> clips=new HistoryRing<>();
 	public static final StructuredTextEditor INSTANCE=new StructuredTextEditor();
 	private StructuredTextEditor(){
@@ -222,9 +224,71 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		}catch(MalformedURLException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
-
-		List<Map<String,Object>> json=((Map<String,List<Map<String,Object>>>)(Object)Main.INSTANCE.loadJSON(new File(Main.INSTANCE.getModulePath(TextEditorModule.NAME),"modes.json"))).get("languages");
-		json.stream().map((m)->Language.fromJSON(m)).forEach((l)->Arrays.stream(l.getMimeTypes()).forEach((mime)->languages.put(mime,l)));
+	}
+	private void registerParser(String lexFile,String parserFile,String typeFile,String rule,String mime){
+		Supplier<Highlighter> highlighter;
+		Supplier<ParserBuilder> parser=()->null;
+		if(lexFile.endsWith(".json")){
+			File lex=new File(Main.INSTANCE.getDataPath(),lexFile);
+			highlighter=()->{
+				NaiveLexer naiveLexer=new NaiveLexer();
+				try{
+					LexBuilders.fromJSON(Helper.readText(lex),naiveLexer);
+					return new AdhokHighlighter(naiveLexer);
+				}catch(IOException|SyntaxException ex){
+					Logger.getGlobal().log(Level.SEVERE,null,ex);
+					return null;
+				}
+			};
+		}else{
+			File superTypeFile=new File(Main.INSTANCE.getDataPath(),typeFile);
+			Map<String,String> superType=new HashMap<>();
+			try{
+				superType.putAll((Map<String,String>)JSONDecoder.decode(Helper.readText(superTypeFile)));
+			}catch(IOException|SyntaxException ex){
+				Logger.getLogger(Language.class.getName()).log(Level.INFO,null,ex);
+			}
+			if(lexFile.endsWith(".g4")){
+				File lex=new File(Main.INSTANCE.getDataPath(),lexFile);
+				highlighter=()->{
+					LexerBuilder lexer=LexerBuilder.wrap(Grammar.load(lex.getAbsolutePath()));
+					return new AntlrHighlighter(lexer,superType);
+				};
+			}else{
+				highlighter=()->{
+					try{
+						return new AntlrHighlighter(LexerBuilder.wrap(loadClass(lexFile)),superType);
+					}catch(MalformedURLException|ClassNotFoundException ex){
+						Logger.getGlobal().log(Level.SEVERE,null,ex);
+						return null;
+					}
+				};
+			}
+		}
+		if(rule!=null&&parserFile!=null){
+			File p=new File(Main.INSTANCE.getDataPath(),parserFile);
+			if(parserFile.endsWith(".g4")){
+				parser=()->{
+					return ParserBuilder.wrap(Grammar.load(p.getAbsolutePath()),rule);
+				};
+			}else{
+				parser=()->{
+					try{
+						return ParserBuilder.wrap(loadClass(parserFile),rule);
+					}catch(MalformedURLException|ClassNotFoundException ex){
+						Logger.getGlobal().log(Level.SEVERE,null,ex);
+						return null;
+					}
+				};
+			}
+		}
+		languages.put(mime,new Language(mime,highlighter,parser));
+	}
+	private static <T> Class<T> loadClass(String location) throws ClassNotFoundException, MalformedURLException{
+		int i=location.indexOf('!');
+		String jar=location.substring(0,i);
+		String cls=location.substring(i+1);
+		return (Class<T>)new URLClassLoader(new URL[]{new File(Main.INSTANCE.getDataPath(),jar).toURI().toURL()}).loadClass(cls);
 	}
 	private void addCommand(String name,Consumer<CodeEditor> action){
 		commandRegistry.put(name,new Command(name,()->action.accept(getCurrentEditor()),TextEditorModule.NAME));

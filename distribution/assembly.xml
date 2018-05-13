@@ -32,6 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<include>LICENSE</include>
 				<include>startup.sh</include>
 				<include>startup.bat</include>
+				<include>etc/init.scm</include>
 			</includes>
 		</fileSet>
 	</fileSets>
@@ -46,10 +47,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<unpack>false</unpack>
 			</binaries>
 			<sources>
-				<includeModuleDirectory>true</includeModuleDirectory>
+				<includeModuleDirectory>false</includeModuleDirectory>
 				<fileSets>
 					<fileSet>
 						<directory>.</directory>
+						<outputDirectory>modules/${module.artifactId}</outputDirectory>
 						<excludes>
 							<exclude>src/**</exclude>
 							<exclude>pom.xml</exclude>

@@ -50,13 +50,16 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 			RegistryNode<String,RegistryNode<Object,Object>> toLoad=(RegistryNode<String,RegistryNode<Object,Object>>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(getPersistentFile()));
 			for(String path:toLoad.keySet()){
 				String[] comp=splitPath(path);
-				resolve(comp[0]).put(comp[1],toLoad.get(path));
+				RegistryNode<Object,Object> parent=(RegistryNode<Object,Object>)resolve(comp[0]).getOrCreateChild(comp[1]);
+				parent.putAll(toLoad.get(path));
 			}
 			fixProvider();
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.INFO,"Failed to load registry cache",ex);
-			for(String mod:Main.INSTANCE.getDataPath().list()){
-				ModuleRegistry.ensureInstalled(mod);
+			File path=Main.getDataPath();
+			for(File file:path.listFiles()){
+				if(file.isDirectory()&&new File(file,"descriptor.json").exists())
+					ModuleRegistry.ensureInstalled(file.getName());
 			}
 		}
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());
