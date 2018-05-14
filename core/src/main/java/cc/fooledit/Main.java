@@ -172,6 +172,11 @@ public class Main extends Application{
 		addCommandBatch("get-or-create-registry",(o)->{
 			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).getOrCreateChild(SchemeConverter.toString(ScmList.second(o))));
 		});
+		addCommandBatch("provide",(o)->{
+			String[] args=ScmList.asStream(o).map(SchemeConverter::toString).toArray(String[]::new);
+			Registry.provides(args[0],args[1],args[2],args[3]);
+			return null;
+		});
 		addCommandBatch("inform-jar",(o)->{
 			String jar=SchemeConverter.toString(ScmList.first(o));
 			String cls=SchemeConverter.toString(ScmList.second(o));

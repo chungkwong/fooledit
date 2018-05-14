@@ -5,4 +5,4 @@
 (map-suffix-to-mime "t" "application/x-perl")
 (map-suffix-to-mime "al" "application/x-perl")
 (map-suffix-to-mime "perl" "application/x-perl")
-
+(provide "application/x-perl" "mode.perl" "highlighter" "editor.text")

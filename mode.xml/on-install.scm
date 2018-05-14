@@ -5,4 +5,10 @@
 (map-suffix-to-mime "rng" "application/xml")
 (mime-alias "text/xml" "application/xml")
 (mime-alias "text/xml-external-parsed-entity" "application/xml-external-parsed-entity")
+(provide "application/xml" "mode.xml" "parser" "editor.text")
+(provide "application/xml" "mode.xml" "highlighter" "editor.text")
 
+(map-suffix-to-mime "dtd" "application/xml-dtd")
+(mime-alias "text/x-dtd" "application/xml-dtd")
+(provide "application/xml-dtd" "mode.xml" "parser" "editor.text")
+(provide "application/xml-dtd" "mode.xml" "highlighter" "editor.text")

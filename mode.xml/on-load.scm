@@ -1,0 +1,5 @@
+(import (java))
+(invoke (get-static 'cc.fooledit.editor.text.StructuredTextEditor 'INSTANCE) 'registerHighlighter (string->String "mode.xml/target/mode.xml-1.0-SNAPSHOT.jar!cc.fooledit.editor.text.mode.xml.XMLLexer") (string->String "mode.xml/tokens.json") (string->String "application/xml"))
+(invoke (get-static 'cc.fooledit.editor.text.StructuredTextEditor 'INSTANCE) 'registerParser (string->String "mode.xml/target/mode.xml-1.0-SNAPSHOT.jar!cc.fooledit.editor.text.mode.xml.XMLParser") (string->String "document") (string->String "application/xml"))
+(invoke (get-static 'cc.fooledit.editor.text.StructuredTextEditor 'INSTANCE) 'registerHighlighter (string->String "mode.xml/target/mode.xml-1.0-SNAPSHOT.jar!cc.fooledit.editor.text.mode.xml.XMLLexer") (string->String "mode.xml/tokens.json") (string->String "application/xml-dtd"))
+(invoke (get-static 'cc.fooledit.editor.text.StructuredTextEditor 'INSTANCE) 'registerParser (string->String "mode.xml/target/mode.xml-1.0-SNAPSHOT.jar!cc.fooledit.editor.text.mode.xml.XMLParser") (string->String "extSubset") (string->String "application/xml-dtd"))

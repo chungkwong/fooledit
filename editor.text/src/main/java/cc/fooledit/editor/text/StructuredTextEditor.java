@@ -44,7 +44,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(TextEditorModule.NAME);
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(TextEditorModule.NAME);
 	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(TextEditorModule.NAME);
-	private final Map<String,Language> languages=(Map<String,Language>)Registry.ROOT.getOrCreateChild(TextEditorModule.NAME).getOrCreateChild("highlighter");
+	private final Map<String,Cache<Highlighter>> highlighters=(Map<String,Cache<Highlighter>>)Registry.ROOT.getOrCreateChild(TextEditorModule.NAME).getOrCreateChild("highlighter");
+	private final Map<String,Cache<ParserBuilder>> parsers=(Map<String,Cache<ParserBuilder>>)Registry.ROOT.getOrCreateChild(TextEditorModule.NAME).getOrCreateChild("parser");
 	private final HistoryRing<String> clips=new HistoryRing<>();
 	public static final StructuredTextEditor INSTANCE=new StructuredTextEditor();
 	private StructuredTextEditor(){
@@ -225,9 +226,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
-	private void registerParser(String lexFile,String parserFile,String typeFile,String rule,String mime){
+	public void registerHighlighter(String lexFile,String typeFile,String mime){
 		Supplier<Highlighter> highlighter;
-		Supplier<ParserBuilder> parser=()->null;
 		if(lexFile.endsWith(".json")){
 			File lex=new File(Main.INSTANCE.getDataPath(),lexFile);
 			highlighter=()->{
@@ -246,7 +246,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			try{
 				superType.putAll((Map<String,String>)JSONDecoder.decode(Helper.readText(superTypeFile)));
 			}catch(IOException|SyntaxException ex){
-				Logger.getLogger(Language.class.getName()).log(Level.INFO,null,ex);
+				Logger.getGlobal().log(Level.INFO,null,ex);
 			}
 			if(lexFile.endsWith(".g4")){
 				File lex=new File(Main.INSTANCE.getDataPath(),lexFile);
@@ -265,6 +265,10 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				};
 			}
 		}
+		highlighters.put(mime,new Cache<>(highlighter));
+	}
+	public void registerParser(String parserFile,String rule,String mime){
+		Supplier<ParserBuilder> parser=()->null;
 		if(rule!=null&&parserFile!=null){
 			File p=new File(Main.INSTANCE.getDataPath(),parserFile);
 			if(parserFile.endsWith(".g4")){
@@ -282,13 +286,13 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				};
 			}
 		}
-		languages.put(mime,new Language(mime,highlighter,parser));
+		parsers.put(mime,new Cache<>(parser));
 	}
 	private static <T> Class<T> loadClass(String location) throws ClassNotFoundException, MalformedURLException{
 		int i=location.indexOf('!');
 		String jar=location.substring(0,i);
 		String cls=location.substring(i+1);
-		return (Class<T>)new URLClassLoader(new URL[]{new File(Main.INSTANCE.getDataPath(),jar).toURI().toURL()}).loadClass(cls);
+		return (Class<T>)new URLClassLoader(new URL[]{new File(Main.INSTANCE.getDataPath(),jar).toURI().toURL()},StructuredTextEditor.class.getClassLoader()).loadClass(cls);
 	}
 	private void addCommand(String name,Consumer<CodeEditor> action){
 		commandRegistry.put(name,new Command(name,()->action.accept(getCurrentEditor()),TextEditorModule.NAME));
@@ -326,14 +330,17 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	@Override
 	public Node edit(TextObject data,Object remark,RegistryNode<String,Object> meta){
 		MetaLexer lex=null;
-		Language language;
+		Highlighter highlighter=null;
+		ParserBuilder parserBuilder=null;
 		try{
-			language=languages.get(new MimeType((String)meta.getOrDefault(DataObject.MIME,"text/plain")).getBaseType());
+			String mime=new MimeType((String)meta.getOrDefault(DataObject.MIME,"text/plain")).getBaseType();
+			Cache<Highlighter> highlighterCache=highlighters.get(mime);
+			highlighter=highlighterCache!=null?highlighterCache.get():null;
+			Cache<ParserBuilder> parserCache=parsers.get(mime);
+			parserBuilder=parserCache!=null?parserCache.get():null;
 		}catch(MimeTypeParseException ex){
-			language=null;
+			Logger.getGlobal().log(Level.INFO,"",ex);
 		}
-		Highlighter highlighter=language!=null?language.getTokenHighlighter():null;
-		ParserBuilder parserBuilder=language!=null?language.getParserBuilder():null;
 		CodeEditor codeEditor=new CodeEditor(parserBuilder,highlighter);
 		codeEditor.textProperty().bindBidirectional(data.getText());
 		if(remark instanceof ListRegistryNode){

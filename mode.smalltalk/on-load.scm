@@ -1,0 +1,3 @@
+(import (java))
+(invoke (get-static 'cc.fooledit.editor.text.StructuredTextEditor 'INSTANCE) 'registerHighlighter (string->String "mode.smalltalk/target/mode.smalltalk-1.0-SNAPSHOT.jar!cc.fooledit.editor.text.mode.smalltalk.SmalltalkLexer") (string->String "mode.smalltalk/tokens.json") (string->String "text/x-smalltalk"))
+(invoke (get-static 'cc.fooledit.editor.text.StructuredTextEditor 'INSTANCE) 'registerParser (string->String "mode.smalltalk/target/mode.smalltalk-1.0-SNAPSHOT.jar!cc.fooledit.editor.text.mode.smalltalk.SmalltalkParser") (string->String "script") (string->String "text/x-smalltalk"))

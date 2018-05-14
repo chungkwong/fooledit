@@ -5,3 +5,5 @@
 (mime-alias "text/ecmascript" "application/javascript")
 (mime-alias "text/javascript" "application/javascript")
 
+(provide "application/javascript" "mode.javascript" "parser" "editor.text")
+(provide "application/javascript" "mode.javascript" "highlighter" "editor.text")

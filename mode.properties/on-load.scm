@@ -1,0 +1,3 @@
+(import (java))
+(invoke (get-static 'cc.fooledit.editor.text.StructuredTextEditor 'INSTANCE) 'registerHighlighter (string->String "mode.properties/target/mode.properties-1.0-SNAPSHOT.jar!cc.fooledit.editor.text.mode.properties.PropertiesLexer") (string->String "mode.properties/tokens.json") (string->String "x-java-properties"))
+(invoke (get-static 'cc.fooledit.editor.text.StructuredTextEditor 'INSTANCE) 'registerParser (string->String "mode.properties/target/mode.properties-1.0-SNAPSHOT.jar!cc.fooledit.editor.text.mode.properties.PropertiesParser") (string->String "propertiesFile") (string->String "text/x-java-properties"))

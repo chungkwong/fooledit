@@ -6,3 +6,5 @@
 (map-suffix-to-mime "phps" "application/x-php")
 (mime-alias "application/x-php-source" "application/x-php")
 
+(provide "application/x-php" "mode.php" "parser" "editor.text")
+(provide "application/x-php" "mode.php" "highlighter" "editor.text")
