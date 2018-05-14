@@ -15,11 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.msoffice;
-
+import cc.fooledit.core.*;
+import org.apache.poi.sl.usermodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class MsOfficeModule{
-
+public class PptObject implements DataObject<PptObject>{
+	private final SlideShow document;
+	public PptObject(SlideShow document){
+		this.document=document;
+	}
+	@Override
+	public DataObjectType<PptObject> getDataObjectType(){
+		return PptObjectType.INSTANCE;
+	}
+	public SlideShow getDocument(){
+		return document;
+	}
 }
