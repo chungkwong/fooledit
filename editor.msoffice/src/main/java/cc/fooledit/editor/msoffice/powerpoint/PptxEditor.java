@@ -14,17 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.msoffice;
-import javafx.scene.web.*;
-import org.apache.poi.hwpf.*;
+package cc.fooledit.editor.msoffice.powerpoint;
+import cc.fooledit.core.*;
+import cc.fooledit.editor.msoffice.MsOfficeModule;
+import cc.fooledit.spi.*;
+import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DocumentViewer extends HTMLEditor{
-	private final HWPFDocumentCore document;
-	public DocumentViewer(HWPFDocumentCore document){
-		this.document=document;
-		setHtmlText(document.getDocumentText().replace("<","&lt;").replace("&","&amp;"));
+public class PptxEditor implements DataEditor<PptxObject>{
+	@Override
+	public Node edit(PptxObject data,Object remark,RegistryNode<String,Object> meta){
+		return new PptxViewer(data.getDocument());
+	}
+	@Override
+	public String getName(){
+		return MessageRegistry.getString("SLIDE_SHOW",MsOfficeModule.NAME);
 	}
 }

@@ -14,23 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.msoffice;
+package cc.fooledit.editor.msoffice.word;
 import cc.fooledit.core.*;
-import org.apache.poi.hwpf.*;
+import cc.fooledit.editor.msoffice.MsOfficeModule;
+import cc.fooledit.spi.*;
+import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DocObject implements DataObject<DocObject>{
-	private final HWPFDocumentCore document;
-	public DocObject(HWPFDocumentCore document){
-		this.document=document;
+public class DocEditor implements DataEditor<DocObject>{
+	public static final DocEditor INSTANCE=new DocEditor();
+	private DocEditor(){
 	}
 	@Override
-	public DataObjectType<DocObject> getDataObjectType(){
-		return DocObjectType.INSTANCE;
+	public Node edit(DocObject data,Object remark,RegistryNode<String,Object> meta){
+		return new DocumentViewer(data.getDocument());
 	}
-	public HWPFDocumentCore getDocument(){
-		return document;
+	@Override
+	public String getName(){
+		return MessageRegistry.getString("DOCUMENT_EDITOR",MsOfficeModule.NAME);
 	}
 }

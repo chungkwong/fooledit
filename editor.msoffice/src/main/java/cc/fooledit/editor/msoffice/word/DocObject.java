@@ -14,23 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.msoffice;
+package cc.fooledit.editor.msoffice.word;
 import cc.fooledit.core.*;
-import org.apache.poi.sl.usermodel.*;
+import org.apache.poi.hwpf.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PptObject implements DataObject<PptObject>{
-	private final SlideShow document;
-	public PptObject(SlideShow document){
+public class DocObject implements DataObject<DocObject>{
+	private final HWPFDocumentCore document;
+	public DocObject(HWPFDocumentCore document){
 		this.document=document;
 	}
 	@Override
-	public DataObjectType<PptObject> getDataObjectType(){
-		return PptObjectType.INSTANCE;
+	public DataObjectType<DocObject> getDataObjectType(){
+		return DocObjectType.INSTANCE;
 	}
-	public SlideShow getDocument(){
+	public HWPFDocumentCore getDocument(){
 		return document;
 	}
 }

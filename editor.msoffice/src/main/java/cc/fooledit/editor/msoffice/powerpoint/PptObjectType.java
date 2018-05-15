@@ -14,18 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.msoffice;
+package cc.fooledit.editor.msoffice.powerpoint;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.msoffice.MsOfficeModule;
 import cc.fooledit.spi.*;
 import java.net.*;
-import org.apache.poi.hwpf.*;
+import org.apache.poi.hslf.usermodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DocObjectType implements DataObjectType<DocObject>{
-	public static DocObjectType INSTANCE=new DocObjectType();
-	private DocObjectType(){
+public class PptObjectType implements DataObjectType<PptObject>{
+	public static final PptObjectType INSTANCE=new PptObjectType();
+	private PptObjectType(){
 	}
 	@Override
 	public boolean canRead(){
@@ -40,19 +41,19 @@ public class DocObjectType implements DataObjectType<DocObject>{
 		return false;
 	}
 	@Override
-	public DocObject create(){
+	public PptObject create(){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",MsOfficeModule.NAME);
+		return MessageRegistry.getString("OLD_POWERPOINT_DOCUMENT",MsOfficeModule.NAME);
 	}
 	@Override
-	public void writeTo(DocObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
+	public void writeTo(PptObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		data.getDocument().write(connection.getOutputStream());
 	}
 	@Override
-	public DocObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
-		return new DocObject(new HWPFDocument(connection.getInputStream()));
+	public PptObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
+		return new PptObject(new HSLFSlideShow(connection.getInputStream()));
 	}
 }

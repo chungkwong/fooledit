@@ -14,24 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.msoffice;
+package cc.fooledit.editor.msoffice.excel;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.msoffice.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DocEditor implements DataEditor<DocObject>{
-	public static final DocEditor INSTANCE=new DocEditor();
-	private DocEditor(){
+public class XlsEditor implements DataEditor<XlsObject>{
+	public static final XlsEditor INSTANCE=new XlsEditor();
+	private XlsEditor(){
 	}
 	@Override
-	public Node edit(DocObject data,Object remark,RegistryNode<String,Object> meta){
-		return new DocumentViewer(data.getDocument());
+	public Node edit(XlsObject data,Object remark,RegistryNode<String,Object> meta){
+		return new XlsViewer(data.getDocument());
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",MsOfficeModule.NAME);
+		return MessageRegistry.getString("SPREADSHEET",MsOfficeModule.NAME);
 	}
 }

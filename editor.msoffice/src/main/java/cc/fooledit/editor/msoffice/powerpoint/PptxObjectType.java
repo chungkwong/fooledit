@@ -14,18 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.msoffice;
+package cc.fooledit.editor.msoffice.powerpoint;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.msoffice.MsOfficeModule;
 import cc.fooledit.spi.*;
 import java.net.*;
-import org.apache.poi.hslf.usermodel.*;
+import org.apache.poi.xslf.usermodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PptObjectType implements DataObjectType<PptObject>{
-	public static final PptObjectType INSTANCE=new PptObjectType();
-	private PptObjectType(){
+public class PptxObjectType implements DataObjectType<PptxObject>{
+	public static final PptxObjectType INSTANCE=new PptxObjectType();
+	private PptxObjectType(){
 	}
 	@Override
 	public boolean canRead(){
@@ -40,20 +41,19 @@ public class PptObjectType implements DataObjectType<PptObject>{
 		return false;
 	}
 	@Override
-	public PptObject create(){
+	public PptxObject create(){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_POWERPOINT_DOCUMENT",MsOfficeModule.NAME);
+		return MessageRegistry.getString("NEW_POWERPOINT_DOCUMENT",MsOfficeModule.NAME);
 	}
 	@Override
-	public void writeTo(PptObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
+	public void writeTo(PptxObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		data.getDocument().write(connection.getOutputStream());
 	}
 	@Override
-	public PptObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
-		return new PptObject(HSLFSlideShowFactory.create(connection.getInputStream()));
+	public PptxObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
+		return new PptxObject(new XMLSlideShow(connection.getInputStream()));
 	}
-
 }

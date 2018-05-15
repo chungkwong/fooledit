@@ -14,22 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.msoffice;
+package cc.fooledit.editor.msoffice.powerpoint;
 import cc.fooledit.core.*;
-import cc.fooledit.spi.*;
-import javafx.scene.*;
+import org.apache.poi.xslf.usermodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PptEditor implements DataEditor<PptObject>{
-	@Override
-	public Node edit(PptObject data,Object remark,RegistryNode<String,Object> meta){
-		return new PptViewer(data.getDocument());
+public class PptxObject implements DataObject<PptxObject>{
+	private final XMLSlideShow document;
+	public PptxObject(XMLSlideShow document){
+		this.document=document;
 	}
 	@Override
-	public String getName(){
-		return MessageRegistry.getString("SLIDE_SHOW",MsOfficeModule.NAME);
+	public DataObjectType<PptxObject> getDataObjectType(){
+		return PptxObjectType.INSTANCE;
 	}
-
+	public XMLSlideShow getDocument(){
+		return document;
+	}
 }

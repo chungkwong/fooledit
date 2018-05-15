@@ -14,25 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.msoffice;
-import cc.fooledit.control.*;
-import java.util.*;
-import javafx.scene.control.*;
-import org.apache.poi.sl.usermodel.*;
+package cc.fooledit.editor.msoffice.excel;
+import cc.fooledit.core.*;
+import org.apache.poi.hssf.usermodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PptViewer extends PaginationWrapper{
-	private final SlideShow slideShow;
-	public PptViewer(SlideShow slideShow){
-		this.slideShow=slideShow;
-		List<Slide> slides=slideShow.getSlides();
-		setPageCount(slides.size());
-		setPageFactory((i)->{
-			return new Label(slides.get(i).getTitle());
-		});
+public class XlsObject implements DataObject<XlsObject>{
+	private final HSSFWorkbook document;
+	public XlsObject(HSSFWorkbook document){
+		this.document=document;
 
 	}
-
+	@Override
+	public DataObjectType<XlsObject> getDataObjectType(){
+		return XlsObjectType.INSTANCE;
+	}
+	public HSSFWorkbook getDocument(){
+		return document;
+	}
 }
