@@ -16,22 +16,21 @@
  */
 package cc.fooledit.editor.msoffice.excel;
 import cc.fooledit.core.*;
-import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class XlsObject implements DataObject<XlsObject>{
-	private final HSSFWorkbook document;
-	public XlsObject(HSSFWorkbook document){
+	private final Workbook document;
+	public XlsObject(Workbook document){
 		this.document=document;
-
 	}
 	@Override
 	public DataObjectType<XlsObject> getDataObjectType(){
 		return XlsObjectType.INSTANCE;
 	}
-	public HSSFWorkbook getDocument(){
+	public Workbook getDocument(){
 		return document;
 	}
 }

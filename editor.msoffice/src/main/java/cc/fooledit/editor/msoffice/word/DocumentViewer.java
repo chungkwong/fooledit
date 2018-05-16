@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.msoffice.word;
-import javafx.scene.web.*;
+import javafx.scene.control.*;
 import org.apache.poi.hwpf.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DocumentViewer extends HTMLEditor{
+public class DocumentViewer extends TextArea{
 	private final HWPFDocumentCore document;
 	public DocumentViewer(HWPFDocumentCore document){
 		this.document=document;
-		setHtmlText(document.getDocumentText().replace("<","&lt;").replace("&","&amp;"));
+		setText(document.getDocumentText());
 	}
 }

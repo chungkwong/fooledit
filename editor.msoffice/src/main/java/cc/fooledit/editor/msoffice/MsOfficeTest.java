@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.msoffice;
-import cc.fooledit.editor.msoffice.powerpoint.PptxViewer;
+import cc.fooledit.editor.msoffice.word.*;
 import java.io.*;
 import java.nio.file.*;
 import javafx.application.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
-import org.apache.poi.xslf.usermodel.*;
+import org.apache.poi.hwpf.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -30,12 +30,14 @@ import org.apache.poi.xslf.usermodel.*;
 public class MsOfficeTest extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		//HWPFDocumentCore document=new HWPFDocument(Files.newInputStream(new File("/home/kwong/下载/20160829052748861.doc").toPath()));
-		//primaryStage.setScene(new Scene(new BorderPane(new DocumentViewer(document))));
+		HWPFDocumentCore document=new HWPFDocument(Files.newInputStream(new File("/home/kwong/下载/20160829052748861.doc").toPath()));
+		primaryStage.setScene(new Scene(new BorderPane(new DocumentViewer(document))));
 		//HSLFSlideShow document=new HSLFSlideShow(Files.newInputStream(new File("/home/kwong/sysu_learning/中国近代法律文化史/第五章杨月楼奇案.ppt").toPath()));
 		//primaryStage.setScene(new Scene(new BorderPane(new PptViewer(document))));
-		XMLSlideShow document=new XMLSlideShow(Files.newInputStream(new File("/home/kwong/sysu_learning/中国近代经济史/中国近代经济史_教学安排.pptx").toPath()));
-		primaryStage.setScene(new Scene(new BorderPane(new PptxViewer(document))));
+		//XMLSlideShow document=new XMLSlideShow(Files.newInputStream(new File("/home/kwong/sysu_learning/中国近代经济史/中国近代经济史_教学安排.pptx").toPath()));
+		//primaryStage.setScene(new Scene(new BorderPane(new PptxViewer(document))));
+		//Workbook document=WorkbookFactory.create(Files.newInputStream(new File("/home/kwong/下载/20151027114950964567.xls").toPath()));
+		//primaryStage.setScene(new Scene(new BorderPane(new XlsViewer(document))));
 		primaryStage.setMaximized(true);
 		primaryStage.show();
 	}

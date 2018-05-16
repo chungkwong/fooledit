@@ -19,7 +19,7 @@ import cc.fooledit.core.*;
 import cc.fooledit.editor.msoffice.*;
 import cc.fooledit.spi.*;
 import java.net.*;
-import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -54,6 +54,6 @@ public class XlsObjectType implements DataObjectType<XlsObject>{
 	}
 	@Override
 	public XlsObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
-		return new XlsObject(new HSSFWorkbook(connection.getInputStream()));
+		return new XlsObject(WorkbookFactory.create(connection.getInputStream()));
 	}
 }
