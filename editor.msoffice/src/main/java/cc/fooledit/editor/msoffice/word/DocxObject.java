@@ -16,23 +16,21 @@
  */
 package cc.fooledit.editor.msoffice.word;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.MsOfficeModule;
-import cc.fooledit.spi.*;
-import javafx.scene.*;
+import org.apache.poi.xwpf.usermodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DocEditor implements DataEditor<DocObject>{
-	public static final DocEditor INSTANCE=new DocEditor();
-	private DocEditor(){
+public class DocxObject implements DataObject<DocxObject>{
+	private final XWPFDocument document;
+	public DocxObject(XWPFDocument document){
+		this.document=document;
 	}
 	@Override
-	public Node edit(DocObject data,Object remark,RegistryNode<String,Object> meta){
-		return new DocViewer(data.getDocument());
+	public DataObjectType<DocxObject> getDataObjectType(){
+		return DocxObjectType.INSTANCE;
 	}
-	@Override
-	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",MsOfficeModule.NAME);
+	public XWPFDocument getDocument(){
+		return document;
 	}
 }

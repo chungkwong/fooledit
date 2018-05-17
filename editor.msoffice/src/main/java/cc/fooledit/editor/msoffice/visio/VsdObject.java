@@ -14,25 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.msoffice.word;
+package cc.fooledit.editor.msoffice.visio;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.MsOfficeModule;
-import cc.fooledit.spi.*;
-import javafx.scene.*;
+import org.apache.poi.hdgf.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DocEditor implements DataEditor<DocObject>{
-	public static final DocEditor INSTANCE=new DocEditor();
-	private DocEditor(){
+public class VsdObject implements DataObject<VsdObject>{
+	private final HDGFDiagram document;
+	public VsdObject(HDGFDiagram document){
+		this.document=document;
 	}
 	@Override
-	public Node edit(DocObject data,Object remark,RegistryNode<String,Object> meta){
-		return new DocViewer(data.getDocument());
+	public DataObjectType<VsdObject> getDataObjectType(){
+		return VsdObjectType.INSTANCE;
 	}
-	@Override
-	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",MsOfficeModule.NAME);
+	public HDGFDiagram getDocument(){
+		return document;
 	}
 }

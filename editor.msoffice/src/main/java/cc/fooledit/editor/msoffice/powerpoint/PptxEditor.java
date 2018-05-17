@@ -16,7 +16,7 @@
  */
 package cc.fooledit.editor.msoffice.powerpoint;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.MsOfficeModule;
+import cc.fooledit.editor.msoffice.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
@@ -24,6 +24,9 @@ import javafx.scene.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class PptxEditor implements DataEditor<PptxObject>{
+	public static final PptxEditor INSTANCE=new PptxEditor();
+	private PptxEditor(){
+	}
 	@Override
 	public Node edit(PptxObject data,Object remark,RegistryNode<String,Object> meta){
 		return new PptxViewer(data.getDocument());

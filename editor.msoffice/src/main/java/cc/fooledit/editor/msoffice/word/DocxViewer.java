@@ -15,24 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.msoffice.word;
-import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.MsOfficeModule;
-import cc.fooledit.spi.*;
-import javafx.scene.*;
+import javafx.scene.control.*;
+import org.apache.poi.xwpf.extractor.*;
+import org.apache.poi.xwpf.usermodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DocEditor implements DataEditor<DocObject>{
-	public static final DocEditor INSTANCE=new DocEditor();
-	private DocEditor(){
-	}
-	@Override
-	public Node edit(DocObject data,Object remark,RegistryNode<String,Object> meta){
-		return new DocViewer(data.getDocument());
-	}
-	@Override
-	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",MsOfficeModule.NAME);
+public class DocxViewer extends TextArea{
+	public DocxViewer(XWPFDocument document){
+		setText(new XWPFWordExtractor(document).getText());
 	}
 }

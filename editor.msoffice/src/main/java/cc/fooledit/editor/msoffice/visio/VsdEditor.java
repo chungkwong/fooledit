@@ -14,25 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.msoffice.word;
+package cc.fooledit.editor.msoffice.visio;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.MsOfficeModule;
+import cc.fooledit.editor.msoffice.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DocEditor implements DataEditor<DocObject>{
-	public static final DocEditor INSTANCE=new DocEditor();
-	private DocEditor(){
+public class VsdEditor implements DataEditor<VsdObject>{
+	public static final VsdEditor INSTANCE=new VsdEditor();
+	private VsdEditor(){
 	}
 	@Override
-	public Node edit(DocObject data,Object remark,RegistryNode<String,Object> meta){
-		return new DocViewer(data.getDocument());
+	public Node edit(VsdObject data,Object remark,RegistryNode<String,Object> meta){
+		return new VsdViewer(data.getDocument());
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",MsOfficeModule.NAME);
+		return MessageRegistry.getString("DIAGRAM_EDITOR",MsOfficeModule.NAME);
 	}
 }

@@ -30,8 +30,10 @@ import org.apache.poi.hwpf.*;
 public class MsOfficeTest extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		HWPFDocumentCore document=new HWPFDocument(Files.newInputStream(new File("/home/kwong/下载/20160829052748861.doc").toPath()));
-		primaryStage.setScene(new Scene(new BorderPane(new DocumentViewer(document))));
+		HWPFDocumentCore document=new HWPFDocument(Files.newInputStream(new File("/home/kwong/sysu_learning/数学模型/MCM2013/A/CUMCM2013A.doc").toPath()));
+		primaryStage.setScene(new Scene(new BorderPane(new DocViewer(document))));
+		//XWPFDocument document=new XWPFDocument(Files.newInputStream(new File("/home/kwong/下载/2016112108225066.docx").toPath()));
+		//primaryStage.setScene(new Scene(new BorderPane(new DocxViewer(document))));
 		//HSLFSlideShow document=new HSLFSlideShow(Files.newInputStream(new File("/home/kwong/sysu_learning/中国近代法律文化史/第五章杨月楼奇案.ppt").toPath()));
 		//primaryStage.setScene(new Scene(new BorderPane(new PptViewer(document))));
 		//XMLSlideShow document=new XMLSlideShow(Files.newInputStream(new File("/home/kwong/sysu_learning/中国近代经济史/中国近代经济史_教学安排.pptx").toPath()));

@@ -15,19 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.msoffice;
-import cc.fooledit.editor.msoffice.word.DocObject;
-import cc.fooledit.editor.msoffice.word.DocEditor;
-import cc.fooledit.editor.msoffice.word.DocObjectType;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.msoffice.excel.*;
+import cc.fooledit.editor.msoffice.powerpoint.*;
+import cc.fooledit.editor.msoffice.word.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MsOfficeModule{
 	public static final String NAME="editor.msoffice";
-		public static void onLoad(){
+	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(DocObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(DocEditor.INSTANCE,DocObject.class);
+		DataObjectTypeRegistry.addDataObjectType(DocxObjectType.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(DocxEditor.INSTANCE,DocObject.class);
+		DataObjectTypeRegistry.addDataObjectType(XlsObjectType.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(XlsEditor.INSTANCE,DocObject.class);
+		DataObjectTypeRegistry.addDataObjectType(PptObjectType.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(PptEditor.INSTANCE,DocObject.class);
+		DataObjectTypeRegistry.addDataObjectType(PptxObjectType.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(PptxEditor.INSTANCE,DocObject.class);
 	}
 	public static void onUnLoad(){
 
@@ -36,5 +44,17 @@ public class MsOfficeModule{
 		Registry.providesDataObjectType(DocObjectType.class.getName(),NAME);
 		Registry.providesDataObjectEditor(DocEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(DocObject.class.getName(),NAME);
+		Registry.providesDataObjectType(DocxObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(DocxEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(DocxObject.class.getName(),NAME);
+		Registry.providesDataObjectType(XlsObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(XlsEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(XlsObject.class.getName(),NAME);
+		Registry.providesDataObjectType(PptObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(PptEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(PptObject.class.getName(),NAME);
+		Registry.providesDataObjectType(PptxObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(PptxEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(PptxObject.class.getName(),NAME);
 	}
 }

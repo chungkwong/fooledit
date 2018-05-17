@@ -16,20 +16,20 @@
  */
 package cc.fooledit.editor.msoffice.word;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.MsOfficeModule;
+import cc.fooledit.editor.msoffice.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DocEditor implements DataEditor<DocObject>{
-	public static final DocEditor INSTANCE=new DocEditor();
-	private DocEditor(){
+public class DocxEditor implements DataEditor<DocxObject>{
+	public static final DocxEditor INSTANCE=new DocxEditor();
+	private DocxEditor(){
 	}
 	@Override
-	public Node edit(DocObject data,Object remark,RegistryNode<String,Object> meta){
-		return new DocViewer(data.getDocument());
+	public Node edit(DocxObject data,Object remark,RegistryNode<String,Object> meta){
+		return new DocxViewer(data.getDocument());
 	}
 	@Override
 	public String getName(){

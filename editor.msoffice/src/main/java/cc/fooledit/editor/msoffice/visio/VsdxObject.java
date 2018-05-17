@@ -14,17 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.msoffice.word;
-import javafx.scene.control.*;
-import org.apache.poi.hwpf.*;
+package cc.fooledit.editor.msoffice.visio;
+import cc.fooledit.core.*;
+import org.apache.poi.xdgf.usermodel.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DocumentViewer extends TextArea{
-	private final HWPFDocumentCore document;
-	public DocumentViewer(HWPFDocumentCore document){
+public class VsdxObject implements DataObject<VsdxObject>{
+	private final XmlVisioDocument document;
+	public VsdxObject(XmlVisioDocument document){
 		this.document=document;
-		setText(document.getDocumentText());
+	}
+	@Override
+	public DataObjectType<VsdxObject> getDataObjectType(){
+		return VsdxObjectType.INSTANCE;
+	}
+	public XmlVisioDocument getDocument(){
+		return document;
 	}
 }
