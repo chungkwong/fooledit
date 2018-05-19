@@ -15,15 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.msoffice.visio;
-import javafx.scene.control.*;
-import org.apache.poi.xdgf.extractor.*;
+import cc.fooledit.control.*;
+import java.io.*;
+import java.util.logging.*;
+import javafx.scene.image.*;
 import org.apache.poi.xdgf.usermodel.*;
+import org.apache.poi.xdgf.usermodel.shape.*;
+import org.apache.poi.xdgf.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class VsdxViewer extends TextArea{
+public class VsdxViewer extends PaginationWrapper{
 	public VsdxViewer(XmlVisioDocument document){
-		setText(new XDGFVisioExtractor(document).getText());
+		File[] pagePng=document.getPages().stream().map((page)->{
+			try{
+				File f=File.createTempFile("vsd",".png");
+				f.deleteOnExit();
+				VsdxToPng.renderToPng(page,f,1.0,new ShapeRenderer());
+				return f;
+			}catch(IOException ex){
+				Logger.getLogger(VsdxViewer.class.getName()).log(Level.SEVERE,null,ex);
+				return null;
+			}
+		}).toArray(File[]::new);
+		setPageCount(document.getPages().size());
+		setPageFactory((i)->{
+			return pagePng[i]!=null?new ImageView(pagePng[i].toURI().toString()):null;
+		});
 	}
 }

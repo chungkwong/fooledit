@@ -104,5 +104,6 @@
 		<module>mode.csv</module>
 		<module>mode.objc</module>
 		<module>distribution</module>
+	 <module>editor.djvu</module>
 	</modules>
 </project>
