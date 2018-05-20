@@ -105,5 +105,6 @@
 		<module>mode.objc</module>
 		<module>distribution</module>
 	 <module>editor.djvu</module>
+	 <module>editor.chm</module>
 	</modules>
 </project>
