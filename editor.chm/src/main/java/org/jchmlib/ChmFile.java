@@ -82,6 +82,7 @@ public class ChmFile {
      */
     private HashMap<String, String> pathToTitle = null;
     private int detectedLCID = -1;
+    private String url;
     private String homeFile;
     private String topicsFile;
     private String indexFile;
@@ -116,6 +117,7 @@ public class ChmFile {
      * @throws IOException if the file doesn't exist or the file is of the wrong format.
      */
     public ChmFile(String filename) throws IOException {
+		this.url="chm:"+new File(filename).toURI().toString();
         try {
             rf = new RandomAccessFile(filename, "r");
         } catch (Exception e) {
@@ -167,7 +169,9 @@ public class ChmFile {
             return idx;
         }
     }
-
+	public String getUrl(){
+		return url;
+	}
     /**
      * @return Path of the main file (default file to show on startup).
      */

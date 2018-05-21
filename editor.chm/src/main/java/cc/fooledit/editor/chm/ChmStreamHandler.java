@@ -18,7 +18,6 @@ package cc.fooledit.editor.chm;
 import java.io.*;
 import java.net.URLConnection;
 import java.net.*;
-import java.nio.charset.*;
 import java.util.logging.*;
 import org.jchmlib.*;
 import sun.net.www.*;
@@ -140,7 +139,7 @@ class ChmConnection extends URLConnection{
 	@Override
 	public void connect() throws IOException{
 		if(!connected){
-			byte[] bytes=chm.retrieveObjectAsString(chm.resolveObject(path)).getBytes(StandardCharsets.UTF_8);
+			byte[] bytes=chm.retrieveObject(chm.resolveObject(path)).array();
 			size=bytes.length;
 			in=new ByteArrayInputStream(bytes);
 			connected=true;
@@ -160,6 +159,7 @@ class ChmConnection extends URLConnection{
 		return size;
 	}
 	private void parseSpecs(URL url) throws Exception {
+		System.err.println(url);
 		String spec = url.getFile();
 		int separator = spec.lastIndexOf("!/");
 		if (separator == -1) {
@@ -168,8 +168,9 @@ class ChmConnection extends URLConnection{
 		chm = ChmObjectType.INSTANCE.readFrom(new URL(spec.substring(0, separator++)).openConnection(),null).getDocument();
 		path = null;
 		if (++separator != spec.length()) {
-			path=ParseUtil.decode(spec.substring(separator,spec.length()));
+			path=ParseUtil.decode('/'+spec.substring(separator,spec.length()));
 		}
+
 	}
 	public ChmFile getChmFile(){
 		return chm;

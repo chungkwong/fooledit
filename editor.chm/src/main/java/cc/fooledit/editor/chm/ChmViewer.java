@@ -41,27 +41,45 @@ public class ChmViewer extends BorderPane{
 		setPath(document.getHomeFile());
 		content.getEngine().getLoadWorker().stateProperty().addListener((e,o,n)->{
 			if(n==Worker.State.SUCCEEDED){
-				EventListener listener=new EventListener(){
-					public void handleEvent(Event ev){
-						String relPath=((Element)ev.getTarget()).getAttribute("href");
-						System.out.println(relPath);
-						setPath("/"+relPath);
-					}
+				EventListener onclick=(Event ev)->{
+					String link=((Element)ev.getTarget()).getAttribute("href");
+					if(link!=null&&!link.contains(":"))
+						setPath(normailizePath(link));
 				};
 				Document doc=content.getEngine().getDocument();
 				NodeList lista=doc.getElementsByTagName("a");
 				for(int i=0;i<lista.getLength();i++){
-					((EventTarget)lista.item(i)).addEventListener("click",listener,false);
+					((EventTarget)lista.item(i)).addEventListener("click",onclick,false);
+				}
+				NodeList listimg=doc.getElementsByTagName("img");
+				for(int i=0;i<listimg.getLength();i++){
+					Node src=listimg.item(i).getAttributes().getNamedItem("src");
+					if(src!=null){
+						String link=src.getNodeValue();
+						System.err.println(src.getNodeValue());
+						if(!link.contains(":"))
+							src.setNodeValue(document.getUrl()+"!"+normailizePath(link));
+					}
 				}
 			}
 		});
 	}
+	private String normailizePath(String link){
+		if(link.startsWith("/")){
+			return link;
+		}else{
+			int i=path.lastIndexOf('/');
+			if(i!=-1)
+				return path.substring(0,i+1)+link;
+			else
+				return "/"+link;
+		}
+	}
 	public void setPath(String path){
 		title.setText(document.getTitleOfObject(path)+" : "+document.getTitle());
 		ChmUnitInfo obj=document.resolveObject(path);
-		content.getEngine().loadContent(document.retrieveObjectAsString(obj));
+		content.getEngine().loadContent(document.retrieveObjectAsString(document.resolveObject(path)));
 		this.path=path;
-		System.out.println(path);
 	}
 	public ChmFile getDocument(){
 		return document;
