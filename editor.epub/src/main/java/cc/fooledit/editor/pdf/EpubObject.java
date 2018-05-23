@@ -14,30 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.image;
-import java.awt.image.*;
-import java.io.*;
-import javafx.application.*;
-import javafx.embed.swing.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
-import javax.imageio.*;
+package cc.fooledit.editor.pdf;
+import cc.fooledit.core.*;
+import nl.siegmann.epublib.domain.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ImageTest extends Application{
-	@Override
-	public void start(Stage primaryStage) throws Exception{
-		BufferedImage image=ImageIO.read(new FileInputStream("/home/kwong/projects/unpaper-master/tests/goldenA1.pbm"));
-		primaryStage.setScene(new Scene(new BorderPane(new ScrollPane(new ImageView(SwingFXUtils.toFXImage(image,null))))));
-		primaryStage.setMaximized(true);
-		primaryStage.show();
+public class EpubObject implements DataObject<EpubObject>{
+	private final Book doc;
+	public EpubObject(Book doc){
+		this.doc=doc;
 	}
-	public static void main(String[] args){
-		launch(args);
+	@Override
+	public DataObjectType<EpubObject> getDataObjectType(){
+		return EpubObjectType.INSTANCE;
+	}
+	public Book getDocument(){
+		return doc;
 	}
 }

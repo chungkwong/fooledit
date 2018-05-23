@@ -14,30 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.image;
-import java.awt.image.*;
-import java.io.*;
+package cc.fooledit.editor.pdf;
 import javafx.application.*;
-import javafx.embed.swing.*;
 import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
 import javafx.scene.layout.*;
+import javafx.scene.web.*;
 import javafx.stage.*;
-import javax.imageio.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ImageTest extends Application{
+public class EpubTest extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		BufferedImage image=ImageIO.read(new FileInputStream("/home/kwong/projects/unpaper-master/tests/goldenA1.pbm"));
-		primaryStage.setScene(new Scene(new BorderPane(new ScrollPane(new ImageView(SwingFXUtils.toFXImage(image,null))))));
-		primaryStage.setMaximized(true);
+		//Book book=new EpubReader().readEpub(new FileInputStream("/home/kwong/下载/test.epub"));
+		//EpubViewer viewer=new EpubViewer(book);
+		//primaryStage.setScene(new Scene(new BorderPane(viewer,null,null,null,new ContentsToolBox.ContentsViewer(viewer,book))));
+		WebView viewer=new WebView();
+		viewer.getEngine().load("jar:file:///home/kwong/.ivy2/cache/org.apache.commons/commons-compress/javadocs/commons-compress-1.15-javadoc.jar!/index.html");
+		primaryStage.setScene(new Scene(new BorderPane(viewer)));
 		primaryStage.show();
 	}
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception{
 		launch(args);
 	}
 }
