@@ -23,7 +23,6 @@ import javafx.scene.layout.*;
 import javafx.scene.web.*;
 import org.jchmlib.*;
 import org.w3c.dom.*;
-import org.w3c.dom.events.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -38,31 +37,30 @@ public class ChmViewer extends BorderPane{
 		this.document=document;
 		setTop(title);
 		setCenter(content);
-		setPath(document.getHomeFile());
 		content.getEngine().getLoadWorker().stateProperty().addListener((e,o,n)->{
 			if(n==Worker.State.SUCCEEDED){
-				EventListener onclick=(Event ev)->{
-					String link=((Element)ev.getTarget()).getAttribute("href");
-					if(link!=null&&!link.contains(":"))
-						setPath(normailizePath(link));
-				};
 				Document doc=content.getEngine().getDocument();
 				NodeList lista=doc.getElementsByTagName("a");
 				for(int i=0;i<lista.getLength();i++){
-					((EventTarget)lista.item(i)).addEventListener("click",onclick,false);
+					Node src=lista.item(i).getAttributes().getNamedItem("href");
+					if(src!=null){
+						String link=src.getNodeValue();
+						if(!link.contains(":"))
+							src.setNodeValue(document.getUrl()+"!"+normailizePath(link));
+					}
 				}
 				NodeList listimg=doc.getElementsByTagName("img");
 				for(int i=0;i<listimg.getLength();i++){
 					Node src=listimg.item(i).getAttributes().getNamedItem("src");
 					if(src!=null){
 						String link=src.getNodeValue();
-						System.err.println(src.getNodeValue());
 						if(!link.contains(":"))
 							src.setNodeValue(document.getUrl()+"!"+normailizePath(link));
 					}
 				}
 			}
 		});
+		setPath(document.getHomeFile());
 	}
 	private String normailizePath(String link){
 		if(link.startsWith("/")){
@@ -77,8 +75,8 @@ public class ChmViewer extends BorderPane{
 	}
 	public void setPath(String path){
 		title.setText(document.getTitleOfObject(path)+" : "+document.getTitle());
-		ChmUnitInfo obj=document.resolveObject(path);
-		content.getEngine().loadContent(document.retrieveObjectAsString(document.resolveObject(path)));
+		//content.getEngine().load("jar:file:///home/kwong/.ivy2/cache/org.apache.commons/commons-compress/javadocs/commons-compress-1.15-javadoc.jar!/index.html");
+		content.getEngine().load(document.getUrl()+"!"+path);
 		this.path=path;
 	}
 	public ChmFile getDocument(){

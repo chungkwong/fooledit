@@ -43,6 +43,7 @@ public class ChmStreamHandler  extends URLStreamHandler{
 		}
 		return -1;
 	}
+
 	@Override
 	@SuppressWarnings("deprecation")
 	protected void parseURL(URL url,String spec,
@@ -159,7 +160,6 @@ class ChmConnection extends URLConnection{
 		return size;
 	}
 	private void parseSpecs(URL url) throws Exception {
-		System.err.println(url);
 		String spec = url.getFile();
 		int separator = spec.lastIndexOf("!/");
 		if (separator == -1) {
@@ -170,7 +170,6 @@ class ChmConnection extends URLConnection{
 		if (++separator != spec.length()) {
 			path=ParseUtil.decode('/'+spec.substring(separator,spec.length()));
 		}
-
 	}
 	public ChmFile getChmFile(){
 		return chm;

@@ -107,5 +107,6 @@
 	 <module>editor.djvu</module>
 	 <module>editor.chm</module>
 	 <module>editor.epub</module>
+	 <module>editor.odf</module>
 	</modules>
 </project>
