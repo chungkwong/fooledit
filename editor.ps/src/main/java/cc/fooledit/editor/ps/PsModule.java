@@ -14,27 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.odf.chart;
-import cc.fooledit.editor.odf.*;
-import java.util.logging.*;
-import javafx.scene.layout.*;
-import javafx.scene.web.*;
-import org.odftoolkit.simple.*;
+package cc.fooledit.editor.ps;
+import cc.fooledit.core.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ChartViewer extends BorderPane{
-	private final ChartDocument document;
-	public ChartViewer(ChartDocument document){
-		this.document=document;
-		WebView view=new WebView();
-		try{
-			view.getEngine().load(OdfXslt.transform(document).toString());
-		}catch(Exception ex){
-			java.util.logging.Logger.getLogger(ChartViewer.class.getName()).log(Level.SEVERE,null,ex);
-		}
-		setCenter(view);
+public class PsModule{
+	public static final String NAME="editor.ps";
+		public static void onLoad(){
+		DataObjectTypeRegistry.addDataObjectType(PsObjectType.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(PsEditor.INSTANCE,PsObject.class);
 	}
+	public static void onUnLoad(){
 
+	}
+	public static void onInstall(){
+		Registry.providesDataObjectType(PsObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(PsEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(PsObject.class.getName(),NAME);
+	}
 }

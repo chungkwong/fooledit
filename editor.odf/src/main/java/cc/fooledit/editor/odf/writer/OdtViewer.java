@@ -15,22 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.odf.writer;
+import cc.fooledit.editor.odf.*;
 import java.util.logging.*;
-import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.web.*;
 import org.odftoolkit.simple.*;
-import org.odftoolkit.simple.common.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class OdtViewer extends TextArea{
+public class OdtViewer extends BorderPane{
 	private final TextDocument document;
 	public OdtViewer(TextDocument document){
 		this.document=document;
+		WebView view=new WebView();
 		try{
+			view.getEngine().load(OdfXslt.transform(document).toString());
+		}catch(Exception ex){
+			java.util.logging.Logger.getLogger(OdtViewer.class.getName()).log(Level.SEVERE,null,ex);
+		}
+		setCenter(view);
+		/*try{
 			setText(EditableTextExtractor.newOdfEditableTextExtractor(document).getText());
 		}catch(Exception ex){
-			Logger.getLogger(OdtViewer.class.getName()).log(Level.SEVERE,null,ex);
-		}
+			java.util.logging.Logger.getLogger(OdtViewer.class.getName()).log(Level.SEVERE,null,ex);
+		}*/
 	}
 }

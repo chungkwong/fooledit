@@ -15,35 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.odf.impress;
-import cc.fooledit.control.*;
-import javafx.scene.control.*;
+import cc.fooledit.editor.odf.*;
+import java.util.logging.*;
+import javafx.scene.layout.*;
+import javafx.scene.web.*;
 import org.odftoolkit.simple.*;
-import org.odftoolkit.simple.common.*;
-import org.odftoolkit.simple.presentation.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class OdpViewer extends ScrollPane{
+public class OdpViewer extends BorderPane{
 	private final PresentationDocument slideShow;
-	private final PaginationWrapper pagination;
+	//private final PaginationWrapper pagination;
 	public OdpViewer(PresentationDocument slideShow){
 		this.slideShow=slideShow;
+		WebView view=new WebView();
+		try{
+			view.getEngine().load(OdfXslt.transform(slideShow).toString());
+		}catch(Exception ex){
+			java.util.logging.Logger.getLogger(OdpViewer.class.getName()).log(Level.SEVERE,null,ex);
+		}
+		setCenter(view);
+
+/*		this.slideShow=slideShow;
 		pagination=new PaginationWrapper(slideShow.getSlideCount(),0);
 		pagination.setPageFactory((i)->{
 			Slide slide=slideShow.getSlideByIndex(i);
-			/*Canvas canvas=new Canvas();
-			GraphicsContext g2d=canvas.getGraphicsContext2D();
-			slide.getTextboxIterator().forEachRemaining((box)->{
-				g2d.strokeText(box.getTextContent(),box.getRectangle().getX(),box.getRectangle().getY());
-			});
-			return canvas;*/
 			return new TextArea(EditableTextExtractor.newOdfEditableTextExtractor(slide.getOdfElement()).getText());
 		});
-		setContent(pagination);
+		setContent(pagination);*/
 	}
 	@Override
 	public void requestFocus(){
-		pagination.requestFocus();
+		getCenter().requestFocus();
 	}
 }

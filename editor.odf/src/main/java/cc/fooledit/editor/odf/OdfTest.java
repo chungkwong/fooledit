@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.odf;
-import cc.fooledit.editor.odf.writer.*;
+import cc.fooledit.editor.odf.impress.*;
 import java.io.*;
 import java.nio.file.*;
 import javafx.application.*;
@@ -30,12 +30,14 @@ import org.odftoolkit.simple.*;
 public class OdfTest extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		TextDocument document=TextDocument.loadDocument(Files.newInputStream(new File("/home/kwong/sysu_learning/生物人类学/eassy.odt").toPath()));
-		primaryStage.setScene(new Scene(new BorderPane(new OdtViewer(document))));
-//		PresentationDocument document=PresentationDocument.loadDocument(Files.newInputStream(new File("/home/kwong/sysu_learning/大学语文/数学与中国文学.odp").toPath()));
-//		primaryStage.setScene(new Scene(new BorderPane(new OdpViewer(document))));
+//		TextDocument document=TextDocument.loadDocument(Files.newInputStream(new File("/home/kwong/sysu_learning/生物人类学/eassy.odt").toPath()));
+//		primaryStage.setScene(new Scene(new BorderPane(new OdtViewer(document))));
+		PresentationDocument document=PresentationDocument.loadDocument(Files.newInputStream(new File("/home/kwong/sysu_learning2/研究生英语/presentation.odp").toPath()));
+		primaryStage.setScene(new Scene(new BorderPane(new OdpViewer(document))));
 //		SpreadsheetDocument document=SpreadsheetDocument.loadDocument(Files.newInputStream(new File("/home/kwong/sysu_learning/misc/classlist.ods").toPath()));
 //		primaryStage.setScene(new Scene(new BorderPane(new OdsViewer(document))));
+//		GraphicsDocument document=GraphicsDocument.loadDocument(Files.newInputStream(new File("/home/kwong/projects/repository/MathOCR/MathOCR/dev/splash.odg").toPath()));
+//		primaryStage.setScene(new Scene(new BorderPane(new OdgViewer(document))));
 		primaryStage.setMaximized(true);
 		primaryStage.show();
 	}

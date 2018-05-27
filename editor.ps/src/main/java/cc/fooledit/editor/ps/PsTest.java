@@ -14,27 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.odf.chart;
-import cc.fooledit.editor.odf.*;
-import java.util.logging.*;
+package cc.fooledit.editor.ps;
+import javafx.application.*;
+import javafx.scene.*;
 import javafx.scene.layout.*;
-import javafx.scene.web.*;
-import org.odftoolkit.simple.*;
+import javafx.stage.*;
+import org.freehep.postscript.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ChartViewer extends BorderPane{
-	private final ChartDocument document;
-	public ChartViewer(ChartDocument document){
-		this.document=document;
-		WebView view=new WebView();
-		try{
-			view.getEngine().load(OdfXslt.transform(document).toString());
-		}catch(Exception ex){
-			java.util.logging.Logger.getLogger(ChartViewer.class.getName()).log(Level.SEVERE,null,ex);
-		}
-		setCenter(view);
+public class PsTest extends Application{
+	@Override
+	public void start(Stage primaryStage) throws Exception{
+		PSInputFile book=new PSInputFile("/usr/share/doc/texlive-doc/support/pdflatexpicscale/testprinter.ps");
+		PsViewer viewer=new PsViewer(book);
+		primaryStage.setScene(new Scene(new BorderPane(viewer)));
+		primaryStage.show();
 	}
-
+	public static void main(String[] args) throws Exception{
+		launch(args);
+	}
 }

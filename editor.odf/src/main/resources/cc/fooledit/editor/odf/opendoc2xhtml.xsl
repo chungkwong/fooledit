@@ -52,10 +52,10 @@
 	<!--+++++ INCLUDED XSL MODULES +++++-->
 
 	<!-- inheritance of office style properties is resolved into absolute styles. Office properties gathered as elements -->
-	<xsl:include href="../common/styles/style_collector.xsl" />
+	<xsl:include href="style_collector.xsl" />
 
 	<!-- mapping rules of office style properties to CSS/HTML properties -->
-	<xsl:include href="../common/styles/style_mapping_css.xsl" />
+	<xsl:include href="style_mapping_css.xsl" />
 
 	<!-- office header element handling especially for XHTML -->
 	<xsl:include href="header.xsl" />

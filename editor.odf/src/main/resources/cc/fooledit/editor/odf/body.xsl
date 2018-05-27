@@ -25,13 +25,13 @@
 	<!--+++++ INCLUDED XSL MODULES +++++-->
 
 	<!-- helper collection, to convert measures (e.g. inch to pixel using DPI (dots per inch) parameter)-->
-	<xsl:import href="../../common/measure_conversion.xsl"/>
+	<xsl:import href="measure_conversion.xsl"/>
 
 	<!-- common office body element handling -->
-	<xsl:import href="../common/body.xsl"/>
+	<xsl:import href="body_common.xsl"/>
 
 	<!-- common table handling -->
-	<xsl:import href="../common/table/table.xsl"/>
+	<xsl:import href="table_common.xsl"/>
 
 	<!-- xhtml table handling -->
 	<xsl:include href="table.xsl"/>
@@ -1549,9 +1549,10 @@
 			</xsl:attribute>
 
 			<xsl:attribute name="src">
-				<xsl:call-template name="create-href">
+				<xsl:value-of select="@xlink:href"/>
+				<!--<xsl:call-template name="create-href">
 					<xsl:with-param name="href" select="@xlink:href"/>
-				</xsl:call-template>
+				</xsl:call-template>-->
 			</xsl:attribute>
 
 			<!-- style interpretation only, as no subelements are allowed for img in XHTML -->
