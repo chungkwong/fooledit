@@ -1,4 +1,4 @@
-(inform-jar "modules/editor.msoffice/dist/editor.msoffice.jar" "cc.fooledit.editor.msoffice.MsOfficeModule" "onInstall")
+(inform-jar "editor.msoffice/target/editor.msoffice-1.0-SNAPSHOT.jar" "cc.fooledit.editor.msoffice.MsOfficeModule" "onInstall")
 
 (map-mime-to-type "application/vnd.ms-excel" "cc.fooledit.editor.msoffice.excel.XlsObjectType")
 (map-suffix-to-mime "xls" "application/vnd.ms-excel")

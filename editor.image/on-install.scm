@@ -1,5 +1,5 @@
 (import (java))
-(invoke-static 'cc.fooledit.editor.image.ImageModule 'onInstall)
+(inform-jar "editor.image/target/editor.image-1.0-SNAPSHOT.jar" "cc.fooledit.editor.image.ImageModule" "onInstall")
 (map-mime-to-type "image/bmp" "cc.fooledit.editor.image.GraphicsObjectType")
 (map-mime-to-type "image/gif" "cc.fooledit.editor.image.GraphicsObjectType")
 (map-mime-to-type "image/jpeg" "cc.fooledit.editor.image.GraphicsObjectType")

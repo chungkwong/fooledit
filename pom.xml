@@ -103,11 +103,11 @@
 		<module>mode.diff</module>
 		<module>mode.csv</module>
 		<module>mode.objc</module>
-		<module>distribution</module>
 	 <module>editor.djvu</module>
 	 <module>editor.chm</module>
 	 <module>editor.epub</module>
 	 <module>editor.odf</module>
 	 <module>editor.ps</module>
+		<module>distribution</module>
 	</modules>
 </project>

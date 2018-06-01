@@ -1,1 +1,1 @@
-(inform-jar "modules/editor.msoffice/dist/editor.msoffice.jar" "cc.fooledit.editor.msoffice.MsOfficeModule" "onUnLoad")
+(inform-jar "editor.msoffice/target/editor.msoffice-1.0-SNAPSHOT.jar" "cc.fooledit.editor.msoffice.MsOfficeModule" "onUnLoad")

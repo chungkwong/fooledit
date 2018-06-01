@@ -1,2 +1,2 @@
 (import (java))
-(invoke-static 'cc.fooledit.editor.filesystem.FileSystemModule 'onInstall)
+(inform-jar "editor.filesystem/target/editor.filesystem-1.0-SNAPSHOT.jar" "cc.fooledit.editor.filesystem.FileSystemModule" "onInstall")

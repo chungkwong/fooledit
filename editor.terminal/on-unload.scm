@@ -1,2 +1,2 @@
 (import (java))
-(invoke-static 'cc.fooledit.editor.terminal.TerminalModule 'onUnLoad)
+(inform-jar "editor.terminal/target/editor.terminal-1.0-SNAPSHOT.jar" "cc.fooledit.editor.terminal.TerminalModule" "onUnLoad")

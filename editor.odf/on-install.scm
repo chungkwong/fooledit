@@ -1,4 +1,4 @@
-(inform-jar "modules/editor.odf/dist/editor.odf.jar" "cc.fooledit.editor.odf.OdfModule" "onInstall")
+(inform-jar "editor.odf/target/editor.odf-1.0-SNAPSHOT.jar" "cc.fooledit.editor.odf.OdfModule" "onInstall")
 
 (map-mime-to-type "application/vnd.oasis.opendocument.spreadsheet" "cc.fooledit.editor.odf.calc.OdsObjectType")
 (map-suffix-to-mime "ods" "application/vnd.oasis.opendocument.spreadsheet")
