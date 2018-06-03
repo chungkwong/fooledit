@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.media;
+import java.io.*;
 import javafx.application.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
+import javafx.scene.media.*;
 import javafx.stage.*;
 /**
  *
@@ -26,8 +28,11 @@ import javafx.stage.*;
 public class MediaTest extends Application{
 	@Override
 	public void start(Stage stage) throws Exception{
-		VlcMediaViewer viewer=new VlcMediaViewer("file:///home/kwong/video/殘梦.mp4");
-		stage.setScene(new Scene(new BorderPane(viewer)));
+		FxMediaViewer viewer=new FxMediaViewer(new MediaPlayer(new Media(new File("/home/kwong/音乐/自由在我手-群星.mp3").toURI().toString())));
+		//VlcMediaViewer viewer=new VlcMediaViewer("/home/kwong/视频/殘梦.mp4");
+		//VlcMediaViewer viewer=new VlcMediaViewer("/home/kwong/音乐/变色龙-关正杰.mp3");
+		ControlToolBox.Controls controls=new ControlToolBox.Controls(viewer);
+		stage.setScene(new Scene(new BorderPane(viewer,null,null,controls,null)));
 		stage.setMaximized(true);
 		stage.show();
 	}

@@ -19,7 +19,6 @@ import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
-import javafx.scene.media.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -38,9 +37,10 @@ public class MediaObjectType implements DataObjectType<MediaObject>{
 	}
 	@Override
 	public MediaObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
-		try(InputStream in=connection.getInputStream()){
+		return new MediaObject(connection.getURL().toString());
+		/*try(InputStream in=connection.getInputStream()){
 			return readFrom(in);
-		}
+		}*/
 	}
 	public MediaObject readFrom(InputStream in) throws Exception{
 		File tmp=File.createTempFile("fooledit","");
@@ -51,7 +51,7 @@ public class MediaObjectType implements DataObjectType<MediaObject>{
 				out.write(buf,0,c);
 			}
 		}
-		MediaObject data=new MediaObject(new MediaPlayer(new Media(tmp.toURI().toString())));
+		MediaObject data=new MediaObject(tmp.toURI().toString());
 		tmp.delete();
 		return data;
 	}

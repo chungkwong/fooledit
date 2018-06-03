@@ -39,7 +39,7 @@ public class ControlToolBox implements ToolBox{
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
-		return new Controls((MediaViewer)viewer,(MediaObject)meta.get(DataObject.DATA));
+		return new Controls((MediaViewer)viewer);
 	}
 	@Override
 	public Node getGraphic(){
@@ -49,17 +49,15 @@ public class ControlToolBox implements ToolBox{
 	public Side[] getPerferedSides(){
 		return new Side[]{Side.BOTTOM};
 	}
-	private static class Controls extends HBox{
+	static class Controls extends HBox{
 		private final MediaViewer viewer;
-		private final MediaObject object;
 		private Duration duration;
 		private Slider timeSlider;
 		private Label playTime;
 		private Slider volumeSlider;
 		private Spinner<Double> rateSpinner;
-			public Controls(MediaViewer viewer,MediaObject object){
-				this.viewer=viewer;
-				this.object=object;
+		public Controls(MediaViewer viewer){
+			this.viewer=viewer;
 			Button playButton=new Button(">");
 			playButton.setOnAction((e)->{
 				MediaPlayer.Status status=viewer.statusProperty().get();
@@ -73,14 +71,15 @@ public class ControlToolBox implements ToolBox{
 				}
 			});
 			viewer.currentTimeProperty().addListener((ov)->updateValues());
+			duration=viewer.totalTimeProperty().get();
 			viewer.statusProperty().addListener((e,o,n)->{
 				if(n==MediaPlayer.Status.PLAYING)
-					playButton.setText("||");
+					Platform.runLater(()->playButton.setText("||"));
 				else if(n==MediaPlayer.Status.PAUSED||n==MediaPlayer.Status.STOPPED)
-					playButton.setText(">");
+					Platform.runLater(()->playButton.setText(">"));
 				else if(n==MediaPlayer.Status.READY){
 					duration=viewer.totalTimeProperty().get();
-					updateValues();
+					Platform.runLater(()->updateValues());
 				}	
 			});
 			getChildren().add(playButton);
@@ -89,7 +88,7 @@ public class ControlToolBox implements ToolBox{
 			timeSlider.setMaxWidth(Double.MAX_VALUE);
 			timeSlider.valueProperty().addListener((ov)->{
 				if(timeSlider.isValueChanging()){
-					mp.seek(duration.multiply(timeSlider.getValue()/100.0));
+					viewer.seek(duration.multiply(timeSlider.getValue()/100.0));
 				}
 			});
 			getChildren().add(timeSlider);

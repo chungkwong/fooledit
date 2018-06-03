@@ -27,6 +27,7 @@ public class MediaEditorModule{
 	public static void onLoad(){
 		addDataObjectType(MediaObjectType.INSTANCE);
 		addDataEditor(MediaEditor.INSTANCE,MediaObject.class);
+		DataObjectTypeRegistry.addToolBox(new ControlToolBox(),MediaEditor.class);
 		addDataObjectType(MidiObjectType.INSTANCE);
 		addDataEditor(MidiEditor.INSTANCE,MidiObject.class);
 	}
@@ -40,5 +41,6 @@ public class MediaEditorModule{
 		Registry.providesDataObjectType(MidiObjectType.class.getName(),NAME);
 		Registry.providesDataObjectEditor(MidiEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(MidiObject.class.getName(),NAME);
+		Registry.providesEditorToToolbox(MediaEditor.class.getName(),NAME);
 	}
 }

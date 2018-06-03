@@ -17,17 +17,16 @@
 package cc.fooledit.editor.media;
 import cc.fooledit.core.*;
 import javafx.beans.property.*;
-import javafx.scene.media.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MediaObject implements DataObject<MediaObject>{
-	private final Property<MediaPlayer> property;
-	public MediaObject(MediaPlayer audio){
-		this.property=new SimpleObjectProperty<>(audio);
+	private final Property<String> property;
+	public MediaObject(String url){
+		this.property=new SimpleObjectProperty<>(url);
 	}
-	public Property<MediaPlayer> getProperty(){
+	public Property<String> getProperty(){
 		return property;
 	}
 	@Override

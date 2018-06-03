@@ -19,9 +19,11 @@ import com.sun.jna.*;
 import java.nio.*;
 import javafx.animation.*;
 import javafx.application.Platform;
+import javafx.beans.property.*;
 import javafx.event.*;
 import javafx.scene.canvas.*;
 import javafx.scene.image.*;
+import javafx.scene.media.*;
 import javafx.util.*;
 import uk.co.caprica.vlcj.component.*;
 import uk.co.caprica.vlcj.player.direct.*;
@@ -30,33 +32,120 @@ import uk.co.caprica.vlcj.player.direct.format.*;
  *
  * @author kwong
  */
-public class VlcMediaViewer extends Canvas{
+public class VlcMediaViewer extends Canvas implements MediaViewer{
 	private static final double FPS=30.0;
 	private final Timeline timeline;
 	private PixelWriter pixelWriter;
 	private final WritablePixelFormat<ByteBuffer> pixelFormat;
 	private final DirectMediaPlayerComponent mediaPlayerComponent;
 	private final EventHandler<ActionEvent> nextFrameHandler=(t)->renderFrame();
+	private final DoubleProperty rate;
+	private final DoubleProperty volume;
+	private final ObjectProperty<Duration> currentTime;
+	private final ObjectProperty<Duration> totalTime;
+	private final ObjectProperty<MediaPlayer.Status> status;
 	public VlcMediaViewer(String url){
 		pixelWriter=getGraphicsContext2D().getPixelWriter();
 		pixelFormat=PixelFormat.getByteBgraInstance();
 		mediaPlayerComponent=new VlcMediaPlayerComponent();
 		mediaPlayerComponent.getMediaPlayer().playMedia(url);
+		rate=new SimpleDoubleProperty(mediaPlayerComponent.getMediaPlayer().getRate());
+		rate.addListener((e,o,n)->mediaPlayerComponent.getMediaPlayer().setRate(n.floatValue()));
+		volume=new SimpleDoubleProperty(1.0);
+		volume.addListener((e,o,n)->mediaPlayerComponent.getMediaPlayer().setVolume((int)(n.doubleValue()*100)));
+		currentTime=new SimpleObjectProperty<>(Duration.millis(mediaPlayerComponent.getMediaPlayer().getTime()));
+		totalTime=new SimpleObjectProperty<>(Duration.millis(mediaPlayerComponent.getMediaPlayer().getLength()));
+		status=new SimpleObjectProperty<>(MediaPlayer.Status.READY);
 		timeline=new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		double duration=1000.0/FPS;
 		timeline.getKeyFrames().add(new KeyFrame(Duration.millis(duration),nextFrameHandler));
-		startTimer();
-		mediaPlayerComponent.getMediaPlayer();
+		timeline.playFromStart();
 	}
 	public final void stop() throws Exception{
-		stopTimer();
+		timeline.stop();
 		mediaPlayerComponent.getMediaPlayer().stop();
 		mediaPlayerComponent.getMediaPlayer().release();
+	}
+	@Override
+	public void play(){
+		mediaPlayerComponent.getMediaPlayer().play();
+	}
+	@Override
+	public void pause(){
+		mediaPlayerComponent.getMediaPlayer().pause();
+	}
+	@Override
+	public void seek(Duration duration){
+		mediaPlayerComponent.getMediaPlayer().setTime((long)duration.toMillis());
+	}
+	@Override
+	public DoubleProperty rateProperty(){
+		return rate;
+	}
+	@Override
+	public DoubleProperty volumeProperty(){
+		return volume;
+	}
+	@Override
+	public ReadOnlyObjectProperty<Duration> currentTimeProperty(){
+		return currentTime;
+	}
+	@Override
+	public ReadOnlyObjectProperty<Duration> totalTimeProperty(){
+		return totalTime;
+	}
+	@Override
+	public ReadOnlyObjectProperty<MediaPlayer.Status> statusProperty(){
+		return status;
 	}
 	private class VlcMediaPlayerComponent extends DirectMediaPlayerComponent{
 		public VlcMediaPlayerComponent(){
 			super(new VlcBufferFormatCallback());
+		}
+		@Override
+		public void lengthChanged(uk.co.caprica.vlcj.player.MediaPlayer mediaPlayer,long newLength){
+			totalTime.set(Duration.millis(newLength));
+		}
+		@Override
+		public void timeChanged(uk.co.caprica.vlcj.player.MediaPlayer mediaPlayer,long newTime){
+			currentTime.set(Duration.millis(newTime));
+		}
+		@Override
+		public void paused(uk.co.caprica.vlcj.player.MediaPlayer mediaPlayer){
+			timeline.pause();
+			status.setValue(MediaPlayer.Status.PAUSED);
+		}
+		@Override
+		public void playing(uk.co.caprica.vlcj.player.MediaPlayer mediaPlayer){
+			timeline.play();
+			status.setValue(MediaPlayer.Status.PLAYING);
+		}
+		@Override
+		public void finished(uk.co.caprica.vlcj.player.MediaPlayer mediaPlayer){
+			status.setValue(MediaPlayer.Status.STOPPED);
+			timeline.pause();
+		}
+		@Override
+		public void stopped(uk.co.caprica.vlcj.player.MediaPlayer mediaPlayer){
+			status.setValue(MediaPlayer.Status.STOPPED);
+			timeline.pause();
+		}
+		@Override
+		public void opening(uk.co.caprica.vlcj.player.MediaPlayer mediaPlayer){
+			status.setValue(MediaPlayer.Status.READY);
+		}
+		@Override
+		public void newMedia(uk.co.caprica.vlcj.player.MediaPlayer mediaPlayer){
+			status.setValue(MediaPlayer.Status.READY);
+		}
+		@Override
+		public void error(uk.co.caprica.vlcj.player.MediaPlayer mediaPlayer){
+			status.setValue(MediaPlayer.Status.HALTED);
+		}
+		@Override
+		public void mediaFreed(uk.co.caprica.vlcj.player.MediaPlayer mediaPlayer){
+			status.setValue(MediaPlayer.Status.DISPOSED);
 		}
 	}
 	private class VlcBufferFormatCallback implements BufferFormatCallback{
@@ -83,11 +172,5 @@ public class VlcMediaViewer extends Canvas{
 			}
 		}
 		mediaPlayerComponent.getMediaPlayer().unlock();
-	}
-	private void startTimer(){
-		timeline.playFromStart();
-	}
-	private void stopTimer(){
-		timeline.stop();
 	}
 }
