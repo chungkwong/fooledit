@@ -58,7 +58,7 @@ public class ControlToolBox implements ToolBox{
 		private Spinner<Double> rateSpinner;
 		public Controls(MediaViewer viewer){
 			this.viewer=viewer;
-			Button playButton=new Button(">");
+			Button playButton=new Button(viewer.statusProperty().getValue()==MediaPlayer.Status.PLAYING?"||":">");
 			playButton.setOnAction((e)->{
 				MediaPlayer.Status status=viewer.statusProperty().get();
 				if(status==MediaPlayer.Status.UNKNOWN||status==MediaPlayer.Status.HALTED){

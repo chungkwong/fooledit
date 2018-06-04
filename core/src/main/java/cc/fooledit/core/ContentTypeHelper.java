@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.core.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -61,13 +60,16 @@ public class ContentTypeHelper{
 					types=possible;
 			}
 		}
+		String contentType=connection.getContentType();
+		if(contentType!=null)
+			types.add(contentType);
 		List<String> cand=types.stream().map((type)->getAllSuperClasses(type)).
 				flatMap((parents)->parents.stream()).distinct().collect(Collectors.toList());
 		return cand.isEmpty()?Collections.singletonList("application/octet-stream"):cand;
 	}
 	public static void main(String[] args) throws IOException{
 		//System.out.println(new String(new byte[]{0,5,0}).length());
-		//System.out.println(new URL("file:///home/kwong/icon.png").openConnection().getContentType());
+		//System.out.println(new URL("file:///usr/share/icons/Adwaita/512x512/apps/accessories-calculator.png").openConnection().getContentType());
 		//System.out.println(new URL("file:///home/kwong/NetBeansProjects/JSchemeMin/doc/overview.pdf").openConnection().getContentType());
 	}
 	static{

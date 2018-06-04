@@ -15,26 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.media;
-import java.io.*;
 import javafx.application.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
-import javafx.scene.media.*;
 import javafx.stage.*;
 /**
  *
  * @author kwong
  */
 public class MediaTest extends Application{
+	private final VlcMediaViewer viewer;
+	public MediaTest(){
+		this.viewer=new VlcMediaViewer("/home/kwong/视频/殘梦.mp4");
+	}
 	@Override
 	public void start(Stage stage) throws Exception{
-		FxMediaViewer viewer=new FxMediaViewer(new MediaPlayer(new Media(new File("/home/kwong/音乐/自由在我手-群星.mp3").toURI().toString())));
-		//VlcMediaViewer viewer=new VlcMediaViewer("/home/kwong/视频/殘梦.mp4");
+		//FxMediaViewer viewer=new FxMediaViewer(new MediaPlayer(new Media(new File("/usr/share/orage/sounds/Boiling.wav").toURI().toString())));
+		//VlcMediaViewer viewer=new VlcMediaViewer("v4l2:///dev/video0");
 		//VlcMediaViewer viewer=new VlcMediaViewer("/home/kwong/音乐/变色龙-关正杰.mp3");
 		ControlToolBox.Controls controls=new ControlToolBox.Controls(viewer);
 		stage.setScene(new Scene(new BorderPane(viewer,null,null,controls,null)));
 		stage.setMaximized(true);
 		stage.show();
+	}
+	@Override
+	public void stop() throws Exception{
+		viewer.dispose();
+		System.err.println("Stopped");
 	}
 	public static void main(String[] args){
 		launch(args);

@@ -80,6 +80,10 @@ public class VlcMediaViewer extends Canvas implements MediaViewer{
 		mediaPlayerComponent.getMediaPlayer().setTime((long)duration.toMillis());
 	}
 	@Override
+	public void dispose(){
+		mediaPlayerComponent.release();
+	}
+	@Override
 	public DoubleProperty rateProperty(){
 		return rate;
 	}

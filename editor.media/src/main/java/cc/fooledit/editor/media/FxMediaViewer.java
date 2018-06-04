@@ -41,6 +41,10 @@ public class FxMediaViewer extends MediaView implements MediaViewer{
 		player.seek(duration);
 	}
 	@Override
+	public void dispose(){
+		player.dispose();
+	}
+	@Override
 	public DoubleProperty rateProperty(){
 		return player.rateProperty();
 	}

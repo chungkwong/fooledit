@@ -50,6 +50,10 @@ public class MediaEditor implements DataEditor<MediaObject>{
 		return new ScrollPane((Node)editor);
 	}
 	@Override
+	public void dispose(Node node){
+		((MediaViewer)((ScrollPane)node).getContent()).dispose();
+	}
+	@Override
 	public String getName(){
 		return MessageRegistry.getString("MEDIA_PLAYER",MediaEditorModule.NAME);
 	}

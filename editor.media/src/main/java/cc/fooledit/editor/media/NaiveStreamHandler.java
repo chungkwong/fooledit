@@ -15,21 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.media;
-import javafx.beans.property.*;
-import javafx.scene.media.*;
-import javafx.util.*;
+import java.io.*;
+import java.net.*;
 /**
  *
  * @author Chan Chung Kwong
  */
-public interface MediaViewer{
-	void play();
-	void pause();
-	void seek(Duration duration);
-	void dispose();
-	DoubleProperty rateProperty();
-	DoubleProperty volumeProperty();
-	ReadOnlyObjectProperty<Duration> currentTimeProperty();
-	ReadOnlyObjectProperty<Duration> totalTimeProperty();
-	ReadOnlyObjectProperty<MediaPlayer.Status> statusProperty();
+public class NaiveStreamHandler extends URLStreamHandler{
+	@Override
+	protected URLConnection openConnection(URL url) throws IOException{
+		return new NaiveConnection(url);
+	}
+}
+class NaiveConnection extends URLConnection{
+	NaiveConnection(URL url){
+		super(url);
+	}
+	@Override
+	public void connect() throws IOException{
+		
+	}
+	@Override
+	public String getContentType(){
+		return "video/unknown";
+	}
 }

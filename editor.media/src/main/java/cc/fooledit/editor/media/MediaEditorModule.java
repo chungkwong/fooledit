@@ -24,12 +24,19 @@ import cc.fooledit.core.*;
  */
 public class MediaEditorModule{
 	public static final String NAME="editor.media";
+	private static final String[] protocols=new String[]{
+		"cdda","dv","dvd","mms","pvr","rtp","rtsp","simpledvd","vcdx","vlc","v4l2"
+	};
 	public static void onLoad(){
 		addDataObjectType(MediaObjectType.INSTANCE);
 		addDataEditor(MediaEditor.INSTANCE,MediaObject.class);
 		DataObjectTypeRegistry.addToolBox(new ControlToolBox(),MediaEditor.class);
 		addDataObjectType(MidiObjectType.INSTANCE);
 		addDataEditor(MidiEditor.INSTANCE,MidiObject.class);
+		NaiveStreamHandler naiveStreamHandler=new NaiveStreamHandler();
+		for(String protocol:protocols){
+			CoreModule.PROTOCOL_REGISTRY.put(protocol,naiveStreamHandler);
+		}
 	}
 	public static void onUnLoad(){
 
@@ -42,5 +49,8 @@ public class MediaEditorModule{
 		Registry.providesDataObjectEditor(MidiEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(MidiObject.class.getName(),NAME);
 		Registry.providesEditorToToolbox(MediaEditor.class.getName(),NAME);
+		for(String protocol:protocols){
+			Registry.providesProtocol(protocol,NAME);
+		}
 	}
 }
