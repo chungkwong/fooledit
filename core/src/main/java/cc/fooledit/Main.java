@@ -618,6 +618,8 @@ public class Main extends Application{
 		}
 	}
 	private void resetRootWorkSheet(WorkSheet workSheet){
+		if(root.getCenter()instanceof WorkSheet)
+			((WorkSheet)root.getCenter()).dispose(workSheet);
 		currentWorksheet=workSheet;
 		root.setCenter(workSheet);
 		CoreModule.REGISTRY.put(CoreModule.WINDOW_REGISTRY_NAME,workSheet.getRegistry());

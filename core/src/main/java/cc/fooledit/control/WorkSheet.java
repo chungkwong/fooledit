@@ -190,10 +190,13 @@ public class WorkSheet extends BorderPane{
 	}
 	public void removeTab(WorkSheet worksheet){
 		if(isTabed()){
-			((TabPane)getCenter()).getTabs().removeIf((tab)->tab.getContent()==worksheet);
+			List<Tab> toRemove=((TabPane)getCenter()).getTabs().stream().filter((tab)->tab.getContent()==worksheet).collect(Collectors.toList());
+			toRemove.forEach((w)->((WorkSheet)w.getContent()).dispose(null));
+			((TabPane)getCenter()).getTabs().removeAll(toRemove);
 		}
 	}
 	public void keepOnly(WorkSheet sheet){
+		dispose(sheet);
 		if((!sheet.isCompound())&&(getParentWorkSheet()==null||!getParentWorkSheet().isTabed())){
 			setCenter(new DraggableTabPane(new Tab(sheet.getName(),sheet)));
 		}else{
@@ -327,5 +330,17 @@ public class WorkSheet extends BorderPane{
 		while(parent!=null&&!(parent instanceof WorkSheet))
 			parent=parent.getParent();
 		return (WorkSheet)parent;
+	}
+	public void dispose(WorkSheet except){
+		if(this==except)
+			return;
+		if(isTabed()){
+			getTabs().forEach((tab)->tab.dispose(except));
+		}else if(isSplit()){
+			getFirst().dispose(except);
+			getLast().dispose(except);
+		}else{
+			getDataEditor().dispose(getNode());
+		}
 	}
 }
