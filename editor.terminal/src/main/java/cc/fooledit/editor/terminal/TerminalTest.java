@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2018 Chan Chung Kwong
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,30 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.terminal;
-import cc.fooledit.core.*;
 import com.kodedu.terminalfx.*;
-import java.nio.file.*;
+import javafx.application.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
 /**
  *
- * @author Chan Chung Kwong <1m02math@126.com>
+ * @author Chan Chung Kwong
  */
-public class TerminalObject implements DataObject<TerminalObject>{
-	private final TerminalTab terminal;
-	public TerminalObject(){
-		TerminalBuilder terminalBuilder=new TerminalBuilder();
-		this.terminal=terminalBuilder.newTerminal();
-	}
-	public TerminalObject(Path path){
-		TerminalBuilder terminalBuilder=new TerminalBuilder();
-		terminalBuilder.setTerminalPath(path);
-		this.terminal=terminalBuilder.newTerminal();
-	}
-	public TerminalTab getTerminal(){
-		return terminal;
+public class TerminalTest extends Application{
+	private TerminalBuilder terminalBuilder;
+	private TerminalTab terminal;
+	@Override
+	public void start(Stage primaryStage) throws Exception{
+		terminalBuilder = new TerminalBuilder();
+		terminal=terminalBuilder.newTerminal();
+		terminal.onTerminalFxReady(()->Platform.runLater(()->primaryStage.setScene(new Scene(new BorderPane(terminal.getContent())))));
+		primaryStage.setMaximized(true);
+		primaryStage.show();
 	}
 	@Override
-	public DataObjectType<TerminalObject> getDataObjectType(){
-		return TerminalObjectType.INSTANCE;
+	public void stop() throws Exception{
+		System.exit(0);
 	}
-
+	public static void main(String[] args){
+		launch(args);
+	}
 }

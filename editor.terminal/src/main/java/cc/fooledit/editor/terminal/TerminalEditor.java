@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.terminal;
-import cc.fooledit.core.MessageRegistry;
-import cc.fooledit.core.DataEditor;
+import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import javafx.embed.swing.*;
+import javafx.application.*;
 import javafx.scene.*;
+import javafx.scene.layout.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -31,9 +31,14 @@ public class TerminalEditor implements DataEditor<TerminalObject>{
 	}
 	@Override
 	public Node edit(TerminalObject data,Object remark,RegistryNode<String,Object> meta){
-		SwingNode node=new SwingNode();
-		node.setContent(data.getTerminal());
-		return node;
+		BorderPane borderPane=new BorderPane();
+		data.getTerminal().onTerminalFxReady(()->Platform.runLater(()->borderPane.setCenter(data.getTerminal().getContent())));
+		borderPane.setCenter(data.getTerminal().getContent());
+		return borderPane;
+	}
+	@Override
+	public void dispose(Node node,RegistryNode<String,Object> meta){
+		
 	}
 	@Override
 	public String getName(){

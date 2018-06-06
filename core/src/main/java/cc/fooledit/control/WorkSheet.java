@@ -340,7 +340,7 @@ public class WorkSheet extends BorderPane{
 			getFirst().dispose(except);
 			getLast().dispose(except);
 		}else{
-			getDataEditor().dispose(getNode());
+			getDataEditor().dispose(getNode(),getDataObject());
 		}
 	}
 }

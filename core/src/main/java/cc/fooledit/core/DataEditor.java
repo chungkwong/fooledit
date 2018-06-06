@@ -23,7 +23,7 @@ import javafx.scene.*;
  */
 public interface DataEditor<T extends DataObject<T>>{
 	Node edit(T data,Object remark,RegistryNode<String,Object> meta);
-	default void dispose(Node node){
+	default void dispose(Node node,RegistryNode<String,Object> meta){
 		
 	}
 	default RegistryNode<String,Command> getCommandRegistry(){

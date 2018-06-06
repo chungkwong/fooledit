@@ -18,7 +18,7 @@ package cc.fooledit.editor.terminal;
 import cc.fooledit.core.DataObjectType;
 import cc.fooledit.spi.*;
 import java.net.*;
-import javax.activation.*;
+import java.nio.file.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -54,11 +54,6 @@ public class TerminalObjectType implements DataObjectType<TerminalObject>{
 	}
 	@Override
 	public TerminalObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
-		return create();
+		return connection.getURL().getProtocol().equals("file")?new TerminalObject(Paths.get(connection.getURL().toURI())):create();
 	}
-	@Override
-	public TerminalObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object> meta) throws Exception{
-		return create();
-	}
-
 }
