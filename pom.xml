@@ -51,6 +51,7 @@
 		<module>editor.media</module>
 		<module>editor.terminal</module>
 		<module>editor.image</module>
+		<module>editor.email</module>
 		<module>mode.ada</module>
 		<module>mode.awk</module>
 		<module>mode.bash</module>
