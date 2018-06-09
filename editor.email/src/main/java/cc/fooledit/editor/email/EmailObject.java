@@ -16,29 +16,26 @@
  */
 package cc.fooledit.editor.email;
 import cc.fooledit.core.*;
-import javafx.scene.*;
-import javafx.scene.web.*;
+import java.util.*;
+import javax.mail.*;
+import javax.mail.internet.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class EmailObject implements DataObject<EmailObject>{
-	private final WebView webView;
-	private final Node editor;
-	public EmailObject(){
-		this.webView=new WebView();
-		this.editor=new EmailViewer(webView);
+	private final Session session;
+	private final Message message;
+	public EmailObject(Properties props){
+		this.session=Session.getInstance(props);
+		this.message=new MimeMessage(session);
+		
 	}
-	public EmailObject(String url){
-		this.webView=new WebView();
-		webView.getEngine().load(url);
-		this.editor=new EmailViewer(webView);
+	public Message getMessage(){
+		return message;
 	}
-	public WebView getWebView(){
-		return webView;
-	}
-	public Node getEditor(){
-		return editor;
+	public Session getSession(){
+		return session;
 	}
 	@Override
 	public DataObjectType<EmailObject> getDataObjectType(){

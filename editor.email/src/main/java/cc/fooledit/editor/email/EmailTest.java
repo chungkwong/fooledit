@@ -27,6 +27,9 @@ public class EmailTest{
 	private static final String to="1m02math@126.com";
 	private static final String password="";
 	public static void main(String[] args) throws MessagingException{
+		send();
+	}
+	private static void send() throws MessagingException{
 		Properties props=new Properties();
 		props.setProperty("mail.debug", "true");
 		props.setProperty("mail.smtp.auth", "true");
@@ -39,6 +42,6 @@ public class EmailTest{
 		msg.setSubject("Hello world");
 		msg.setRecipients(Message.RecipientType.TO,to);
 		msg.setText("javax.mail is Good");
-		Transport.send(msg,from,password);
+		Transport.send(msg,from,password);		
 	}
 }

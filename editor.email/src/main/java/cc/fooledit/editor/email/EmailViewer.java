@@ -15,60 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.email;
-import cc.fooledit.*;
-import javafx.collections.*;
-import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.web.*;
+import javax.mail.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class EmailViewer extends BorderPane{
-	private final Button reload=new Button("↺");
-	private final Button back=new Button("<");
-	private final Button forward=new Button(">");
-	private final WebEngine engine;
-	private final TextField loc=new TextField();
-	public EmailViewer(WebView data){
-		engine=data.getEngine();
-		engine.getLoadWorker().messageProperty().addListener((e,o,n)->{if(n!=null)Main.INSTANCE.getNotifier().notify(n);});
-		reload.setOnAction((e)->refresh());
-		WebHistory history=engine.getHistory();
-		back.setOnAction((e)->backward());
-		back.disableProperty().bind(history.currentIndexProperty().lessThanOrEqualTo(0));
-		forward.setOnAction((e)->forward());
-		updateForward();
-		history.currentIndexProperty().addListener((e,o,n)->updateForward());
-		history.getEntries().addListener((ListChangeListener.Change<? extends WebHistory.Entry> c)->updateForward());
-		loc.setEditable(true);
-		loc.setOnAction((e)->engine.load(loc.getText()));
-		engine.locationProperty().addListener((e,o,n)->loc.setText(n));
-		HBox.setHgrow(loc,Priority.ALWAYS);
-		setCenter(data);
-		setTop(new HBox(back,forward,loc,reload));
-	}
-	@Override
-	public void requestFocus(){
-		super.requestFocus();
-		loc.requestFocus();
-	}
-	private void updateForward(){
-		forward.setDisable(engine.getHistory().getCurrentIndex()+1>=engine.getHistory().getEntries().size());
-	}
-	void forward(){
-		engine.getHistory().go(1);
-	}
-	void backward(){
-		engine.getHistory().go(-1);
-	}
-	void locate(){
-		loc.requestFocus();
-	}
-	void refresh(){
-		engine.reload();
-	}
-	public WebEngine getEngine(){
-		return engine;
+	public EmailViewer(Session session){
+		
 	}
 }

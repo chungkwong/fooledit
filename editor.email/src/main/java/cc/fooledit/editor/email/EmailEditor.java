@@ -19,10 +19,7 @@ import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.util.function.*;
-import javafx.collections.*;
 import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.web.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -33,51 +30,17 @@ public class EmailEditor implements DataEditor<EmailObject>{
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(EmailModule.NAME);
 	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(EmailModule.NAME);
 	private EmailEditor(){
-		addCommand("move-to-previous-page",(viewer)->viewer.backward());
-		addCommand("move-to-next-page",(viewer)->viewer.forward());
-		addCommand("refresh",(viewer)->viewer.refresh());
-		addCommand("set-location",(viewer)->viewer.locate());
-		menuRegistry.registerDynamicMenu("editor.browser.ForwardPages",(items)->{
-			WebHistory history=((EmailObject)Main.INSTANCE.getCurrentData()).getWebView().getEngine().getHistory();
-			ObservableList<WebHistory.Entry> entries=history.getEntries();
-			items.clear();
-			int curr=history.getCurrentIndex();
-			for(int i=curr+1;i<entries.size();i++){
-				MenuItem item=new MenuItem(entries.get(i).getTitle());
-				int index=i-curr;
-				item.setOnAction((event)->{
-					history.go(index);
-				});
-				items.add(item);
-			}
-		});
-		menuRegistry.registerDynamicMenu("editor.browser.BackwardPages",(items)->{
-			WebHistory history=((EmailObject)Main.INSTANCE.getCurrentData()).getWebView().getEngine().getHistory();
-			ObservableList<WebHistory.Entry> entries=history.getEntries();
-			items.clear();
-			int curr=history.getCurrentIndex();
-			for(int i=curr-1;i>=0;i--){
-				MenuItem item=new MenuItem(entries.get(i).getTitle());
-				int index=i-curr;
-				item.setOnAction((event)->{
-					history.go(index);
-				});
-				items.add(item);
-			}
-		});
 	}
 	private void addCommand(String name,Consumer<EmailViewer> action){
 		commandRegistry.put(name,new Command(name,()->action.accept((EmailViewer)Main.INSTANCE.getCurrentNode()),EmailModule.NAME));
 	}
 	@Override
 	public Node edit(EmailObject data,Object remark,RegistryNode<String,Object> meta){
-		if(remark!=null)
-			data.getWebView().getEngine().load((String)remark);
-		return data.getEditor();
+		return new EmailViewer(data.getSession());
 	}
 	@Override
 	public Object getRemark(Node node){
-		return ((EmailViewer)node).getEngine().getLocation();
+		return null;
 	}
 	@Override
 	public String getName(){

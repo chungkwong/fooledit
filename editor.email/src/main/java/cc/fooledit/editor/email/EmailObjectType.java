@@ -18,6 +18,7 @@ package cc.fooledit.editor.email;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.net.*;
+import java.util.*;
 import javax.activation.*;
 /**
  *
@@ -42,7 +43,7 @@ public class EmailObjectType implements DataObjectType<EmailObject>{
 	}
 	@Override
 	public EmailObject create(){
-		return new EmailObject();
+		return new EmailObject(new Properties());
 	}
 	@Override
 	public boolean canCreate(){
