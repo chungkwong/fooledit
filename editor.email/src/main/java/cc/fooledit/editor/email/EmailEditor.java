@@ -19,7 +19,9 @@ import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.util.function.*;
+import java.util.logging.*;
 import javafx.scene.*;
+import javax.mail.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -36,7 +38,12 @@ public class EmailEditor implements DataEditor<EmailObject>{
 	}
 	@Override
 	public Node edit(EmailObject data,Object remark,RegistryNode<String,Object> meta){
-		return new EmailViewer(data.getSession());
+		try{
+			return new EmailViewer(data.getSession());
+		}catch(MessagingException ex){
+			Logger.getLogger(EmailEditor.class.getName()).log(Level.SEVERE,null,ex);
+			return null;
+		}
 	}
 	@Override
 	public Object getRemark(Node node){

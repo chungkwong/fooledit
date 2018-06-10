@@ -16,32 +16,52 @@
  */
 package cc.fooledit.editor.email;
 import java.util.*;
+import javafx.application.*;
+import javafx.scene.*;
+import javafx.stage.*;
 import javax.mail.*;
 import javax.mail.internet.*;
 /**
  *
  * @author Chan Chung Kwong
  */
-public class EmailTest{
+public class EmailTest extends Application{
 	private static final String from="admin@fooledit.cc";
 	private static final String to="1m02math@126.com";
 	private static final String password="";
+	@Override
+	public void start(Stage primaryStage) throws Exception{
+		Properties props=new Properties();
+		props.setProperty("mail.debug","true");
+		props.setProperty("mail.imap.auth","true");
+		props.setProperty("mail.imap.host","imap.mxhichina.com");
+		props.setProperty("mail.store.protocol","imap");
+		props.put("mail.imap.ssl.enable","true");
+		Session session=Session.getInstance(props,new Authenticator(){
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication(){
+				return new PasswordAuthentication(from,password);
+			}
+		});
+		primaryStage.setScene(new Scene(new EmailViewer(session)));
+		primaryStage.show();
+	}
 	public static void main(String[] args) throws MessagingException{
-		send();
+		launch(args);
 	}
 	private static void send() throws MessagingException{
 		Properties props=new Properties();
-		props.setProperty("mail.debug", "true");
-		props.setProperty("mail.smtp.auth", "true");
-		props.setProperty("mail.smtp.host", "smtp.mxhichina.com");
-		props.setProperty("mail.transport.protocol", "smtp");
-		props.put("mail.smtp.ssl.enable", "true");
+		props.setProperty("mail.debug","true");
+		props.setProperty("mail.smtp.auth","true");
+		props.setProperty("mail.smtp.host","smtp.mxhichina.com");
+		props.setProperty("mail.transport.protocol","smtp");
+		props.put("mail.smtp.ssl.enable","true");
 		Session session=Session.getInstance(props);
 		MimeMessage msg=new MimeMessage(session);
 		msg.setFrom(from);
 		msg.setSubject("Hello world");
 		msg.setRecipients(Message.RecipientType.TO,to);
 		msg.setText("javax.mail is Good");
-		Transport.send(msg,from,password);		
+		Transport.send(msg,from,password);
 	}
 }
