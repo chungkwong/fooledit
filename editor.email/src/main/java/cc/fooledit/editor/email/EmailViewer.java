@@ -16,6 +16,7 @@
  */
 package cc.fooledit.editor.email;
 import cc.fooledit.control.*;
+import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
@@ -34,6 +35,9 @@ public class EmailViewer extends BorderPane{
 		messages.getColumns().add(getSubjectColumn());
 		messages.getColumns().add(getFromColumn());
 		messages.getColumns().add(getDateColumn());
+		messages.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
+			setBottom(n!=null?new MessageViewer(n):null);
+		});
 		setCenter(messages);
 		Store store=session.getStore();
 		store.connect();
@@ -43,7 +47,11 @@ public class EmailViewer extends BorderPane{
 		folders.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
 			if(n!=null){
 				try{
-					messages.getItems().setAll(n.getValue().getMessages());
+					Folder f=n.getValue();
+					if(!f.isOpen()){
+						f.open(Folder.READ_ONLY);
+					}
+					messages.getItems().setAll(f.getMessages());
 				}catch(MessagingException ex){
 					Logger.getLogger(EmailViewer.class.getName()).log(Level.SEVERE,null,ex);
 				}
@@ -102,6 +110,17 @@ public class EmailViewer extends BorderPane{
 			if(!empty&&item!=null){
 				setText(item.getName());
 			}
+		}
+	}
+}
+class MessageViewer extends BorderPane{
+	private final Message message;
+	public MessageViewer(Message message){
+		this.message=message;
+		try{
+			setCenter(new TextArea(Objects.toString(message.getContent())));
+		}catch(IOException|MessagingException ex){
+			Logger.getLogger(MessageViewer.class.getName()).log(Level.SEVERE,null,ex);
 		}
 	}
 }
