@@ -19,7 +19,6 @@ import cc.fooledit.control.*;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import java.util.stream.*;
 import javafx.beans.property.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -29,50 +28,44 @@ import javax.mail.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class EmailViewer extends BorderPane{
-	private final TreeView<Folder> folders;
-	private final TableView<Message> messages=new TableView<>();
+	private final TreeTableView<Object> folders;
 	public EmailViewer(Session session) throws NoSuchProviderException,MessagingException{
-		messages.getColumns().add(getSubjectColumn());
-		messages.getColumns().add(getFromColumn());
-		messages.getColumns().add(getDateColumn());
-		messages.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
-			setBottom(n!=null?new MessageViewer(n):null);
+		folders=new TreeTableWrapper<>();
+		folders.getColumns().add(getSubjectColumn());
+		folders.getColumns().add(getFromColumn());
+		folders.getColumns().add(getDateColumn());
+		folders.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
+			setCenter(n!=null&&n.getValue() instanceof Message?new MessageViewer((Message)n.getValue()):null);
 		});
-		setCenter(messages);
 		Store store=session.getStore();
 		store.connect();
-		folders=new TreeView<>();
 		folders.setShowRoot(true);
-		//folders.setCellFactory((view)->new FolderCell());
-		folders.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
-			if(n!=null){
-				try{
-					Folder f=n.getValue();
-					if(!f.isOpen()){
-						f.open(Folder.READ_ONLY);
-					}
-					messages.getItems().setAll(f.getMessages());
-				}catch(MessagingException ex){
-					Logger.getLogger(EmailViewer.class.getName()).log(Level.SEVERE,null,ex);
-				}
-			}
-		});
-		folders.setRoot(getFolderNode(store.getDefaultFolder()));
+		folders.setRoot(getNode(store.getDefaultFolder()));
 		setLeft(folders);
 	}
-	private TreeItem<Folder> getFolderNode(Folder folder){
-		try{
-			Arrays.stream(folder.list()).forEach((f)->System.err.println(f.getFullName()));
-		}catch(MessagingException ex){
-			Logger.getLogger(EmailViewer.class.getName()).log(Level.SEVERE,null,ex);
-		}
-		return new LazyTreeItem<>(folder,()->Arrays.stream(folder.list()).map((f)->getFolderNode(f)).collect(Collectors.toList()));
+	private TreeItem<Object> getNode(Folder folder){
+		return new LazyTreeItem<>(folder,()->{
+			List<TreeItem<Object>> children=new ArrayList<>();
+			Arrays.stream(folder.list()).forEach((f)->children.add(getNode(f)));
+			if((folder.getType()&Folder.HOLDS_MESSAGES)!=0){
+				if(!folder.isOpen()){
+					folder.open(Folder.READ_ONLY);
+				}
+				Arrays.stream(folder.getMessages()).forEach((m)->children.add(new TreeItem<>(m)));
+			}
+			return children;
+		});
 	}
-	private TableColumn<Message,String> getSubjectColumn(){
-		TableColumn<Message,String> column=new TableColumn<>("Subject");
-		column.setCellValueFactory((TableColumn.CellDataFeatures<Message,String> param)->{
+	private TreeTableColumn<Object,String> getSubjectColumn(){
+		TreeTableColumn<Object,String> column=new TreeTableColumn<>("Subject");
+		column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Object,String> param)->{
 			try{
-				return new ReadOnlyObjectWrapper<>(param.getValue().getSubject());
+				Object value=param.getValue().getValue();
+				if(value instanceof Message){
+					return new ReadOnlyObjectWrapper<>(((Message)value).getSubject());
+				}else{
+					return new ReadOnlyObjectWrapper<>(((Folder)value).getName());
+				}
 			}catch(MessagingException ex){
 				Logger.getLogger(EmailViewer.class.getName()).log(Level.SEVERE,null,ex);
 				return new ReadOnlyObjectWrapper<>("UNKNOWN");
@@ -80,11 +73,16 @@ public class EmailViewer extends BorderPane{
 		});
 		return column;
 	}
-	private TableColumn<Message,String> getFromColumn(){
-		TableColumn<Message,String> column=new TableColumn<>("From");
-		column.setCellValueFactory((TableColumn.CellDataFeatures<Message,String> param)->{
+	private TreeTableColumn<Object,String> getFromColumn(){
+		TreeTableColumn<Object,String> column=new TreeTableColumn<>("From");
+		column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Object,String> param)->{
 			try{
-				return new ReadOnlyObjectWrapper<>(Arrays.toString(param.getValue().getFrom()));
+				Object value=param.getValue().getValue();
+				if(value instanceof Message){
+					return new ReadOnlyObjectWrapper<>(Arrays.toString(((Message)value).getFrom()));
+				}else{
+					return new ReadOnlyObjectWrapper<>("");
+				}
 			}catch(MessagingException ex){
 				Logger.getLogger(EmailViewer.class.getName()).log(Level.SEVERE,null,ex);
 				return new ReadOnlyObjectWrapper<>("UNKNOWN");
@@ -92,11 +90,16 @@ public class EmailViewer extends BorderPane{
 		});
 		return column;
 	}
-	private TableColumn<Message,Date> getDateColumn(){
-		TableColumn<Message,Date> column=new TableColumn<>("Date");
-		column.setCellValueFactory((TableColumn.CellDataFeatures<Message,Date> param)->{
+	private TreeTableColumn<Object,Date> getDateColumn(){
+		TreeTableColumn<Object,Date> column=new TreeTableColumn<>("Date");
+		column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Object,Date> param)->{
 			try{
-				return new ReadOnlyObjectWrapper<>(param.getValue().getSentDate());
+				Object value=param.getValue().getValue();
+				if(value instanceof Message){
+					return new ReadOnlyObjectWrapper<>(((Message)value).getSentDate());
+				}else{
+					return new ReadOnlyObjectWrapper<>(null);
+				}
 			}catch(MessagingException ex){
 				Logger.getLogger(EmailViewer.class.getName()).log(Level.SEVERE,null,ex);
 				return new ReadOnlyObjectWrapper<>(null);
@@ -118,7 +121,23 @@ class MessageViewer extends BorderPane{
 	public MessageViewer(Message message){
 		this.message=message;
 		try{
-			setCenter(new TextArea(Objects.toString(message.getContent())));
+			StringBuilder buf=new StringBuilder();
+			Object content=message.getContent();
+			if(content instanceof Multipart){
+				Multipart multipart=(Multipart)content;
+				for(int i=0;i<multipart.getCount();i++){
+					BodyPart bodyPart=multipart.getBodyPart(i);
+					Enumeration<Header> en=bodyPart.getAllHeaders();
+					while(en.hasMoreElements()){
+						Header nextElement=en.nextElement();
+						buf.append(nextElement.getName()).append('=').append(nextElement.getValue()).append('\n');
+					}
+					buf.append(Objects.toString(bodyPart.getContent()));
+				}
+			}else{
+				buf.append(Objects.toString(content));
+			}
+			setCenter(new TextArea(buf.toString()));
 		}catch(IOException|MessagingException ex){
 			Logger.getLogger(MessageViewer.class.getName()).log(Level.SEVERE,null,ex);
 		}
