@@ -43,7 +43,7 @@ public class EmailTest extends Application{
 				return new PasswordAuthentication(from,password);
 			}
 		});
-		primaryStage.setScene(new Scene(new EmailViewer(session)));
+		primaryStage.setScene(new Scene(new MailBoxViewer(session)));
 		primaryStage.show();
 	}
 	public static void main(String[] args) throws MessagingException{

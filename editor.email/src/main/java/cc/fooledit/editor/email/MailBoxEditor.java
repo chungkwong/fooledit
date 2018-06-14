@@ -26,22 +26,22 @@ import javax.mail.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class EmailEditor implements DataEditor<EmailObject>{
-	public static final EmailEditor INSTANCE=new EmailEditor();
+public class MailBoxEditor implements DataEditor<MailBoxObject>{
+	public static final MailBoxEditor INSTANCE=new MailBoxEditor();
 	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(EmailModule.NAME);
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(EmailModule.NAME);
 	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(EmailModule.NAME);
-	private EmailEditor(){
+	private MailBoxEditor(){
 	}
-	private void addCommand(String name,Consumer<EmailViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((EmailViewer)Main.INSTANCE.getCurrentNode()),EmailModule.NAME));
+	private void addCommand(String name,Consumer<MailBoxViewer> action){
+		commandRegistry.put(name,new Command(name,()->action.accept((MailBoxViewer)Main.INSTANCE.getCurrentNode()),EmailModule.NAME));
 	}
 	@Override
-	public Node edit(EmailObject data,Object remark,RegistryNode<String,Object> meta){
+	public Node edit(MailBoxObject data,Object remark,RegistryNode<String,Object> meta){
 		try{
-			return new EmailViewer(data.getSession());
+			return new MailBoxViewer(data.getSession());
 		}catch(MessagingException ex){
-			Logger.getLogger(EmailEditor.class.getName()).log(Level.SEVERE,null,ex);
+			Logger.getLogger(MailBoxEditor.class.getName()).log(Level.SEVERE,null,ex);
 			return null;
 		}
 	}

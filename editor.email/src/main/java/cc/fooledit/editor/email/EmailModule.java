@@ -26,18 +26,28 @@ public class EmailModule{
 	public static final String APPLICATION_NAME="email";
 	public static final String CONTENT_TYPE_NAME="fooledit/email";
 	public static void onLoad(){
-		Registry.registerApplication(APPLICATION_NAME,CONTENT_TYPE_NAME,EmailObjectType.INSTANCE,EmailObject.class,EmailEditor.INSTANCE);
-		Main.INSTANCE.getGlobalCommandRegistry().put("email",new Command("email",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(EmailObjectType.INSTANCE)),NAME));
+		Registry.registerApplication(APPLICATION_NAME,CONTENT_TYPE_NAME,MailBoxObjectType.INSTANCE,MailBoxObject.class,MailBoxEditor.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(MultipartEditor.INSTANCE,MultipartObject.class);
+		DataObjectTypeRegistry.addDataObjectType(MultipartObjectType.INSTANCE);
+		CoreModule.PROTOCOL_REGISTRY.put("imap",new NaiveStreamHandler());
+		CoreModule.PROTOCOL_REGISTRY.put("pop3",new NaiveStreamHandler());
+		CoreModule.PROTOCOL_REGISTRY.put("smtp",new NaiveStreamHandler());
+		Main.INSTANCE.getGlobalCommandRegistry().put("email",new Command("email",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(MailBoxObjectType.INSTANCE)),NAME));
 	}
 	public static void onUnLoad(){
-
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(EmailObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(EmailEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(EmailObject.class.getName(),NAME);
+		Registry.providesDataObjectType(MailBoxObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(MailBoxEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(MailBoxObject.class.getName(),NAME);
 		Registry.providesApplication(APPLICATION_NAME,NAME);
 		Registry.providesContentTypeLoader(CONTENT_TYPE_NAME,NAME);
 		Registry.providesCommand(APPLICATION_NAME,NAME);
+		Registry.providesDataObjectType(MultipartObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(MultipartEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(MultipartObject.class.getName(),NAME);
+		Registry.providesProtocol("stmp",NAME);
+		Registry.providesProtocol("pop3",NAME);
+		Registry.providesProtocol("imap",NAME);
 	}
 }

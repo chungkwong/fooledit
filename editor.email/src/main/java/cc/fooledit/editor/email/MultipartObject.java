@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2018 Chan Chung Kwong
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,29 +16,21 @@
  */
 package cc.fooledit.editor.email;
 import cc.fooledit.core.*;
-import java.util.*;
 import javax.mail.*;
-import javax.mail.internet.*;
 /**
  *
- * @author Chan Chung Kwong <1m02math@126.com>
+ * @author Chan Chung Kwong
  */
-public class EmailObject implements DataObject<EmailObject>{
-	private final Session session;
-	private final Message message;
-	public EmailObject(Properties props){
-		this.session=Session.getInstance(props);
-		this.message=new MimeMessage(session);
-		
-	}
-	public Message getMessage(){
-		return message;
-	}
-	public Session getSession(){
-		return session;
+public class MultipartObject implements DataObject<MultipartObject>{
+	private final Multipart object;
+	public MultipartObject(Multipart object){
+		this.object=object;
 	}
 	@Override
-	public DataObjectType<EmailObject> getDataObjectType(){
-		return EmailObjectType.INSTANCE;
+	public DataObjectType<MultipartObject> getDataObjectType(){
+		return MultipartObjectType.INSTANCE;
+	}
+	public Multipart getObject(){
+		return object;
 	}
 }

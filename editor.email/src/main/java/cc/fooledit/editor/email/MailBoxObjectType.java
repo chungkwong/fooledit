@@ -20,14 +20,15 @@ import cc.fooledit.spi.*;
 import java.net.*;
 import java.util.*;
 import javax.activation.*;
+import javax.mail.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class EmailObjectType implements DataObjectType<EmailObject>{
-	public static final EmailObjectType INSTANCE=new EmailObjectType();
+public class MailBoxObjectType implements DataObjectType<MailBoxObject>{
+	public static final MailBoxObjectType INSTANCE=new MailBoxObjectType();
 	private static final String MIME="text/html";
-	private EmailObjectType(){
+	private MailBoxObjectType(){
 	}
 	@Override
 	public boolean canRead(){
@@ -38,23 +39,24 @@ public class EmailObjectType implements DataObjectType<EmailObject>{
 		return false;
 	}
 	@Override
-	public void writeTo(EmailObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
+	public void writeTo(MailBoxObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public EmailObject create(){
-		return new EmailObject(new Properties());
+	public MailBoxObject create(){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
 	public boolean canCreate(){
-		return true;
+		return false;
 	}
 	@Override
-	public EmailObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
-		return create();
+	public MailBoxObject readFrom(URLConnection connection,RegistryNode<String,Object> meta) throws Exception{
+		Properties properties=new Properties();
+		return new MailBoxObject(Session.getDefaultInstance(properties));
 	}
 	@Override
-	public EmailObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object> meta) throws Exception{
+	public MailBoxObject readFrom(URLConnection connection,MimeType mime,RegistryNode<String,Object> meta) throws Exception{
 		return create();
 	}
 	@Override

@@ -1,1 +1,8 @@
 (inform-jar "editor.email/target/editor.email-1.0-SNAPSHOT.jar" "cc.fooledit.editor.email.EmailModule" "onInstall")
+(map-mime-to-type "multipart/alternative" "cc.fooledit.editor.email.MultipartObjectType")
+(map-mime-to-type "multipart/digest" "cc.fooledit.editor.email.MultipartObjectType")
+(map-mime-to-type "multipart/mixed" "cc.fooledit.editor.email.MultipartObjectType")
+(map-mime-to-type "multipart/parallel" "cc.fooledit.editor.email.MultipartObjectType")
+(map-mime-to-type "multipart/encrypted" "cc.fooledit.editor.email.MultipartObjectType")
+(map-mime-to-type "multipart/signed" "cc.fooledit.editor.email.MultipartObjectType")
+(map-mime-to-type "multipart/report" "cc.fooledit.editor.email.MultipartObjectType")

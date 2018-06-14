@@ -27,9 +27,9 @@ import javax.mail.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class EmailViewer extends BorderPane{
+public class MailBoxViewer extends BorderPane{
 	private final TreeTableView<Object> folders;
-	public EmailViewer(Session session) throws NoSuchProviderException,MessagingException{
+	public MailBoxViewer(Session session) throws NoSuchProviderException,MessagingException{
 		folders=new TreeTableWrapper<>();
 		folders.getColumns().add(getSubjectColumn());
 		folders.getColumns().add(getFromColumn());
@@ -67,7 +67,7 @@ public class EmailViewer extends BorderPane{
 					return new ReadOnlyObjectWrapper<>(((Folder)value).getName());
 				}
 			}catch(MessagingException ex){
-				Logger.getLogger(EmailViewer.class.getName()).log(Level.SEVERE,null,ex);
+				Logger.getLogger(MailBoxViewer.class.getName()).log(Level.SEVERE,null,ex);
 				return new ReadOnlyObjectWrapper<>("UNKNOWN");
 			}
 		});
@@ -84,7 +84,7 @@ public class EmailViewer extends BorderPane{
 					return new ReadOnlyObjectWrapper<>("");
 				}
 			}catch(MessagingException ex){
-				Logger.getLogger(EmailViewer.class.getName()).log(Level.SEVERE,null,ex);
+				Logger.getLogger(MailBoxViewer.class.getName()).log(Level.SEVERE,null,ex);
 				return new ReadOnlyObjectWrapper<>("UNKNOWN");
 			}
 		});
@@ -101,7 +101,7 @@ public class EmailViewer extends BorderPane{
 					return new ReadOnlyObjectWrapper<>(null);
 				}
 			}catch(MessagingException ex){
-				Logger.getLogger(EmailViewer.class.getName()).log(Level.SEVERE,null,ex);
+				Logger.getLogger(MailBoxViewer.class.getName()).log(Level.SEVERE,null,ex);
 				return new ReadOnlyObjectWrapper<>(null);
 			}
 		});
