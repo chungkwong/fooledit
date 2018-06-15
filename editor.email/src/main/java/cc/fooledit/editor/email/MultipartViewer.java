@@ -15,8 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.email;
+import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
+import java.io.*;
 import java.net.*;
+import java.util.*;
+import java.util.logging.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javax.activation.*;
 import javax.mail.*;
 /**
  *
@@ -26,15 +34,69 @@ public class MultipartViewer extends BorderPane{
 	private final Multipart object;
 	public MultipartViewer(Multipart object){
 		this.object=object;
+		try{
+			switch(object.getContentType()){
+				case "multipart/digest":
+				case "multipart/mixed":
+					VBox mixed=new VBox();
+					for(int i=0;i<object.getCount();i++){
+						mixed.getChildren().add(getViewer(object.getBodyPart(i)));
+					}
+					setCenter(new ScrollPane(mixed));
+					break;
+				case "multipart/alternative":
+					for(int i=0;i<object.getCount();i++){
+						setCenter(getViewer(object.getBodyPart(i)));
+					}
+					break;
+				case "multipart/parallel":
+					SplitPane parallel=new SplitPane();
+					for(int i=0;i<object.getCount();i++){
+						parallel.getItems().add(getViewer(object.getBodyPart(i)));
+					}
+					setCenter(parallel);
+					break;
+				case "multipart/encrypted":
+					break;
+				case "multipart/signed":
+					break;
+				case "multipart/report":
+					break;
+			}
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.SEVERE,"",ex);
+		}
 	}
-	public static void main(String[] args) throws MalformedURLException{
-		String str=new URLName("smtp","mail.sysu.edu.cn",25,"hello","kwong","888888").toString();
-//		URL url=new URL(str);
-		System.out.println(str);
-		/*		System.out.println(url.getProtocol());
-		System.out.println(url.getUserInfo());
-		System.out.println(url.getHost());
-		System.out.println(url.getPort());
-		System.out.println(url.getPath());*/
+	private static Node getViewer(BodyPart part) throws Exception{
+		List<DataObjectType> types=DataObjectTypeRegistry.getPreferedDataObjectType(new MimeType(part.getContentType()));
+		if(!types.isEmpty()){
+			RegistryNode<String,Object> meta=new SimpleRegistryNode<>();
+			DataObject obj=types.get(0).readFrom(new InputStreamConnection(part.getInputStream(),part.getContentType()),new MimeType(part.getContentType()),meta);
+			List<DataEditor> editors=DataObjectTypeRegistry.getDataEditors(obj.getClass());
+			if(editors!=null){
+				return editors.get(0).edit(obj,null,meta);
+			}
+		}
+		return null;
+	}
+}
+class InputStreamConnection extends URLConnection{
+	private final InputStream in;
+	private final String mime;
+	public InputStreamConnection(InputStream in,String mime) throws MalformedURLException{
+		super(new URL("inputstream://localhost/"+System.identityHashCode(in)));
+		this.in=in;
+		this.mime=mime;
+	}
+	@Override
+	public void connect() throws IOException{
+	}
+	@Override
+	public InputStream getInputStream() throws IOException{
+		return in;
+	}
+	@Override
+	public String getContentType(){
+		return mime;
 	}
 }

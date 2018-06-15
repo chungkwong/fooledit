@@ -6,3 +6,5 @@
 (map-mime-to-type "multipart/encrypted" "cc.fooledit.editor.email.MultipartObjectType")
 (map-mime-to-type "multipart/signed" "cc.fooledit.editor.email.MultipartObjectType")
 (map-mime-to-type "multipart/report" "cc.fooledit.editor.email.MultipartObjectType")
+(map-mime-to-type "message/rfc822" "cc.fooledit.editor.email.MessageObjectType")
+(map-suffix-to-mime "eml" "message/rfc822")
