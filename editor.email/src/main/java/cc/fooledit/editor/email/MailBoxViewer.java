@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.email;
 import cc.fooledit.control.*;
-import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javafx.beans.property.*;
@@ -113,33 +112,6 @@ public class MailBoxViewer extends BorderPane{
 			if(!empty&&item!=null){
 				setText(item.getName());
 			}
-		}
-	}
-}
-class MessageViewer extends BorderPane{
-	private final Message message;
-	public MessageViewer(Message message){
-		this.message=message;
-		try{
-			StringBuilder buf=new StringBuilder();
-			Object content=message.getContent();
-			if(content instanceof Multipart){
-				Multipart multipart=(Multipart)content;
-				for(int i=0;i<multipart.getCount();i++){
-					BodyPart bodyPart=multipart.getBodyPart(i);
-					Enumeration<Header> en=bodyPart.getAllHeaders();
-					while(en.hasMoreElements()){
-						Header nextElement=en.nextElement();
-						buf.append(nextElement.getName()).append('=').append(nextElement.getValue()).append('\n');
-					}
-					buf.append(Objects.toString(bodyPart.getContent()));
-				}
-			}else{
-				buf.append(Objects.toString(content));
-			}
-			setCenter(new TextArea(buf.toString()));
-		}catch(IOException|MessagingException ex){
-			Logger.getLogger(MessageViewer.class.getName()).log(Level.SEVERE,null,ex);
 		}
 	}
 }

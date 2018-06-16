@@ -29,6 +29,8 @@ public class EmailModule{
 		Registry.registerApplication(APPLICATION_NAME,CONTENT_TYPE_NAME,MailBoxObjectType.INSTANCE,MailBoxObject.class,MailBoxEditor.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(MultipartEditor.INSTANCE,MultipartObject.class);
 		DataObjectTypeRegistry.addDataObjectType(MultipartObjectType.INSTANCE);
+		DataObjectTypeRegistry.addDataEditor(MessageEditor.INSTANCE,MessageObject.class);
+		DataObjectTypeRegistry.addDataObjectType(MessageObjectType.INSTANCE);
 		CoreModule.PROTOCOL_REGISTRY.put("imap",new NaiveStreamHandler());
 		CoreModule.PROTOCOL_REGISTRY.put("pop3",new NaiveStreamHandler());
 		CoreModule.PROTOCOL_REGISTRY.put("smtp",new NaiveStreamHandler());
@@ -46,6 +48,9 @@ public class EmailModule{
 		Registry.providesDataObjectType(MultipartObjectType.class.getName(),NAME);
 		Registry.providesDataObjectEditor(MultipartEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(MultipartObject.class.getName(),NAME);
+		Registry.providesDataObjectType(MessageObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(MessageEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(MessageObject.class.getName(),NAME);
 		Registry.providesProtocol("stmp",NAME);
 		Registry.providesProtocol("pop3",NAME);
 		Registry.providesProtocol("imap",NAME);
