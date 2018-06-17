@@ -18,6 +18,7 @@ package cc.fooledit.editor.email;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+import javafx.beans.property.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javax.mail.*;
@@ -31,11 +32,20 @@ public class MessageViewer extends BorderPane{
 		this.message=message;
 		try{
 			TableView<Header> head=new TableView<>();
+			TableColumn<Header,String> key=new TableColumn<>();
+			key.setCellValueFactory((param)->new ReadOnlyObjectWrapper<>(param.getValue().getName()));
+			TableColumn<Header,String> value=new TableColumn<>();
+			value.setCellValueFactory((param)->new ReadOnlyObjectWrapper<>(param.getValue().getValue()));
+			head.getColumns().setAll(key,value);
 			for(Enumeration<Header> headers=message.getAllHeaders();headers.hasMoreElements();){
-				Header header=headers.nextElement();
-				head.getItems().add(header);
-				setTop(head);
+				head.getItems().add(headers.nextElement());
+			}
+			setTop(head);
+			Object content=message.getContent();
+			if(content instanceof Multipart){
 				setCenter(new MultipartViewer((Multipart)message.getContent()));
+			}else{
+				setCenter(new TextArea(Objects.toString(content)));
 			}
 		}catch(IOException|MessagingException ex){
 			Logger.getLogger(MessageViewer.class.getName()).log(Level.SEVERE,null,ex);

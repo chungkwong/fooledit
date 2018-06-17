@@ -68,7 +68,7 @@ public class MultipartViewer extends BorderPane{
 		}
 	}
 	private static Node getViewer(BodyPart part) throws Exception{
-		List<DataObjectType> types=DataObjectTypeRegistry.getPreferedDataObjectType(new MimeType(part.getContentType()));
+		List<DataObjectType> types=DataObjectTypeRegistry.getPreferedDataObjectType(new MimeType(part.getContentType()));//FIXME
 		if(!types.isEmpty()){
 			RegistryNode<String,Object> meta=new SimpleRegistryNode<>();
 			DataObject obj=types.get(0).readFrom(new InputStreamConnection(part.getInputStream(),part.getContentType()),new MimeType(part.getContentType()),meta);
