@@ -16,7 +16,6 @@
  */
 package cc.fooledit.core;
 import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
 /**
@@ -24,16 +23,16 @@ import java.util.function.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class UndoableCommand extends Command{
-	private final Function<ScmPairOrNil,UndoableAction> backup;
-	public UndoableCommand(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,Function<ScmPairOrNil,UndoableAction> backup,String module){
+	private final Function<Object[],UndoableAction> backup;
+	public UndoableCommand(String name,ThrowableVarargsFunction<Object,Object> action,Function<Object[],UndoableAction> backup,String module){
 		super(name,action,module);
 		this.backup=backup;
 	}
-	public UndoableCommand(String name,List<Argument> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,Function<ScmPairOrNil,UndoableAction> backup,String module){
+	public UndoableCommand(String name,List<Argument> parameters,ThrowableVarargsFunction<Object,Object> action,Function<Object[],UndoableAction> backup,String module){
 		super(name,parameters,action,module);
 		this.backup=backup;
 	}
-	public UndoableAction getUndoAction(ScmPairOrNil args){
+	public UndoableAction getUndoAction(Object[] args){
 		return backup.apply(args);
 	}
 }

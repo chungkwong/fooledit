@@ -56,8 +56,9 @@ public class HistoryRing<T>{
 		return currentIndex;
 	}
 	public void setCurrentIndex(int currentIndex){
-		if(currentIndex>=0&&currentIndex<list.size())
+		if(currentIndex>=0&&currentIndex<list.size()){
 			this.currentIndex=currentIndex;
+		}
 	}
 	public T get(String tag){
 		return get(tags.get(tag));
@@ -90,20 +91,19 @@ public class HistoryRing<T>{
 		addCommand("previous-"+noun,()->chooseAction.accept(get(previous())),registry,module);
 		addCommand("record-"+noun,()->add(snapshotAction.get()),registry,module);
 		addCommand("tag-"+noun,(args)->{
-			tag(SchemeConverter.toString(ScmList.first(args)));
+			tag((String)args[0]);
 			return null;
 		},registry,module);
 		addCommand(noun+"-limit",(ScmPairOrNil)->ScmInteger.valueOf(getLimit()),registry,module);
 		addCommand("set-"+noun+"-limit",(args)->{
-			setLimit(SchemeConverter.toInteger(ScmList.first(args)));
+			setLimit(((Number)args[0]).intValue());
 			return null;
 		},registry,module);
 	}
 	private void addCommand(String name,Runnable action,RegistryNode<String,Command> registry,String module){
 		registry.put(name,new Command(name,action,module));
 	}
-	private void addCommand(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,RegistryNode<String,Command> registry,String module){
+	private void addCommand(String name,ThrowableVarargsFunction<Object,Object> action,RegistryNode<String,Command> registry,String module){
 		registry.put(name,new Command(name,action,module));
 	}
-
 }

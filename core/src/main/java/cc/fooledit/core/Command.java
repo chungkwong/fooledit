@@ -16,7 +16,6 @@
  */
 package cc.fooledit.core;
 import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import javafx.application.*;
 /**
@@ -26,17 +25,17 @@ import javafx.application.*;
 public class Command{
 	private final String module;
 	private final String name;
-	private final ThrowableFunction<ScmPairOrNil,ScmObject> action;
+	private final ThrowableVarargsFunction<Object,Object> action;
 	private final List<Argument> parameters;
 	private final boolean interactive;
-	private static Pair<Command,ScmPairOrNil> lastCommand=new Pair<>(null,null);
+	private static Pair<Command,Object[]> lastCommand=new Pair<>(null,null);
 	public Command(String name,Runnable action,String module){
 		this(name,action,module,true);
 	}
-	public Command(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
+	public Command(String name,ThrowableVarargsFunction<Object,Object> action,String module){
 		this(name,action,module,true);
 	}
-	public Command(String name,List<Argument> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module){
+	public Command(String name,List<Argument> parameters,ThrowableVarargsFunction<Object,Object> action,String module){
 		this(name,parameters,action,module,true);
 	}
 	public Command(String name,Runnable action,String module,boolean interactive){
@@ -45,10 +44,10 @@ public class Command{
 			return null;
 		},module,interactive);
 	}
-	public Command(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module,boolean interactive){
+	public Command(String name,ThrowableVarargsFunction<Object,Object> action,String module,boolean interactive){
 		this(name,Collections.emptyList(),action,module,interactive);
 	}
-	public Command(String name,List<Argument> parameters,ThrowableFunction<ScmPairOrNil,ScmObject> action,String module,boolean interactive){
+	public Command(String name,List<Argument> parameters,ThrowableVarargsFunction<Object,Object> action,String module,boolean interactive){
 		this.action=action;
 		this.module=module;
 		this.name=name;
@@ -71,10 +70,10 @@ public class Command{
 	public boolean isInteractive(){
 		return interactive;
 	}
-	public ScmObject accept(ScmPairOrNil t)throws Exception{
+	public Object accept(Object[] t) throws Exception{
 		try{
 			if(isInteractive()&&!Platform.isFxApplicationThread()){
-				ScmObject[] result=new ScmObject[1];
+				Object[] result=new Object[1];
 				Exception[] exception=new Exception[1];
 				Platform.runLater(()->{
 					try{
@@ -89,25 +88,43 @@ public class Command{
 				synchronized(result){
 					result.wait();
 				}
-				if(exception[0]==null)
+				if(exception[0]==null){
 					return result[0];
-				else
+				}else{
 					throw new Exception(exception[0]);
+				}
 			}else{
 				return action.accept(t);
 			}
 		}finally{
-			if(!(name.equals("command")||name.equals("restore")||name.equals("repeat")))
+			if(!(name.equals("command")||name.equals("restore")||name.equals("repeat"))){
 				lastCommand=new Pair<>(this,t);
+			}
 		}
 	}
-	public static ScmObject repeat(int times) throws Exception{
+	public static Object repeat(int times) throws Exception{
 		if(lastCommand!=null){
-			ScmListBuilder buf=new ScmListBuilder();
-			for(int i=0;i<times;i++)
+			List<Object> buf=new ArrayList<>();
+			for(int i=0;i<times;i++){
 				buf.add(lastCommand.getKey().accept(lastCommand.getValue()));
-			return buf.toList();
-		}else
-			return ScmNil.NIL;
+			}
+			return buf;
+		}else{
+			return null;
+		}
 	}
+	/*public static void main(String[] args) throws ScriptException{
+		ScriptEngine engine=EvaluatorFactory.INSTANCE.getScriptEngine();
+		SimpleBindings bindings=new SimpleBindings();
+		Function<String,String> f=new Function<String,String>(){
+			@Override
+			public String apply(String t){
+				return t.toUpperCase();
+			}
+		};
+		bindings.put("up",f);
+		bindings.put("str","hello");
+		engine.setBindings(bindings,ScriptContext.GLOBAL_SCOPE);
+		System.out.println(engine.eval("(up \"hello\")"));
+	}*/
 }

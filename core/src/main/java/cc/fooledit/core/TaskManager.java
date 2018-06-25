@@ -17,7 +17,6 @@
 package cc.fooledit.core;
 import cc.fooledit.*;
 import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -55,12 +54,12 @@ public class TaskManager{
 			CoreModule.TASK_REGISTRY.remove(id);
 		});
 		executor.submit(task);
-
 	}
 	private static String getTitle(Task<?> task){
 		String name=task.getTitle();
-		if(name==null)
+		if(name==null){
 			name="";
+		}
 		if(CoreModule.TASK_REGISTRY.containsKey(name)){
 			for(int i=1;;i++){
 				String tmp=name+":"+i;
@@ -75,13 +74,13 @@ public class TaskManager{
 	public static void executeCommand(Command command){
 		executeCommand(command,new ArrayList<>(),command.getParameters());
 	}
-	public static void executeCommand(Command command,List<ScmObject> collected,List<Argument> missing){
+	public static void executeCommand(Command command,List<Object> collected,List<Argument> missing){
 		if(missing.isEmpty()){
 			executeTask(new UserTask<>(command.getName(),()->{
 				if(!command.getName().equals("command")){
 					Platform.runLater(()->Main.INSTANCE.getMiniBuffer().restore());
 				}
-				return command.accept(ScmList.toList(collected));
+				return command.accept(collected.toArray());
 			}));//FIXME
 		}else{
 			Argument arg=missing.get(0);
@@ -95,7 +94,7 @@ public class TaskManager{
 				}
 			}
 			Platform.runLater(()->Main.INSTANCE.getMiniBuffer().setMode((String p)->{
-				collected.add(new ScmString(p));
+				collected.add(p);
 				executeCommand(command,collected,missing.subList(1,missing.size()));
 			},null,"",new Label(MessageRegistry.getString(missing.get(0).getName(),command.getModule())),null));
 		}

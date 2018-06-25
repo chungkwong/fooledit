@@ -18,7 +18,6 @@ package cc.fooledit.control;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.io.*;
 import java.util.*;
@@ -47,8 +46,9 @@ public class PaginationWrapper extends Pagination{
 	private void installKeymap(){
 		TreeMap<String,String> mapping=new TreeMap<>();
 		File src=Main.getFile("keymaps/pagination.json",CoreModule.NAME);
-		if(src!=null)
+		if(src!=null){
 			mapping.putAll((Map<String,String>)(Object)Main.loadJSON(src));
+		}
 		NavigableRegistryNode<String,String> registry=new NavigableRegistryNode<>(mapping);
 		getProperties().put(WorkSheet.KEYMAP_NAME,registry);
 	}
@@ -58,7 +58,7 @@ public class PaginationWrapper extends Pagination{
 		addCommand("current-page",Collections.emptyList(),(args)->ScmInteger.valueOf(getCurrentPageIndex()),registry);
 		addCommand("number-of-pages",Collections.emptyList(),(args)->ScmInteger.valueOf(getPageCount()),registry);
 		addCommand("move-to-page",Arrays.asList(new Argument("PAGE_NUMBER")),(args)->{
-			setCurrentPageIndex(SchemeConverter.toInteger(ScmList.first(args)));
+			setCurrentPageIndex(((Number)args[0]).intValue());
 			return null;
 		},registry);
 		addCommand("move-to-first-page",()->setCurrentPageIndex(0),registry);
@@ -69,10 +69,7 @@ public class PaginationWrapper extends Pagination{
 	private void addCommand(String name,Runnable action,ObservableMap<String,Command> registry){
 		registry.put(name,new Command(name,action,CoreModule.NAME));
 	}
-	private void addCommand(String name,List<Argument> parameters,Function<ScmPairOrNil,ScmObject> action,ObservableMap<String,Command> registry){
+	private void addCommand(String name,List<Argument> parameters,Function<Object[],Object> action,ObservableMap<String,Command> registry){
 		registry.put(name,new Command(name,parameters,(args)->action.apply(args),CoreModule.NAME));
 	}
-
-
-
 }
