@@ -86,7 +86,7 @@ public class TaskManager{
 			Argument arg=missing.get(0);
 			if(arg.getDef()!=null){
 				try{
-					collected.add(SchemeConverter.toScheme(arg.getDef().get()));
+					collected.add(arg.getDef().get());
 					executeCommand(command,collected,missing.subList(1,missing.size()));
 					return;
 				}catch(Exception ex){

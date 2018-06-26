@@ -20,7 +20,6 @@ import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -53,74 +52,76 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		Argument id=new Argument("ID",GitRepositoryEditor::getSelectedItem);
 		Argument commitOrBranch=new Argument("COMMIT_OR_BRANCH",GitRepositoryEditor::getSelectedItem);
 		addCommand("git-push",Arrays.asList(remote,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.push(SchemeConverter.toJava(ScmList.first(args)),
-					SchemeConverter.toString(ScmList.second(args)),SchemeConverter.toString(ScmList.third(args)),
-					(Git)SchemeConverter.toJava(ScmList.get(args,3))));
+			return GitCommands.push(args[0],(String)args[1],(String)args[2],(Git)args[3]);
 		});
 		addCommand("git-pull",Arrays.asList(remote,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.pull(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.pull(args[0],(Git)args[1]);
 		});
 		addCommand("git-fetch",Arrays.asList(remote,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.fetch(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.fetch(args[0],(Git)args[1]);
 		});
 		addCommand("git-view",Arrays.asList(id,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.view(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.view(args[0],(Git)args[1]);
 		});
 		addCommand("git-checkout",Arrays.asList(commitOrBranch,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.checkout(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.checkout(args[0],(Git)args[1]);
 		});
 		addCommand("git-revert",Arrays.asList(commitOrBranch,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.revert(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.revert(args[0],(Git)args[1]);
 		});
 		addCommand("git-merge",Arrays.asList(commitOrBranch,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.merge(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.merge(args[0],(Git)args[1]);
 		});
 		addCommand("git-branch-add",Arrays.asList(name,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.addBranch(SchemeConverter.toJava(ScmList.first(args)).toString(),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.addBranch(args[0].toString(),(Git)args[1]);
 		});
 		addCommand("git-branch-delete",Arrays.asList(branch,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.deleteBranch(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.deleteBranch(args[0],(Git)args[1]);
 		});
 		addCommand("git-branch-rename",Arrays.asList(branch,name,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.renameBranch(SchemeConverter.toJava(ScmList.first(args)),SchemeConverter.toJava(ScmList.second(args)).toString(),(Git)SchemeConverter.toJava(ScmList.third(args))));
+			return GitCommands.renameBranch(args[0],args[1].toString(),(Git)args[2]);
 		});
 		addCommand("git-add",Arrays.asList(file,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.add(SchemeConverter.toJava(ScmList.first(args)).toString(),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.add(args[0].toString(),(Git)args[1]);
 		});
 		addCommand("git-remove",Arrays.asList(file,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.remove(SchemeConverter.toJava(ScmList.first(args)).toString(),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.remove(args[0].toString(),(Git)args[1]);
 		});
 		addCommand("git-tag-add",Arrays.asList(name,commit,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.addTag(SchemeConverter.toJava(ScmList.first(args)).toString(),(RevObject)SchemeConverter.toJava(ScmList.second(args)),(Git)SchemeConverter.toJava(ScmList.third(args))));
+			return GitCommands.addTag(args[0].toString(),(RevObject)args[1],(Git)args[2]);
 		});
 		addCommand("git-tag-delete",Arrays.asList(tag,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.removeTag(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.removeTag(args[0],(Git)args[1]);
 		});
 		addCommand("git-remote-add",Arrays.asList(uri,name,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.addRemote(SchemeConverter.toJava(ScmList.first(args)).toString(),SchemeConverter.toJava(ScmList.second(args)).toString(),(Git)SchemeConverter.toJava(ScmList.third(args))));
+			return GitCommands.addRemote(args[0].toString(),args[1].toString(),(Git)args[2]);
 		});
 		addCommand("git-remote-delete",Arrays.asList(name,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.deleteRemote(SchemeConverter.toJava(ScmList.first(args)),(Git)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.deleteRemote(args[0],(Git)args[1]);
 		});
 		addCommand("git-remote-set-url",Arrays.asList(remote,uri,git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.setRemote(SchemeConverter.toJava(ScmList.first(args)),SchemeConverter.toJava(ScmList.second(args)).toString(),(Git)SchemeConverter.toJava(ScmList.third(args))));
+			return GitCommands.setRemote(args[0],args[1].toString(),(Git)args[2]);
 		});
 		addCommand("git-commit",Arrays.asList(git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.commit((Git)SchemeConverter.toJava(ScmList.first(args))));
+			return GitCommands.commit((Git)args[0]);
 		});
 		addCommand("git-gc",Arrays.asList(git),(args)->{
-			return SchemeConverter.toScheme(GitCommands.gc((Git)SchemeConverter.toJava(ScmList.first(args))));
+			return GitCommands.gc((Git)args[0]);
 		});
 		addCommand("git-init",Arrays.asList(dir),(args)->{
-			return SchemeConverter.toScheme(GitCommands.init((File)SchemeConverter.toJava(ScmList.first(args))));
+			return GitCommands.init((File)args[0]);
 		});
 		addCommand("git-clone",Arrays.asList(uri,dir),(args)->{
-			return SchemeConverter.toScheme(GitCommands.clone(SchemeConverter.toJava(ScmList.first(args)).toString(),(File)SchemeConverter.toJava(ScmList.second(args))));
+			return GitCommands.clone((String)args[0],(File)args[1]);
 		});
-		addCommand("git-config",Arrays.asList(),(args)->{return null;});//TODO
-		addCommand("git-blame",Arrays.asList(),(args)->{return null;});//TODO
+		addCommand("git-config",Arrays.asList(),(args)->{
+			return null;
+		});//TODO
+		addCommand("git-blame",Arrays.asList(),(args)->{
+			return null;
+		});//TODO
 	}
-	private void addCommand(String name,List<Argument> args,ThrowableFunction<ScmPairOrNil,ScmObject> proc){
+	private void addCommand(String name,List<Argument> args,ThrowableVarargsFunction<Object,Object> proc){
 		commandRegistry.put(name,new Command(name,args,proc,GitModule.NAME));
 	}
 	@Override
@@ -161,8 +162,9 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 						break;
 					}
 				}
-				if(dir!=null)
+				if(dir!=null){
 					return Git.open(dir);
+				}
 			}
 		}
 		throw new Exception();
@@ -179,8 +181,9 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 						break;
 					}
 				}
-				if(dir!=null)
+				if(dir!=null){
 					return dir;
+				}
 			}
 		}
 		throw new Exception();
@@ -188,8 +191,9 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 	private static File findGitDirectory(File f){
 		while(!new File(f,".git").exists()){
 			f=f.getParentFile();
-			if(f==null)
+			if(f==null){
 				return null;
+			}
 		}
 		return f;
 	}
@@ -202,8 +206,9 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 				while(iter.hasNext()){
 					dir=gcd(dir,findDirectory(iter.next().toFile()));
 				}
-				if(dir!=null)
+				if(dir!=null){
 					return dir;
+				}
 			}
 		}
 		throw new Exception();
@@ -211,14 +216,16 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 	private static File findDirectory(File f){
 		while(f!=null&&!f.isDirectory()){
 			f=f.getParentFile();
-			if(f==null)
+			if(f==null){
 				return null;
+			}
 		}
 		return f;
 	}
 	private static File gcd(File f,File g){
-		if(f==null||g==null)
+		if(f==null||g==null){
 			return null;
+		}
 		Path p=f.toPath();
 		Path q=g.toPath();
 		if(p.getNameCount()<q.getNameCount()){
@@ -228,8 +235,9 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		}
 		while(!p.startsWith(q)){
 			q=q.getParent();
-			if(q==null)
+			if(q==null){
 				return null;
+			}
 		}
 		return q.toFile();
 	}
@@ -237,8 +245,9 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		Node node=Main.INSTANCE.getCurrentNode();
 		if(node instanceof GitRepositoryViewer){
 			TreeTableView.TreeTableViewSelectionModel<Object> model=((TreeTableView<Object>)((GitRepositoryViewer)node).getCenter()).getSelectionModel();
-			if(!model.isEmpty())
+			if(!model.isEmpty()){
 				return model.getSelectedItem().getValue();
+			}
 		}
 		throw new Exception();
 	}

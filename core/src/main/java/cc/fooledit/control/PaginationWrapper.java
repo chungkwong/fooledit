@@ -18,7 +18,6 @@ package cc.fooledit.control;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
@@ -55,8 +54,8 @@ public class PaginationWrapper extends Pagination{
 	private void installCommands(){
 		RegistryNode<String,Command> registry=new SimpleRegistryNode<>();
 		getProperties().put(WorkSheet.COMMANDS_NAME,registry);
-		addCommand("current-page",Collections.emptyList(),(args)->ScmInteger.valueOf(getCurrentPageIndex()),registry);
-		addCommand("number-of-pages",Collections.emptyList(),(args)->ScmInteger.valueOf(getPageCount()),registry);
+		addCommand("current-page",Collections.emptyList(),(args)->getCurrentPageIndex(),registry);
+		addCommand("number-of-pages",Collections.emptyList(),(args)->getPageCount(),registry);
 		addCommand("move-to-page",Arrays.asList(new Argument("PAGE_NUMBER")),(args)->{
 			setCurrentPageIndex(((Number)args[0]).intValue());
 			return null;

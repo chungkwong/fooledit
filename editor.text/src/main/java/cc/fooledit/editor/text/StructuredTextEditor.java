@@ -22,9 +22,9 @@ import cc.fooledit.editor.text.lex.*;
 import cc.fooledit.editor.text.parser.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
+import java.lang.reflect.*;
 import java.net.*;
 import java.nio.charset.*;
 import java.util.*;
@@ -80,10 +80,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			ToggleGroup group=new ToggleGroup();
 			items.setAll(Charset.availableCharsets().values().stream()
 					.map((set)->createCharsetItem(set,(s)->{
-						curr.put("CHARSET",s.name());
-					},group,currCharset)).collect(Collectors.toList()));
+				curr.put("CHARSET",s.name());
+			},group,currCharset)).collect(Collectors.toList()));
 		});
-
 		addCommand("undo",(area)->area.getArea().undo());
 		addCommand("redo",(area)->area.getArea().redo());
 		addCommand("cut",(area)->area.getArea().cut());
@@ -119,7 +118,6 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("move-to-paragraph-begin",(area)->area.getArea().paragraphStart(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-file-end",(area)->area.getArea().end(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-file-begin",(area)->area.getArea().start(NavigationActions.SelectionPolicy.CLEAR));
-
 		addCommand("select-to-next-word",(area)->area.nextWord(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-previous-word",(area)->area.previousWord(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-next-character",(area)->area.getArea().nextChar(NavigationActions.SelectionPolicy.ADJUST));
@@ -145,7 +143,6 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("select-previous-node",(area)->area.selectPreviousNode());
 		addCommand("select-first-node",(area)->area.selectFirstNode());
 		addCommand("select-last-node",(area)->area.selectLastNode());
-
 		addCommand("to-lowercase",(area)->area.transform(String::toLowerCase));
 		addCommand("to-uppercase",(area)->area.transform(String::toUpperCase));
 		addCommand("encode-url",(area)->area.transform(StructuredTextEditor::encodeURL));
@@ -153,44 +150,43 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("scroll-to-top",(area)->area.getArea().showParagraphAtTop(area.getArea().getCurrentParagraph()));
 		addCommand("scroll-to-bottom",(area)->area.getArea().showParagraphAtBottom(area.getArea().getCurrentParagraph()));
 		addCommand("move-to-paragraph",Collections.singletonList(new Argument("line")),(args,area)->{
-				int index=SchemeConverter.toInteger(ScmList.first(args));
-				area.getArea().moveTo(index,Math.min(area.getArea().getCaretColumn(),area.getArea().getParagraphLength(index)));
-				area.getArea().showParagraphInViewport(index);
-				return null;
+			int index=((Number)args[0]).intValue();
+			area.getArea().moveTo(index,Math.min(area.getArea().getCaretColumn(),area.getArea().getParagraphLength(index)));
+			area.getArea().showParagraphInViewport(index);
+			return null;
 		});
 		addCommand("move-to-column",Collections.singletonList(new Argument("line")),(args,area)->{
-				area.getArea().moveTo(area.getArea().getCurrentParagraph(),SchemeConverter.toInteger(ScmList.first(args)));
-				return null;
+			area.getArea().moveTo(area.getArea().getCurrentParagraph(),((Number)args[0]).intValue());
+			return null;
 		});
 		addCommand("move-to-position",Collections.singletonList(new Argument("line")),(args,area)->{
-				area.getArea().moveTo(SchemeConverter.toInteger(ScmList.first(args)));
-				area.getArea().showParagraphInViewport(area.getArea().getCurrentParagraph());
-				return null;
+			area.getArea().moveTo(((Number)args[0]).intValue());
+			area.getArea().showParagraphInViewport(area.getArea().getCurrentParagraph());
+			return null;
 		});
-
 		addCommand("current-paragraph",Collections.emptyList(),(args,area)->{
-				return ScmInteger.valueOf(area.getArea().getCurrentParagraph());
+			return area.getArea().getCurrentParagraph();
 		});
 		addCommand("current-column",Collections.emptyList(),(args,area)->{
-				return ScmInteger.valueOf(area.getArea().getCaretColumn());
+			return area.getArea().getCaretColumn();
 		});
 		addCommand("current-caret",Collections.emptyList(),(args,area)->{
-				return ScmInteger.valueOf(area.getArea().getCaretPosition());
+			return area.getArea().getCaretPosition();
 		});
 		addCommand("current-anchor",Collections.emptyList(),(args,area)->{
-				return ScmInteger.valueOf(area.getArea().getAnchor());
+			return area.getArea().getAnchor();
 		});
 		addCommand("->position",Arrays.asList(new Argument("line"),new Argument("column")),(args,area)->{
-				return ScmInteger.valueOf(area.getArea().getAbsolutePosition(SchemeConverter.toInteger(ScmList.first(args)),SchemeConverter.toInteger(ScmList.second(args))));
+			return area.getArea().getAbsolutePosition(((Number)args[0]).intValue(),((Number)args[1]).intValue());
 		});
 		addCommand("length",Collections.emptyList(),(args,area)->{
-				return ScmInteger.valueOf(area.getArea().getLength());
+			return area.getArea().getLength();
 		});
 		addCommand("text",Collections.emptyList(),(args,area)->{
-				int argc=ScmList.getLength(args);
-				int start=argc>=1?SchemeConverter.toInteger(ScmList.first(args)):0;
-				int end=argc>=2?SchemeConverter.toInteger(ScmList.second(args)):area.getArea().getLength();
-				return new ScmString(area.getArea().getText(start,end));
+			int argc=args.length;
+			int start=argc>=1?((Number)args[0]).intValue():0;
+			int end=argc>=2?((Number)args[1]).intValue():area.getArea().getLength();
+			return area.getArea().getText(start,end);
 		});
 		clips.registerComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry,TextEditorModule.NAME);
 		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
@@ -198,27 +194,36 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("highlight",(area)->area.selections().add(area.createSelection(area.getArea().getSelection())));
 		addCommand("unhighlight",(area)->area.unhighlight());
 		addCommand("find-string",Collections.singletonList(new Argument("target")),(args,area)->{
-				return ScmInteger.valueOf(area.find(SchemeConverter.toString(ScmList.first(args))));
+			return area.find((String)args[0]);
 		});
 		addCommand("find-regex",Collections.singletonList(new Argument("target")),(args,area)->{
-				return ScmInteger.valueOf(area.findRegex(SchemeConverter.toString(ScmList.first(args))));
+			return area.findRegex((String)args[0]);
 		});
 		addCommand("replace-string",Collections.singletonList(new Argument("replacement")),(args,area)->{
-				String replacement=SchemeConverter.toString(ScmList.first(args));
-				area.replace((t)->replacement);
-				return null;
+			String replacement=(String)args[0];
+			area.replace((t)->replacement);
+			return null;
 		});
 		addCommand("replace",Collections.singletonList(new Argument("function")),(args,area)->{
-				ScmProcedure function=(ScmProcedure)(ScmList.first(args));
-				area.replace((t)->((ScmString)function.call(ScmList.toList(new ScmString(t)))).getValue());
-				return null;
+			Method method=Arrays.stream(args[0].getClass().getInterfaces()).
+					filter((i)->i.isAnnotationPresent(FunctionalInterface.class)).
+					flatMap((i)->Arrays.stream(i.getDeclaredMethods())).
+					filter((m)->Modifier.isPublic(m.getModifiers())&&!Modifier.isStatic(m.getModifiers())&&!m.isDefault()).findAny().get();
+			area.replace((t)->{
+				try{
+					return method.invoke(args[0],t).toString();
+				}catch(IllegalAccessException|IllegalArgumentException|InvocationTargetException ex){
+					Logger.getLogger(StructuredTextEditor.class.getName()).log(Level.SEVERE,null,ex);
+					return t;
+				}
+			});
+			return null;
 		});
 		addCommand("syntax-tree",Collections.emptyList(),(args,area)->{
-				//OptionDialog.showDialog(new ParseTreeViewer((ParserRuleContext)area.syntaxTree()));
-				return null;
+			//OptionDialog.showDialog(new ParseTreeViewer((ParserRuleContext)area.syntaxTree()));
+			return null;
 //return new ScmJavaObject(area.syntaxTree());
 		});
-
 		try{
 			//scene.setUserAgentStylesheet("com/github/chungkwong/fooledit/dark.css");
 			Main.INSTANCE.getScene().getStylesheets().add(Main.INSTANCE.getFile("stylesheets/default.css",TextEditorModule.NAME).toURI().toURL().toString());
@@ -288,7 +293,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		}
 		parsers.put(mime,new Cache<>(parser));
 	}
-	private static <T> Class<T> loadClass(String location) throws ClassNotFoundException, MalformedURLException{
+	private static <T> Class<T> loadClass(String location) throws ClassNotFoundException,MalformedURLException{
 		int i=location.indexOf('!');
 		String jar=location.substring(0,i);
 		String cls=location.substring(i+1);
@@ -297,7 +302,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private void addCommand(String name,Consumer<CodeEditor> action){
 		commandRegistry.put(name,new Command(name,()->action.accept(getCurrentEditor()),TextEditorModule.NAME));
 	}
-	private void addCommand(String name,List<Argument> parameters,BiFunction<ScmPairOrNil,CodeEditor,ScmObject> action){
+	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],CodeEditor,Object> action){
 		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,getCurrentEditor()),TextEditorModule.NAME));
 	}
 	private CodeEditor getCurrentEditor(){
@@ -347,8 +352,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			List<Number> pair=((ListRegistryNode<Number>)remark).getChildren();
 			int len=codeEditor.getArea().getLength();
 			codeEditor.getArea().selectRange(Math.min(pair.get(0).intValue(),len),Math.min(pair.get(1).intValue(),len));
-			for(int i=2;i<pair.size();i+=2)
+			for(int i=2;i<pair.size();i+=2){
 				codeEditor.selections().add(codeEditor.createSelection(pair.get(i).intValue(),pair.get(i+1).intValue()));
+			}
 		}
 		return codeEditor;
 	}
@@ -375,8 +381,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	private static MenuItem createCharsetItem(Charset charset,Consumer<Charset> action,ToggleGroup group,String def){
 		RadioMenuItem radioMenuItem=new RadioMenuItem(charset.displayName());
 		radioMenuItem.setToggleGroup(group);
-		if(charset.name().equalsIgnoreCase(def))
+		if(charset.name().equalsIgnoreCase(def)){
 			group.selectToggle(radioMenuItem);
+		}
 		radioMenuItem.setOnAction((e)->action.accept(charset));
 		return radioMenuItem;
 	}

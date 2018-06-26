@@ -17,8 +17,6 @@
 package cc.fooledit.core;
 import cc.fooledit.*;
 import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.lib.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.stream.*;
 import javax.script.*;
@@ -27,19 +25,9 @@ import javax.script.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ScriptEnvironment implements Bindings{
-	private static Object pack(Command command){
-		return new NativeEvaluable((o)->{
-			return command.accept((ScmPairOrNil)o);
-		});
-	}
-	private static Command unpack(Object o){
-		if(o instanceof Command)
-			return (Command)o;
-		return null;
-	}
 	@Override
 	public Object put(String name,Object value){
-		return pack(Main.INSTANCE.getGlobalCommandRegistry().put(name,unpack(value)));
+		return Main.INSTANCE.getGlobalCommandRegistry().put(name,(Command)value);
 	}
 	@Override
 	public void putAll(Map<? extends String,? extends Object> toMerge){
@@ -51,8 +39,7 @@ public class ScriptEnvironment implements Bindings{
 	}
 	@Override
 	public Object get(Object key){
-		Command command=Main.INSTANCE.getCommand(Objects.toString(key));
-		return command==null?null:pack(command);
+		return Main.INSTANCE.getCommand(Objects.toString(key));
 	}
 	@Override
 	public Object remove(Object key){
@@ -68,7 +55,7 @@ public class ScriptEnvironment implements Bindings{
 	}
 	@Override
 	public boolean containsValue(Object value){
-		return values().contains(unpack(value));
+		return values().contains(value);
 	}
 	@Override
 	public void clear(){
@@ -80,10 +67,10 @@ public class ScriptEnvironment implements Bindings{
 	}
 	@Override
 	public Collection<Object> values(){
-		return keySet().stream().map((k)->pack((Command)get(k))).collect(Collectors.toList());
+		return keySet().stream().map((k)->get(k)).collect(Collectors.toList());
 	}
 	@Override
 	public Set<Entry<String,Object>> entrySet(){
-		return keySet().stream().map((k)->new Pair<>(k,pack((Command)get(k)))).collect(Collectors.toSet());
+		return keySet().stream().map((k)->new Pair<>(k,get(k))).collect(Collectors.toSet());
 	}
 }

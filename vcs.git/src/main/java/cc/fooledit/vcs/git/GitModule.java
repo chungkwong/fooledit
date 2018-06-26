@@ -18,8 +18,6 @@ package cc.fooledit.vcs.git;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
-import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
@@ -33,14 +31,14 @@ import javafx.scene.control.*;
 public class GitModule{
 	public static final String NAME="vcs.git";
 	public static final String APPLICATION_NAME="git";
-	public static void onLoad() throws ClassNotFoundException, MalformedURLException{
+	public static void onLoad() throws ClassNotFoundException,MalformedURLException{
 		DataObjectTypeRegistry.addDataObjectType(GitRepositoryObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(GitRepositoryEditor.INSTANCE,GitRepositoryObject.class);
 		FileSystemEditor.INSTANCE.getCommandRegistry().put("git-init",GitRepositoryEditor.INSTANCE.getCommandRegistry().get("git-init"));
 		FileSystemEditor.INSTANCE.getCommandRegistry().put("git-clone",GitRepositoryEditor.INSTANCE.getCommandRegistry().get("git-clone"));
 		Argument dir=new Argument("DIRECTORY",GitRepositoryEditor::getGitDirectory);
 		FileSystemEditor.INSTANCE.getCommandRegistry().put("git-browse",new Command("git-browse",Arrays.asList(dir),(params)->{
-			Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(((File)SchemeConverter.toJava(ScmList.first(params))).toURI().toURL()));
+			Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(((File)params[0]).toURI().toURL()));
 			return null;
 		},NAME));
 		CoreModule.DYNAMIC_MENU_REGISTRY.put(APPLICATION_NAME,(items)->{
@@ -58,7 +56,6 @@ public class GitModule{
 		return item;
 	}
 	public static void onUnLoad(){
-
 	}
 	public static void onInstall(){
 		Registry.providesDynamicMenu(APPLICATION_NAME,NAME);

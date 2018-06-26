@@ -17,7 +17,6 @@
 package cc.fooledit.core;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -94,7 +93,7 @@ public class HistoryRing<T>{
 			tag((String)args[0]);
 			return null;
 		},registry,module);
-		addCommand(noun+"-limit",(ScmPairOrNil)->ScmInteger.valueOf(getLimit()),registry,module);
+		addCommand(noun+"-limit",(ScmPairOrNil)->getLimit(),registry,module);
 		addCommand("set-"+noun+"-limit",(args)->{
 			setLimit(((Number)args[0]).intValue());
 			return null;

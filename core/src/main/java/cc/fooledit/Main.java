@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit;
-
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.net.*;
@@ -109,17 +107,19 @@ public class Main extends Application{
 		addCommand("always-on-top-frame",()->stage.setAlwaysOnTop(true));
 		addCommand("split-vertically",()->{
 			WorkSheet workSheet=getCurrentWorkSheet();
-			if(workSheet.isCompound())
+			if(workSheet.isCompound()){
 				workSheet.split(new WorkSheet(),Orientation.VERTICAL);
-			else
+			}else{
 				workSheet.split(new WorkSheet(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()),Orientation.VERTICAL);
+			}
 		});
 		addCommand("split-horizontally",()->{
 			WorkSheet workSheet=getCurrentWorkSheet();
-			if(workSheet.isCompound())
+			if(workSheet.isCompound()){
 				workSheet.split(new WorkSheet(),Orientation.HORIZONTAL);
-			else
+			}else{
 				workSheet.split(new WorkSheet(getCurrentDataObject(),getCurrentDataEditor(),getCurrentRemark()),Orientation.HORIZONTAL);
+			}
 		});
 		addCommand("focus-left",()->focusLeft());
 		addCommand("focus-right",()->focusRight());
@@ -131,56 +131,64 @@ public class Main extends Application{
 		addCommand("cancel",()->getCurrentNode().requestFocus());
 		addCommand("next-buffer",()->showOnCurrentTab(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
 		addCommand("previous-buffer",()->showOnCurrentTab(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
-		addCommand("start-record",()->{macro.clear();recording=true;});
-		addCommand("stop-record",()->{recording=false;macro.remove(0);macro.remove(macro.size()-1);});
-		addCommand("replay",()->{macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));});
+		addCommand("start-record",()->{
+			macro.clear();
+			recording=true;
+		});
+		addCommand("stop-record",()->{
+			recording=false;
+			macro.remove(0);
+			macro.remove(macro.size()-1);
+		});
+		addCommand("replay",()->{
+			macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));
+		});
 		addCommand("restore",()->getMiniBuffer().restore());
-		addCommand("repeat",(o)->Command.repeat(o instanceof ScmNil?1:SchemeConverter.toInteger(ScmList.first(o))));
+		addCommand("repeat",(o)->Command.repeat(o.length==0?1:((Number)o[0]).intValue()));
 		addCommandBatch("map-mime-to-type",(o)->{
-			DataObjectTypeRegistry.registerMime(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			DataObjectTypeRegistry.registerMime((String)o[0],(String)o[1]);
 			return null;
 		});
 		addCommandBatch("map-suffix-to-mime",(o)->{
-			ContentTypeHelper.getSUFFIX_GUESSER().registerSuffix(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			ContentTypeHelper.getSUFFIX_GUESSER().registerSuffix((String)o[0],(String)o[1]);
 			return null;
 		});
 		addCommandBatch("map-glob-to-mime",(o)->{
-			ContentTypeHelper.getURL_GUESSER().registerPathPattern(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			ContentTypeHelper.getURL_GUESSER().registerPathPattern((String)o[0],(String)o[1]);
 			return null;
 		});
 		addCommandBatch("mime-alias",(o)->{
-			CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put((String)o[0],(String)o[1]);
 			return null;
 		});
 		addCommandBatch("mime-parent",(o)->{
-			CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.put(SchemeConverter.toString(ScmList.first(o)),SchemeConverter.toString(ScmList.second(o)));
+			CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.put((String)o[0],(String)o[1]);
 			return null;
 		});
 		addCommandBatch("ensure-loaded",(o)->{
-			ModuleRegistry.ensureLoaded(SchemeConverter.toString(ScmList.first(o)));
-			return ScmNil.NIL;
+			ModuleRegistry.ensureLoaded((String)o[0]);
+			return null;
 		});
 		addCommandBatch("get-registry",(o)->{
-			return SchemeConverter.toScheme(Registry.ROOT.resolve(SchemeConverter.toString(ScmList.first(o))));
+			return Registry.ROOT.resolve((String)o[0]);
 		});
 		addCommandBatch("get-entry",(o)->{
-			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).get(SchemeConverter.toString(ScmList.second(o))));
+			return ((RegistryNode)o[0]).get((String)o[1]);
 		});
 		addCommandBatch("set-entry!",(o)->{
-			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).put(SchemeConverter.toString(ScmList.second(o)),SchemeConverter.toJava(ScmList.third(o))));
+			return ((RegistryNode)o[0]).put((String)o[1],o[2]);
 		});
 		addCommandBatch("get-or-create-registry",(o)->{
-			return SchemeConverter.toScheme(((RegistryNode)SchemeConverter.toJava(ScmList.first(o))).getOrCreateChild(SchemeConverter.toString(ScmList.second(o))));
+			return ((RegistryNode)o[0]).getOrCreateChild((String)o[1]);
 		});
 		addCommandBatch("provide",(o)->{
-			String[] args=ScmList.asStream(o).map(SchemeConverter::toString).toArray(String[]::new);
-			Registry.provides(args[0],args[1],args[2],args[3]);
+			Registry.provides((String)o[0],(String)o[1],(String)o[2],(String)o[3]);
 			return null;
 		});
 		addCommandBatch("inform-jar",(o)->{
-			String jar=SchemeConverter.toString(ScmList.first(o));
-			String cls=SchemeConverter.toString(ScmList.second(o));
-			String method=SchemeConverter.toString(ScmList.third(o));
+			String jar=(String)o[0];
+			String cls=(String)o[1];
+			String method=(String)o[2];
 			URLClassLoader loader=new URLClassLoader(new URL[]{new File(MODULE_PATH,jar).toURI().toURL()});
 			loader.loadClass(cls).getMethod(method).invoke(null);
 			return null;
@@ -189,13 +197,13 @@ public class Main extends Application{
 	private void addCommand(String name,Runnable action){
 		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,CoreModule.NAME));
 	}
-	private void addCommand(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
+	private void addCommand(String name,ThrowableVarargsFunction<Object,Object> action){
 		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,CoreModule.NAME));
 	}
 	private void addCommandBatch(String name,Runnable action){
 		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,CoreModule.NAME,false));
 	}
-	private void addCommandBatch(String name,ThrowableFunction<ScmPairOrNil,ScmObject> action){
+	private void addCommandBatch(String name,ThrowableVarargsFunction<Object,Object> action){
 		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,CoreModule.NAME,false));
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
@@ -206,8 +214,9 @@ public class Main extends Application{
 				l.add(item);
 			}
 			l.add(new SeparatorMenuItem());
-			if(getCurrentWorkSheet().isCompound())
+			if(getCurrentWorkSheet().isCompound()){
 				return;
+			}
 			DataObject curr=getCurrentData();
 			DataObjectTypeRegistry.getDataEditors(curr.getClass()).forEach((editor)->{
 				MenuItem item=new MenuItem(editor.getName());
@@ -392,8 +401,9 @@ public class Main extends Application{
 			File file=new File(url.getFile());
 			while(!new File(file,"editor.text").exists()){
 				file=file.getParentFile();
-				if(file==null)
+				if(file==null){
 					return USER_PATH;
+				}
 			}
 			return file;
 		}else{
@@ -423,8 +433,9 @@ public class Main extends Application{
 	private boolean ignoreKey=false;
 	private EventHandler<KeyEvent> getKeyFilter(){
 		return (KeyEvent e)->{
-			if(recording)
+			if(recording){
 				macro.add(e.copyFor(e.getSource(),e.getTarget()));
+			}
 			if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
 				if(ignoreKey){
 					e.consume();
@@ -481,8 +492,9 @@ public class Main extends Application{
 			Object local=node.getProperties().get("commands");
 			if(local instanceof RegistryNode){
 				Command command=((RegistryNode<String,Command>)local).get(name);
-				if(command!=null)
+				if(command!=null){
 					return command;
+				}
 			}
 			node=node.getParent();
 		}
@@ -527,7 +539,6 @@ public class Main extends Application{
 			}
 			@Override
 			public void connect() throws IOException{
-
 			}
 			@Override
 			public String getContentType(){
@@ -538,19 +549,23 @@ public class Main extends Application{
 	private final StringBuilder buf=new StringBuilder();
 	private String encode(KeyEvent evt){
 		buf.setLength(0);
-		if(evt.isControlDown()||evt.isShortcutDown())
+		if(evt.isControlDown()||evt.isShortcutDown()){
 			buf.append("C-");
-		if(evt.isAltDown())
+		}
+		if(evt.isAltDown()){
 			buf.append("M-");
-		if(evt.isShiftDown())
+		}
+		if(evt.isShiftDown()){
 			buf.append("S-");
+		}
 		buf.append(evt.getCode().getName());
 		return buf.toString();
 	}
 	private boolean isCurrentNodeFocused(){
 		Node owner=scene.getFocusOwner();
-		while(owner!=null&&owner!=currentWorksheet)
+		while(owner!=null&&owner!=currentWorksheet){
 			owner=owner.getParent();
+		}
 		return owner!=null;
 	}
 	private void focusOuter(){
@@ -573,10 +588,11 @@ public class Main extends Application{
 		WorkSheet workSheet=getCurrentWorkSheet().getParentWorkSheet();
 		if(workSheet!=null){
 			if(workSheet.isSplit()){
-				if(workSheet.getFirst()==currentWorksheet)
+				if(workSheet.getFirst()==currentWorksheet){
 					workSheet.getLast().requestFocus();
-				else
+				}else{
 					workSheet.getFirst().requestFocus();
+				}
 			}else if(workSheet.isTabed()){
 				((TabPane)workSheet.getCenter()).getSelectionModel().selectNext();
 			}
@@ -586,10 +602,11 @@ public class Main extends Application{
 		WorkSheet workSheet=getCurrentWorkSheet().getParentWorkSheet();
 		if(workSheet!=null){
 			if(workSheet.isSplit()){
-				if(workSheet.getFirst()==currentWorksheet)
+				if(workSheet.getFirst()==currentWorksheet){
 					workSheet.getLast().requestFocus();
-				else
+				}else{
 					workSheet.getFirst().requestFocus();
+				}
 			}else if(workSheet.isTabed()){
 				((TabPane)workSheet.getCenter()).getSelectionModel().selectPrevious();
 			}
@@ -618,8 +635,9 @@ public class Main extends Application{
 		}
 	}
 	private void resetRootWorkSheet(WorkSheet workSheet){
-		if(root.getCenter()instanceof WorkSheet)
+		if(root.getCenter() instanceof WorkSheet){
 			((WorkSheet)root.getCenter()).dispose(workSheet);
+		}
 		currentWorksheet=workSheet;
 		root.setCenter(workSheet);
 		CoreModule.REGISTRY.put(CoreModule.WINDOW_REGISTRY_NAME,workSheet.getRegistry());

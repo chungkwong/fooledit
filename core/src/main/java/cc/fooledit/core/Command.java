@@ -22,7 +22,7 @@ import javafx.application.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Command{
+public class Command implements ThrowableVarargsFunction<Object,Object>{
 	private final String module;
 	private final String name;
 	private final ThrowableVarargsFunction<Object,Object> action;

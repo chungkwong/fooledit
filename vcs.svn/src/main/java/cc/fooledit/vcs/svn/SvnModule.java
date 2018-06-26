@@ -20,7 +20,6 @@ import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.net.*;
 import java.util.*;
 import javafx.scene.control.*;
@@ -33,10 +32,9 @@ public class SvnModule{
 	public static final String NAME="vcs.svn";
 	public static final String APPLICATION_NAME="svn";
 	public static final String SETTINGS_REGISTRY_NAME="settings";
-	public static final RegistryNode<String,Object> SETTINGS_REGISTRY=
-			(RegistryNode<String,Object>)Registry.ROOT.getOrCreateChild(SvnModule.NAME).getOrCreateChild(SETTINGS_REGISTRY_NAME);
-	public static void onLoad() throws ClassNotFoundException, MalformedURLException{
-
+	public static final RegistryNode<String,Object> SETTINGS_REGISTRY
+			=(RegistryNode<String,Object>)Registry.ROOT.getOrCreateChild(SvnModule.NAME).getOrCreateChild(SETTINGS_REGISTRY_NAME);
+	public static void onLoad() throws ClassNotFoundException,MalformedURLException{
 		Argument allowMixedRevisions=createArgument("ALLOW_MIXED_REVISIONS");
 		Argument allowUnversionedObstructions=createArgument("ALLOW_UNVERSIONED_OBSTRUCTIONS");
 		Argument applyAutoProperties=createArgument("APPLY_AUTO_PROPERTIES");
@@ -94,7 +92,6 @@ public class SvnModule{
 		Argument useAncestry=createArgument("USE_ANCESTRY");
 		Argument useGlobalIgnores=createArgument("USE_GLOBAL_IGNORE");
 		Argument vacuumPristines=createArgument("VACUUM_PRISTINES");
-
 		Argument files=new Argument("FILES",()->{
 			return ((FileSystemViewer)Main.INSTANCE.getCurrentNode()).getSelectedPaths();
 		});
@@ -110,7 +107,6 @@ public class SvnModule{
 		Argument name=new Argument("NAME");
 		Argument msg=new Argument("MESSAGE");
 		Argument value=new Argument("VALUE");
-
 		addCommand("svn-add",Arrays.asList(files,force,mkdir,depth,depthIsSticky,includeIgnored,makeParent),(args)->{
 			SvnCommands.add(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
 			return null;
@@ -167,7 +163,7 @@ public class SvnModule{
 			return null;
 		});
 		addCommand("svn-info",Arrays.asList(url),(args)->{
-			return ScmInteger.valueOf(SvnCommands.info(args[0]));
+			return SvnCommands.info(args[0]);
 		});
 		addCommand("svn-list",Arrays.asList(url,pegRevision,revision,fetchLock,depth),(args)->{
 			SvnCommands.list(args[0],args[1],args[2],args[3],args[4]);
@@ -248,7 +244,6 @@ public class SvnModule{
 			SvnCommands.upgrade(args[0]);
 			return null;
 		});
-
 		CoreModule.PROTOCOL_REGISTRY.put("svn",new SvnStreamHandler());
 		ContentTypeHelper.getURL_GUESSER().registerPathPattern("^.*[/\\\\]\\.svn$","directory/svn");
 	}
@@ -258,7 +253,6 @@ public class SvnModule{
 		return item;
 	}
 	public static void onUnLoad(){
-
 	}
 	public static void onInstall(){
 		providesFileCommands();
@@ -362,15 +356,11 @@ public class SvnModule{
 		SETTINGS_REGISTRY.putIfAbsent("USE_ANCESTRY",false);
 		SETTINGS_REGISTRY.putIfAbsent("USE_GLOBAL_IGNORE",true);
 		SETTINGS_REGISTRY.putIfAbsent("VACUUM_PRISTINES",true);
-
 	}
 	private static Argument createArgument(String name){
 		return new Argument(MessageRegistry.getString(name,NAME),()->SETTINGS_REGISTRY.get(name));
 	}
 	private static void addCommand(String name,List<Argument> args,ThrowableFunction<Object[],Object> proc){
-		FileSystemEditor.INSTANCE.getCommandRegistry().put(name,new Command(name,args,(a)->SchemeConverter.toScheme(proc.accept(toArgumentList(a))),FileSystemModule.NAME));
-	}
-	private static Object[] toArgumentList(ScmPairOrNil args){
-		return ScmList.asStream(args).map(SchemeConverter::toJava).toArray();
+		FileSystemEditor.INSTANCE.getCommandRegistry().put(name,new Command(name,args,(a)->proc.accept(a),FileSystemModule.NAME));
 	}
 }

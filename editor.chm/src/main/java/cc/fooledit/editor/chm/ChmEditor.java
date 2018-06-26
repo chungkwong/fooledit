@@ -18,8 +18,6 @@ package cc.fooledit.editor.chm;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.scene.*;
@@ -33,9 +31,9 @@ public class ChmEditor implements DataEditor<ChmObject>{
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(ChmModule.NAME);
 	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(ChmModule.NAME);
 	private ChmEditor(){
-		addCommand("current-scale",Collections.emptyList(),(args,viewer)->ScmFloatingPointNumber.valueOf(viewer.getScale()));
+		addCommand("current-scale",Collections.emptyList(),(args,viewer)->viewer.getScale());
 		addCommand("zoom",Arrays.asList(new Argument("SCALE")),(args,viewer)->{
-			viewer.setScale((float)((ScmComplex)SchemeConverter.toScheme(ScmList.first(args))).toScmReal().toDouble());
+			viewer.setScale(((Number)args[0]).floatValue());
 			return null;
 		});
 	}
@@ -50,7 +48,7 @@ public class ChmEditor implements DataEditor<ChmObject>{
 	private void addCommand(String name,Consumer<ChmViewer> action){
 		commandRegistry.put(name,new Command(name,()->action.accept((ChmViewer)Main.INSTANCE.getCurrentNode()),ChmModule.NAME));
 	}
-	private void addCommand(String name,List<Argument> parameters,BiFunction<ScmPairOrNil,ChmViewer,ScmObject> action){
+	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],ChmViewer,Object> action){
 		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(ChmViewer)Main.INSTANCE.getCurrentDataEditor()),ChmModule.NAME));
 	}
 	@Override

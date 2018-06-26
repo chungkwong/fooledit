@@ -18,7 +18,6 @@ package cc.fooledit.editor.pdf;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import cc.fooledit.util.*;
 import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
@@ -35,11 +34,11 @@ public class PdfEditor implements DataEditor<PdfObject>{
 	private PdfEditor(){
 		addCommand("current-scale",Collections.emptyList(),(args,viewer)->ScmFloatingPointNumber.valueOf(viewer.getScale()));
 		addCommand("zoom",Arrays.asList(new Argument("SCALE")),(args,viewer)->{
-			viewer.setScale((float)((ScmComplex)SchemeConverter.toScheme(ScmList.first(args))).toScmReal().toDouble());
+			viewer.setScale(((Number)args[0]).floatValue());
 			return null;
 		});
 		addCommand("rotate",Arrays.asList(new Argument("DEGREE")),(args,viewer)->{
-			viewer.setRotate(((ScmComplex)SchemeConverter.toScheme(ScmList.first(args))).toScmReal().toDouble());
+			viewer.setRotate(((Number)args[0]).doubleValue());
 			return null;
 		});
 	}
@@ -54,7 +53,7 @@ public class PdfEditor implements DataEditor<PdfObject>{
 	private void addCommand(String name,Consumer<PdfViewer> action){
 		commandRegistry.put(name,new Command(name,()->action.accept((PdfViewer)Main.INSTANCE.getCurrentNode()),PdfModule.NAME));
 	}
-	private void addCommand(String name,List<Argument> parameters,BiFunction<ScmPairOrNil,PdfViewer,ScmObject> action){
+	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],PdfViewer,Object> action){
 		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(PdfViewer)Main.INSTANCE.getCurrentDataEditor()),PdfModule.NAME));
 	}
 	@Override

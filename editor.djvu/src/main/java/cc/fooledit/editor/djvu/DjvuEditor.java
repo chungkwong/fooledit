@@ -18,8 +18,6 @@ package cc.fooledit.editor.djvu;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import cc.fooledit.util.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.scene.*;
@@ -33,13 +31,13 @@ public class DjvuEditor implements DataEditor<DjvuObject>{
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(DjvuModule.NAME);
 	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(DjvuModule.NAME);
 	private DjvuEditor(){
-		addCommand("current-scale",Collections.emptyList(),(args,viewer)->ScmFloatingPointNumber.valueOf(viewer.getScale()));
+		addCommand("current-scale",Collections.emptyList(),(args,viewer)->viewer.getScale());
 		addCommand("zoom",Arrays.asList(new Argument("SCALE")),(args,viewer)->{
-			viewer.setScale((float)((ScmComplex)SchemeConverter.toScheme(ScmList.first(args))).toScmReal().toDouble());
+			viewer.setScale(((Number)args[0]).floatValue());
 			return null;
 		});
 		addCommand("rotate",Arrays.asList(new Argument("DEGREE")),(args,viewer)->{
-			viewer.setRotate(((ScmComplex)SchemeConverter.toScheme(ScmList.first(args))).toScmReal().toDouble());
+			viewer.setRotate(((Number)args[0]).doubleValue());
 			return null;
 		});
 	}
@@ -54,7 +52,7 @@ public class DjvuEditor implements DataEditor<DjvuObject>{
 	private void addCommand(String name,Consumer<DjvuViewer> action){
 		commandRegistry.put(name,new Command(name,()->action.accept((DjvuViewer)Main.INSTANCE.getCurrentNode()),DjvuModule.NAME));
 	}
-	private void addCommand(String name,List<Argument> parameters,BiFunction<ScmPairOrNil,DjvuViewer,ScmObject> action){
+	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],DjvuViewer,Object> action){
 		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(DjvuViewer)Main.INSTANCE.getCurrentDataEditor()),DjvuModule.NAME));
 	}
 	@Override

@@ -18,7 +18,6 @@ package cc.fooledit.editor.ps;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.scene.*;
@@ -44,7 +43,7 @@ public class PsEditor implements DataEditor<PsObject>{
 	private void addCommand(String name,Consumer<PsViewer> action){
 		commandRegistry.put(name,new Command(name,()->action.accept((PsViewer)Main.INSTANCE.getCurrentNode()),PsModule.NAME));
 	}
-	private void addCommand(String name,List<Argument> parameters,BiFunction<ScmPairOrNil,PsViewer,ScmObject> action){
+	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],PsViewer,Object> action){
 		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(PsViewer)Main.INSTANCE.getCurrentDataEditor()),PsModule.NAME));
 	}
 	@Override

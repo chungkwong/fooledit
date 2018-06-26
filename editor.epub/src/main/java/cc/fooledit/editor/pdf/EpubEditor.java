@@ -18,7 +18,6 @@ package cc.fooledit.editor.pdf;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.scene.*;
@@ -44,7 +43,7 @@ public class EpubEditor implements DataEditor<EpubObject>{
 	private void addCommand(String name,Consumer<EpubViewer> action){
 		commandRegistry.put(name,new Command(name,()->action.accept((EpubViewer)Main.INSTANCE.getCurrentNode()),EpubModule.NAME));
 	}
-	private void addCommand(String name,List<Argument> parameters,BiFunction<ScmPairOrNil,EpubViewer,ScmObject> action){
+	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],EpubViewer,Object> action){
 		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(EpubViewer)Main.INSTANCE.getCurrentDataEditor()),EpubModule.NAME));
 	}
 	@Override
