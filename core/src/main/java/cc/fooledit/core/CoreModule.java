@@ -31,7 +31,7 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CoreModule{
-	private static final Serializier serializier= StandardSerializiers.JSON_SERIALIZIER;
+	private static final Serializier serializier=StandardSerializiers.JSON_SERIALIZIER;
 	public static final String NAME="core";
 	public static final String APPLICATION_REGISTRY_NAME="application";
 	public static final String CLIP_REGISTRY_NAME="clip";
@@ -120,7 +120,6 @@ public class CoreModule{
 		});
 	}
 	public static void onUnLoad(){
-
 	}
 	public static void onInstall(){
 		PERSISTENT_REGISTRY.put("core/"+PROVIDER_REGISTRY_NAME);
@@ -137,6 +136,7 @@ public class CoreModule{
 		TEMPLATE_REGISTRY.putIfAbsent("module","core");
 		TEMPLATE_REGISTRY.putIfAbsent("children",new ListRegistryNode<>());
 		MISC_REGISTRY.put(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
+		MISC_REGISTRY.put(ScriptAPI.ENGINE,"JSchemeMin");
 	}
 	public static void onInit(){
 		REGISTRY=(RegistryNode<String,Object>)Registry.ROOT.getOrCreateChild(NAME);
@@ -180,18 +180,21 @@ public class CoreModule{
 		}
 	}
 	static RegistryNode<String,URLStreamHandler> getPROTOCOL_REGISTRY(){
-		if(PROTOCOL_REGISTRY==null)
+		if(PROTOCOL_REGISTRY==null){
 			PROTOCOL_REGISTRY=(RegistryNode<String,URLStreamHandler>)getREGISTRY().getOrCreateChild(PROTOCOL_REGISTRY_NAME);
+		}
 		return PROTOCOL_REGISTRY;
 	}
 	static RegistryNode<String,ListRegistryNode<Consumer>> getEVENT_REGISTRY(){
-		if(EVENT_REGISTRY==null)
+		if(EVENT_REGISTRY==null){
 			EVENT_REGISTRY=(RegistryNode<String,ListRegistryNode<Consumer>>)getREGISTRY().getOrCreateChild(EVENT_REGISTRY_NAME);
+		}
 		return EVENT_REGISTRY;
 	}
 	static RegistryNode<String,Object> getREGISTRY(){
-		if(REGISTRY==null)
+		if(REGISTRY==null){
 			REGISTRY=(RegistryNode<String,Object>)Registry.ROOT.getOrCreateChild(NAME);
+		}
 		return REGISTRY;
 	}
 }

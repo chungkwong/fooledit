@@ -17,23 +17,36 @@
 package cc.fooledit.core;
 import com.github.chungkwong.jschememin.*;
 import java.io.*;
+import java.util.*;
 import javax.script.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ScriptAPI{
-	private final Evaluator SCHEME_ENGINE=new Evaluator(true);
+	public static final String ENGINE="script_engine";
+	private final ScriptEngineManager manager=new ScriptEngineManager();
 	private final SimpleScriptContext CONTEXT;
+	private final Evaluator evaluator=new Evaluator(true);
 	public ScriptAPI(){
 		this.CONTEXT=new SimpleScriptContext();
+		EvaluatorFactory factory=EvaluatorFactory.INSTANCE;
+		factory.getExtensions().forEach((ext)->manager.registerEngineExtension(ext,factory));
+		factory.getNames().forEach((name)->manager.registerEngineExtension(name,factory));
+		factory.getNames().forEach((name)->manager.put(name,factory));
+		factory.getMimeTypes().forEach((type)->manager.registerEngineExtension(type,factory));
 		CONTEXT.setBindings(new ScriptEnvironment(),SimpleScriptContext.GLOBAL_SCOPE);
 	}
 	public Object eval(Reader reader) throws ScriptException{
-		return SCHEME_ENGINE.eval(reader,CONTEXT);
+		return getDefaultEngine().eval(reader,CONTEXT);
 	}
 	public Object eval(String code) throws ScriptException{
-		return SCHEME_ENGINE.eval(code,CONTEXT);
+		return getDefaultEngine().eval(code,CONTEXT);
+	}
+	public ScriptEngine getDefaultEngine(){
+		String name=Objects.toString(CoreModule.MISC_REGISTRY.get(ENGINE));
+		ScriptEngine engine=manager.getEngineByName(name);
+		return engine!=null?engine:evaluator;
 	}
 	public static void main(String[] args){
 		java.net.URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
