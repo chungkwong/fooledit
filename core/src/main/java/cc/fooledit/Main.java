@@ -54,6 +54,7 @@ public class Main extends Application{
 	private final ScriptAPI script;
 	private final Scene scene=new Scene(root);
 	private Stage stage;
+	private Node mainFocusOwner;
 	private WorkSheet currentWorksheet;
 	private List<KeyEvent> macro=new ArrayList<>();
 	private boolean recording=false;
@@ -71,7 +72,7 @@ public class Main extends Application{
 		Logger.getGlobal().addHandler(notifier);
 		scene.getStylesheets().add(getFile("stylesheets/base.css",CoreModule.NAME).toURI().toString());
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
-		scene.focusOwnerProperty().addListener((e,o,n)->System.out.println(n));
+		//scene.focusOwnerProperty().addListener((e,o,n)->System.out.println(n));
 		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		script=new ScriptAPI();
 		CoreModule.onInit();
@@ -264,10 +265,12 @@ public class Main extends Application{
 		return item;
 	}
 	private void updateCurrentNode(Node node){
+		Node focusOwner=node;
 		while(!(node instanceof WorkSheet)&&node!=null){
 			node=node.getParent();
 		}
 		if(node!=null){
+			mainFocusOwner=focusOwner;
 			if(currentWorksheet!=null){
 				currentWorksheet.getStyleClass().remove("current");
 				currentWorksheet.applyCss();
@@ -487,7 +490,7 @@ public class Main extends Application{
 		return false;
 	}
 	public Command getCommand(String name){
-		Node node=scene.getFocusOwner();
+		Node node=mainFocusOwner;
 		while(node!=null){
 			Object local=node.getProperties().get("commands");
 			if(local instanceof RegistryNode){
@@ -501,7 +504,7 @@ public class Main extends Application{
 		return CoreModule.COMMAND_REGISTRY.get(name);
 	}
 	public Set<String> getCommandNames(){
-		Node node=scene.getFocusOwner();
+		Node node=mainFocusOwner;
 		Set<String> set=new HashSet<>(CoreModule.COMMAND_REGISTRY.keySet());
 		while(node!=null){
 			Object local=node.getProperties().get("commands");
@@ -520,7 +523,7 @@ public class Main extends Application{
 	}
 	private void runScript(){
 		try{
-			script.eval(new InputStreamReader(new FileInputStream(new File(new File(MODULE_PATH,"etc"),"init.scm")),StandardCharsets.UTF_8));
+			script.eval(new InputStreamReader(new FileInputStream(new File(new File(MODULE_PATH,"etc").getParent(),"init.scm")),StandardCharsets.UTF_8));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,"Error in init script",ex);
 		}
@@ -560,13 +563,6 @@ public class Main extends Application{
 		}
 		buf.append(evt.getCode().getName());
 		return buf.toString();
-	}
-	private boolean isCurrentNodeFocused(){
-		Node owner=scene.getFocusOwner();
-		while(owner!=null&&owner!=currentWorksheet){
-			owner=owner.getParent();
-		}
-		return owner!=null;
 	}
 	private void focusOuter(){
 		WorkSheet workSheet=getCurrentWorkSheet().getParentWorkSheet();

@@ -70,6 +70,7 @@ public class Command implements ThrowableVarargsFunction<Object,Object>{
 	public boolean isInteractive(){
 		return interactive;
 	}
+	@Override
 	public Object accept(Object[] t) throws Exception{
 		try{
 			if(isInteractive()&&!Platform.isFxApplicationThread()){

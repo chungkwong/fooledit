@@ -21,5 +21,5 @@ package cc.fooledit.util;
  */
 @FunctionalInterface
 public interface ThrowableVarargsFunction<T,R>{
-	R accept(T[] arg) throws Exception;
+	R accept(T... arg) throws Exception;
 }
