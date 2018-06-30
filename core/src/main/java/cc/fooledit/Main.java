@@ -523,7 +523,7 @@ public class Main extends Application{
 	}
 	private void runScript(){
 		try{
-			script.eval(new InputStreamReader(new FileInputStream(new File(new File(MODULE_PATH,"etc").getParent(),"init.scm")),StandardCharsets.UTF_8));
+			script.eval(new InputStreamReader(new FileInputStream(new File(new File(MODULE_PATH.getParent(),"etc"),"init.scm")),StandardCharsets.UTF_8));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,"Error in init script",ex);
 		}

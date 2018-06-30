@@ -60,3 +60,17 @@
 /editor.odf/target/
 /core/target/
 /editor.email/target/
+/editor.zip/target/
+/editor.pdf/target/
+/editor.text/target/
+/editor.filesystem/target/
+/vcs.svn/target/
+/vcs.git/target/
+/editor.msoffice/target/
+/editor.binary/target/
+/editor.browser/target/
+/editor.media/target/
+/editor.terminal/target/
+/editor.image/target/
+/mode.json/target/
+/distribution/target/
