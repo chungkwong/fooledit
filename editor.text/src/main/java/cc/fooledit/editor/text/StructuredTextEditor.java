@@ -147,6 +147,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("to-uppercase",(area)->area.transform(String::toUpperCase));
 		addCommand("encode-url",(area)->area.transform(StructuredTextEditor::encodeURL));
 		addCommand("decode-url",(area)->area.transform(StructuredTextEditor::decodeURL));
+		addCommand("tab-to-space",(area)->area.transform(StructuredTextEditor::tabToSpace));
+		addCommand("space-to-tab",(area)->area.transform(StructuredTextEditor::spaceToTab));
 		addCommand("scroll-to-top",(area)->area.getArea().showParagraphAtTop(area.getArea().getCurrentParagraph()));
 		addCommand("scroll-to-bottom",(area)->area.getArea().showParagraphAtBottom(area.getArea().getCurrentParagraph()));
 		addCommand("move-to-paragraph",Collections.singletonList(new Argument("line")),(args,area)->{
@@ -223,6 +225,10 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			//OptionDialog.showDialog(new ParseTreeViewer((ParserRuleContext)area.syntaxTree()));
 			return null;
 //return new ScmJavaObject(area.syntaxTree());
+		});
+		addCommand("set-wrap-text",Arrays.asList(new Argument("wrap")),(args,area)->{
+			area.getArea().setWrapText((Boolean)args[0]);
+			return null;
 		});
 		try{
 			//scene.setUserAgentStylesheet("com/github/chungkwong/fooledit/dark.css");
@@ -377,6 +383,12 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return url;
 		}
+	}
+	private static String tabToSpace(String text){
+		return text.replace("\t","        ");
+	}
+	private static String spaceToTab(String text){
+		return text.replace("        ","\t");
 	}
 	private static MenuItem createCharsetItem(Charset charset,Consumer<Charset> action,ToggleGroup group,String def){
 		RadioMenuItem radioMenuItem=new RadioMenuItem(charset.displayName());

@@ -60,8 +60,9 @@ public class CodeEditor extends BorderPane{
 	private final ObservableList<Highlighter> highlighters=FXCollections.observableArrayList();
 	public CodeEditor(ParserBuilder parserBuilder,Highlighter lex){
 		this.parserBuilder=parserBuilder;
-		if(lex!=null)
+		if(lex!=null){
 			lex.highlight(this);
+		}
 		//tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
 		area.currentParagraphProperty().addListener((e,o,n)->area.showParagraphInViewport(n));
 		area.setInputMethodRequests(new InputMethodRequestsObject());
@@ -72,14 +73,14 @@ public class CodeEditor extends BorderPane{
 		});
 		area.setParagraphGraphicFactory(header);
 		area.focusedProperty().addListener((e,o,n)->{
-			if(n)
+			if(n){
 				area.setStyle("-fx-caret-blink-rate:500ms;");
-			else
+			}else{
 				area.setStyle("-fx-caret-blink-rate:0ms;");
+			}
 			area.showCaretProperty().setValue(CaretVisibility.ON);
 		});
 		indentPolicy=IndentPolicy.AS_PREVIOUS;
-
 		area.plainTextChanges().subscribe((e)->update(e));
 		RealTimeTask<String> task=new RealTimeTask<>((text)->{
 			this.syntaxTree=null;
@@ -89,8 +90,9 @@ public class CodeEditor extends BorderPane{
 			@Override
 			public void onChanged(ListChangeListener.Change<? extends Pair<Marker,Marker>> c){
 				c.next();
-				if(c.wasAdded())
+				if(c.wasAdded()){
 					SelectionHighlighter.INSTANCE.highlight(CodeEditor.this);
+				}
 			}
 		});
 		area.textProperty().addListener((e,o,n)->task.summit(n));
@@ -104,15 +106,17 @@ public class CodeEditor extends BorderPane{
 		if(iter.hasNext()){
 			List<Pair<Marker,Marker>> reversed=new ArrayList<>(selections.size()+1);
 			Pair<Marker,Marker> prev=iter.next();
-			if(prev.getKey().getOffset()!=0)
+			if(prev.getKey().getOffset()!=0){
 				reversed.add(createSelection(0,prev.getKey().getOffset()));
+			}
 			while(iter.hasNext()){
 				Pair<Marker,Marker> range=iter.next();
 				reversed.add(createSelection(prev.getValue().getOffset(),range.getKey().getOffset()));
 				prev=range;
 			}
-			if(prev.getValue().getOffset()!=area.getLength())
+			if(prev.getValue().getOffset()!=area.getLength()){
 				reversed.add(createSelection(prev.getValue().getOffset(),area.getLength()));
+			}
 			selections.setAll(reversed);
 		}else{
 			selections.add(createSelection(0,area.getLength()));
@@ -151,8 +155,9 @@ public class CodeEditor extends BorderPane{
 	public int findRegex(String regex){
 		Matcher matcher=Pattern.compile(regex).matcher(area.getText());
 		List<Pair<Marker,Marker>> results=new ArrayList<>();
-		while(matcher.find())
+		while(matcher.find()){
 			results.add(createSelection(matcher.start(),matcher.end()));
+		}
 		selections.setAll(results);
 		return results.size();
 	}
@@ -161,7 +166,7 @@ public class CodeEditor extends BorderPane{
 		int diff=0;
 		for(Marker marker:markers){
 			marker.setOffset(marker.getOffset()+diff);
-			if(marker.getTag()instanceof Pair&&((Pair<Marker,Marker>)marker.getTag()).getKey()==marker){
+			if(marker.getTag() instanceof Pair&&((Pair<Marker,Marker>)marker.getTag()).getKey()==marker){
 				int start=marker.getOffset();
 				int end=((Pair<Marker,Marker>)marker.getTag()).getValue().getOffset()+diff;
 				String replacement=tranform.apply(area.getText(start,end));
@@ -177,8 +182,9 @@ public class CodeEditor extends BorderPane{
 			destroyCompleteSupport.run();
 			destroyCompleteSupport=null;
 		}
-		if(provider!=null)
+		if(provider!=null){
 			destroyCompleteSupport=new CompleteSupport(provider).apply(area,once);
+		}
 	}
 	private List<? extends org.antlr.v4.runtime.Token> tokens;
 	void cache(List<? extends org.antlr.v4.runtime.Token> tokens){
@@ -222,11 +228,12 @@ public class CodeEditor extends BorderPane{
 		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
 		ParseTree parent=getOuterNode(node);
 		if(node!=null){
-			for(int i=0;i<parent.getChildCount();i++)
+			for(int i=0;i<parent.getChildCount();i++){
 				if(parent.getChild(i).getSourceInterval().equals(node.getSourceInterval())&&i>0){
 					Interval newselection=parent.getChild(i-1).getSourceInterval();
 					area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
 				}
+			}
 		}
 	}
 	public void selectNextNode(){
@@ -234,11 +241,12 @@ public class CodeEditor extends BorderPane{
 		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
 		ParseTree parent=getOuterNode(node);
 		if(parent!=null){
-			for(int i=0;i<parent.getChildCount();i++)
+			for(int i=0;i<parent.getChildCount();i++){
 				if(parent.getChild(i).getSourceInterval().equals(node.getSourceInterval())&&i+1<parent.getChildCount()){
 					Interval newselection=parent.getChild(i+1).getSourceInterval();
 					area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
 				}
+			}
 		}
 	}
 	public void selectFirstNode(){
@@ -264,8 +272,9 @@ public class CodeEditor extends BorderPane{
 		while(node.getParent()!=null){
 			node=node.getParent();
 			Interval newInterval=node.getSourceInterval();
-			if(newInterval.a!=oldInterval.a||newInterval.b!=oldInterval.b)
+			if(newInterval.a!=oldInterval.a||newInterval.b!=oldInterval.b){
 				return node;
+			}
 		}
 		return null;
 	}
@@ -274,12 +283,14 @@ public class CodeEditor extends BorderPane{
 		while(true){
 			int childCount=tree.getChildCount();
 			int index=0;
-			while(index<childCount&&tokens.get(tree.getChild(index).getSourceInterval().a).getStartIndex()<=start)
+			while(index<childCount&&tokens.get(tree.getChild(index).getSourceInterval().a).getStartIndex()<=start){
 				++index;
-			if(index==0||tokens.get(tree.getChild(index-1).getSourceInterval().b).getStopIndex()+1<end)
+			}
+			if(index==0||tokens.get(tree.getChild(index-1).getSourceInterval().b).getStopIndex()+1<end){
 				return tree;
-			else
+			}else{
 				tree=tree.getChild(index-1);
+			}
 		}
 	}
 	public CodeArea getArea(){
@@ -296,9 +307,9 @@ public class CodeEditor extends BorderPane{
 	}
 	public int getSelectionIndex(int position){
 		int index=Collections.binarySearch(selections,createSelection(position,position),(x,y)->Integer.compare(x.getKey().getOffset(),y.getKey().getOffset()));
-		if(index>=0)
+		if(index>=0){
 			return index==selections.size()?-1:index;
-		else{
+		}else{
 			index=-(index+1);
 			if(index>0){
 				return selections.get(index-1).getValue().getOffset()>=position?index-1:-1;
@@ -322,16 +333,18 @@ public class CodeEditor extends BorderPane{
 		area.insertText(line,0,indentPolicy.apply(area,line));
 	}
 	public void delete(){
-		if(area.getSelection().getLength()==0)
+		if(area.getSelection().getLength()==0){
 			area.deleteNextChar();
-		else
+		}else{
 			area.replaceSelection("");
+		}
 	}
 	public void backspace(){
-		if(area.getSelection().getLength()==0)
+		if(area.getSelection().getLength()==0){
 			area.deletePreviousChar();
-		else
+		}else{
 			area.replaceSelection("");
+		}
 	}
 	public void deleteNextChar(){
 		area.nextChar(NavigationActions.SelectionPolicy.EXTEND);
@@ -368,10 +381,11 @@ public class CodeEditor extends BorderPane{
 	}
 	public void nextLine(NavigationActions.SelectionPolicy policy){
 		int targetParagraph=area.getCurrentParagraph()+1;
-		if(targetParagraph<area.getParagraphs().size())
+		if(targetParagraph<area.getParagraphs().size()){
 			area.moveTo(targetParagraph,Math.min(area.getCaretColumn(),area.getParagraphLength(targetParagraph)),policy);
-		else
+		}else{
 			area.end(policy);
+		}
 	}
 	public void nextSelection(){
 		int curr=Math.max(area.getCaretPosition(),area.getAnchor());
@@ -383,17 +397,19 @@ public class CodeEditor extends BorderPane{
 	}
 	public void previousLine(NavigationActions.SelectionPolicy policy){
 		int targetParagraph=area.getCurrentParagraph()-1;
-		if(targetParagraph>=0)
+		if(targetParagraph>=0){
 			area.moveTo(targetParagraph,Math.min(area.getCaretColumn(),area.getParagraphLength(targetParagraph)),policy);
-		else
+		}else{
 			area.start(policy);
+		}
 	}
 	public void deleteLine(){
 		int currentParagraph=area.getCurrentParagraph();
-		if(currentParagraph+1<area.getParagraphs().size())
+		if(currentParagraph+1<area.getParagraphs().size()){
 			area.deleteText(currentParagraph,0,currentParagraph+1,0);
-		else
+		}else{
 			area.deleteText(currentParagraph,0,currentParagraph,area.getParagraphLength(currentParagraph));
+		}
 	}
 	public void swapAnchorAndCaret(){
 		area.selectRange(area.getCaretPosition(),area.getAnchor());
@@ -407,12 +423,13 @@ public class CodeEditor extends BorderPane{
 	}
 	private boolean changing=false;
 	private void update(PlainTextChange e){
-		if(changing||markers.isEmpty())
+		if(changing||markers.isEmpty()){
 			return;
-	        int oldPos=e.getRemovalEnd();
-                int newPos=e.getInsertionEnd();
-                unmark(e.getPosition(),e.getRemovalEnd());
-                //selections.removeIf((range)->range.getStart()<=e.getRemovalEnd()&&e.getPosition()<=range.getEnd());
+		}
+		int oldPos=e.getRemovalEnd();
+		int newPos=e.getInsertionEnd();
+		unmark(e.getPosition(),e.getRemovalEnd());
+		//selections.removeIf((range)->range.getStart()<=e.getRemovalEnd()&&e.getPosition()<=range.getEnd());
 		int diff=newPos-oldPos;
 		Optional<Pair<Marker,Marker>> selection=selections.stream().
 				filter((s)->s.getKey().getOffset()<=e.getPosition()&&s.getValue().getOffset()>=e.getRemovalEnd()).findAny();
@@ -424,7 +441,7 @@ public class CodeEditor extends BorderPane{
 			diff=0;
 			for(Marker marker:markers){
 				marker.setOffset(marker.getOffset()+diff);
-				if(marker.getTag()instanceof Pair&&((Pair<Marker,Marker>)marker.getTag()).getKey()==marker){
+				if(marker.getTag() instanceof Pair&&((Pair<Marker,Marker>)marker.getTag()).getKey()==marker){
 					int start=marker.getOffset();
 					int end=((Pair<Marker,Marker>)marker.getTag()).getValue().getOffset()+diff;
 					if(marker.getTag()!=selection.get()){
@@ -438,7 +455,7 @@ public class CodeEditor extends BorderPane{
 				}
 			}
 			changing=false;
-		}else if(!markers.isEmpty())
+		}else if(!markers.isEmpty()){
 			if(diff<0){
 				Marker marker=markers.ceiling(new Marker(oldPos,null));
 				while(marker!=null){
@@ -452,6 +469,7 @@ public class CodeEditor extends BorderPane{
 					marker=markers.lower(marker);
 				}
 			}
+		}
 	}
 	public void mark(int offset,String tag){
 		markers.add(new Marker(offset,tag));
@@ -587,27 +605,38 @@ class LineNumberFactory implements IntFunction<Node>{
 	}
 	@Override
 	public Node apply(int idx){
-		if(marks.containsKey(idx))
+		if(marks.containsKey(idx)){
 			return marks.get(idx);
+		}
 		Val<String> formatted=paragraphs.map((n)->format.format(idx+1));
 		Label lineNo=new Label();
 		lineNo.setFont(FONT);
 		lineNo.setBackground(BACKGROUND);
 		lineNo.setPadding(INSETS);
 		lineNo.getStyleClass().add("lineno");
-        lineNo.textProperty().bind(formatted.conditionOnShowing(lineNo));
+		lineNo.textProperty().bind(formatted.conditionOnShowing(lineNo));
 		return lineNo;
 	}
 	private static int getNumberOfDigit(int n){
-		if(n<10)return 1;
-		else if(n<100)return 2;
-		else if(n<1000)return 3;
-		else if(n<10000)return 4;
-		else if(n<100000)return 5;
-		else if(n<1000000)return 6;
-		else if(n<10000000)return 7;
-		else if(n<100000000)return 8;
-		else return 9;
+		if(n<10){
+			return 1;
+		}else if(n<100){
+			return 2;
+		}else if(n<1000){
+			return 3;
+		}else if(n<10000){
+			return 4;
+		}else if(n<100000){
+			return 5;
+		}else if(n<1000000){
+			return 6;
+		}else if(n<10000000){
+			return 7;
+		}else if(n<100000000){
+			return 8;
+		}else{
+			return 9;
+		}
 	}
 }
 class SelectionHighlighter implements Highlighter{
