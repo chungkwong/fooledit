@@ -81,5 +81,7 @@
 	"Copy":"copy",
 	"C-V":"paste",
 	"S-Insert":"paste",
-	"Paste":"paste"
+	"Paste":"paste",
+	"M-S-Left":"indent-less",
+	"M-S-Right":"indent-more"
 }

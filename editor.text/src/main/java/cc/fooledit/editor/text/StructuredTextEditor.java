@@ -143,8 +143,11 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("select-previous-node",(area)->area.selectPreviousNode());
 		addCommand("select-first-node",(area)->area.selectFirstNode());
 		addCommand("select-last-node",(area)->area.selectLastNode());
+		addCommand("indent-more",(area)->area.transformLines(StructuredTextEditor::indentMore));
+		addCommand("indent-less",(area)->area.transformLines(StructuredTextEditor::indentLess));
 		addCommand("to-lowercase",(area)->area.transform(String::toLowerCase));
 		addCommand("to-uppercase",(area)->area.transform(String::toUpperCase));
+		addCommand("to-titlecase",(area)->area.transform(StructuredTextEditor::toTitlecase));
 		addCommand("encode-url",(area)->area.transform(StructuredTextEditor::encodeURL));
 		addCommand("decode-url",(area)->area.transform(StructuredTextEditor::decodeURL));
 		addCommand("tab-to-space",(area)->area.transform(StructuredTextEditor::tabToSpace));
@@ -389,6 +392,27 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	}
 	private static String spaceToTab(String text){
 		return text.replace("        ","\t");
+	}
+	private static Stream<String> indentMore(Stream<String> text){
+		return text.map((str)->'\t'+str);
+	}
+	private static Stream<String> indentLess(Stream<String> text){
+		return text.map((str)->{
+			if(str.startsWith("\t")){
+				return str.substring(1);
+			}else if(str.startsWith("        ")){
+				return str.substring(8);
+			}else{
+				return str;
+			}
+		});
+	}
+	private static String toTitlecase(String text){
+		if(text.isEmpty()){
+			return "";
+		}
+		int split=text.offsetByCodePoints(0,1);
+		return text.substring(0,split).toUpperCase()+text.substring(split);
 	}
 	private static MenuItem createCharsetItem(Charset charset,Consumer<Charset> action,ToggleGroup group,String def){
 		RadioMenuItem radioMenuItem=new RadioMenuItem(charset.displayName());

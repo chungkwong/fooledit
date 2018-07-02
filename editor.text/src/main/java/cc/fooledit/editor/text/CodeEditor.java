@@ -24,13 +24,14 @@ import java.text.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.regex.*;
+import java.util.stream.*;
 import javafx.application.*;
 import javafx.beans.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.collections.*;
 import javafx.geometry.*;
-import javafx.scene.*;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
@@ -416,6 +417,14 @@ public class CodeEditor extends BorderPane{
 	}
 	public void transform(Function<String,String> transformer){
 		area.replaceSelection(transformer.apply(area.getSelectedText()));
+	}
+	public void transformLines(Function<Stream<String>,Stream<String>> transformer){
+		/*IndexRange selection=area.getSelection();
+		int firstLine=area.get;
+		int lastLine;
+		area.selectRange(firstLine,0,lastLine,area.getParagraphLength(lastLine));*/
+		area.selectParagraph();
+		area.replaceSelection(transformer.apply(Pattern.compile("\\r\\n?|\\n").splitAsStream(area.getSelectedText())).collect(Collectors.joining("\n")));
 	}
 	public void unhighlight(){
 		selections.clear();
