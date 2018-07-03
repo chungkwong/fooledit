@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.logging.Formatter;
 import java.util.logging.*;
 import javafx.application.*;
+import javafx.beans.property.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -33,6 +34,7 @@ public class Notifier extends Handler{
 	private final Node bar;
 	private final Label label;
 	private final HBox other;
+	public static final StringProperty MESSAGES=new SimpleStringProperty("");
 	public Notifier(){
 		label=new Label();
 		label.setAlignment(Pos.BASELINE_LEFT);
@@ -40,6 +42,7 @@ public class Notifier extends Handler{
 		bar=new BorderPane(label,null,other,null,null);
 	}
 	public void notify(String msg){
+		MESSAGES.setValue(MESSAGES.getValue()+msg);
 		Platform.runLater(()->label.setText(msg));
 	}
 	@Override
@@ -48,11 +51,9 @@ public class Notifier extends Handler{
 	}
 	@Override
 	public void flush(){
-
 	}
 	@Override
 	public void close() throws SecurityException{
-
 	}
 	public Node getStatusBar(){
 		return bar;
@@ -84,16 +85,17 @@ public class Notifier extends Handler{
 			buf.append(TIME_FORMAT.format(new Date(record.getMillis()))).append(" [");
 			buf.append(record.getLevel().getName()).append("] [");
 			buf.append(record.getSourceClassName()).append('.').append(record.getSourceMethodName()).append("] ");
-			if(record.getMessage()!=null)
+			if(record.getMessage()!=null){
 				buf.append(MessageFormat.format(record.getMessage(),record.getParameters()));
-			else if(record.getThrown()!=null)
+			}else if(record.getThrown()!=null){
 				buf.append(record.getThrown().getClass().getName()).append(':').append(record.getThrown().getMessage());
+			}
 			return buf.append('\n').toString();
 		}
 	}
 	public static Node createTimeField(DateFormat format){
 		Label time=new Label();
-		new Timer(true).scheduleAtFixedRate(new TimerTask() {
+		new Timer(true).scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run(){
 				Platform.runLater(()->time.setText(format.format(new Date())));
@@ -104,6 +106,7 @@ public class Notifier extends Handler{
 	public static void main(String[] args){
 		Logger.getGlobal().addHandler(new StreamHandler(System.err,USER_FORMATTER));
 		Logger.getGlobal().log(Level.SEVERE,null,new RuntimeException("hello"));
-		Logger.getGlobal().severe("world");Logger.getGlobal().setResourceBundle(null);
+		Logger.getGlobal().severe("world");
+		Logger.getGlobal().setResourceBundle(null);
 	}
 }

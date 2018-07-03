@@ -34,6 +34,14 @@ public class TextEditorModule{
 		DataObjectTypeRegistry.addDataObjectType(TextObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(StructuredTextEditor.INSTANCE,TextObject.class);
 		CoreModule.TEMPLATE_TYPE_REGISTRY.put(TextTemplate.class.getName(),(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime"),(String)obj.get("module")));
+		TextObject logObject=new TextObject("");
+		logObject.getText().bind(Notifier.MESSAGES);
+		RegistryNode<String,Object> log=new SimpleRegistryNode<>();
+		log.put(DataObject.DEFAULT_NAME,MessageRegistry.getString("LOG",NAME));
+		log.put(DataObject.TYPE,TextObjectType.class.getName());
+		log.put(DataObject.MIME,"text/plain");
+		log.put(DataObject.DATA,logObject);
+		DataObjectRegistry.addDataObject(log);
 	}
 	public static void onInstall(){
 		Registry.providesDataObjectType(TextObjectType.class.getName(),NAME);
@@ -48,7 +56,6 @@ public class TextEditorModule{
 		}
 	}
 	public static void onUnLoad(){
-
 	}
 	public static void main(String[] args){
 		System.out.println(TextEditorModule.class.getName());

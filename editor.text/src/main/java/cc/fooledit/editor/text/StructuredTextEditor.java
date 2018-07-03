@@ -145,6 +145,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("select-last-node",(area)->area.selectLastNode());
 		addCommand("indent-more",(area)->area.transformLines(StructuredTextEditor::indentMore));
 		addCommand("indent-less",(area)->area.transformLines(StructuredTextEditor::indentLess));
+		addCommand("duplicate-lines",(area)->area.transformLines(StructuredTextEditor::duplicateLine));
+		addCommand("sort-lines",(area)->area.transformLines(Stream::sorted));
 		addCommand("to-lowercase",(area)->area.transform(String::toLowerCase));
 		addCommand("to-uppercase",(area)->area.transform(String::toUpperCase));
 		addCommand("to-titlecase",(area)->area.transform(StructuredTextEditor::toTitlecase));
@@ -406,6 +408,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 				return str;
 			}
 		});
+	}
+	private static Stream<String> duplicateLine(Stream<String> text){
+		return Stream.of(text,text).flatMap((lines)->lines);
 	}
 	private static String toTitlecase(String text){
 		if(text.isEmpty()){

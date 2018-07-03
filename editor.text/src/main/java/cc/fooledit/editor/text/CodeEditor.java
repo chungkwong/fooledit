@@ -419,12 +419,17 @@ public class CodeEditor extends BorderPane{
 		area.replaceSelection(transformer.apply(area.getSelectedText()));
 	}
 	public void transformLines(Function<Stream<String>,Stream<String>> transformer){
-		/*IndexRange selection=area.getSelection();
-		int firstLine=area.get;
-		int lastLine;
-		area.selectRange(firstLine,0,lastLine,area.getParagraphLength(lastLine));*/
-		area.selectParagraph();
-		area.replaceSelection(transformer.apply(Pattern.compile("\\r\\n?|\\n").splitAsStream(area.getSelectedText())).collect(Collectors.joining("\n")));
+		IndexRange selection=area.getSelection();
+		String text=area.getText();
+		int start=text.lastIndexOf('\n',selection.getStart());
+		int end=text.indexOf('\n',selection.getEnd());
+		if(start==-1){
+			start=0;
+		}
+		if(end==-1){
+			end=text.length();
+		}
+		area.replaceText(start,end,transformer.apply(Pattern.compile("\\r\\n?|\\n").splitAsStream(area.getSelectedText())).collect(Collectors.joining("\n")));
 	}
 	public void unhighlight(){
 		selections.clear();

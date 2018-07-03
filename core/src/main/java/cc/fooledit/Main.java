@@ -194,6 +194,10 @@ public class Main extends Application{
 			loader.loadClass(cls).getMethod(method).invoke(null);
 			return null;
 		});
+		addCommand("reload",(o)->{
+			showOnCurrentTab(getCurrentDataObject());
+			return null;
+		});
 	}
 	private void addCommand(String name,Runnable action){
 		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,CoreModule.NAME));

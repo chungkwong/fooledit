@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.text;
+import java.util.*;
 import javafx.application.*;
 import javafx.scene.*;
-import javafx.scene.canvas.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.*;
 import javafx.stage.*;
 import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.*;
@@ -32,11 +31,19 @@ public class Demo extends Application{
 	public void start(Stage primaryStage) throws Exception{
 		CodeArea area=new CodeArea();
 		area.setWrapText(true);
-		Canvas canvas=new Canvas(500,500);
-		canvas.getGraphicsContext2D().setStroke(Color.GREEN);
-		canvas.getGraphicsContext2D().strokeLine(100,0,100,500);
-		StackPane ruledArea=new StackPane(new VirtualizedScrollPane(area),canvas);
-		primaryStage.setScene(new Scene(ruledArea));
+		area.caretPositionProperty().addListener((e,o,n)->{
+			if(n>0){
+				String sym=area.getText(n-1,n);
+				if(sym.equals(")")){
+					int index=area.getText(0,n-1).lastIndexOf('(');
+					if(index>=0){
+						area.getStyleSpans(index,index+1).append(Collections.singletonList("brace"),0);
+					}
+				}
+			}
+		});
+		area.getStylesheets().add("stylesheets/default.css");
+		primaryStage.setScene(new Scene(new BorderPane(new VirtualizedScrollPane(area))));
 		primaryStage.show();
 	}
 	public static void main(String[] args){

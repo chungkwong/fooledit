@@ -76,7 +76,17 @@
 				]},
 				{"name":"TRANSFORM","children":[
 					{"name":"TO_UPPERCASE","command":"to-uppercase"},
-					{"name":"TO_LOWERCASE","command":"to-lowercase"}
+					{"name":"TO_LOWERCASE","command":"to-lowercase"},
+					{"name":"TO_TITLECASE","command":"to-titlecase"},
+					{"name":"TAB_TO_SPACE","command":"tab-to-space"},
+					{"name":"SPACE_TO_TAB","command":"space-to-tab"},
+					{"name":"ENCODE_URL","command":"encode-url"},
+					{"name":"DECODE_URL","command":"decode-url"},
+					{},
+					{"name":"SORT_LINES","command":"sort-lines"},
+					{"name":"INDENT_MORE","command":"indent-more"},
+					{"name":"INDENT_LESS","command":"indent-less"},
+					{"name":"DUPLICATE_LINES","command":"duplicate-lines"}
 				]},
 				{},
 				{

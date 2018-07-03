@@ -83,5 +83,6 @@
 	"S-Insert":"paste",
 	"Paste":"paste",
 	"M-S-Left":"indent-less",
-	"M-S-Right":"indent-more"
+	"M-S-Right":"indent-more",
+	"C-S-Up":"duplicate-lines"
 }
