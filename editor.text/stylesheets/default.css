@@ -34,3 +34,4 @@
 .highlight{-rtfx-background-color: yellow;}
 .selection{-rtfx-background-color: grey;}
 .error{-rtfx-background-color: red;}
+.brace{-rtfx-border-stroke-color: black;-rtfx-border-stroke-width: 1px;}
