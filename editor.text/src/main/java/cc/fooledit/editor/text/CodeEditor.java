@@ -18,7 +18,6 @@ package cc.fooledit.editor.text;
 import cc.fooledit.control.*;
 import cc.fooledit.editor.text.LineNumberFactory;
 import cc.fooledit.editor.text.parser.*;
-import cc.fooledit.util.Pair;
 import cc.fooledit.util.*;
 import java.text.*;
 import java.util.*;
@@ -80,17 +79,20 @@ public class CodeEditor extends BorderPane{
 			area.showCaretProperty().setValue(CaretVisibility.ON);
 		});
 		indentPolicy=IndentPolicy.AS_PREVIOUS;
-		area.plainTextChanges().subscribe((e)->update(e));
 		RealTimeTask<String> task=new RealTimeTask<>((text)->{
 			this.syntaxTree=null;
 			highlighters.forEach((highlighter)->highlighter.highlight(CodeEditor.this));
 		});
-		selections.addListener(new ListChangeListener<Pair<Marker,Marker>>(){
+		selections.addListener(new ListChangeListener<Selection<Collection<String>,String,Collection<String>>>(){
 			@Override
-			public void onChanged(ListChangeListener.Change<? extends Pair<Marker,Marker>> c){
-				c.next();
-				if(c.wasAdded()){
-					SelectionHighlighter.INSTANCE.highlight(CodeEditor.this);
+			public void onChanged(ListChangeListener.Change<? extends Selection<Collection<String>,String,Collection<String>>> c){
+				while(c.next()){
+					if(c.wasRemoved()){
+						c.getRemoved().forEach((s)->area.removeSelection(s));
+					}
+					if(c.wasAdded()){
+						c.getAddedSubList().forEach((s)->area.addSelection(s));
+					}
 				}
 			}
 		});
@@ -100,64 +102,44 @@ public class CodeEditor extends BorderPane{
 	}
 	public void reverseSelection(){
 		sortSelection();
-		Iterator<Pair<Marker,Marker>> iter=selections.iterator();
+		Iterator<Selection<Collection<String>,String,Collection<String>>> iter=selections.iterator();
 		if(iter.hasNext()){
-			List<Pair<Marker,Marker>> reversed=new ArrayList<>(selections.size()+1);
-			Pair<Marker,Marker> prev=iter.next();
-			if(prev.getKey().getOffset()!=0){
-				reversed.add(createSelection(0,prev.getKey().getOffset()));
+			Selection<Collection<String>,String,Collection<String>> prev=iter.next();
+			if(prev.getStartPosition()!=0){
+				selections.add(new SelectionImpl<>("reversed",area,0,prev.getStartPosition()));
 			}
 			while(iter.hasNext()){
-				Pair<Marker,Marker> range=iter.next();
-				reversed.add(createSelection(prev.getValue().getOffset(),range.getKey().getOffset()));
+				Selection<Collection<String>,String,Collection<String>> range=iter.next();
+				selections.add(new SelectionImpl<>("reversed",area,prev.getEndPosition(),range.getStartPosition()));
 				prev=range;
 			}
-			if(prev.getValue().getOffset()!=area.getLength()){
-				reversed.add(createSelection(prev.getValue().getOffset(),area.getLength()));
+			if(prev.getEndPosition()!=area.getLength()){
+				selections.add(new SelectionImpl<>("reversed",area,prev.getEndPosition(),area.getLength()));
 			}
-			selections.setAll(reversed);
 		}else{
-			selections.add(createSelection(0,area.getLength()));
+			selections.add(new SelectionImpl<>("reversed",area,0,area.getLength()));
 		}
 	}
 	private void sortSelection(){
-		FXCollections.sort(selections,(x,y)->Integer.compare(x.getKey().getOffset(),y.getKey().getOffset()));
-	}
-	Pair<Marker,Marker> createSelection(IndexRange range){
-		return createSelection(range.getStart(),range.getEnd());
-	}
-	Pair<Marker,Marker> createSelection(int start,int end){
-		Marker startMarker=createMarker(start);
-		Marker endMarker=createMarker(end);
-		Pair<Marker,Marker> selection=new Pair<>(startMarker,endMarker);
-		startMarker.setTag(selection);
-		endMarker.setTag(selection);
-		return selection;
-	}
-	Marker createMarker(int pos){
-		Marker marker=new Marker(pos,null);
-		markers.add(marker);
-		return marker;
+		FXCollections.sort(selections,(x,y)->Integer.compare(x.getStartPosition(),y.getStartPosition()));
 	}
 	public int find(String target){
 		String text=area.getText();
-		List<Pair<Marker,Marker>> results=new ArrayList<>();;
+		selections.clear();
 		int length=target.length();
 		int start=0;
 		while((start=text.indexOf(target,start))!=-1){
-			results.add(createSelection(start,start+=length));
+			selections.add(new SelectionImpl<>("find",area,start,start+=length));
 		}
-		selections.setAll(results);
-		return results.size();
+		return selections.size();
 	}
 	public int findRegex(String regex){
 		Matcher matcher=Pattern.compile(regex).matcher(area.getText());
-		List<Pair<Marker,Marker>> results=new ArrayList<>();
+		selections.clear();
 		while(matcher.find()){
-			results.add(createSelection(matcher.start(),matcher.end()));
+			selections.add(new SelectionImpl<>("find",area,matcher.start(),matcher.end()));
 		}
-		selections.setAll(results);
-		return results.size();
+		return selections.size();
 	}
 	public void replace(Function<String,String> tranform){
 		selections.forEach((s)->area.replaceText(s.getRange(),tranform.apply(s.getSelectedText())));
@@ -291,18 +273,8 @@ public class CodeEditor extends BorderPane{
 	public ObservableList<Selection<Collection<String>,String,Collection<String>>> selections(){
 		return selections;
 	}
-	public int getSelectionIndex(int position){
-		int index=Collections.binarySearch(selections,createSelection(position,position),(x,y)->Integer.compare(x.getKey().getOffset(),y.getKey().getOffset()));
-		if(index>=0){
-			return index==selections.size()?-1:index;
-		}else{
-			index=-(index+1);
-			if(index>0){
-				return selections.get(index-1).getStartPosition()>=position?index-1:-1;
-			}else{
-				return -1;
-			}
-		}
+	public Selection getSelectionIndex(int position){
+		return selections.stream().filter((s)->s.getStartPosition()>=position&&s.getEndPosition()<position).findAny().orElse(null);
 	}
 	public void newline(){
 		area.insertText(area.getCaretPosition(),"\n");

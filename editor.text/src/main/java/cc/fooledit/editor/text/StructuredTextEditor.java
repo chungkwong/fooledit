@@ -198,7 +198,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		clips.registerComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry,TextEditorModule.NAME);
 		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
 				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList())),true));
-		addCommand("highlight",(area)->area.selections().add(area.createSelection(area.getArea().getSelection())));
+		addCommand("highlight",(area)->area.selections().add(new SelectionImpl<>("highlight",area.getArea(),area.getArea().getSelection().getStart(),area.getArea().getSelection().getEnd())));
 		addCommand("unhighlight",(area)->area.unhighlight());
 		addCommand("find-string",Collections.singletonList(new Argument("target")),(args,area)->{
 			return area.find((String)args[0]);
@@ -334,8 +334,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		remark.add(editor.getArea().getAnchor());
 		remark.add(editor.getArea().getCaretPosition());
 		editor.selections().forEach((range)->{
-			remark.add(range.getKey().getOffset());
-			remark.add(range.getValue().getOffset());
+			remark.add(range.getStartPosition());
+			remark.add(range.getEndPosition());
 		});
 		return new ListRegistryNode<>(remark);
 	}
@@ -364,7 +364,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			int len=codeEditor.getArea().getLength();
 			codeEditor.getArea().selectRange(Math.min(pair.get(0).intValue(),len),Math.min(pair.get(1).intValue(),len));
 			for(int i=2;i<pair.size();i+=2){
-				codeEditor.selections().add(codeEditor.createSelection(pair.get(i).intValue(),pair.get(i+1).intValue()));
+				codeEditor.selections().add(new SelectionImpl<>("selection",codeEditor.getArea(),pair.get(i).intValue(),pair.get(i+1).intValue()));
 			}
 		}
 		return codeEditor;
