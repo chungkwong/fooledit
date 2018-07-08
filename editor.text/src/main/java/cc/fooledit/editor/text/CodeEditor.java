@@ -98,6 +98,39 @@ public class CodeEditor extends BorderPane{
 		});
 		area.textProperty().addListener((e,o,n)->task.summit(n));
 		highlighters.add(lex);
+		Selection<Collection<String>,String,Collection<String>> matchingBrace=new SelectionImpl<>("brace",area,(path)->path.getStyleClass().add("brace"));
+		area.addSelection(matchingBrace);
+		area.caretPositionProperty().addListener((e,o,n)->{
+			if(n>0){
+				String ch=area.getText(n-1,n);
+				int match=-1;
+				switch(ch.codePointAt(0)){
+					case '(':
+						match=area.getText().indexOf(')',n);
+						break;
+					case '[':
+						match=area.getText().indexOf(']',n);
+						break;
+					case '{':
+						match=area.getText().indexOf('}',n);
+						break;
+					case ')':
+						match=area.getText().lastIndexOf('(',n);
+						break;
+					case ']':
+						match=area.getText().lastIndexOf('[',n);
+						break;
+					case '}':
+						match=area.getText().lastIndexOf('{',n);
+						break;
+				}
+				if(match!=-1){
+					matchingBrace.selectRange(match,match+1);
+				}else{
+					matchingBrace.deselect();
+				}
+			}
+		});
 		setCenter(new VirtualizedScrollPane(area));
 	}
 	public void reverseSelection(){
