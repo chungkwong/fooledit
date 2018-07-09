@@ -56,6 +56,7 @@ public class CodeEditor extends BorderPane{
 	private final TreeSet<CaretNode> markers=new TreeSet<>(Comparator.comparing((n)->n.getPosition()));
 	private final ObservableList<Selection<Collection<String>,String,Collection<String>>> selections=FXCollections.observableArrayList();
 	private final ObservableList<Highlighter> highlighters=FXCollections.observableArrayList();
+	private int selectionId=0;
 	public CodeEditor(ParserBuilder parserBuilder,Highlighter lex){
 		this.parserBuilder=parserBuilder;
 		if(lex!=null){
@@ -106,22 +107,22 @@ public class CodeEditor extends BorderPane{
 				int match=-1;
 				switch(ch.codePointAt(0)){
 					case '(':
-						match=area.getText().indexOf(')',n);
+						match=findMatchingBraceForward(area.getText(),n,'(',')');
 						break;
 					case '[':
-						match=area.getText().indexOf(']',n);
+						match=findMatchingBraceForward(area.getText(),n,'[',']');
 						break;
 					case '{':
-						match=area.getText().indexOf('}',n);
+						match=findMatchingBraceForward(area.getText(),n,'[','}');
 						break;
 					case ')':
-						match=area.getText().lastIndexOf('(',n);
+						match=findMatchingBraceBackward(area.getText(),n-2,'(',')');
 						break;
 					case ']':
-						match=area.getText().lastIndexOf('[',n);
+						match=findMatchingBraceBackward(area.getText(),n-2,'[',']');
 						break;
 					case '}':
-						match=area.getText().lastIndexOf('{',n);
+						match=findMatchingBraceBackward(area.getText(),n-2,'{','}');
 						break;
 				}
 				if(match!=-1){
@@ -132,6 +133,46 @@ public class CodeEditor extends BorderPane{
 			}
 		});
 		setCenter(new VirtualizedScrollPane(area));
+	}
+	private static int findMatchingBraceForward(String text,int start,char left,char right){
+		int level=1;
+		while(start<text.length()){
+			char c=text.charAt(start);
+			if(c==left){
+				++level;
+			}
+			if(c==right){
+				--level;
+				if(level==0){
+					return start;
+				}
+			}
+			++start;
+		}
+		return -1;
+	}
+	private static int findMatchingBraceBackward(String text,int start,char left,char right){
+		int level=1;
+		while(start>=0){
+			char c=text.charAt(start);
+			if(c==right){
+				++level;
+			}
+			if(c==left){
+				--level;
+				if(level==0){
+					return start;
+				}
+			}
+			--start;
+		}
+		return -1;
+	}
+	Selection<Collection<String>,String,Collection<String>> createSelection(int start,int end,String cls){
+		SelectionImpl<Collection<String>,String,Collection<String>> selection=new SelectionImpl<>(Integer.toString(++selectionId),area,(path)->path.getStyleClass().add(cls));
+		area.addSelection(selection);
+		selection.selectRange(start,end);
+		return selection;
 	}
 	public void reverseSelection(){
 		sortSelection();

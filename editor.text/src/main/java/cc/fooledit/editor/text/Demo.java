@@ -24,30 +24,10 @@ import org.fxmisc.richtext.*;
  * @author Chan Chung Kwong
  */
 public class Demo extends Application{
-	private final InlineCssTextArea area=new InlineCssTextArea();
+	private final CodeEditor area=new CodeEditor(null,null);
 	private Selection caret;
 	@Override
 	public void start(Stage primaryStage){
-		area.replaceText("hello");
-		System.out.println(area.addSelection(new SelectionImpl<>("brace",area,0,1)));
-		Selection sel=new SelectionImpl<>("hello",area,(path)->path.getStyleClass().add("brace"));
-		System.out.println(area.addSelection(sel));
-		sel.selectRange(3,4);
-		area.caretPositionProperty().addListener((e,o,n)->{
-			if(caret!=null){
-				area.removeSelection(caret);
-			}
-			int pos=area.getCaretPosition();
-			if(pos>0){
-				if(area.getText(pos-1,pos).equals(")")){
-					int match=area.getText(0,pos).lastIndexOf('(');
-					if(match!=-1){
-						caret=new SelectionImpl("brace",area,match,match+1);
-						area.addSelection(caret);
-					}
-				}
-			}
-		});
 		primaryStage.setScene(new Scene(area));
 		primaryStage.show();
 	}
