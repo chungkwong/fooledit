@@ -54,14 +54,16 @@ public class CodeEditor extends BorderPane{
 	private final IndentPolicy indentPolicy;
 	private final StringProperty textProperty=new PlainTextProperty();
 	private final TreeSet<CaretNode> markers=new TreeSet<>(Comparator.comparing((n)->n.getPosition()));
-	private final ObservableList<Selection<Collection<String>,String,Collection<String>>> selections=FXCollections.observableArrayList();
-	private final ObservableList<Highlighter> highlighters=FXCollections.observableArrayList();
+	private final ObservableList<SelectionGroup> selections=FXCollections.observableArrayList();
+	private final Property<Highlighter> highlighters=new SimpleObjectProperty<>();
 	private int selectionId=0;
+	private int currentSelectionGroup=0;
 	public CodeEditor(ParserBuilder parserBuilder,Highlighter lex){
 		this.parserBuilder=parserBuilder;
 		if(lex!=null){
 			lex.highlight(this);
 		}
+		selections.add(createSelectionGroup("selection"));
 		//tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
 		area.currentParagraphProperty().addListener((e,o,n)->area.showParagraphInViewport(n));
 		area.setInputMethodRequests(new InputMethodRequestsObject());
@@ -82,24 +84,16 @@ public class CodeEditor extends BorderPane{
 		indentPolicy=IndentPolicy.AS_PREVIOUS;
 		RealTimeTask<String> task=new RealTimeTask<>((text)->{
 			this.syntaxTree=null;
-			highlighters.forEach((highlighter)->highlighter.highlight(CodeEditor.this));
-		});
-		selections.addListener(new ListChangeListener<Selection<Collection<String>,String,Collection<String>>>(){
-			@Override
-			public void onChanged(ListChangeListener.Change<? extends Selection<Collection<String>,String,Collection<String>>> c){
-				while(c.next()){
-					if(c.wasRemoved()){
-						c.getRemoved().forEach((s)->area.removeSelection(s));
-					}
-					if(c.wasAdded()){
-						c.getAddedSubList().forEach((s)->area.addSelection(s));
-					}
-				}
+			Highlighter highlighter=highlighters.getValue();
+			if(highlighter!=null){
+				highlighter.highlight(CodeEditor.this);
 			}
 		});
 		area.textProperty().addListener((e,o,n)->task.summit(n));
-		highlighters.add(lex);
-		Selection<Collection<String>,String,Collection<String>> matchingBrace=new SelectionImpl<>("brace",area,(path)->path.getStyleClass().add("brace"));
+		highlighters.setValue(lex);
+		Selection<Collection<String>,String,Collection<String>> currentBrace=createSelection(0,0,"brace");
+		area.addSelection(currentBrace);
+		Selection<Collection<String>,String,Collection<String>> matchingBrace=createSelection(0,0,"brace");
 		area.addSelection(matchingBrace);
 		area.caretPositionProperty().addListener((e,o,n)->{
 			if(n>0){
@@ -126,8 +120,10 @@ public class CodeEditor extends BorderPane{
 						break;
 				}
 				if(match!=-1){
+					currentBrace.selectRange(n-1,n);
 					matchingBrace.selectRange(match,match+1);
 				}else{
+					currentBrace.deselect();
 					matchingBrace.deselect();
 				}
 			}
@@ -169,54 +165,44 @@ public class CodeEditor extends BorderPane{
 		return -1;
 	}
 	Selection<Collection<String>,String,Collection<String>> createSelection(int start,int end,String cls){
-		SelectionImpl<Collection<String>,String,Collection<String>> selection=new SelectionImpl<>(Integer.toString(++selectionId),area,(path)->path.getStyleClass().add(cls));
+		Selection<Collection<String>,String,Collection<String>> selection=new SelectionImpl<>(Integer.toString(++selectionId),area,(path)->path.getStyleClass().add(cls));
 		area.addSelection(selection);
 		selection.selectRange(start,end);
 		return selection;
 	}
-	public void reverseSelection(){
-		sortSelection();
-		Iterator<Selection<Collection<String>,String,Collection<String>>> iter=selections.iterator();
-		if(iter.hasNext()){
-			Selection<Collection<String>,String,Collection<String>> prev=iter.next();
-			if(prev.getStartPosition()!=0){
-				selections.add(new SelectionImpl<>("reversed",area,0,prev.getStartPosition()));
-			}
-			while(iter.hasNext()){
-				Selection<Collection<String>,String,Collection<String>> range=iter.next();
-				selections.add(new SelectionImpl<>("reversed",area,prev.getEndPosition(),range.getStartPosition()));
-				prev=range;
-			}
-			if(prev.getEndPosition()!=area.getLength()){
-				selections.add(new SelectionImpl<>("reversed",area,prev.getEndPosition(),area.getLength()));
-			}
-		}else{
-			selections.add(new SelectionImpl<>("reversed",area,0,area.getLength()));
-		}
+	public SelectionGroup createSelectionGroup(String cls){
+		SelectionGroup selectionGroup=new SelectionGroup(cls,this);
+		selections.add(selectionGroup);
+		return selectionGroup;
 	}
-	private void sortSelection(){
-		FXCollections.sort(selections,(x,y)->Integer.compare(x.getStartPosition(),y.getStartPosition()));
+	public void reverseSelection(){
+		getCurrentSelectionGroup().reverse();
 	}
 	public int find(String target){
 		String text=area.getText();
-		selections.clear();
 		int length=target.length();
 		int start=0;
+		SelectionGroup group=getCurrentSelectionGroup();
+		group.getSelections().clear();
 		while((start=text.indexOf(target,start))!=-1){
-			selections.add(new SelectionImpl<>("find",area,start,start+=length));
+			group.select(start,start+=length);
 		}
 		return selections.size();
 	}
 	public int findRegex(String regex){
 		Matcher matcher=Pattern.compile(regex).matcher(area.getText());
-		selections.clear();
+		SelectionGroup group=getCurrentSelectionGroup();
+		group.getSelections().clear();
 		while(matcher.find()){
-			selections.add(new SelectionImpl<>("find",area,matcher.start(),matcher.end()));
+			group.select(matcher.start(),matcher.end());
 		}
 		return selections.size();
 	}
 	public void replace(Function<String,String> tranform){
-		selections.forEach((s)->area.replaceText(s.getRange(),tranform.apply(s.getSelectedText())));
+		getCurrentSelectionGroup().getSelections().forEach((s)->area.replaceText(s.getRange(),tranform.apply(s.getSelectedText())));
+	}
+	public SelectionGroup getCurrentSelectionGroup(){
+		return selections.get(currentSelectionGroup);
 	}
 	private Runnable destroyCompleteSupport=null;
 	public void setAutoCompleteProvider(AutoCompleteProvider provider,boolean once){
@@ -344,11 +330,11 @@ public class CodeEditor extends BorderPane{
 	Map<Integer,Node> annotations(){
 		return header.getMarks();
 	}
-	public ObservableList<Selection<Collection<String>,String,Collection<String>>> selections(){
+	public ObservableList<SelectionGroup> selections(){
 		return selections;
 	}
 	public Selection getSelectionIndex(int position){
-		return selections.stream().filter((s)->s.getStartPosition()>=position&&s.getEndPosition()<position).findAny().orElse(null);
+		return getCurrentSelectionGroup().getSelections().stream().filter((s)->s.getStartPosition()>=position&&s.getEndPosition()<position).findAny().orElse(null);
 	}
 	public void newline(){
 		area.insertText(area.getCaretPosition(),"\n");
@@ -421,11 +407,11 @@ public class CodeEditor extends BorderPane{
 	}
 	public void nextSelection(){
 		int curr=Math.max(area.getCaretPosition(),area.getAnchor());
-		selections.stream().filter((range)->range.getStartPosition()>=curr).findFirst().ifPresent((range)->area.selectRange(range.getStartPosition(),range.getEndPosition()));
+		getCurrentSelectionGroup().getSelections().stream().filter((range)->range.getStartPosition()>=curr).findFirst().ifPresent((range)->area.selectRange(range.getStartPosition(),range.getEndPosition()));
 	}
 	public void previousSelection(){
 		int curr=Math.min(area.getCaretPosition(),area.getAnchor());
-		selections.stream().filter((range)->range.getStartPosition()<curr).forEach((range)->area.selectRange(range.getStartPosition(),range.getEndPosition()));
+		getCurrentSelectionGroup().getSelections().stream().filter((range)->range.getStartPosition()<curr).forEach((range)->area.selectRange(range.getStartPosition(),range.getEndPosition()));
 	}
 	public void previousLine(NavigationActions.SelectionPolicy policy){
 		int targetParagraph=area.getCurrentParagraph()-1;

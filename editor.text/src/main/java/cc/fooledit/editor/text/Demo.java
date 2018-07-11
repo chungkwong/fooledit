@@ -28,7 +28,9 @@ public class Demo extends Application{
 	private Selection caret;
 	@Override
 	public void start(Stage primaryStage){
-		primaryStage.setScene(new Scene(area));
+		area.getStylesheets().add("file:///home/kwong/NetBeansProjects/fooledit/editor.text/stylesheets/default.css");
+		Scene scene=new Scene(area);
+		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
 	public static void main(String[] args){
