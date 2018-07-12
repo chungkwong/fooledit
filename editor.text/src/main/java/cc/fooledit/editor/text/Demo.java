@@ -17,6 +17,7 @@
 package cc.fooledit.editor.text;
 import javafx.application.*;
 import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.stage.*;
 import org.fxmisc.richtext.*;
 /**
@@ -29,6 +30,11 @@ public class Demo extends Application{
 	@Override
 	public void start(Stage primaryStage){
 		area.getStylesheets().add("file:///home/kwong/NetBeansProjects/fooledit/editor.text/stylesheets/default.css");
+		Button addButton=new Button("Added caret");
+		addButton.setOnAction((e)->{
+			area.getArea().addCaret(new CaretNode("caret",area.getArea(),area.getArea().getCaretPosition()));
+		});
+		area.setBottom(addButton);
 		Scene scene=new Scene(area);
 		primaryStage.setScene(scene);
 		primaryStage.show();

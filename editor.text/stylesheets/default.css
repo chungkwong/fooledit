@@ -35,4 +35,4 @@
 .selection{-rtfx-background-color: grey;}
 .error{-rtfx-background-color: red;}
 .brace{-rtfx-border-stroke-color: black;-rtfx-border-stroke-width: 1px;}
-.code-area .text{-rtfx-background-color: yellow;}
+.paragraph-box:has-caret{-fx-background-color: azure;}
