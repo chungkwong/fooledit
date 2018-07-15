@@ -33,6 +33,7 @@ public class TextEditorModule{
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(TextObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(StructuredTextEditor.INSTANCE,TextObject.class);
+		DataObjectTypeRegistry.addToolBox(FindToolBox.INSTANCE,StructuredTextEditor.class);
 		CoreModule.TEMPLATE_TYPE_REGISTRY.put(TextTemplate.class.getName(),(obj)->new TextTemplate((String)obj.get("name"),(String)obj.get("description"),(String)obj.get("file"),(String)obj.get("mime"),(String)obj.get("module")));
 		TextObject logObject=new TextObject("");
 		logObject.getText().bind(Notifier.MESSAGES);
@@ -48,6 +49,7 @@ public class TextEditorModule{
 		Registry.providesDataObjectEditor(StructuredTextEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(TextObject.class.getName(),NAME);
 		Registry.providesTemplateType(TextTemplate.class.getName(),NAME);
+		Registry.providesToolBox(FindToolBox.class.getName(),NAME);
 		try{
 			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getOrCreateChild("children")).put(
 					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Main.INSTANCE.getFile("templates.json",NAME))));
