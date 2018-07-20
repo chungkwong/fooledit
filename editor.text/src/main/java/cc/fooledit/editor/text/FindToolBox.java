@@ -39,7 +39,7 @@ public class FindToolBox implements ToolBox{
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
-		return new FindPanel(viewer);
+		return new FindPanel((CodeEditor)viewer);
 	}
 	@Override
 	public Node getGraphic(){
@@ -81,16 +81,13 @@ public class FindToolBox implements ToolBox{
 			getChildren().setAll(searchBar,replaceBar);
 		}
 		private void findNext(){
-
 		}
 		private void findPrevious(){
-
 		}
 		private void replaceCurrent(){
 			area.getArea().replaceSelection(replaceString.getText());
 		}
 		private void replaceAll(){
-
 		}
 	}
 }
