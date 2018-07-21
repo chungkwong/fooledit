@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.text;
-import cc.fooledit.core.Helper;
 import cc.fooledit.*;
+import cc.fooledit.core.*;
 import cc.fooledit.core.Template;
 import freemarker.template.*;
 import java.io.*;
@@ -112,15 +112,15 @@ public class TextTemplate implements Template<TextObject>{
 		ENGINE=new Configuration(new Version(2,3,23));
 		ENGINE.setDefaultEncoding("UTF-8");
 		try{
-			ENGINE.setDirectoryForTemplateLoading(new File(Main.INSTANCE.getModulePath(TextEditorModule.NAME),"modes"));
+			ENGINE.setDirectoryForTemplateLoading(new File(Main.INSTANCE.getModulePath(Activator.NAME),"modes"));
 		}catch(IOException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
-	public static void main(String[] args) throws IOException, TemplateException{
+	public static void main(String[] args) throws IOException,TemplateException{
 		Configuration configuration=new Configuration(new Version(2,3,26));
 		configuration.setDefaultEncoding("UTF-8");
-		configuration.setDirectoryForTemplateLoading(new File(Main.INSTANCE.getModulePath(TextEditorModule.NAME),"modes"));
+		configuration.setDirectoryForTemplateLoading(new File(Main.INSTANCE.getModulePath(Activator.NAME),"modes"));
 		freemarker.template.Template template=configuration.getTemplate("java/Main.java");
 		Map<String,Object> props=new HashMap<>();
 		props.put("name","Name");

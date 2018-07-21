@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.text;
-import cc.fooledit.core.MenuRegistry;
-import cc.fooledit.core.MessageRegistry;
-import cc.fooledit.core.DataEditor;
+import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -41,6 +39,6 @@ public class PlainTextEditor implements DataEditor<TextObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("TEXT_EDITOR",TextEditorModule.NAME);
+		return MessageRegistry.getString("TEXT_EDITOR",Activator.NAME);
 	}
 }
