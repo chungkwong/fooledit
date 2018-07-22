@@ -42,7 +42,7 @@ public class ContentsToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("CONTENTS",PdfModule.NAME);
+		return MessageRegistry.getString("CONTENTS",Activator.NAME);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){

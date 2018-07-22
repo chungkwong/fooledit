@@ -46,7 +46,7 @@ public class VsdxObjectType implements DataObjectType<VsdxObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("NEW_WORD_DOCUMENT",MsOfficeModule.NAME);
+		return MessageRegistry.getString("NEW_WORD_DOCUMENT",Activator.NAME);
 	}
 	@Override
 	public void writeTo(VsdxObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

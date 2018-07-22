@@ -57,32 +57,4 @@ public class Activator implements BundleActivator{
 	@Override
 	public void stop(BundleContext bc) throws Exception{
 	}
-	public static void main(String[] args){
-		for(File module:new File("/home/kwong/NetBeansProjects/fooledit").listFiles()){
-			File descriptor=new File(module,"description.json");
-			if(module.isDirectory()&&descriptor.exists()){
-				File resources=new File(module,"src/main/resources");
-				File meta=new File(resources,"META-INF");
-				meta.mkdirs();
-				descriptor.renameTo(new File(meta,"description.json"));
-				File menu=new File(module,"menus/default.json");
-				if(menu.exists()){
-					menu.renameTo(new File(resources,"menu.json"));
-					menu.getParentFile().delete();
-				}
-				File kepmap=new File(module,"keymaps/default.json");
-				if(kepmap.exists()){
-					kepmap.renameTo(new File(resources,"keymap.json"));
-					kepmap.getParentFile().delete();
-				}
-				File msg=new File(module,"locales/messages_zh_CN.properties");
-				if(msg.exists()){
-					msg.renameTo(new File(resources,"messages_zh_CN.properties"));
-					new File(module,"locales/messages.properties").renameTo(new File(resources,"messages.properties"));
-					msg.getParentFile().delete();
-				}
-				new File(module,"on-unload.scm").delete();
-			}
-		}
-	}
 }

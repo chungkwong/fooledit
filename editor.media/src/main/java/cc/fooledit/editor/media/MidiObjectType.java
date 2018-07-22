@@ -49,7 +49,7 @@ public class MidiObjectType implements DataObjectType<MidiObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("MIDI",MediaEditorModule.NAME);
+		return MessageRegistry.getString("MIDI",Activator.NAME);
 	}
 	@Override
 	public void writeTo(MidiObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

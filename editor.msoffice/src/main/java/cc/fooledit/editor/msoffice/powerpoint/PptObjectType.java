@@ -16,7 +16,7 @@
  */
 package cc.fooledit.editor.msoffice.powerpoint;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.MsOfficeModule;
+import cc.fooledit.editor.msoffice.Activator;
 import cc.fooledit.spi.*;
 import java.net.*;
 import org.apache.poi.hslf.usermodel.*;
@@ -46,7 +46,7 @@ public class PptObjectType implements DataObjectType<PptObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_POWERPOINT_DOCUMENT",MsOfficeModule.NAME);
+		return MessageRegistry.getString("OLD_POWERPOINT_DOCUMENT",Activator.NAME);
 	}
 	@Override
 	public void writeTo(PptObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

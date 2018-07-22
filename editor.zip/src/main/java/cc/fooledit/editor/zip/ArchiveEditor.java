@@ -32,9 +32,9 @@ import org.apache.commons.compress.archivers.*;
  */
 public class ArchiveEditor implements DataEditor<ArchiveObject>{
 	public static final ArchiveEditor INSTANCE=new ArchiveEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(ZipModule.NAME);
-	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(ZipModule.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(ZipModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
 	private ArchiveEditor(){
 		addCommand("focus-previous",(viewer)->viewer.getTree().getFocusModel().focusPrevious());
 		addCommand("focus-next",(viewer)->viewer.getTree().getFocusModel().focusNext());
@@ -55,7 +55,7 @@ public class ArchiveEditor implements DataEditor<ArchiveObject>{
 		addCommand("submit",(viewer)->viewer.fireAction());
 	}
 	private void addCommand(String name,Consumer<ArchiveViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),ZipModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
 	}
 	@Override
 	public Node edit(ArchiveObject data,Object remark,RegistryNode<String,Object> meta){
@@ -75,7 +75,7 @@ public class ArchiveEditor implements DataEditor<ArchiveObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("ARCHIVE_EDITOR",ZipModule.NAME);
+		return MessageRegistry.getString("ARCHIVE_EDITOR",Activator.NAME);
 	}
 	private void focusUp(TableView<ArchiveEntry> tree){
 		focusBeginOfDirectory(tree);

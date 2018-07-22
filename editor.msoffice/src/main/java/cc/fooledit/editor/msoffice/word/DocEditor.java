@@ -16,7 +16,7 @@
  */
 package cc.fooledit.editor.msoffice.word;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.MsOfficeModule;
+import cc.fooledit.editor.msoffice.Activator;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
@@ -33,6 +33,6 @@ public class DocEditor implements DataEditor<DocObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",MsOfficeModule.NAME);
+		return MessageRegistry.getString("DOCUMENT_EDITOR",Activator.NAME);
 	}
 }

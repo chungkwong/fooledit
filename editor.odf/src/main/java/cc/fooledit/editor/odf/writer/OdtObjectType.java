@@ -52,7 +52,7 @@ public class OdtObjectType implements DataObjectType<OdtObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("WRITER_DOCUMENT",OdfModule.NAME);
+		return MessageRegistry.getString("WRITER_DOCUMENT",Activator.NAME);
 	}
 	@Override
 	public void writeTo(OdtObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

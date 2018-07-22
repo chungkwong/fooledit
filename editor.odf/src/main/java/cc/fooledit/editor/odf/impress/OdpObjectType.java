@@ -16,7 +16,7 @@
  */
 package cc.fooledit.editor.odf.impress;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.odf.OdfModule;
+import cc.fooledit.editor.odf.Activator;
 import cc.fooledit.spi.*;
 import java.net.*;
 import org.odftoolkit.simple.*;
@@ -46,7 +46,7 @@ public class OdpObjectType implements DataObjectType<OdpObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("PRESENTATION_DOCUMENT",OdfModule.NAME);
+		return MessageRegistry.getString("PRESENTATION_DOCUMENT",Activator.NAME);
 	}
 	@Override
 	public void writeTo(OdpObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

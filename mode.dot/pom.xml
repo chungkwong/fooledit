@@ -9,7 +9,12 @@
     <artifactId>mode.dot</artifactId>
     <packaging>jar</packaging>
     <dependencies>
-        <dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>6.0.0</version>
+			<scope>provided</scope>
+		</dependency>        <dependency>
             <groupId>com.github.chungkwong</groupId>
             <artifactId>core</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -59,6 +64,21 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>3.5.1</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-Activator>cc.fooledit.editor.text.mode.dot.Activator</Bundle-Activator>
+						<Export-Package />
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Embed-Transitive>true</Embed-Transitive>
+					</instructions>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

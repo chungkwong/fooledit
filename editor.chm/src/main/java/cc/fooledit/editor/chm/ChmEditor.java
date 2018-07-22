@@ -27,9 +27,9 @@ import javafx.scene.*;
  */
 public class ChmEditor implements DataEditor<ChmObject>{
 	public static final ChmEditor INSTANCE=new ChmEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(ChmModule.NAME);
-	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(ChmModule.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(ChmModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
 	private ChmEditor(){
 		addCommand("current-scale",Collections.emptyList(),(args,viewer)->viewer.getScale());
 		addCommand("zoom",Arrays.asList(new Argument("SCALE")),(args,viewer)->{
@@ -43,13 +43,13 @@ public class ChmEditor implements DataEditor<ChmObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("CHM_EDITOR",ChmModule.NAME);
+		return MessageRegistry.getString("CHM_EDITOR",Activator.NAME);
 	}
 	private void addCommand(String name,Consumer<ChmViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((ChmViewer)Main.INSTANCE.getCurrentNode()),ChmModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((ChmViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
 	}
 	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],ChmViewer,Object> action){
-		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(ChmViewer)Main.INSTANCE.getCurrentDataEditor()),ChmModule.NAME));
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(ChmViewer)Main.INSTANCE.getCurrentDataEditor()),Activator.NAME));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

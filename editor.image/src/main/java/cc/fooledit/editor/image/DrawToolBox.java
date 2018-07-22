@@ -45,7 +45,7 @@ public class DrawToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("DRAW",ImageModule.NAME);
+		return MessageRegistry.getString("DRAW",Activator.NAME);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
@@ -64,9 +64,9 @@ public class DrawToolBox implements ToolBox{
 	}
 }
 class DrawingToolBox extends TabPane{
-	private final ToggleButton fill=new ToggleButton(MessageRegistry.getString("FILL",ImageModule.NAME));
-	private final ToggleButton border=new ToggleButton(MessageRegistry.getString("BORDER",ImageModule.NAME));
-	private final ToggleButton close=new ToggleButton(MessageRegistry.getString("CLOSE",ImageModule.NAME));
+	private final ToggleButton fill=new ToggleButton(MessageRegistry.getString("FILL",Activator.NAME));
+	private final ToggleButton border=new ToggleButton(MessageRegistry.getString("BORDER",Activator.NAME));
+	private final ToggleButton close=new ToggleButton(MessageRegistry.getString("CLOSE",Activator.NAME));
 	private final FontChooser fontChooser=new FontChooser();
 	private final ComboBox<FillRule> fillRuleChooser=new ComboBox<>();
 	private final Spinner alphaChooser=new Spinner(0.0,1.0,1.0,0.1);
@@ -91,13 +91,13 @@ class DrawingToolBox extends TabPane{
 		pane.getChildren().add(new Separator());
 		ToggleGroup elements=new ToggleGroup();
 		for(Element shape:Element.values()){
-			ToggleButton button=new ToggleButton(MessageRegistry.getString(shape.name(),ImageModule.NAME));
+			ToggleButton button=new ToggleButton(MessageRegistry.getString(shape.name(),Activator.NAME));
 			button.setUserData(shape);
 			elements.getToggles().add(button);
 			pane.getChildren().add(button);
 		}
 		elements.selectedToggleProperty().addListener((e,o,n)->recorded=0);
-		Button draw=new Button(MessageRegistry.getString("DRAW",ImageModule.NAME));
+		Button draw=new Button(MessageRegistry.getString("DRAW",Activator.NAME));
 		draw.setOnAction((e)->{
 			GraphicsContext g2d=getGraphicsContext();
 			draw(g2d);
@@ -129,22 +129,22 @@ class DrawingToolBox extends TabPane{
 		return new Tab("TOOL",pane);
 	}
 	public Tab getBackgroundTab(){
-		fillRuleChooser.setConverter(new EnumStringConvertor<>(FillRule.class,ImageModule.NAME));
+		fillRuleChooser.setConverter(new EnumStringConvertor<>(FillRule.class,Activator.NAME));
 		fillRuleChooser.getItems().setAll(FillRule.values());
 		fillRuleChooser.getSelectionModel().select(FillRule.NON_ZERO);
 		alphaChooser.setEditable(true);
 		return new Tab("Fill",new FlowPane(fillRuleChooser,alphaChooser,fillChooser));
 	}
 	public Tab getFrontgroundTab(){
-		joinChooser.setConverter(new EnumStringConvertor<>(StrokeLineJoin.class,ImageModule.NAME));
+		joinChooser.setConverter(new EnumStringConvertor<>(StrokeLineJoin.class,Activator.NAME));
 		joinChooser.getItems().setAll(StrokeLineJoin.values());
 		joinChooser.getSelectionModel().select(StrokeLineJoin.MITER);
-		capChooser.setConverter(new EnumStringConvertor<>(StrokeLineCap.class,ImageModule.NAME));
+		capChooser.setConverter(new EnumStringConvertor<>(StrokeLineCap.class,Activator.NAME));
 		capChooser.getItems().setAll(StrokeLineCap.values());
 		capChooser.getSelectionModel().select(StrokeLineCap.BUTT);
-		Label dashLabel=new Label(MessageRegistry.getString("DASH",ImageModule.NAME));
+		Label dashLabel=new Label(MessageRegistry.getString("DASH",Activator.NAME));
 		dashChooser.setText("1.0");
-		Label thickLabel=new Label(MessageRegistry.getString("THICK",ImageModule.NAME));
+		Label thickLabel=new Label(MessageRegistry.getString("THICK",Activator.NAME));
 		thickChooser.setText("1.0");
 		return new Tab("STROKE",new FlowPane(joinChooser,capChooser,dashLabel,dashChooser,thickLabel,thickChooser,strokeChooser));
 	}

@@ -16,7 +16,7 @@
  */
 package cc.fooledit.editor.msoffice.word;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.MsOfficeModule;
+import cc.fooledit.editor.msoffice.Activator;
 import cc.fooledit.spi.*;
 import java.net.*;
 import org.apache.poi.hwpf.*;
@@ -46,7 +46,7 @@ public class DocObjectType implements DataObjectType<DocObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",MsOfficeModule.NAME);
+		return MessageRegistry.getString("OLD_WORD_DOCUMENT",Activator.NAME);
 	}
 	@Override
 	public void writeTo(DocObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

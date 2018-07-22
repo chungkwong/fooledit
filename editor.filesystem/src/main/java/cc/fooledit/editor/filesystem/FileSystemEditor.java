@@ -33,9 +33,9 @@ import javafx.scene.control.*;
  */
 public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	public static final FileSystemEditor INSTANCE=new FileSystemEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(FileSystemModule.NAME);
-	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(FileSystemModule.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(FileSystemModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
 	private FileSystemEditor(){
 		addCommand("delete",(viewer)->viewer.getSelectedPaths().forEach((path)->delete(path)));
 		addCommand("mark",(viewer)->viewer.markPaths());
@@ -56,7 +56,7 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 		}));
 	}
 	private void addCommand(String name,Consumer<FileSystemViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),FileSystemModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
 	}
 	private static final void delete(Path path){
 		try{
@@ -78,7 +78,7 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 			}
 			Main.INSTANCE.getMiniBuffer().restore();
 			Main.INSTANCE.getCurrentNode().requestFocus();
-		},null,"",new Label(MessageRegistry.getString("NAME",FileSystemModule.NAME)),null);
+		},null,"",new Label(MessageRegistry.getString("NAME",Activator.NAME)),null);
 	}
 	private static void createFile(Path from){
 		Main.INSTANCE.getMiniBuffer().setMode((name)->{
@@ -90,7 +90,7 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 			}
 			Main.INSTANCE.getMiniBuffer().restore();
 			Main.INSTANCE.getCurrentNode().requestFocus();
-		},null,"",new Label(MessageRegistry.getString("NAME",FileSystemModule.NAME)),null);
+		},null,"",new Label(MessageRegistry.getString("NAME",Activator.NAME)),null);
 	}
 	private static void rename(Path from){
 		Main.INSTANCE.getMiniBuffer().setMode((name)->{
@@ -112,7 +112,7 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 			}catch(IOException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
-		},null,from.getFileName().toString(),new Label(MessageRegistry.getString("RENAME_TO",FileSystemModule.NAME)),null);
+		},null,from.getFileName().toString(),new Label(MessageRegistry.getString("RENAME_TO",Activator.NAME)),null);
 	}
 	private static void move(Path from,Path dir){
 		fileToDirectory(from,dir,(f,t,o)->{
@@ -161,14 +161,14 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 		}
 	}
 	private static void onOverride(Runnable action){
-		String yes=MessageRegistry.getString("YES",FileSystemModule.NAME);
-		String no=MessageRegistry.getString("NO",FileSystemModule.NAME);
+		String yes=MessageRegistry.getString("YES",Activator.NAME);
+		String no=MessageRegistry.getString("NO",Activator.NAME);
 		Main.INSTANCE.getMiniBuffer().setMode((ans)->{
 			if(ans.equals(yes))
 				action.run();
 			Main.INSTANCE.getMiniBuffer().restore();
 		},AutoCompleteProvider.createSimple(Arrays.asList(AutoCompleteHint.create(yes,yes,""),AutoCompleteHint.create(no,no,"")))
-		,"",new Label(MessageRegistry.getString("OVERRIDE_EXIST",FileSystemModule.NAME)),null);
+		,"",new Label(MessageRegistry.getString("OVERRIDE_EXIST",Activator.NAME)),null);
 		Main.INSTANCE.getMiniBuffer().restore();
 		Main.INSTANCE.getCurrentNode().requestFocus();
 	}
@@ -188,7 +188,7 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("FILE_SYSTEM_VIEWER",FileSystemModule.NAME);
+		return MessageRegistry.getString("FILE_SYSTEM_VIEWER",Activator.NAME);
 	}
 	@Override
 	public Object getRemark(Node node){

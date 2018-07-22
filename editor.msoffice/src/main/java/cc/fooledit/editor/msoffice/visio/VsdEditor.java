@@ -33,6 +33,6 @@ public class VsdEditor implements DataEditor<VsdObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DIAGRAM_EDITOR",MsOfficeModule.NAME);
+		return MessageRegistry.getString("DIAGRAM_EDITOR",Activator.NAME);
 	}
 }

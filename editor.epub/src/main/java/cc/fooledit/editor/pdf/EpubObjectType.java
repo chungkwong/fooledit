@@ -46,7 +46,7 @@ public class EpubObjectType implements DataObjectType<EpubObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("EPUB_DOCUMENT",EpubModule.NAME);
+		return MessageRegistry.getString("EPUB_DOCUMENT",Activator.NAME);
 	}
 	@Override
 	public void writeTo(EpubObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

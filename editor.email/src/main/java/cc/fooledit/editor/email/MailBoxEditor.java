@@ -28,13 +28,13 @@ import javax.mail.*;
  */
 public class MailBoxEditor implements DataEditor<MailBoxObject>{
 	public static final MailBoxEditor INSTANCE=new MailBoxEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(EmailModule.NAME);
-	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(EmailModule.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(EmailModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
 	private MailBoxEditor(){
 	}
 	private void addCommand(String name,Consumer<MailBoxViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((MailBoxViewer)Main.INSTANCE.getCurrentNode()),EmailModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((MailBoxViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
 	}
 	@Override
 	public Node edit(MailBoxObject data,Object remark,RegistryNode<String,Object> meta){
@@ -51,7 +51,7 @@ public class MailBoxEditor implements DataEditor<MailBoxObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("BROWSER",EmailModule.NAME);
+		return MessageRegistry.getString("BROWSER",Activator.NAME);
 	}
 	@Override
 	public RegistryNode<String,Command> getCommandRegistry(){

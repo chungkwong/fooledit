@@ -36,15 +36,15 @@ public class EffectToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("EFFECT",ImageModule.NAME);
+		return MessageRegistry.getString("EFFECT",Activator.NAME);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
 		return createInstance((GraphicsObject)meta.get(DataObject.DATA));
 	}
 	Node createInstance(GraphicsObject object){
-		ChoiceBox<EffectTool> choiceBox=new ChoiceBox<>(FXCollections.observableArrayList(ImageModule.EFFECT_REGISTRY.values()));
-		choiceBox.getSelectionModel().select(ImageModule.EFFECT_REGISTRY.get("IMAGE_INPUT"));
+		ChoiceBox<EffectTool> choiceBox=new ChoiceBox<>(FXCollections.observableArrayList(Activator.EFFECT_REGISTRY.values()));
+		choiceBox.getSelectionModel().select(Activator.EFFECT_REGISTRY.get("IMAGE_INPUT"));
 		choiceBox.getSelectionModel().selectedItemProperty().addListener((e,o,n)->{
 			object.currentLayerProperty().getValue().setEffect(n.getEffect(null));
 		});

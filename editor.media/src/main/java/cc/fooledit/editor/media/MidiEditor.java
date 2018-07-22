@@ -48,7 +48,7 @@ public class MidiEditor implements DataEditor<MidiObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("MIDI_EDITOR",MediaEditorModule.NAME);
+		return MessageRegistry.getString("MIDI_EDITOR",Activator.NAME);
 	}
 }
 class MidiViewer extends BorderPane{
@@ -70,14 +70,14 @@ class MidiViewer extends BorderPane{
 	}
 	private Label getInfo(){
 		StringBuilder buf=new StringBuilder();
-		buf.append(MessageRegistry.getString("LENGTH",MediaEditorModule.NAME)).append(':');
+		buf.append(MessageRegistry.getString("LENGTH",Activator.NAME)).append(':');
 		buf.append(sequence.getTickLength());
-		buf.append(MessageRegistry.getString("TICKS",MediaEditorModule.NAME)).append('=');
+		buf.append(MessageRegistry.getString("TICKS",Activator.NAME)).append('=');
 		buf.append(sequence.getMicrosecondLength()/1000000.0);
-		buf.append(MessageRegistry.getString("SECONDS",MediaEditorModule.NAME)).append(' ');
-		buf.append(MessageRegistry.getString("RESOLUTION",MediaEditorModule.NAME)).append(':');
+		buf.append(MessageRegistry.getString("SECONDS",Activator.NAME)).append(' ');
+		buf.append(MessageRegistry.getString("RESOLUTION",Activator.NAME)).append(':');
 		buf.append(sequence.getResolution()).append('/');
-		buf.append(MessageRegistry.getString(getDivisionTypeName(sequence.getDivisionType()),MediaEditorModule.NAME));
+		buf.append(MessageRegistry.getString(getDivisionTypeName(sequence.getDivisionType()),Activator.NAME));
 		return new Label(buf.toString());
 	}
 	private String getDivisionTypeName(float type){
@@ -107,7 +107,7 @@ class MidiViewer extends BorderPane{
 		});
 	}
 	private TreeTableColumn<Object,String> getTimeColumn(){
-		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("TIME",MediaEditorModule.NAME));
+		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("TIME",Activator.NAME));
 		column.setCellValueFactory((param)->{
 			Object value=param.getValue().getValue();
 			if(value instanceof MidiEvent)
@@ -121,7 +121,7 @@ class MidiViewer extends BorderPane{
 		return column;
 	}
 	private TreeTableColumn<Object,String> getChannelColumn(){
-		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("CHANNEL",MediaEditorModule.NAME));
+		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("CHANNEL",Activator.NAME));
 		column.setCellValueFactory((param)->{
 			Object val=param.getValue().getValue();
 			if(val instanceof MidiEvent){
@@ -141,7 +141,7 @@ class MidiViewer extends BorderPane{
 		return column;
 	}
 	private TreeTableColumn<Object,String> getTypeColumn(){
-		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("TYPE",MediaEditorModule.NAME));
+		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("TYPE",Activator.NAME));
 		column.setCellValueFactory((param)->{
 			Object val=param.getValue().getValue();
 			if(val instanceof MidiEvent){
@@ -152,14 +152,14 @@ class MidiViewer extends BorderPane{
 				else if(value instanceof MetaMessage)
 					return new ReadOnlyStringWrapper(getTypeName(((MetaMessage)value).getType()));
 				else
-					return new ReadOnlyStringWrapper(MessageRegistry.getString("UNKNOWN",MediaEditorModule.NAME));
+					return new ReadOnlyStringWrapper(MessageRegistry.getString("UNKNOWN",Activator.NAME));
 			}else
 				return new ReadOnlyStringWrapper("");
 		});
 		return column;
 	}
 	private TreeTableColumn<Object,String> getData1Column(){
-		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("DATA1",MediaEditorModule.NAME));
+		TreeTableColumn<Object,String> column=new TreeTableColumn<>(MessageRegistry.getString("DATA1",Activator.NAME));
 		column.setCellValueFactory((param)->{
 			Object val=param.getValue().getValue();
 			if(val instanceof MidiEvent){
@@ -175,7 +175,7 @@ class MidiViewer extends BorderPane{
 		return column;
 	}
 	private TreeTableColumn<Object,Object> getData2Column(){
-		TreeTableColumn<Object,Object> column=new TreeTableColumn<>(MessageRegistry.getString("DATA2",MediaEditorModule.NAME));
+		TreeTableColumn<Object,Object> column=new TreeTableColumn<>(MessageRegistry.getString("DATA2",Activator.NAME));
 		column.setCellValueFactory((param)->{
 			Object val=param.getValue().getValue();
 			if(val instanceof MidiEvent){
@@ -498,9 +498,9 @@ class MidiViewer extends BorderPane{
 	}
 	private String getTrackTitle(Track track){
 		return NumberFormat.getIntegerInstance().format(track.size())+
-				MessageRegistry.getString("EVENTS",MediaEditorModule.NAME)+
+				MessageRegistry.getString("EVENTS",Activator.NAME)+
 				NumberFormat.getIntegerInstance().format(track.ticks())+
-				MessageRegistry.getString("TICKS",MediaEditorModule.NAME);
+				MessageRegistry.getString("TICKS",Activator.NAME);
 	}
 	private Node getPlayground() throws MidiUnavailableException{
 		ComboBox<Instrument> programs=new ComboBox<>(FXCollections.observableArrayList(MidiSystem.getSynthesizer().getAvailableInstruments()));

@@ -37,6 +37,6 @@ public class ZipEditor implements DataEditor<ZipObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("COMPRESSED_DATA_EDITOR",ZipModule.NAME);
+		return MessageRegistry.getString("COMPRESSED_DATA_EDITOR",Activator.NAME);
 	}
 }

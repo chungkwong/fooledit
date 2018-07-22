@@ -111,15 +111,15 @@ public class GitCommands{
 	private static String toString(DiffEntry entry){
 		switch(entry.getChangeType()){
 			case ADD:
-				return entry.getNewPath()+MessageRegistry.getString(" ADDED",GitModule.NAME);
+				return entry.getNewPath()+MessageRegistry.getString(" ADDED",Activator.NAME);
 			case COPY:
-				return entry.getOldPath()+MessageRegistry.getString(" COPIED TO ",GitModule.NAME)+entry.getNewPath();
+				return entry.getOldPath()+MessageRegistry.getString(" COPIED TO ",Activator.NAME)+entry.getNewPath();
 			case DELETE:
-				return entry.getOldPath()+MessageRegistry.getString(" REMOVED",GitModule.NAME);
+				return entry.getOldPath()+MessageRegistry.getString(" REMOVED",Activator.NAME);
 			case MODIFY:
-				return entry.getOldPath()+MessageRegistry.getString(" MODIFIED",GitModule.NAME);
+				return entry.getOldPath()+MessageRegistry.getString(" MODIFIED",Activator.NAME);
 			case RENAME:
-				return entry.getOldPath()+MessageRegistry.getString(" RENAMED TO ",GitModule.NAME)+entry.getNewPath();
+				return entry.getOldPath()+MessageRegistry.getString(" RENAMED TO ",Activator.NAME)+entry.getNewPath();
 			default:
 				return "";
 		}

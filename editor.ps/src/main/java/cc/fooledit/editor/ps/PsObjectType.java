@@ -45,7 +45,7 @@ public class PsObjectType implements DataObjectType<PsObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("PS_DOCUMENT",PsModule.NAME);
+		return MessageRegistry.getString("PS_DOCUMENT",Activator.NAME);
 	}
 	@Override
 	public void writeTo(PsObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

@@ -46,7 +46,7 @@ public class ChartObjectType implements DataObjectType<ChartObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",OdfModule.NAME);
+		return MessageRegistry.getString("OLD_WORD_DOCUMENT",Activator.NAME);
 	}
 	@Override
 	public void writeTo(ChartObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

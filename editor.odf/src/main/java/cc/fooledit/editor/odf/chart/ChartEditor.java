@@ -33,6 +33,6 @@ public class ChartEditor implements DataEditor<ChartObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("SPREADSHEET",OdfModule.NAME);
+		return MessageRegistry.getString("SPREADSHEET",Activator.NAME);
 	}
 }

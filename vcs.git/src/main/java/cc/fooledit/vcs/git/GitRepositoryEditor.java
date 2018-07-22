@@ -32,9 +32,9 @@ import org.eclipse.jgit.revwalk.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(GitModule.NAME);
-	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(GitModule.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(GitModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
 	public static GitRepositoryEditor INSTANCE=new GitRepositoryEditor();
 	private GitRepositoryEditor(){
 		Argument git=new Argument("GIT",GitRepositoryEditor::getGit);
@@ -122,7 +122,7 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		});//TODO
 	}
 	private void addCommand(String name,List<Argument> args,ThrowableVarargsFunction<Object,Object> proc){
-		commandRegistry.put(name,new Command(name,args,proc,GitModule.NAME));
+		commandRegistry.put(name,new Command(name,args,proc,Activator.NAME));
 	}
 	@Override
 	public Node edit(GitRepositoryObject data,Object remark,RegistryNode<String,Object> meta){
@@ -146,7 +146,7 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("GIT_REPOSITORY_VIEWER",GitModule.NAME);
+		return MessageRegistry.getString("GIT_REPOSITORY_VIEWER",Activator.NAME);
 	}
 	static Git getGit() throws Exception{
 		DataObject data=Main.INSTANCE.getCurrentData();

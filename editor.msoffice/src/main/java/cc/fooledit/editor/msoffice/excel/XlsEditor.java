@@ -33,6 +33,6 @@ public class XlsEditor implements DataEditor<XlsObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("SPREADSHEET",MsOfficeModule.NAME);
+		return MessageRegistry.getString("SPREADSHEET",Activator.NAME);
 	}
 }

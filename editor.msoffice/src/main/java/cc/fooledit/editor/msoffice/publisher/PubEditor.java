@@ -35,6 +35,6 @@ public class PubEditor implements DataEditor<PubObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",MsOfficeModule.NAME);
+		return MessageRegistry.getString("DOCUMENT_EDITOR",Activator.NAME);
 	}
 }

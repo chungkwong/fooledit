@@ -45,7 +45,7 @@ public class DjvuObjectType implements DataObjectType<DjvuObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("DJVU_DOCUMENT",DjvuModule.NAME);
+		return MessageRegistry.getString("DJVU_DOCUMENT",Activator.NAME);
 	}
 	@Override
 	public void writeTo(DjvuObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

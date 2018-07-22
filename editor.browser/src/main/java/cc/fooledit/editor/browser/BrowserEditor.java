@@ -29,9 +29,9 @@ import javafx.scene.web.*;
  */
 public class BrowserEditor implements DataEditor<BrowserObject>{
 	public static final BrowserEditor INSTANCE=new BrowserEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(BrowserModule.NAME);
-	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(BrowserModule.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(BrowserModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
 	private BrowserEditor(){
 		addCommand("move-to-previous-page",(viewer)->viewer.backward());
 		addCommand("move-to-next-page",(viewer)->viewer.forward());
@@ -67,7 +67,7 @@ public class BrowserEditor implements DataEditor<BrowserObject>{
 		});
 	}
 	private void addCommand(String name,Consumer<BrowserViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()),BrowserModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
 	}
 	@Override
 	public Node edit(BrowserObject data,Object remark,RegistryNode<String,Object> meta){
@@ -81,7 +81,7 @@ public class BrowserEditor implements DataEditor<BrowserObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("BROWSER",BrowserModule.NAME);
+		return MessageRegistry.getString("BROWSER",Activator.NAME);
 	}
 	@Override
 	public RegistryNode<String,Command> getCommandRegistry(){

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.odf.calc;
-import cc.fooledit.editor.odf.OdfModule;
+import cc.fooledit.editor.odf.Activator;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.net.*;
@@ -46,7 +46,7 @@ public class OdsObjectType implements DataObjectType<OdsObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",OdfModule.NAME);
+		return MessageRegistry.getString("OLD_WORD_DOCUMENT",Activator.NAME);
 	}
 	@Override
 	public void writeTo(OdsObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

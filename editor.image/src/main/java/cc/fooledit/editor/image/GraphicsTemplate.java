@@ -48,7 +48,7 @@ public class GraphicsTemplate implements Template<GraphicsObject>{
 	}
 	@Override
 	public String getModule(){
-		return ImageModule.NAME;
+		return Activator.NAME;
 	}
 	@Override
 	public Collection<String> getParameters(){
@@ -60,7 +60,7 @@ public class GraphicsTemplate implements Template<GraphicsObject>{
 			SimpleRegistryNode<String,Object> prop=new SimpleRegistryNode<>();
 			prop.put(DataObject.MIME,mime);
 			prop.put(DataObject.DEFAULT_NAME,name);
-			return GraphicsObjectType.INSTANCE.readFrom(Main.INSTANCE.getFile(file,ImageModule.NAME).toURL().openConnection(),prop);
+			return GraphicsObjectType.INSTANCE.readFrom(Main.INSTANCE.getFile(file,Activator.NAME).toURL().openConnection(),prop);
 		}catch(Exception ex){
 			Logger.getLogger(GraphicsTemplate.class.getName()).log(Level.SEVERE,null,ex);
 			return GraphicsObjectType.INSTANCE.create();

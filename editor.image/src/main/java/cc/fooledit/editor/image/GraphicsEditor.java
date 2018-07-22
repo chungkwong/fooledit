@@ -30,6 +30,6 @@ public class GraphicsEditor implements DataEditor<GraphicsObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("IMAGE_EDITOR",ImageModule.NAME);
+		return MessageRegistry.getString("IMAGE_EDITOR",Activator.NAME);
 	}
 }

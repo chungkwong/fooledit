@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.odf.draw;
-import cc.fooledit.editor.odf.OdfModule;
+import cc.fooledit.editor.odf.Activator;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
@@ -33,6 +33,6 @@ public class OdgEditor implements DataEditor<OdgObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DIAGRAM_EDITOR",OdfModule.NAME);
+		return MessageRegistry.getString("DIAGRAM_EDITOR",Activator.NAME);
 	}
 }

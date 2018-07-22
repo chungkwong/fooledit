@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.odf.impress;
-import cc.fooledit.editor.odf.OdfModule;
+import cc.fooledit.editor.odf.Activator;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
@@ -33,6 +33,6 @@ public class OdpEditor implements DataEditor<OdpObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("SLIDE_SHOW",OdfModule.NAME);
+		return MessageRegistry.getString("SLIDE_SHOW",Activator.NAME);
 	}
 }

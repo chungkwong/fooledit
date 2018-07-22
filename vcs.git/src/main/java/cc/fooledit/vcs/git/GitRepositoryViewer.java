@@ -67,17 +67,17 @@ public class GitRepositoryViewer extends BorderPane{
 		MenuItem[] add=new MenuItem[]{
 			MenuItemBuilder.build("ADD",(e)->GitCommands.execute("git-add"))
 		};
-		return new SimpleTreeItem<>(MessageRegistry.getString("WORKING DIRECTORY",GitModule.NAME),
+		return new SimpleTreeItem<>(MessageRegistry.getString("WORKING DIRECTORY",Activator.NAME),
 				new TreeItem[]{
-					new LazySimpleTreeItem(MessageRegistry.getString("IGNORED",GitModule.NAME),
+					new LazySimpleTreeItem(MessageRegistry.getString("IGNORED",Activator.NAME),
 							()->git.status().call().getIgnoredNotInIndex().stream().map((file)->new SimpleTreeItem<>(file)).collect(Collectors.toList())),
-					new LazySimpleTreeItem(MessageRegistry.getString("UNTRACKED",GitModule.NAME),
+					new LazySimpleTreeItem(MessageRegistry.getString("UNTRACKED",Activator.NAME),
 							()->git.status().call().getUntracked().stream().map((file)->new SimpleTreeItem<>(file,add)).collect(Collectors.toList())),
-					new LazySimpleTreeItem(MessageRegistry.getString("CONFLICTING",GitModule.NAME),
+					new LazySimpleTreeItem(MessageRegistry.getString("CONFLICTING",Activator.NAME),
 							()->git.status().call().getConflicting().stream().map((file)->new SimpleTreeItem<>(file)).collect(Collectors.toList())),
-					new LazySimpleTreeItem(MessageRegistry.getString("MISSING",GitModule.NAME),
+					new LazySimpleTreeItem(MessageRegistry.getString("MISSING",Activator.NAME),
 							()->git.status().call().getMissing().stream().map((file)->new SimpleTreeItem<>(file)).collect(Collectors.toList())),
-					new LazySimpleTreeItem(MessageRegistry.getString("MODIFIED",GitModule.NAME),
+					new LazySimpleTreeItem(MessageRegistry.getString("MODIFIED",Activator.NAME),
 							()->git.status().call().getModified().stream().map((file)->new SimpleTreeItem<>(file,add)).collect(Collectors.toList()))
 				});
 	}
@@ -89,15 +89,15 @@ public class GitRepositoryViewer extends BorderPane{
 			MenuItemBuilder.build("REMOVE",(e)->GitCommands.execute("git-remove")),
 			MenuItemBuilder.build("BLAME",(e)->GitCommands.execute("git-blame"))
 		};
-		return new SimpleTreeItem<>(MessageRegistry.getString("STAGING AREA",GitModule.NAME),
+		return new SimpleTreeItem<>(MessageRegistry.getString("STAGING AREA",Activator.NAME),
 				new TreeItem[]{
-					new LazySimpleTreeItem(MessageRegistry.getString("ADDED",GitModule.NAME),
+					new LazySimpleTreeItem(MessageRegistry.getString("ADDED",Activator.NAME),
 							()->git.status().call().getAdded().stream().map((file)->new SimpleTreeItem<>(file,rm)).collect(Collectors.toList())),
-					new LazySimpleTreeItem(MessageRegistry.getString("REMOVED",GitModule.NAME),
+					new LazySimpleTreeItem(MessageRegistry.getString("REMOVED",Activator.NAME),
 							()->git.status().call().getRemoved().stream().map((file)->new SimpleTreeItem<>(file)).collect(Collectors.toList())),
-					new LazySimpleTreeItem(MessageRegistry.getString("CHANGED",GitModule.NAME),
+					new LazySimpleTreeItem(MessageRegistry.getString("CHANGED",Activator.NAME),
 							()->git.status().call().getChanged().stream().map((file)->new SimpleTreeItem<>(file,rm)).collect(Collectors.toList())),
-					new LazySimpleTreeItem(MessageRegistry.getString("ALL",GitModule.NAME),()->{
+					new LazySimpleTreeItem(MessageRegistry.getString("ALL",Activator.NAME),()->{
 						LinkedList<TreeItem<String>> files=new LinkedList<>();
 						DirCache cache=git.getRepository().readDirCache();
 						for(int i=0;i<cache.getEntryCount();i++)
@@ -109,23 +109,23 @@ public class GitRepositoryViewer extends BorderPane{
 				});
 	}
 	private TreeItem<Object> createTagListTreeItem(){
-		return new LazySimpleTreeItem<>(MessageRegistry.getString("TAG",GitModule.NAME),
+		return new LazySimpleTreeItem<>(MessageRegistry.getString("TAG",Activator.NAME),
 				()->git.tagList().call().stream().map((ref)->new TagTreeItem(ref,git)).collect(Collectors.toList()));
 	}
 	private TreeItem<Object> createLogTreeItem(){
-		return new LazySimpleTreeItem<>(MessageRegistry.getString("COMMIT",GitModule.NAME),
+		return new LazySimpleTreeItem<>(MessageRegistry.getString("COMMIT",Activator.NAME),
 				()->StreamSupport.stream(git.log().call().spliterator(),false).map((rev)->new CommitTreeItem(rev,git)).collect(Collectors.toList()),
 				new MenuItem[0]);
 	}
 	private TreeItem<Object> createLocalTreeItem(){
-		return new LazySimpleTreeItem<>(MessageRegistry.getString("LOCAL BRANCH",GitModule.NAME),
+		return new LazySimpleTreeItem<>(MessageRegistry.getString("LOCAL BRANCH",Activator.NAME),
 				()->git.branchList().call().stream().map((ref)->new BranchTreeItem(ref,git)).collect(Collectors.toList()),
 			new MenuItem[]{
 				MenuItemBuilder.build("BRANCH",(e)->GitCommands.execute("git-branch-add"))
 			});
 	}
 	private TreeItem<Object> createRemoteTreeItem(){
-		return new LazySimpleTreeItem<>(MessageRegistry.getString("REMOTE BRANCH",GitModule.NAME),
+		return new LazySimpleTreeItem<>(MessageRegistry.getString("REMOTE BRANCH",Activator.NAME),
 				()->git.remoteList().call().stream().map((ref)->new RemoteTreeItem(ref)).collect(Collectors.toList()),
 			new MenuItem[]{
 				MenuItemBuilder.build("REMOTE ADD",(e)->GitCommands.execute("git-remote-add"))
@@ -133,13 +133,13 @@ public class GitRepositoryViewer extends BorderPane{
 	}
 	private FlowPane createColumnsChooser(TreeTableView<Object> nav){
 		FlowPane chooser=new FlowPane();
-		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("NAME",GitModule.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
+		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("NAME",Activator.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
 				return new ReadOnlyObjectWrapper<>(p.getValue().toString());
 			}
 		},true,nav));
-		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("MESSAGE",GitModule.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
+		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("MESSAGE",Activator.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
 				if(p.getValue() instanceof CommitTreeItem)
@@ -148,7 +148,7 @@ public class GitRepositoryViewer extends BorderPane{
 					return new ReadOnlyObjectWrapper<>("");
 			}
 		},false,nav));
-		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("AUTHOR",GitModule.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
+		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("AUTHOR",Activator.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
 				if(p.getValue() instanceof CommitTreeItem)
@@ -157,7 +157,7 @@ public class GitRepositoryViewer extends BorderPane{
 					return new ReadOnlyObjectWrapper<>("");
 			}
 		},false,nav));
-		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("COMMITTER",GitModule.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
+		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("COMMITTER",Activator.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
 				if(p.getValue() instanceof CommitTreeItem)
@@ -166,7 +166,7 @@ public class GitRepositoryViewer extends BorderPane{
 					return new ReadOnlyObjectWrapper<>("");
 			}
 		},false,nav));
-		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("TIME",GitModule.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
+		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("TIME",Activator.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
 				if(p.getValue() instanceof CommitTreeItem)
@@ -175,7 +175,7 @@ public class GitRepositoryViewer extends BorderPane{
 					return new ReadOnlyObjectWrapper<>("");
 			}
 		},false,nav));
-		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("REFERNECE",GitModule.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
+		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("REFERNECE",Activator.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
 				if(p.getValue().getValue() instanceof ObjectId){
@@ -188,7 +188,7 @@ public class GitRepositoryViewer extends BorderPane{
 					return new ReadOnlyObjectWrapper<>("");
 			}
 		},false,nav));
-		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("URI",GitModule.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
+		chooser.getChildren().add(createColumnChooser(MessageRegistry.getString("URI",Activator.NAME),new Callback<TreeTableColumn.CellDataFeatures<Object, String>,ObservableValue<String>>() {
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Object,String> p){
 				if(p.getValue() instanceof RemoteTreeItem){

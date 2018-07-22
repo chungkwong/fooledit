@@ -43,7 +43,7 @@ public class LayerToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("LAYER",ImageModule.NAME);
+		return MessageRegistry.getString("LAYER",Activator.NAME);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){

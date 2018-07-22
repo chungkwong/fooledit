@@ -33,6 +33,6 @@ public class PptEditor implements DataEditor<PptObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("SLIDE_SHOW",MsOfficeModule.NAME);
+		return MessageRegistry.getString("SLIDE_SHOW",Activator.NAME);
 	}
 }

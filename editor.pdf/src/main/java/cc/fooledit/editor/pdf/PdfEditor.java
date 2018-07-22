@@ -28,9 +28,9 @@ import javafx.scene.*;
  */
 public class PdfEditor implements DataEditor<PdfObject>{
 	public static final PdfEditor INSTANCE=new PdfEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(PdfModule.NAME);
-	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(PdfModule.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(PdfModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
 	private PdfEditor(){
 		addCommand("current-scale",Collections.emptyList(),(args,viewer)->ScmFloatingPointNumber.valueOf(viewer.getScale()));
 		addCommand("zoom",Arrays.asList(new Argument("SCALE")),(args,viewer)->{
@@ -48,13 +48,13 @@ public class PdfEditor implements DataEditor<PdfObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("PDF_EDITOR",PdfModule.NAME);
+		return MessageRegistry.getString("PDF_EDITOR",Activator.NAME);
 	}
 	private void addCommand(String name,Consumer<PdfViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((PdfViewer)Main.INSTANCE.getCurrentNode()),PdfModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((PdfViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
 	}
 	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],PdfViewer,Object> action){
-		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(PdfViewer)Main.INSTANCE.getCurrentDataEditor()),PdfModule.NAME));
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(PdfViewer)Main.INSTANCE.getCurrentDataEditor()),Activator.NAME));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

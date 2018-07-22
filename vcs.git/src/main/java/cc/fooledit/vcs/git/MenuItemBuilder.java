@@ -26,7 +26,7 @@ import javafx.scene.control.*;
  */
 public class MenuItemBuilder{
 	public static MenuItem build(String text,ThrowableConsumer<ActionEvent> action){
-		MenuItem item=new MenuItem(MessageRegistry.getString(text,GitModule.NAME));
+		MenuItem item=new MenuItem(MessageRegistry.getString(text,Activator.NAME));
 		item.setOnAction((e)->{
 			try{
 				action.accept(e);

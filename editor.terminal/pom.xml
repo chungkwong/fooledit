@@ -10,6 +10,12 @@
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>6.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.github.chungkwong</groupId>
 			<artifactId>core</artifactId>
 			<version>1.0-SNAPSHOT</version>
@@ -29,7 +35,7 @@
 			<id>terminalfx-repo</id>
 			<url>https://github.com/javaterminal/terminalfx/raw/master/releases</url>
 		</repository>
-		
+
 		<repository>
 			<id>pty4j-releases</id>
 			<url>https://github.com/javaterminal/pty4j/raw/master/releases</url>
@@ -64,4 +70,22 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</repository>
 	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>3.5.1</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-Activator>cc.fooledit.editor.terminal.Activator</Bundle-Activator>
+						<Export-Package />
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Embed-Transitive>true</Embed-Transitive>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

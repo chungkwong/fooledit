@@ -35,7 +35,7 @@ public class ControlToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("CONTROLS",MediaEditorModule.NAME);
+		return MessageRegistry.getString("CONTROLS",Activator.NAME);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
@@ -94,12 +94,12 @@ public class ControlToolBox implements ToolBox{
 			getChildren().add(timeSlider);
 			playTime=new Label();
 			getChildren().add(playTime);
-			Label rateLabel=new Label(MessageRegistry.getString("RATE",MediaEditorModule.NAME));
+			Label rateLabel=new Label(MessageRegistry.getString("RATE",Activator.NAME));
 			getChildren().add(rateLabel);
 			rateSpinner=new Spinner<>(0.0,8.0,1.0,0.5);
 			viewer.rateProperty().bind(rateSpinner.valueProperty());
 			getChildren().add(rateSpinner);
-			Label volumeLabel=new Label(MessageRegistry.getString("VOLUME",MediaEditorModule.NAME));
+			Label volumeLabel=new Label(MessageRegistry.getString("VOLUME",Activator.NAME));
 			getChildren().add(volumeLabel);
 			volumeSlider=new Slider(0,2.0,1.0);
 			volumeSlider.valueProperty().bindBidirectional(viewer.volumeProperty());

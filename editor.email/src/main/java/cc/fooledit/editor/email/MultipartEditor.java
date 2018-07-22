@@ -32,6 +32,6 @@ public class MultipartEditor implements DataEditor<MultipartObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("MULTIPART_EDITOR",EmailModule.NAME);
+		return MessageRegistry.getString("MULTIPART_EDITOR",Activator.NAME);
 	}
 }

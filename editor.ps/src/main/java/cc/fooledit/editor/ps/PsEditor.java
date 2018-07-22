@@ -27,9 +27,9 @@ import javafx.scene.*;
  */
 public class PsEditor implements DataEditor<PsObject>{
 	public static final PsEditor INSTANCE=new PsEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(PsModule.NAME);
-	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(PsModule.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(PsModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
 	private PsEditor(){
 	}
 	@Override
@@ -38,13 +38,13 @@ public class PsEditor implements DataEditor<PsObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("PS_EDITOR",PsModule.NAME);
+		return MessageRegistry.getString("PS_EDITOR",Activator.NAME);
 	}
 	private void addCommand(String name,Consumer<PsViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((PsViewer)Main.INSTANCE.getCurrentNode()),PsModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((PsViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
 	}
 	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],PsViewer,Object> action){
-		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(PsViewer)Main.INSTANCE.getCurrentDataEditor()),PsModule.NAME));
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(PsViewer)Main.INSTANCE.getCurrentDataEditor()),Activator.NAME));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

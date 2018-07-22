@@ -33,6 +33,6 @@ public class OdtEditor implements DataEditor<OdtObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("WRITER",OdfModule.NAME);
+		return MessageRegistry.getString("WRITER",Activator.NAME);
 	}
 }

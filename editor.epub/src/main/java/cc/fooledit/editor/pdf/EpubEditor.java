@@ -27,9 +27,9 @@ import javafx.scene.*;
  */
 public class EpubEditor implements DataEditor<EpubObject>{
 	public static final EpubEditor INSTANCE=new EpubEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(EpubModule.NAME);
-	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(EpubModule.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(EpubModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
 	private EpubEditor(){
 	}
 	@Override
@@ -38,13 +38,13 @@ public class EpubEditor implements DataEditor<EpubObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("EPUB_EDITOR",EpubModule.NAME);
+		return MessageRegistry.getString("EPUB_EDITOR",Activator.NAME);
 	}
 	private void addCommand(String name,Consumer<EpubViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((EpubViewer)Main.INSTANCE.getCurrentNode()),EpubModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((EpubViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
 	}
 	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],EpubViewer,Object> action){
-		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(EpubViewer)Main.INSTANCE.getCurrentDataEditor()),EpubModule.NAME));
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(EpubViewer)Main.INSTANCE.getCurrentDataEditor()),Activator.NAME));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

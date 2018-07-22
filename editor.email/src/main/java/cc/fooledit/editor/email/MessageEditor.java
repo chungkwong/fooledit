@@ -32,6 +32,6 @@ public class MessageEditor implements DataEditor<MessageObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("MESSAGE",EmailModule.NAME);
+		return MessageRegistry.getString("MESSAGE",Activator.NAME);
 	}
 }

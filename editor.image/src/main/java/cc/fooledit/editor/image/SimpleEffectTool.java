@@ -46,6 +46,6 @@ public class SimpleEffectTool implements EffectTool{
 	}
 	@Override
 	public String toString(){
-		return MessageRegistry.getString(name,ImageModule.NAME);
+		return MessageRegistry.getString(name,Activator.NAME);
 	}
 }

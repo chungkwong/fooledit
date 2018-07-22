@@ -45,7 +45,7 @@ public class PdfObjectType implements DataObjectType<PdfObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("PDF_DOCUMENT",PdfModule.NAME);
+		return MessageRegistry.getString("PDF_DOCUMENT",Activator.NAME);
 	}
 	@Override
 	public void writeTo(PdfObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

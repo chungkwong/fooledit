@@ -29,9 +29,9 @@ import javafx.scene.media.*;
  */
 public class MediaEditor implements DataEditor<MediaObject>{
 	public static final MediaEditor INSTANCE=new MediaEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(MediaEditorModule.NAME);
-	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(MediaEditorModule.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(MediaEditorModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
 	private MediaEditor(){
 		addCommand("play",(player)->player.play());
 		addCommand("pause",(player)->player.pause());
@@ -45,7 +45,7 @@ public class MediaEditor implements DataEditor<MediaObject>{
 			Logger.getGlobal().log(Level.INFO,"",ex);
 		}
 		editor=new VlcMediaViewer(data.getProperty().getValue());
-		editor.statusProperty().addListener((e,o,n)->Main.INSTANCE.getNotifier().notify(MessageRegistry.getString(n.toString(),MediaEditorModule.NAME)));
+		editor.statusProperty().addListener((e,o,n)->Main.INSTANCE.getNotifier().notify(MessageRegistry.getString(n.toString(),Activator.NAME)));
 		editor.play();
 		return new ScrollPane((Node)editor);
 	}
@@ -55,10 +55,10 @@ public class MediaEditor implements DataEditor<MediaObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("MEDIA_PLAYER",MediaEditorModule.NAME);
+		return MessageRegistry.getString("MEDIA_PLAYER",Activator.NAME);
 	}
 	private void addCommand(String name,Consumer<MediaViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((MediaViewer)((ScrollPane)Main.INSTANCE.getCurrentNode()).getContent()),MediaEditorModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((MediaViewer)((ScrollPane)Main.INSTANCE.getCurrentNode()).getContent()),Activator.NAME));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

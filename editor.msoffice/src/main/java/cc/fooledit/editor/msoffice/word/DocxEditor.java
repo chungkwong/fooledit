@@ -33,6 +33,6 @@ public class DocxEditor implements DataEditor<DocxObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",MsOfficeModule.NAME);
+		return MessageRegistry.getString("DOCUMENT_EDITOR",Activator.NAME);
 	}
 }

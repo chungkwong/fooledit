@@ -27,9 +27,9 @@ import javafx.scene.*;
  */
 public class DjvuEditor implements DataEditor<DjvuObject>{
 	public static final DjvuEditor INSTANCE=new DjvuEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(DjvuModule.NAME);
-	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(DjvuModule.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(DjvuModule.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
 	private DjvuEditor(){
 		addCommand("current-scale",Collections.emptyList(),(args,viewer)->viewer.getScale());
 		addCommand("zoom",Arrays.asList(new Argument("SCALE")),(args,viewer)->{
@@ -47,13 +47,13 @@ public class DjvuEditor implements DataEditor<DjvuObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DVI_EDITOR",DjvuModule.NAME);
+		return MessageRegistry.getString("DVI_EDITOR",Activator.NAME);
 	}
 	private void addCommand(String name,Consumer<DjvuViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((DjvuViewer)Main.INSTANCE.getCurrentNode()),DjvuModule.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((DjvuViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
 	}
 	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],DjvuViewer,Object> action){
-		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(DjvuViewer)Main.INSTANCE.getCurrentDataEditor()),DjvuModule.NAME));
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(DjvuViewer)Main.INSTANCE.getCurrentDataEditor()),Activator.NAME));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){
