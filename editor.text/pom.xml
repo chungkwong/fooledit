@@ -79,7 +79,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-Activator>cc.fooledit.editor.text.Activator</Bundle-Activator>
-						<Export-Package />
+						<Export-Package>cc.fooledit.editor.text,cc.fooledit.editor.text.lex,cc.fooledit.editor.text.parser</Export-Package>>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>

@@ -18,6 +18,7 @@ package cc.fooledit.editor.text;
 import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.text.Activator;
 import cc.fooledit.editor.text.lex.*;
 import cc.fooledit.editor.text.parser.*;
 import cc.fooledit.spi.*;
@@ -242,6 +243,19 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 	}
+	public void registerHighlighter(Class lexer,InputStream typeFile,String mime){
+		Supplier<Highlighter> highlighter;
+		Map<String,String> superType=new HashMap<>();
+		try{
+			superType.putAll((Map<String,String>)JSONDecoder.decode(Helper.readText(new InputStreamReader(typeFile,StandardCharsets.UTF_8))));
+		}catch(IOException|SyntaxException ex){
+			Logger.getLogger(StructuredTextEditor.class.getName()).log(Level.SEVERE,null,ex);
+		}
+		highlighter=()->{
+			return new AntlrHighlighter(LexerBuilder.wrap(lexer),superType);
+		};
+		highlighters.put(mime,new Cache<>(highlighter));
+	}
 	public void registerHighlighter(String lexFile,String typeFile,String mime){
 		Supplier<Highlighter> highlighter;
 		if(lexFile.endsWith(".json")){
@@ -282,6 +296,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			}
 		}
 		highlighters.put(mime,new Cache<>(highlighter));
+	}
+	public void registerParser(Class parser,String rule,String mime){
+		parsers.put(mime,new Cache(()->ParserBuilder.wrap(parser,rule)));
 	}
 	public void registerParser(String parserFile,String rule,String mime){
 		Supplier<ParserBuilder> parser=()->null;
