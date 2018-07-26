@@ -19,6 +19,7 @@ import cc.fooledit.*;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataEditor;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataObjectType;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.image.Activator;
 import cc.fooledit.spi.*;
 import java.util.function.*;
 import java.util.logging.*;
@@ -78,6 +79,37 @@ public class Activator implements BundleActivator{
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.INFO,null,ex);
 		}
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/bmp","cc.fooledit.editor.image.GraphicsObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/gif","cc.fooledit.editor.image.GraphicsObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/jpeg","cc.fooledit.editor.image.GraphicsObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/png","cc.fooledit.editor.image.GraphicsObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/tiff","cc.fooledit.editor.image.GraphicsObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/x-pcx","cc.fooledit.editor.image.GraphicsObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/vnd.wap.wbmp","cc.fooledit.editor.image.GraphicsObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/x-portable-pixmap","cc.fooledit.editor.image.GraphicsObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/x-portable-graymap","cc.fooledit.editor.image.GraphicsObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/x-portable-bitmap","cc.fooledit.editor.image.GraphicsObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/x-portable-anymap","cc.fooledit.editor.image.GraphicsObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("image/x-raw","cc.fooledit.editor.image.GraphicsObjectType");
+		MultiRegistryNode.addChildElement("bmp","image/bmp",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("dib","image/bmp",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("gif","image/gif",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("jpeg","image/jpeg",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("jpg","image/jpeg",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("jpe","image/jpeg",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("png","image/png",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("tif","image/tiff",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("tiff","image/tiff",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("pcx","image/x-pcx",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("wbmp","image/x-pcx",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("ppm","image/x-portable-pixmap",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("pgm","image/x-portable-graymap",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("pbm","image/x-portable-bitmap",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("pnm","image/x-portable-anymap",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("raw","image/x-raw",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("image/x-bmp","image/bmp");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("image/x-MS-bmp","image/bmp");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("image/pjpeg","image/jpeg");
 	}
 	@Override
 	public void start(BundleContext bc) throws Exception{

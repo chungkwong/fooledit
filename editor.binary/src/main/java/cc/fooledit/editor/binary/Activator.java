@@ -18,6 +18,7 @@ package cc.fooledit.editor.binary;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataEditor;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataObjectType;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.binary.Activator;
 import org.osgi.framework.*;
 /**
  *

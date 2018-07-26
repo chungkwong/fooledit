@@ -6,6 +6,7 @@ import org.osgi.framework.*;
  */
 public class Activator implements BundleActivator{
 	public static final String NAME=Activator.class.getPackage().getName();
+	public static final String CONTENT_TYPE="application/sql";
 	@Override
 	public void start(BundleContext bc) throws Exception{
 	}

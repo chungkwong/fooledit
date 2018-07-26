@@ -1,3 +1,0 @@
-(import (java))
-(invoke (get-static 'cc.fooledit.editor.text.StructuredTextEditor 'INSTANCE) 'registerHighlighter (string->String "mode.plain/target/mode.plain-1.0-SNAPSHOT.jar!cc.fooledit.editor.text.mode.plain.JSONLexer") (string->String "mode.plain/tokens.json") (string->String "text/x-mode.plain"))
-(invoke (get-static 'cc.fooledit.editor.text.StructuredTextEditor 'INSTANCE) 'registerParser (string->String "mode.plain/target/mode.plain-1.0-SNAPSHOT.jar!cc.fooledit.editor.text.mode.plain.JSONParser") (string->String "json") (string->String "text/x-mode.plain"))

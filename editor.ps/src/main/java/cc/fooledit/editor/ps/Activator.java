@@ -16,6 +16,8 @@
  */
 package cc.fooledit.editor.ps;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.ps.Activator;
+import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
  *
@@ -23,6 +25,7 @@ import org.osgi.framework.*;
  */
 public class Activator implements BundleActivator{
 	public static final String NAME=Activator.class.getPackage().getName();
+	public static final String CONTENT_TYPE="application/postscript";
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(PsObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(PsEditor.INSTANCE,PsObject.class);
@@ -33,6 +36,8 @@ public class Activator implements BundleActivator{
 		Registry.providesDataObjectType(PsObjectType.class.getName(),NAME);
 		Registry.providesDataObjectEditor(PsEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(PsObject.class.getName(),NAME);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(CONTENT_TYPE,PsObjectType.class.getName());
+		MultiRegistryNode.addChildElement("ps",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 	}
 	@Override
 	public void start(BundleContext bc) throws Exception{

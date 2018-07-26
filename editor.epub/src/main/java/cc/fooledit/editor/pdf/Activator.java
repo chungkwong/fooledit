@@ -16,6 +16,7 @@
  */
 package cc.fooledit.editor.pdf;
 import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
  *
@@ -23,6 +24,7 @@ import org.osgi.framework.*;
  */
 public class Activator implements BundleActivator{
 	public static final String NAME=Activator.class.getPackage().getName();
+	public static final String CONTENT_TYPE="application/epub+zip";
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(EpubObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(EpubEditor.INSTANCE,EpubObject.class);
@@ -36,6 +38,9 @@ public class Activator implements BundleActivator{
 		Registry.providesTypeToEditor(EpubObject.class.getName(),NAME);
 		Registry.providesToolBox(ContentsToolBox.class.getName(),NAME);
 		Registry.providesEditorToToolbox(EpubEditor.class.getName(),NAME);
+		CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.put(CONTENT_TYPE,"application/zip");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(CONTENT_TYPE,EpubObjectType.class.getName());
+		MultiRegistryNode.addChildElement("epub",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 	}
 	@Override
 	public void start(BundleContext bc) throws Exception{

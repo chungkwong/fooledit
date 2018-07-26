@@ -16,6 +16,7 @@
  */
 package cc.fooledit.editor.chm;
 import cc.fooledit.core.*;
+import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
  *
@@ -23,6 +24,7 @@ import org.osgi.framework.*;
  */
 public class Activator implements BundleActivator{
 	public static final String NAME=Activator.class.getName();
+	public static final String CONTENT_TYPE="application/vnd.ms-htmlhelp";
 	public static void onLoad(){
 		DataObjectTypeRegistry.addDataObjectType(ChmObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(ChmEditor.INSTANCE,ChmObject.class);
@@ -38,6 +40,9 @@ public class Activator implements BundleActivator{
 		Registry.providesProtocol("chm",NAME);
 		Registry.providesEditorToToolbox(ChmEditor.class.getName(),NAME);
 		Registry.providesToolBox(ContentsToolBox.class.getName(),NAME);
+		MultiRegistryNode.addChildElement("chm",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(CONTENT_TYPE,cc.fooledit.editor.chm.ChmObjectType.class.getName());
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-chm",CONTENT_TYPE);
 	}
 	@Override
 	public void start(BundleContext bc) throws Exception{

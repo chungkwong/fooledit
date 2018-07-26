@@ -16,11 +16,13 @@
  */
 package cc.fooledit.editor.odf;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.odf.Activator;
 import cc.fooledit.editor.odf.calc.*;
 import cc.fooledit.editor.odf.chart.*;
 import cc.fooledit.editor.odf.draw.*;
 import cc.fooledit.editor.odf.impress.*;
 import cc.fooledit.editor.odf.writer.*;
+import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
  *
@@ -58,6 +60,32 @@ public class Activator implements BundleActivator{
 		Registry.providesDataObjectType(ChartObjectType.class.getName(),NAME);
 		Registry.providesDataObjectEditor(ChartEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(ChartObject.class.getName(),NAME);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.spreadsheet","cc.fooledit.editor.odf.calc.OdsObjectType");
+		MultiRegistryNode.addChildElement("ods","application/vnd.oasis.opendocument.spreadsheet",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.spreadsheet-template","cc.fooledit.editor.odf.calc.OdsObjectType");
+		MultiRegistryNode.addChildElement("ots","application/vnd.oasis.opendocument.spreadsheet-template",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.text","cc.fooledit.editor.odf.writer.OdtObjectType");
+		MultiRegistryNode.addChildElement("odt","application/vnd.oasis.opendocument.text",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.text-master","cc.fooledit.editor.odf.writer.OdtObjectType");
+		MultiRegistryNode.addChildElement("odm","application/vnd.oasis.opendocument.text-master",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.text-master-template","cc.fooledit.editor.odf.writer.OdtObjectType");
+		MultiRegistryNode.addChildElement("otm","application/vnd.oasis.opendocument.text-master-template",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.text-web","cc.fooledit.editor.odf.writer.OdtObjectType");
+		MultiRegistryNode.addChildElement("oth","application/vnd.oasis.opendocument.text-web",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.presentation","cc.fooledit.editor.odf.impress.OdpObjectType");
+		MultiRegistryNode.addChildElement("odp","application/vnd.oasis.opendocument.presentation",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.presentation-template","cc.fooledit.editor.odf.impress.OdpObjectType");
+		MultiRegistryNode.addChildElement("otp","application/vnd.oasis.opendocument.presentation-template",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.graphics","cc.fooledit.editor.odf.draw.OdgObjectType");
+		MultiRegistryNode.addChildElement("odg","application/vnd.oasis.opendocument.graphics",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.graphics-template","cc.fooledit.editor.odf.draw.OdgObjectType");
+		MultiRegistryNode.addChildElement("otg","application/vnd.oasis.opendocument.graphics-template",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.image","cc.fooledit.editor.odf.draw.OdgObjectType");
+		MultiRegistryNode.addChildElement("odi","application/vnd.oasis.opendocument.image",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.chart","cc.fooledit.editor.odf.chart.ChartObjectType");
+		MultiRegistryNode.addChildElement("odc","application/vnd.oasis.opendocument.chart",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.chart-template","cc.fooledit.editor.odf.chart.ChartObjectType");
+		MultiRegistryNode.addChildElement("otc","application/vnd.oasis.opendocument.chart-template",CoreModule.SUFFIX_REGISTRY);
 	}
 	@Override
 	public void start(BundleContext bc) throws Exception{

@@ -16,6 +16,7 @@
  */
 package cc.fooledit.core;
 import cc.fooledit.core.Activator;
+import java.io.*;
 import org.osgi.framework.*;
 /**
  *

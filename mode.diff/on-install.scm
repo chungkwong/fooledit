@@ -1,5 +1,0 @@
-(map-suffix-to-mime "diff" "text/x-patch")
-(map-suffix-to-mime "patch" "text/x-patch")
-(mime-alias "text/x-diff" "text/x-patch")
-(provide "text/x-patch" "mode.diff" "parser" "editor.text")
-(provide "text/x-patch" "mode.diff" "highlighter" "editor.text")

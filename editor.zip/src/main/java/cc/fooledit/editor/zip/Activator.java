@@ -17,6 +17,8 @@
 package cc.fooledit.editor.zip;
 import static cc.fooledit.core.CoreModule.PROTOCOL_REGISTRY;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.zip.Activator;
+import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
  *
@@ -42,6 +44,60 @@ public class Activator implements BundleActivator{
 		DataObjectTypeRegistry.addDataEditor(ZipEditor.INSTANCE,ZipObject.class);
 		PROTOCOL_REGISTRY.put("archive",new ArchiveStreamHandler());
 		PROTOCOL_REGISTRY.put("compressed",new ZipStreamHandler());
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-7z-compressed","cc.fooledit.editor.zip.ArchiveObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-archive","cc.fooledit.editor.zip.ArchiveObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-arj","cc.fooledit.editor.zip.ArchiveObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-bzip","cc.fooledit.editor.zip.ZipObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-bzip2","cc.fooledit.editor.zip.ZipObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-cpio","cc.fooledit.editor.zip.ArchiveObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-gtar","cc.fooledit.editor.zip.ArchiveObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/gzip","cc.fooledit.editor.zip.ZipObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-gzip","cc.fooledit.editor.zip.ZipObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/java-archive","cc.fooledit.editor.zip.ArchiveObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-java-archive","cc.fooledit.editor.zip.ArchiveObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-jar","cc.fooledit.editor.zip.ArchiveObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-java-pack200","cc.fooledit.editor.zip.ZipObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-lz4","cc.fooledit.editor.zip.ZipObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-lzma","cc.fooledit.editor.zip.ZipObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-tar","cc.fooledit.editor.zip.ArchiveObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-xz","cc.fooledit.editor.zip.ZipObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/zip","cc.fooledit.editor.zip.ArchiveObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-zip-compressed","cc.fooledit.editor.zip.ArchiveObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/zlib","cc.fooledit.editor.zip.ZipObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.rar","cc.fooledit.editor.zip.ArchiveObjectType");
+		MultiRegistryNode.addChildElement("7z","application/x-7z-compressed",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("ar","application/x-archive",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("arj","application/x-arj",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("apk","application/vnd.android.package-archive",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("bz2","application/x-bzip2",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("cpio","application/x-cpio",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("deb","application/vnd.debian.binary-package",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("rar","application/vnd.rar",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("ear","application/x-java-archive",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("gz","application/x-gzip",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("jar","application/x-java-archive",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("pack","application/x-java-pack200",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("lz4","application/x-lz4",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("lzma","application/x-lzma",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("tar","application/x-tar",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("war","application/x-java-archive",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("xz","application/x-xz",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("zip","application/x-zip-compressed",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("Z","application/zlib",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("zz","application/zlib",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.put("application/vnd.android.package-archive","application/x-java-archive");
+		CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.put("application/vnd.debian.binary-package","application/x-archive");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/java-archive","application/x-java-archive");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-jar","application/x-java-archive");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-gtar","application/x-tar");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-zip-compressed","application/zip");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-gzip","application/gzip");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-bzip2","application/x-bzip");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-deb","application/vnd.debian.binary-package");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-debian-package","application/vnd.debian.binary-package");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-rar","application/vnd.rar");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-rar-compressed","application/vnd.rar");
+//TODO: DUMP,Brotli,DEFLATE,LZ77,LZW,Snappy
 	}
 	@Override
 	public void stop(BundleContext bc) throws Exception{

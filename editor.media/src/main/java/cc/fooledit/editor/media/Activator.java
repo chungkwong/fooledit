@@ -18,6 +18,8 @@ package cc.fooledit.editor.media;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataEditor;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataObjectType;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.media.Activator;
+import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
  *
@@ -52,6 +54,11 @@ public class Activator implements BundleActivator{
 		for(String protocol:protocols){
 			Registry.providesProtocol(protocol,NAME);
 		}
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("audio/midi","cc.fooledit.editor.media.MidiObjectType");
+		MultiRegistryNode.addChildElement("midi","audio/midi",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("mid","audio/midi",CoreModule.SUFFIX_REGISTRY);
+		MultiRegistryNode.addChildElement("kar","audio/midi",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("audio/x-midi","audio/midi");
 	}
 	@Override
 	public void start(BundleContext bc) throws Exception{

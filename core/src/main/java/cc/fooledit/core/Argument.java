@@ -16,6 +16,7 @@
  */
 package cc.fooledit.core;
 import cc.fooledit.util.*;
+import java.io.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -35,5 +36,17 @@ public class Argument{
 	}
 	public ThrowableSupplier<Object> getDef(){
 		return def;
+	}
+	public static void main(String[] args){
+		for(File f:new File("/home/kwong/NetBeansProjects/fooledit").listFiles()){
+			if(f.getName().startsWith("mode.")){
+				File tokens=new File(f,"tokens.json");
+				if(tokens.exists()){
+					File distFolder=new File(f,"src/main/resources/cc/fooledit/editor/text/mode/"+f.getName().substring(5));
+					distFolder.mkdirs();
+					tokens.renameTo(new File(distFolder,"tokens.json"));
+				}
+			}
+		}
 	}
 }

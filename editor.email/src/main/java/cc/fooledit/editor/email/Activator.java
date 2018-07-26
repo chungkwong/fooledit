@@ -17,6 +17,8 @@
 package cc.fooledit.editor.email;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.email.Activator;
+import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
  *
@@ -55,6 +57,15 @@ public class Activator implements BundleActivator{
 		Registry.providesProtocol("stmp",NAME);
 		Registry.providesProtocol("pop3",NAME);
 		Registry.providesProtocol("imap",NAME);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("multipart/alternative","cc.fooledit.editor.email.MultipartObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("multipart/digest","cc.fooledit.editor.email.MultipartObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("multipart/mixed","cc.fooledit.editor.email.MultipartObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("multipart/parallel","cc.fooledit.editor.email.MultipartObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("multipart/encrypted","cc.fooledit.editor.email.MultipartObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("multipart/signed","cc.fooledit.editor.email.MultipartObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("multipart/report","cc.fooledit.editor.email.MultipartObjectType");
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("message/rfc822","cc.fooledit.editor.email.MessageObjectType");
+		MultiRegistryNode.addChildElement("eml","message/rfc822",CoreModule.SUFFIX_REGISTRY);
 	}
 	@Override
 	public void start(BundleContext bc) throws Exception{

@@ -16,6 +16,8 @@
  */
 package cc.fooledit.editor.pdf;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.pdf.Activator;
+import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
  *
@@ -37,6 +39,11 @@ public class Activator implements BundleActivator{
 		DataObjectTypeRegistry.addToolBox(PageToolBox.INSTANCE,PdfEditor.class);
 		DataObjectTypeRegistry.addToolBox(ContentsToolBox.INSTANCE,PdfEditor.class);
 		DataObjectTypeRegistry.addToolBox(PropertiesToolBox.INSTANCE,PdfEditor.class);
+		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/pdf","cc.fooledit.editor.pdf.PdfObjectType");
+		MultiRegistryNode.addChildElement("pdf","application/pdf",CoreModule.SUFFIX_REGISTRY);
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("image/pdf","application/pdf");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-pdf","application/pdf");
+		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/acrobat","application/pdf");
 	}
 	@Override
 	public void stop(BundleContext bc) throws Exception{
