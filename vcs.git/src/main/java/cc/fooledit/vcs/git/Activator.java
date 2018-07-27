@@ -18,6 +18,7 @@ package cc.fooledit.vcs.git;
 import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
+import cc.fooledit.vcs.git.Activator;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -34,9 +35,9 @@ public class Activator implements BundleActivator{
 	@Override
 	public void start(BundleContext bc) throws Exception{
 		Registry.providesDynamicMenu(APPLICATION_NAME,NAME);
-		Registry.provides("git-init",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("git-clone",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
-		Registry.provides("git-browse",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
+		Registry.provides("git-init",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemViewer.class.getPackage().getName());
+		Registry.provides("git-clone",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemViewer.class.getPackage().getName());
+		Registry.provides("git-browse",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemViewer.class.getPackage().getName());
 		Registry.providesDataObjectType(GitRepositoryObjectType.class.getName(),NAME);
 		Registry.providesDataObjectEditor(GitRepositoryEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(GitRepositoryObject.class.getName(),NAME);

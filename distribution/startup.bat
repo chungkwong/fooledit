@@ -1,1 +1,1 @@
-java -cp "lib/*" cc.fooledit.Main 
+java -cp "bin/*" cc.fooledit.Main

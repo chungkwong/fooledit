@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017,2018 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2018 Chan Chung Kwong
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,9 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit;
+package cc.fooledit.core;
 import cc.fooledit.control.*;
-import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import com.github.chungkwong.json.*;
@@ -26,6 +25,7 @@ import java.nio.charset.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
+import static javafx.application.Application.launch;
 import javafx.application.*;
 import javafx.collections.*;
 import javafx.event.*;
@@ -37,9 +37,11 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 import javax.activation.*;
+import org.osgi.framework.*;
+import org.osgi.framework.launch.*;
 /**
  *
- * @author Chan Chung Kwong <1m02math@126.com>
+ * @author Chan Chung Kwong
  */
 public class Main extends Application{
 	public static Main INSTANCE;
@@ -388,6 +390,11 @@ public class Main extends Application{
 	@Override
 	public void stop() throws Exception{
 		super.stop();
+		for(Bundle bundle:Activator.bundleContext.getBundles()){
+			if(bundle instanceof Framework){
+				bundle.stop();
+			}
+		}
 		System.exit(0);
 	}
 	public static File getDataPath(){

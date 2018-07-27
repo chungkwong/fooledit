@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.core.Activator;
-import java.io.*;
 import org.osgi.framework.*;
 /**
  *
  * @author Chan Chung Kwong
  */
 public class Activator implements BundleActivator{
-	public static final String NAME=Activator.class.getPackage().getName();
+	static BundleContext bundleContext;
 	@Override
-	public void start(BundleContext bc) throws Exception{
+	public void start(BundleContext context) throws Exception{
+		bundleContext=context;
+		new Thread(()->Main.launch(Main.class)).start();
 	}
 	@Override
-	public void stop(BundleContext bc) throws Exception{
+	public void stop(BundleContext context) throws Exception{
 	}
 }

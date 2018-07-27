@@ -20,6 +20,7 @@ import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
+import cc.fooledit.vcs.svn.Activator;
 import java.util.*;
 import javafx.scene.control.*;
 import org.osgi.framework.*;
@@ -71,7 +72,7 @@ public class Activator implements BundleActivator{
 		providesFileCommand("svn-upgrade");
 	}
 	private static void providesFileCommand(String name){
-		Registry.provides(name,NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemModule.NAME);
+		Registry.provides(name,NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemViewer.class.getPackage().getName());
 	}
 	private static void providesDefaultValues(){
 		SETTINGS_REGISTRY.putIfAbsent("ALLOW_MIXED_REVISIONS",false);
@@ -135,7 +136,7 @@ public class Activator implements BundleActivator{
 		return new Argument(MessageRegistry.getString(name,NAME),()->SETTINGS_REGISTRY.get(name));
 	}
 	private static void addCommand(String name,List<Argument> args,ThrowableFunction<Object[],Object> proc){
-		FileSystemEditor.INSTANCE.getCommandRegistry().put(name,new Command(name,args,(a)->proc.accept(a),FileSystemModule.NAME));
+		FileSystemEditor.INSTANCE.getCommandRegistry().put(name,new Command(name,args,(a)->proc.accept(a),FileSystemViewer.class.getPackage().getName()));
 	}
 	private static MenuItem createMenuItem(String command,String name){
 		MenuItem item=new MenuItem(MessageRegistry.getString(name,NAME));

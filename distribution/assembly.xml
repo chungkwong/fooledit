@@ -28,11 +28,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<fileMode>777</fileMode>
 			<directory>${project.basedir}</directory>
 			<includes>
-				<include>README</include>
-				<include>LICENSE</include>
 				<include>startup.sh</include>
 				<include>startup.bat</include>
-				<include>etc/init.scm</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}</directory>
+			<includes>
+				<include>README</include>
+				<include>LICENSE</include>
 			</includes>
 		</fileSet>
 	</fileSets>
@@ -41,25 +45,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<excludes>
 				<exclude>com.github.chungkwong:distribution</exclude>
+				<exclude>com.github.chungkwong:fooledit.launcher</exclude>
 			</excludes>
 			<binaries>
-				<outputDirectory>lib</outputDirectory>
+				<includeDependencies>false</includeDependencies>
+				<outputDirectory>bundle</outputDirectory>
 				<unpack>false</unpack>
 			</binaries>
-			<sources>
-				<includeModuleDirectory>false</includeModuleDirectory>
-				<fileSets>
-					<fileSet>
-						<directory>.</directory>
-						<outputDirectory>modules/${module.artifactId}</outputDirectory>
-						<excludes>
-							<exclude>src/**</exclude>
-							<exclude>pom.xml</exclude>
-							<exclude>target/**</exclude>
-						</excludes>
-					</fileSet>
-				</fileSets>
-			</sources>
+		</moduleSet>
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>com.github.chungkwong:fooledit.launcher</include>
+			</includes>
+			<binaries>
+				<outputDirectory>bin</outputDirectory>
+				<unpack>false</unpack>
+			</binaries>
 		</moduleSet>
 	</moduleSets>
 </assembly>
