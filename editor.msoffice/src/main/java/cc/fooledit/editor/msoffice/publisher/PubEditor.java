@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.msoffice.publisher;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -35,6 +34,6 @@ public class PubEditor implements DataEditor<PubObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",Activator.NAME);
+		return MessageRegistry.getString("DOCUMENT_EDITOR",cc.fooledit.editor.msoffice.Activator.NAME);
 	}
 }

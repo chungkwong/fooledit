@@ -25,6 +25,7 @@ public class Activator implements BundleActivator{
 	@Override
 	public void start(BundleContext context) throws Exception{
 		bundleContext=context;
+		System.out.println("CORE");
 		new Thread(()->Main.launch(Main.class)).start();
 	}
 	@Override

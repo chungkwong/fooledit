@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.odf.writer;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.odf.*;
 import cc.fooledit.spi.*;
 import java.net.*;
 import java.util.logging.*;
@@ -52,7 +51,7 @@ public class OdtObjectType implements DataObjectType<OdtObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("WRITER_DOCUMENT",Activator.NAME);
+		return MessageRegistry.getString("WRITER_DOCUMENT",cc.fooledit.editor.odf.Activator.NAME);
 	}
 	@Override
 	public void writeTo(OdtObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

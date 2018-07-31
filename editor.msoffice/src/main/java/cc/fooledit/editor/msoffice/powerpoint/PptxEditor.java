@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.msoffice.powerpoint;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
@@ -33,6 +32,6 @@ public class PptxEditor implements DataEditor<PptxObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("SLIDE_SHOW",Activator.NAME);
+		return MessageRegistry.getString("SLIDE_SHOW",cc.fooledit.editor.msoffice.Activator.NAME);
 	}
 }

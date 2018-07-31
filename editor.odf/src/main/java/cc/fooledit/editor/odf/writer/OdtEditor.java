@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.odf.writer;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.odf.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
@@ -33,6 +32,6 @@ public class OdtEditor implements DataEditor<OdtObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("WRITER",Activator.NAME);
+		return MessageRegistry.getString("WRITER",cc.fooledit.editor.odf.Activator.NAME);
 	}
 }

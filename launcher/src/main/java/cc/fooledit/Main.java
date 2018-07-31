@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit;
-import cc.fooledit.Main;
-import java.io.*;
-import java.nio.file.FileSystem;
-import java.nio.file.*;
 import java.util.*;
-import java.util.logging.*;
-import java.util.logging.Logger;
 import org.apache.felix.framework.FrameworkFactory;
 import org.apache.felix.main.*;
 import org.osgi.framework.launch.*;
@@ -34,6 +28,7 @@ public class Main{
 		Map config=getDefaultConfig();
 		Framework framework=new FrameworkFactory().newFramework(config);
 		stopFrameOnExit(framework);
+		System.out.println(framework.getLocation());
 		framework.init();
 		syncBundles(config,framework);
 		framework.start();
@@ -50,9 +45,11 @@ public class Main{
 				+"javafx.scene.paint,javafx.scene.shape,javafx.scene.text,javafx.scene.transform,javafx.scene.web,javafx.stage,"
 				+"javafx.util,javafx.util.converter,netscape.javascript,javax.crypto,javax.crypto.spec,javax.imageio,javax.i"
 				+"mageio.metadata,javax.imageio.plugins.jpeg,javax.imageio.stream,javax.xml.namespace,javax.xml.parsers,javax.xml.xpath,"
-				+"org.w3c.dom,org.xml.sax");
+				+"org.w3c.dom,org.xml.sax,com.sun.javafx.scene.control.skin,javax.activation,javax.script");
 		config.put("felix.auto.deploy.action","uninstall,install,update,start");
-		config.put("felix.auto.deploy.dir","bundle");
+		config.put("org.osgi.framework.storage","/home/kwong/NetBeansProjects/fooledit/distribution/target/distribution-1.0-SNAPSHOT-dist/felix-cache");
+		config.put("felix.auto.deploy.dir","/home/kwong/NetBeansProjects/fooledit/distribution/target/distribution-1.0-SNAPSHOT-dist/bundle");
+		//config.put("felix.auto.deploy.dir","bundle");
 		config.put("org.osgi.framework.storage.clean","onFirstInit");
 		config.put("felix.log.level","4");
 		return config;
@@ -69,7 +66,7 @@ public class Main{
 	}
 	private static void syncBundles(Map config,Framework framework){
 		AutoProcessor.process(config,framework.getBundleContext());
-		try{
+		/*try{
 			Path path=new File("bundle").toPath();
 			FileSystem fileSystem=path.getFileSystem();
 			WatchService watchService=fileSystem.newWatchService();
@@ -91,6 +88,6 @@ public class Main{
 		}catch(Exception ex){
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,null,ex);
 			ex.printStackTrace();
-		}
+		}*/
 	}
 }

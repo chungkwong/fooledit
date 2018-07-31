@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.browser;
-import cc.fooledit.*;
+import cc.fooledit.core.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -32,7 +32,11 @@ public class BrowserViewer extends BorderPane{
 	private final TextField loc=new TextField();
 	public BrowserViewer(WebView data){
 		engine=data.getEngine();
-		engine.getLoadWorker().messageProperty().addListener((e,o,n)->{if(n!=null)Main.INSTANCE.getNotifier().notify(n);});
+		engine.getLoadWorker().messageProperty().addListener((e,o,n)->{
+			if(n!=null){
+				Main.INSTANCE.getNotifier().notify(n);
+			}
+		});
 		reload.setOnAction((e)->refresh());
 		WebHistory history=engine.getHistory();
 		back.setOnAction((e)->backward());

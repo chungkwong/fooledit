@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.msoffice.publisher;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.*;
 import cc.fooledit.spi.*;
 import java.net.*;
 import org.apache.poi.hpbf.*;
@@ -46,7 +45,7 @@ public class PubObjectType implements DataObjectType<PubObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_PUBLISHER_DOCUMENT",Activator.NAME);
+		return MessageRegistry.getString("OLD_PUBLISHER_DOCUMENT",cc.fooledit.editor.msoffice.Activator.NAME);
 	}
 	@Override
 	public void writeTo(PubObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

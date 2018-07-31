@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.msoffice.visio;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
@@ -33,6 +32,6 @@ public class VsdxEditor implements DataEditor<VsdxObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DIAGRAM_EDITOR",Activator.NAME);
+		return MessageRegistry.getString("DIAGRAM_EDITOR",cc.fooledit.editor.msoffice.Activator.NAME);
 	}
 }

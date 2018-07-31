@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.odf.chart;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.odf.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
@@ -33,6 +32,6 @@ public class ChartEditor implements DataEditor<ChartObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("SPREADSHEET",Activator.NAME);
+		return MessageRegistry.getString("SPREADSHEET",cc.fooledit.editor.odf.Activator.NAME);
 	}
 }

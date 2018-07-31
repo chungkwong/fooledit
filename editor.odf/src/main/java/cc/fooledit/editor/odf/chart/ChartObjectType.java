@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.odf.chart;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.odf.*;
 import cc.fooledit.spi.*;
 import java.net.*;
 import org.odftoolkit.simple.*;
@@ -46,7 +45,7 @@ public class ChartObjectType implements DataObjectType<ChartObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",Activator.NAME);
+		return MessageRegistry.getString("OLD_WORD_DOCUMENT",cc.fooledit.editor.odf.Activator.NAME);
 	}
 	@Override
 	public void writeTo(ChartObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

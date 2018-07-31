@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.msoffice.visio;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.*;
 import cc.fooledit.spi.*;
 import java.net.*;
 import org.apache.poi.hdgf.*;
@@ -47,7 +46,7 @@ public class VsdObjectType implements DataObjectType<VsdObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",Activator.NAME);
+		return MessageRegistry.getString("OLD_WORD_DOCUMENT",cc.fooledit.editor.msoffice.Activator.NAME);
 	}
 	@Override
 	public void writeTo(VsdObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

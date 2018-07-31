@@ -16,7 +16,6 @@
  */
 package cc.fooledit.editor.msoffice.excel;
 import cc.fooledit.core.*;
-import cc.fooledit.editor.msoffice.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
 /**
@@ -33,6 +32,6 @@ public class XlsEditor implements DataEditor<XlsObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("SPREADSHEET",Activator.NAME);
+		return MessageRegistry.getString("SPREADSHEET",cc.fooledit.editor.msoffice.Activator.NAME);
 	}
 }
