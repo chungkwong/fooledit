@@ -45,7 +45,9 @@ public class Main{
 				+"javafx.scene.paint,javafx.scene.shape,javafx.scene.text,javafx.scene.transform,javafx.scene.web,javafx.stage,"
 				+"javafx.util,javafx.util.converter,netscape.javascript,javax.crypto,javax.crypto.spec,javax.imageio,javax.i"
 				+"mageio.metadata,javax.imageio.plugins.jpeg,javax.imageio.stream,javax.xml.namespace,javax.xml.parsers,javax.xml.xpath,"
-				+"org.w3c.dom,org.xml.sax,com.sun.javafx.scene.control.skin,javax.activation,javax.script");
+				+"org.w3c.dom,org.xml.sax,com.sun.javafx.scene.control.skin,javax.activation,javax.script,"
+				+"com.sun.javafx.binding,com.sun.org.apache.xml.internal.utils,com.sun.org.apache.xpath.internal,"
+				+"com.sun.org.apache.xpath.internal.objects,sun.net.www");
 		config.put("felix.auto.deploy.action","uninstall,install,update,start");
 		config.put("org.osgi.framework.storage","/home/kwong/NetBeansProjects/fooledit/distribution/target/distribution-1.0-SNAPSHOT-dist/felix-cache");
 		config.put("felix.auto.deploy.dir","/home/kwong/NetBeansProjects/fooledit/distribution/target/distribution-1.0-SNAPSHOT-dist/bundle");

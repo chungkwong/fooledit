@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.text;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.core.Template;
+import cc.fooledit.editor.text.Activator;
 import freemarker.template.*;
 import java.io.*;
 import java.util.*;

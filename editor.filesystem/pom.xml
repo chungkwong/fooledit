@@ -58,9 +58,10 @@
 				<configuration>
 					<instructions>
 						<Bundle-Activator>cc.fooledit.editor.filesystem.Activator</Bundle-Activator>
-						<Export-Package />
+						<Export-Package >cc.fooledit.editor.filesystem</Export-Package>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
+						<Private-Package>cc.fooledit.editor.filesystem.*</Private-Package>
 					</instructions>
 				</configuration>
 			</plugin>

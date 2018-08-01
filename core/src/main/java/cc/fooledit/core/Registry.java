@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.*;
 import cc.fooledit.spi.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
@@ -31,12 +30,12 @@ import java.util.logging.*;
 public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 	public static final Registry ROOT=new Registry();
 	private Registry(){
-
 	}
 	public <K,V> RegistryNode<K,V> resolve(String path){
 		RegistryNode node=this;
-		for(String name:path.split("/"))
+		for(String name:path.split("/")){
 			node=(RegistryNode)node.getOrCreateChild(name);
+		}
 		return node;
 	}
 	public String[] splitPath(String path){
@@ -58,8 +57,9 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 			Logger.getGlobal().log(Level.INFO,"Failed to load registry cache",ex);
 			File path=Main.getDataPath();
 			for(File file:path.listFiles()){
-				if(file.isDirectory()&&new File(file,"descriptor.json").exists())
+				if(file.isDirectory()&&new File(file,"descriptor.json").exists()){
 					ModuleRegistry.ensureInstalled(file.getName());
+				}
 			}
 		}
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());
@@ -87,8 +87,9 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 				out.write(JSONEncoder.encode(path));
 				out.write(':');
 				out.write(StandardSerializiers.JSON_SERIALIZIER.encode(resolve(path)));
-				if(toSave.hasNext())
+				if(toSave.hasNext()){
 					out.write(',');
+				}
 			}
 			out.append('}');
 			out.flush();
@@ -118,10 +119,11 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 			if(b.containsKey(key)){
 				V childa=a.get(key);
 				V childb=b.get(key);
-				if(childa instanceof RegistryNode&&childb instanceof RegistryNode)
+				if(childa instanceof RegistryNode&&childb instanceof RegistryNode){
 					mergeTo((RegistryNode)childa,(RegistryNode)childb);
-				else
+				}else{
 					Logger.getGlobal().log(Level.INFO,"Failed to merge {0}",new Object[]{key});
+				}
 			}else{
 				b.put(key,a.get(key));
 			}
@@ -130,8 +132,9 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 	public NavigableRegistryNode<String,String> registerKeymap(String module){
 		TreeMap<String,String> mapping=new TreeMap<>();
 		File src=Main.INSTANCE.getFile("keymaps/default.json",module);
-		if(src!=null)
+		if(src!=null){
 			mapping.putAll((Map<String,String>)(Object)Main.INSTANCE.loadJSON(src));
+		}
 		NavigableRegistryNode<String,String> registry=new NavigableRegistryNode<>(mapping);
 		((RegistryNode<String,RegistryNode<String,String>>)ROOT.getOrCreateChild(module)).put(CoreModule.KEYMAP_REGISTRY_NAME,registry);
 		return registry;
@@ -197,8 +200,8 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 		provides(type,module,registry,CoreModule.NAME);
 	}
 	public static void provides(String type,String module,String registry,String target){
-		RegistryNode<Object,Object> core=CoreModule.PROVIDER_REGISTRY.getOrCreateChild(target);
+		/*RegistryNode<Object,Object> core=CoreModule.PROVIDER_REGISTRY.getOrCreateChild(target);
 		((RegistryNode)core.getOrCreateChild(registry)).put(type,module);
-		((RegistryNode)ROOT.getOrCreateChild(target).getOrCreateChild(registry)).put(type,LoaderValue.create(module));
+		((RegistryNode)ROOT.getOrCreateChild(target).getOrCreateChild(registry)).put(type,LoaderValue.create(module));*/
 	}
 }
