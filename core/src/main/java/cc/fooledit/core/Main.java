@@ -46,7 +46,6 @@ import org.osgi.framework.launch.*;
 public class Main extends Application{
 	public static Main INSTANCE;
 	private static final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
-	private static final File MODULE_PATH=computePath();
 	private MenuRegistry menuRegistry;
 	private final NavigableRegistryNode<String,String> keymapRegistry;
 	private final Notifier notifier=new Notifier();
@@ -63,7 +62,6 @@ public class Main extends Application{
 	private HistoryRing<Map<Object,Object>> worksheets=new HistoryRing<>();
 	public Main(){
 		INSTANCE=this;
-		System.setProperty("user.dir",MODULE_PATH.toString());
 		Logger.getGlobal().setLevel(Level.INFO);
 		USER_PATH.mkdirs();
 		try{
@@ -72,14 +70,14 @@ public class Main extends Application{
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
 		}
 		Logger.getGlobal().addHandler(notifier);
-		scene.getStylesheets().add(getFile("stylesheets/base.css",CoreModule.NAME).toURI().toString());
+		scene.getStylesheets().add(getClass().getResource("/stylesheets/base.css").toString());
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//scene.focusOwnerProperty().addListener((e,o,n)->System.out.println(n));
 		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		script=new ScriptAPI();
 		CoreModule.onInit();
 		registerStandardCommand();
-		Registry.ROOT.loadPreference();
+		//Registry.ROOT.loadPreference();
 		ModuleRegistry.loadDefault();
 		CoreModule.PROTOCOL_REGISTRY.put("application",new ApplicationRegistry());
 		CoreModule.PROTOCOL_REGISTRY.put("data",new DataStreamHandler());
@@ -186,14 +184,6 @@ public class Main extends Application{
 		});
 		addCommandBatch("provide",(o)->{
 			Registry.provides((String)o[0],(String)o[1],(String)o[2],(String)o[3]);
-			return null;
-		});
-		addCommandBatch("inform-jar",(o)->{
-			String jar=(String)o[0];
-			String cls=(String)o[1];
-			String method=(String)o[2];
-			URLClassLoader loader=new URLClassLoader(new URL[]{new File(MODULE_PATH,jar).toURI().toURL()});
-			loader.loadClass(cls).getMethod(method).invoke(null);
 			return null;
 		});
 		addCommand("reload",(o)->{
@@ -375,11 +365,7 @@ public class Main extends Application{
 	@Override
 	public void start(Stage primaryStage){
 		stage=primaryStage;
-		try{
-			primaryStage.getIcons().add(new Image(new File(getDataPath(),"core/icons/logo.png").toURI().toURL().toString()));
-		}catch(MalformedURLException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
+		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/logo.png")));
 		primaryStage.setTitle("fooledit");
 		primaryStage.setScene(scene);
 		primaryStage.setMaximized(true);
@@ -397,41 +383,8 @@ public class Main extends Application{
 		}
 		System.exit(0);
 	}
-	public static File getDataPath(){
-		return MODULE_PATH;
-	}
 	public static File getUserPath(){
 		return USER_PATH;
-	}
-	public static File getFile(String path,String module){
-		return new File(getModulePath(module),path);
-	}
-	public static File getModulePath(String module){
-		return new File(MODULE_PATH,module);
-	}
-	private static File computePath(){
-		URL url=Main.class.getResource("");
-		if(url.getProtocol().equals("file")){
-			File file=new File(url.getFile());
-			while(!new File(file,"editor.text").exists()){
-				file=file.getParentFile();
-				if(file==null){
-					return USER_PATH;
-				}
-			}
-			return file;
-		}else{
-			try{
-				File jarFile=new File(URLDecoder.decode(url.toString().substring(9,url.toString().indexOf('!')),"UTF-8"));
-				return new File(jarFile.getParentFile().getParentFile(),"modules");
-			}catch(UnsupportedEncodingException ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-				return USER_PATH;
-			}
-		}
-	}
-	public static Map<Object,Object> loadJSON(String name){
-		return loadJSON(new File(getDataPath(),name));
 	}
 	public static Map<Object,Object> loadJSON(File file){
 		Map<Object,Object> obj;
@@ -534,7 +487,7 @@ public class Main extends Application{
 	}
 	private void runScript(){
 		try{
-			script.eval(new InputStreamReader(new FileInputStream(new File(new File(MODULE_PATH.getParent(),"etc"),"init.scm")),StandardCharsets.UTF_8));
+			//script.eval(new InputStreamReader(new FileInputStream(new File(new File(MODULE_PATH.getParent(),"etc"),"init.scm")),StandardCharsets.UTF_8));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.SEVERE,"Error in init script",ex);
 		}

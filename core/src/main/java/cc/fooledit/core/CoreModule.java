@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.spi.*;
 import java.io.*;
@@ -67,37 +66,39 @@ public class CoreModule{
 	public static final String TOOLBOX_REGISTRY_NAME="toolbox";
 	public static final String WINDOW_REGISTRY_NAME="window";
 	public static final String MISC_REGISTRY_NAME="misc";
-	public static RegistryNode<String,Object> REGISTRY;
-	public static RegistryNode<String,String> APPLICATION_REGISTRY;
-	public static RegistryNode<String,Object> CLIP_REGISTRY;
-	public static RegistryNode<String,ContentTypeDetector> CONTENT_TYPE_DETECTOR_REGISTRY;
-	public static RegistryNode<String,String> CONTENT_TYPE_ALIAS_REGISTRY;
-	public static RegistryNode<String,String> CONTENT_TYPE_SUPERCLASS_REGISTRY;
-	public static RegistryNode<String,String> CONTENT_TYPE_LOADER_REGISTRY;
-	public static RegistryNode<String,ListRegistryNode<String>> SUFFIX_REGISTRY;
-	public static RegistryNode<String,String> GLOB_REGISTRY;
-	public static NavigableRegistryNode<String,RegistryNode> DATA_OBJECT_REGISTRY;
-	public static RegistryNode<String,DataObjectType> DATA_OBJECT_TYPE_REGISTRY;
-	public static RegistryNode<String,DataEditor> DATA_OBJECT_EDITOR_REGISTRY;
-	public static RegistryNode<String,Consumer<ObservableList<MenuItem>>> DYNAMIC_MENU_REGISTRY;
-	public static RegistryNode<String,ListRegistryNode<String>> TYPE_TO_EDITOR_REGISTRY;
-	public static RegistryNode<String,ListRegistryNode<String>> EDITOR_TO_TOOLBOX_REGISTRY;
-	public static RegistryNode<String,ListRegistryNode<Consumer>> EVENT_REGISTRY;
-	public static ListRegistryNode<RegistryNode<String,Object>> HISTORY_REGISTRY;
-	public static RegistryNode<String,RegistryNode<String,Object>> LOADED_MODULE_REGISTRY;
-	public static RegistryNode<String,RegistryNode<String,Object>> LOADING_MODULE_REGISTRY;
-	public static RegistryNode<String,Object> INSTALLED_MODULE_REGISTRY;
-	public static RegistryNode<String,Object> INSTALLING_MODULE_REGISTRY;
-	public static RegistryNode<String,URLStreamHandler> PROTOCOL_REGISTRY;
-	public static RegistryNode<String,RegistryNode<Object,Object>> PROVIDER_REGISTRY;
-	public static ListRegistryNode<String> PERSISTENT_REGISTRY;
-	public static RegistryNode<String,Serializier> SERIALIZIER_REGISTRY;
-	public static RegistryNode<String,Task> TASK_REGISTRY;
-	public static RegistryNode<String,Object> TEMPLATE_REGISTRY;
-	public static RegistryNode<String,Function<Map<Object,Object>,Template>> TEMPLATE_TYPE_REGISTRY;
-	public static RegistryNode<String,ToolBox> TOOLBOX_REGISTRY;
-	public static RegistryNode<String,Object> MISC_REGISTRY;
-	public static RegistryNode<String,Command> COMMAND_REGISTRY;
+	public static final RegistryNode<String,Object> REGISTRY=(RegistryNode<String,Object>)Registry.ROOT.getOrCreateChild(NAME);
+	public static final RegistryNode<String,String> APPLICATION_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(APPLICATION_REGISTRY_NAME);
+	public static final RegistryNode<String,Object> CLIP_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(CLIP_REGISTRY_NAME);
+	public static final RegistryNode<String,ContentTypeDetector> CONTENT_TYPE_DETECTOR_REGISTRY=(RegistryNode<String,ContentTypeDetector>)REGISTRY.getOrCreateChild(CONTENT_TYPE_DETECTOR_REGISTRY_NAME);
+	public static final RegistryNode<String,String> CONTENT_TYPE_ALIAS_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(CONTENT_TYPE_ALIAS_REGISTRY_NAME);
+	public static final RegistryNode<String,String> CONTENT_TYPE_SUPERCLASS_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME);
+	public static final RegistryNode<String,String> CONTENT_TYPE_LOADER_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(CONTENT_TYPE_LOADER_REGISTRY_NAME);
+	public static final RegistryNode<String,ListRegistryNode<String>> SUFFIX_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(SUFFIX_REGISTRY_NAME);
+	public static final RegistryNode<String,String> GLOB_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(GLOB_REGISTRY_NAME);
+	;
+	public static NavigableRegistryNode<String,RegistryNode> DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
+	public static final RegistryNode<String,DataObjectType> DATA_OBJECT_TYPE_REGISTRY=(RegistryNode<String,DataObjectType>)REGISTRY.getOrCreateChild(DATA_OBJECT_TYPE_REGISTRY_NAME);
+	public static final RegistryNode<String,DataEditor> DATA_OBJECT_EDITOR_REGISTRY=(RegistryNode<String,DataEditor>)REGISTRY.getOrCreateChild(DATA_OBJECT_EDITOR_REGISTRY_NAME);
+	public static final RegistryNode<String,Consumer<ObservableList<MenuItem>>> DYNAMIC_MENU_REGISTRY=(RegistryNode<String,Consumer<ObservableList<MenuItem>>>)REGISTRY.getOrCreateChild(DYNAMIC_MENU_REGISTRY_NAME);
+	public static final RegistryNode<String,ListRegistryNode<String>> TYPE_TO_EDITOR_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(TYPE_TO_EDITOR_REGISTRY_NAME);
+	public static final RegistryNode<String,ListRegistryNode<String>> EDITOR_TO_TOOLBOX_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(EDITOR_TO_TOOLBOX_REGISTRY_NAME);
+	public static final RegistryNode<String,ListRegistryNode<Consumer>> EVENT_REGISTRY=(RegistryNode<String,ListRegistryNode<Consumer>>)REGISTRY.getOrCreateChild(EVENT_REGISTRY_NAME);
+	public static ListRegistryNode<RegistryNode<String,Object>> HISTORY_REGISTRY=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
+	public static final RegistryNode<String,RegistryNode<String,Object>> LOADED_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object>>)REGISTRY.getOrCreateChild(LOADED_MODULE_REGISTRY_NAME);
+	public static final RegistryNode<String,RegistryNode<String,Object>> LOADING_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object>>)REGISTRY.getOrCreateChild(LOADING_MODULE_REGISTRY_NAME);
+	public static final RegistryNode<String,Object> INSTALLED_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLED_MODULE_REGISTRY_NAME);
+	public static final RegistryNode<String,Object> INSTALLING_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLING_MODULE_REGISTRY_NAME);
+	public static final RegistryNode<String,URLStreamHandler> PROTOCOL_REGISTRY=(RegistryNode<String,URLStreamHandler>)REGISTRY.getOrCreateChild(PROTOCOL_REGISTRY_NAME);
+	public static final RegistryNode<String,RegistryNode<Object,Object>> PROVIDER_REGISTRY=(RegistryNode<String,RegistryNode<Object,Object>>)REGISTRY.getOrCreateChild(PROVIDER_REGISTRY_NAME);
+	public static ListRegistryNode<String> PERSISTENT_REGISTRY=(ListRegistryNode<String>)REGISTRY.getOrCreateChild(PERSISTENT_REGISTRY_NAME,new ListRegistryNode<>());
+	public static final RegistryNode<String,Serializier> SERIALIZIER_REGISTRY=(RegistryNode<String,Serializier>)REGISTRY.getOrCreateChild(SERIALIZIER_REGISTRY_NAME);
+	public static final RegistryNode<String,Task> TASK_REGISTRY=(RegistryNode<String,Task>)REGISTRY.getOrCreateChild(TASK_REGISTRY_NAME);
+	public static final RegistryNode<String,Object> TEMPLATE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(TEMPLATE_REGISTRY_NAME);
+	public static final RegistryNode<String,Function<Map<Object,Object>,Template>> TEMPLATE_TYPE_REGISTRY=(RegistryNode<String,Function<Map<Object,Object>,Template>>)REGISTRY.getOrCreateChild(TEMPLATE_TYPE_REGISTRY_NAME);
+	public static final RegistryNode<String,ToolBox> TOOLBOX_REGISTRY=(RegistryNode<String,ToolBox>)REGISTRY.getOrCreateChild(TOOLBOX_REGISTRY_NAME);
+	public static final RegistryNode<String,Object> MISC_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(MISC_REGISTRY_NAME);
+	public static final RegistryNode<String,Command> COMMAND_REGISTRY=(RegistryNode<String,Command>)REGISTRY.getOrCreateChild(COMMAND_REGISTRY_NAME);
+	;
 	public static void onLoad(){
 		//HISTORY_REGISTRY.limit(20);
 		REGISTRY.put(HISTORY_REGISTRY_NAME,HISTORY_REGISTRY);
@@ -139,37 +140,6 @@ public class CoreModule{
 		MISC_REGISTRY.put(ScriptAPI.ENGINE,"JSchemeMin");
 	}
 	public static void onInit(){
-		REGISTRY=(RegistryNode<String,Object>)Registry.ROOT.getOrCreateChild(NAME);
-		APPLICATION_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(APPLICATION_REGISTRY_NAME);
-		CLIP_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(CLIP_REGISTRY_NAME);
-		COMMAND_REGISTRY=(RegistryNode<String,Command>)REGISTRY.getOrCreateChild(COMMAND_REGISTRY_NAME);
-		CONTENT_TYPE_DETECTOR_REGISTRY=(RegistryNode<String,ContentTypeDetector>)REGISTRY.getOrCreateChild(CONTENT_TYPE_DETECTOR_REGISTRY_NAME);
-		CONTENT_TYPE_ALIAS_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(CONTENT_TYPE_ALIAS_REGISTRY_NAME);
-		CONTENT_TYPE_SUPERCLASS_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME);
-		CONTENT_TYPE_LOADER_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(CONTENT_TYPE_LOADER_REGISTRY_NAME);
-		SUFFIX_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(SUFFIX_REGISTRY_NAME);
-		GLOB_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(GLOB_REGISTRY_NAME);
-		DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
-		DATA_OBJECT_TYPE_REGISTRY=(RegistryNode<String,DataObjectType>)REGISTRY.getOrCreateChild(DATA_OBJECT_TYPE_REGISTRY_NAME);
-		DATA_OBJECT_EDITOR_REGISTRY=(RegistryNode<String,DataEditor>)REGISTRY.getOrCreateChild(DATA_OBJECT_EDITOR_REGISTRY_NAME);
-		DYNAMIC_MENU_REGISTRY=(RegistryNode<String,Consumer<ObservableList<MenuItem>>>)REGISTRY.getOrCreateChild(DYNAMIC_MENU_REGISTRY_NAME);
-		TYPE_TO_EDITOR_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(TYPE_TO_EDITOR_REGISTRY_NAME);
-		EDITOR_TO_TOOLBOX_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(EDITOR_TO_TOOLBOX_REGISTRY_NAME);
-		EVENT_REGISTRY=(RegistryNode<String,ListRegistryNode<Consumer>>)REGISTRY.getOrCreateChild(EVENT_REGISTRY_NAME);
-		HISTORY_REGISTRY=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
-		LOADED_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object>>)REGISTRY.getOrCreateChild(LOADED_MODULE_REGISTRY_NAME);
-		LOADING_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object>>)REGISTRY.getOrCreateChild(LOADING_MODULE_REGISTRY_NAME);
-		INSTALLED_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLED_MODULE_REGISTRY_NAME);
-		INSTALLING_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLING_MODULE_REGISTRY_NAME);
-		PROTOCOL_REGISTRY=(RegistryNode<String,URLStreamHandler>)REGISTRY.getOrCreateChild(PROTOCOL_REGISTRY_NAME);
-		PROVIDER_REGISTRY=(RegistryNode<String,RegistryNode<Object,Object>>)REGISTRY.getOrCreateChild(PROVIDER_REGISTRY_NAME);
-		PERSISTENT_REGISTRY=(ListRegistryNode<String>)REGISTRY.getOrCreateChild(PERSISTENT_REGISTRY_NAME,new ListRegistryNode<>());
-		SERIALIZIER_REGISTRY=(RegistryNode<String,Serializier>)REGISTRY.getOrCreateChild(SERIALIZIER_REGISTRY_NAME);
-		TASK_REGISTRY=(RegistryNode<String,Task>)REGISTRY.getOrCreateChild(TASK_REGISTRY_NAME);
-		TEMPLATE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(TEMPLATE_REGISTRY_NAME);
-		TEMPLATE_TYPE_REGISTRY=(RegistryNode<String,Function<Map<Object,Object>,Template>>)REGISTRY.getOrCreateChild(TEMPLATE_TYPE_REGISTRY_NAME);
-		TOOLBOX_REGISTRY=(RegistryNode<String,ToolBox>)REGISTRY.getOrCreateChild(TOOLBOX_REGISTRY_NAME);
-		MISC_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(MISC_REGISTRY_NAME);
 	}
 	private static <T> T fromJSON(String file,Supplier<T> def){
 		try{
@@ -178,23 +148,5 @@ public class CoreModule{
 			Logger.getLogger(CoreModule.class.getName()).log(Level.INFO,null,ex);
 			return def.get();
 		}
-	}
-	static RegistryNode<String,URLStreamHandler> getPROTOCOL_REGISTRY(){
-		if(PROTOCOL_REGISTRY==null){
-			PROTOCOL_REGISTRY=(RegistryNode<String,URLStreamHandler>)getREGISTRY().getOrCreateChild(PROTOCOL_REGISTRY_NAME);
-		}
-		return PROTOCOL_REGISTRY;
-	}
-	static RegistryNode<String,ListRegistryNode<Consumer>> getEVENT_REGISTRY(){
-		if(EVENT_REGISTRY==null){
-			EVENT_REGISTRY=(RegistryNode<String,ListRegistryNode<Consumer>>)getREGISTRY().getOrCreateChild(EVENT_REGISTRY_NAME);
-		}
-		return EVENT_REGISTRY;
-	}
-	static RegistryNode<String,Object> getREGISTRY(){
-		if(REGISTRY==null){
-			REGISTRY=(RegistryNode<String,Object>)Registry.ROOT.getOrCreateChild(NAME);
-		}
-		return REGISTRY;
 	}
 }

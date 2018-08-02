@@ -27,15 +27,15 @@ public class EventManager{
 	public static final String SHUTDOWN="shutdown";
 	public static final String SHOWN="shown";
 	public static void addEventListener(String event,Consumer<Object> action){
-		MultiRegistryNode.addChildElement(event,action,CoreModule.getEVENT_REGISTRY());
+		MultiRegistryNode.addChildElement(event,action,CoreModule.EVENT_REGISTRY);
 	}
 	public static void removeEventListener(String event,Consumer<Object> action){
-		MultiRegistryNode.removeChildElement(event,action,CoreModule.getEVENT_REGISTRY());
+		MultiRegistryNode.removeChildElement(event,action,CoreModule.EVENT_REGISTRY);
 	}
 	public static void fire(String event,Object parameter){
-		List<Consumer> list=MultiRegistryNode.getChildElements(event,CoreModule.getEVENT_REGISTRY());
-		if(list!=null)
-			for(Consumer<Object> action:list)
+		List<Consumer> list=MultiRegistryNode.getChildElements(event,CoreModule.EVENT_REGISTRY);
+		if(list!=null){
+			for(Consumer<Object> action:list){
 				try{
 					action.accept(parameter);
 				}catch(BreakException ex){
@@ -44,6 +44,8 @@ public class EventManager{
 				}catch(Exception ex){
 					Logger.getGlobal().log(Level.INFO,null,ex);
 				}
+			}
+		}
 	}
 	public static class BreakException extends RuntimeException{
 		public BreakException(){

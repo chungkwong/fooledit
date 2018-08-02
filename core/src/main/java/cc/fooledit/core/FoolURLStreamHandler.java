@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.core.*;
 import java.net.*;
 /**
  *
@@ -24,13 +23,13 @@ import java.net.*;
 public class FoolURLStreamHandler implements URLStreamHandlerFactory{
 	public static final FoolURLStreamHandler INSTNACE=new FoolURLStreamHandler();
 	private FoolURLStreamHandler(){
-
 	}
 	@Override
 	public URLStreamHandler createURLStreamHandler(String protocol){
-		URLStreamHandler handler=CoreModule.getPROTOCOL_REGISTRY().get(protocol);
-		if(handler!=null)
+		URLStreamHandler handler=CoreModule.PROTOCOL_REGISTRY.get(protocol);
+		if(handler!=null){
 			return handler;
+		}
 		String packagePrefix="sun.net.www.protocol";
 		try{
 			String clsName=packagePrefix+"."+protocol+".Handler";
@@ -45,11 +44,10 @@ public class FoolURLStreamHandler implements URLStreamHandlerFactory{
 			}
 			if(cls!=null){
 				handler=(URLStreamHandler)cls.newInstance();
-				CoreModule.getPROTOCOL_REGISTRY().put(clsName,handler);
+				CoreModule.PROTOCOL_REGISTRY.put(clsName,handler);
 				return handler;
 			}
 		}catch(Exception e){
-
 		}
 		return null;
 	}
