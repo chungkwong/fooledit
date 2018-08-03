@@ -45,7 +45,7 @@ public class PubObjectType implements DataObjectType<PubObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_PUBLISHER_DOCUMENT",cc.fooledit.editor.msoffice.Activator.NAME);
+		return MessageRegistry.getString("OLD_PUBLISHER_DOCUMENT",cc.fooledit.editor.msoffice.Activator.class);
 	}
 	@Override
 	public void writeTo(PubObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

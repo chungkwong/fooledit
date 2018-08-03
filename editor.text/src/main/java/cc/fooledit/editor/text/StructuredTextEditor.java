@@ -34,16 +34,15 @@ import java.util.stream.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javax.activation.*;
-import org.antlr.v4.tool.*;
 import org.fxmisc.richtext.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class StructuredTextEditor implements DataEditor<TextObject>{
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.class);
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
 	private final Map<String,Cache<Highlighter>> highlighters=(Map<String,Cache<Highlighter>>)Registry.ROOT.getOrCreateChild(Activator.NAME).getOrCreateChild("highlighter");
 	private final Map<String,Cache<ParserBuilder>> parsers=(Map<String,Cache<ParserBuilder>>)Registry.ROOT.getOrCreateChild(Activator.NAME).getOrCreateChild("parser");
 	private final HistoryRing<String> clips=new HistoryRing<>();
@@ -195,7 +194,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			int end=argc>=2?((Number)args[1]).intValue():area.getArea().getLength();
 			return area.getArea().getText(start,end);
 		});
-		clips.registerComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry,Activator.NAME);
+		clips.registerComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry,Activator.class);
 		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
 				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList())),true));
 		addCommand("highlight",(area)->area.getCurrentSelectionGroup().select(area.getArea().getSelection().getStart(),area.getArea().getSelection().getEnd()));
@@ -235,12 +234,6 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			area.getArea().setWrapText((Boolean)args[0]);
 			return null;
 		});
-		try{
-			//scene.setUserAgentStylesheet("com/github/chungkwong/fooledit/dark.css");
-			Main.INSTANCE.getScene().getStylesheets().add(Main.INSTANCE.getFile("stylesheets/default.css",Activator.NAME).toURI().toURL().toString());
-		}catch(MalformedURLException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
 	}
 	public void registerHighlighter(Class lexer,InputStream typeFile,String mime){
 		Supplier<Highlighter> highlighter;
@@ -255,7 +248,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		};
 		highlighters.put(mime,new Cache<>(highlighter));
 	}
-	public void registerHighlighter(String lexFile,String typeFile,String mime){
+	/*public void registerHighlighter(String lexFile,String typeFile,String mime){
 		Supplier<Highlighter> highlighter;
 		if(lexFile.endsWith(".json")){
 			File lex=new File(Main.INSTANCE.getDataPath(),lexFile);
@@ -295,11 +288,11 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			}
 		}
 		highlighters.put(mime,new Cache<>(highlighter));
-	}
+	}*/
 	public void registerParser(Class parser,String rule,String mime){
 		parsers.put(mime,new Cache(()->ParserBuilder.wrap(parser,rule)));
 	}
-	public void registerParser(String parserFile,String rule,String mime){
+	/*public void registerParser(String parserFile,String rule,String mime){
 		Supplier<ParserBuilder> parser=()->null;
 		if(rule!=null&&parserFile!=null){
 			File p=new File(Main.INSTANCE.getDataPath(),parserFile);
@@ -319,18 +312,12 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			}
 		}
 		parsers.put(mime,new Cache<>(parser));
-	}
-	private static <T> Class<T> loadClass(String location) throws ClassNotFoundException,MalformedURLException{
-		int i=location.indexOf('!');
-		String jar=location.substring(0,i);
-		String cls=location.substring(i+1);
-		return (Class<T>)new URLClassLoader(new URL[]{new File(Main.INSTANCE.getDataPath(),jar).toURI().toURL()},StructuredTextEditor.class.getClassLoader()).loadClass(cls);
-	}
+	}*/
 	private void addCommand(String name,Consumer<CodeEditor> action){
-		commandRegistry.put(name,new Command(name,()->action.accept(getCurrentEditor()),Activator.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept(getCurrentEditor()),Activator.class));
 	}
 	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],CodeEditor,Object> action){
-		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,getCurrentEditor()),Activator.NAME));
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,getCurrentEditor()),Activator.class));
 	}
 	private CodeEditor getCurrentEditor(){
 		return (CodeEditor)Main.INSTANCE.getCurrentNode();
@@ -387,7 +374,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("CODE_EDITOR",Activator.NAME);
+		return MessageRegistry.getString("CODE_EDITOR",Activator.class);
 	}
 	private static String encodeURL(String url){
 		try{

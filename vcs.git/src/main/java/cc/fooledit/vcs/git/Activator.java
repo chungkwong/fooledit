@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.vcs.git.Activator;
@@ -51,7 +50,7 @@ public class Activator implements BundleActivator{
 		FileSystemEditor.INSTANCE.getCommandRegistry().put("git-browse",new Command("git-browse",Arrays.asList(dir),(params)->{
 			Main.INSTANCE.addAndShow(DataObjectRegistry.readFrom(((File)params[0]).toURI().toURL()));
 			return null;
-		},NAME));
+		},getClass()));
 		CoreModule.DYNAMIC_MENU_REGISTRY.put(APPLICATION_NAME,(items)->{
 			ObservableList<Path> paths=((FileSystemObject)Main.INSTANCE.getCurrentData()).getPaths();
 			items.add(createMenuItem("git-init","INIT"));
@@ -65,7 +64,7 @@ public class Activator implements BundleActivator{
 	public void stop(BundleContext bc) throws Exception{
 	}
 	private static MenuItem createMenuItem(String command,String name){
-		MenuItem item=new MenuItem(MessageRegistry.getString(name,NAME));
+		MenuItem item=new MenuItem(MessageRegistry.getString(name,Activator.class));
 		item.setOnAction((e)->TaskManager.executeCommand(Main.INSTANCE.getCommand(command)));
 		return item;
 	}

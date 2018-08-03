@@ -75,7 +75,6 @@ public class CoreModule{
 	public static final RegistryNode<String,String> CONTENT_TYPE_LOADER_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(CONTENT_TYPE_LOADER_REGISTRY_NAME);
 	public static final RegistryNode<String,ListRegistryNode<String>> SUFFIX_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(SUFFIX_REGISTRY_NAME);
 	public static final RegistryNode<String,String> GLOB_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(GLOB_REGISTRY_NAME);
-	;
 	public static NavigableRegistryNode<String,RegistryNode> DATA_OBJECT_REGISTRY=new NavigableRegistryNode<>();
 	public static final RegistryNode<String,DataObjectType> DATA_OBJECT_TYPE_REGISTRY=(RegistryNode<String,DataObjectType>)REGISTRY.getOrCreateChild(DATA_OBJECT_TYPE_REGISTRY_NAME);
 	public static final RegistryNode<String,DataEditor> DATA_OBJECT_EDITOR_REGISTRY=(RegistryNode<String,DataEditor>)REGISTRY.getOrCreateChild(DATA_OBJECT_EDITOR_REGISTRY_NAME);
@@ -148,5 +147,8 @@ public class CoreModule{
 			Logger.getLogger(CoreModule.class.getName()).log(Level.INFO,null,ex);
 			return def.get();
 		}
+	}
+	static{
+		TEMPLATE_REGISTRY.put("children",new ListRegistryNode<>());
 	}
 }

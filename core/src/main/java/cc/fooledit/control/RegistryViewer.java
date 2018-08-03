@@ -34,7 +34,7 @@ public class RegistryViewer extends BorderPane{
 		TreeTableView<Pair<Object,Object>> tree=new TreeTableWrapper<>(createTreeNode("",root));
 		tree.setEditable(true);
 		tree.setShowRoot(false);
-		TreeTableColumn<Pair<Object,Object>,String> key=new TreeTableColumn<>(MessageRegistry.getString("KEY",CoreModule.NAME));
+		TreeTableColumn<Pair<Object,Object>,String> key=new TreeTableColumn<>(MessageRegistry.getString("KEY",Activator.class));
 		key.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
 		key.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Pair<Object,Object>,String>,ObservableValue<String>>(){
 			@Override
@@ -42,17 +42,18 @@ public class RegistryViewer extends BorderPane{
 				return new ReadOnlyStringWrapper(Objects.toString(p.getValue().getValue().getKey()));
 			}
 		});
-		TreeTableColumn<Pair<Object,Object>,String> value=new TreeTableColumn<>(MessageRegistry.getString("KEY",CoreModule.NAME));
+		TreeTableColumn<Pair<Object,Object>,String> value=new TreeTableColumn<>(MessageRegistry.getString("KEY",Activator.class));
 		value.setEditable(true);
 		value.prefWidthProperty().bind(tree.widthProperty().multiply(0.5));
 		value.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Pair<Object,Object>,String>,ObservableValue<String>>(){
 			@Override
 			public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Pair<Object,Object>,String> p){
-				if(p.getValue().getValue().getValue() instanceof RegistryNode)
+				if(p.getValue().getValue().getValue() instanceof RegistryNode){
 					return new ReadOnlyStringWrapper("");
-				else
+				}else{
 					return new ReadOnlyStringWrapper(Objects.toString(((Pair<?,?>)p.getValue().getValue()).getValue()));
-					//return new SimpleStringProperty(p.getValue().getValue(),"Value",((BasicPreferenceEditor.PreferenceBean)p.getValue().getValue()).getValue());
+				}
+				//return new SimpleStringProperty(p.getValue().getValue(),"Value",((BasicPreferenceEditor.PreferenceBean)p.getValue().getValue()).getValue());
 			}
 		});
 		tree.getColumns().addAll(key,value);
@@ -61,9 +62,9 @@ public class RegistryViewer extends BorderPane{
 	private static TreeItem<Pair<Object,Object>> createTreeNode(Object name,RegistryNode pref){
 		LazyTreeItem item=new LazyTreeItem(new Pair<>(name,pref),()->{
 			return pref.keySet().stream().map((child)->{
-				return pref.get(child)instanceof RegistryNode?
-						createTreeNode(child,(RegistryNode)pref.get(child)):
-						new TreeItem<>(new Pair<>(child,pref.get(child)));
+				return pref.get(child) instanceof RegistryNode
+						?createTreeNode(child,(RegistryNode)pref.get(child))
+						:new TreeItem<>(new Pair<>(child,pref.get(child)));
 			}).collect(Collectors.toList());
 		});
 		pref.addListener((MapChangeListener.Change e)->item.refresh());

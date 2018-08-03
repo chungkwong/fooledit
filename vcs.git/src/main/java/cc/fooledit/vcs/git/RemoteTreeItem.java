@@ -27,9 +27,9 @@ import org.eclipse.jgit.transport.*;
 public class RemoteTreeItem extends TreeItem<Object> implements NavigationTreeItem{
 	public RemoteTreeItem(RemoteConfig ref){
 		super(ref);
-		getChildren().add(new LazySimpleTreeItem<>(MessageRegistry.getString("FETCH",Activator.NAME),
+		getChildren().add(new LazySimpleTreeItem<>(MessageRegistry.getString("FETCH",Activator.class),
 				()->ref.getFetchRefSpecs().stream().map((spec)->new RemoteSpecTreeItem(spec)).collect(Collectors.toList())));
-		getChildren().add(new LazySimpleTreeItem<>(MessageRegistry.getString("PUSH",Activator.NAME),
+		getChildren().add(new LazySimpleTreeItem<>(MessageRegistry.getString("PUSH",Activator.class),
 				()->ref.getPushRefSpecs().stream().map((spec)->new RemoteSpecTreeItem(spec)).collect(Collectors.toList())));
 	}
 	@Override

@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.pdf;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.pdf.Activator;
 import cc.fooledit.spi.*;
-import com.github.chungkwong.jschememin.type.*;
 import java.util.*;
 import java.util.function.*;
 import javafx.scene.*;
@@ -28,11 +27,11 @@ import javafx.scene.*;
  */
 public class PdfEditor implements DataEditor<PdfObject>{
 	public static final PdfEditor INSTANCE=new PdfEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.class);
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
 	private PdfEditor(){
-		addCommand("current-scale",Collections.emptyList(),(args,viewer)->ScmFloatingPointNumber.valueOf(viewer.getScale()));
+		addCommand("current-scale",Collections.emptyList(),(args,viewer)->viewer.getScale());
 		addCommand("zoom",Arrays.asList(new Argument("SCALE")),(args,viewer)->{
 			viewer.setScale(((Number)args[0]).floatValue());
 			return null;
@@ -48,13 +47,13 @@ public class PdfEditor implements DataEditor<PdfObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("PDF_EDITOR",Activator.NAME);
+		return MessageRegistry.getString("PDF_EDITOR",Activator.class);
 	}
 	private void addCommand(String name,Consumer<PdfViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((PdfViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((PdfViewer)Main.INSTANCE.getCurrentNode()),Activator.class));
 	}
 	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],PdfViewer,Object> action){
-		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(PdfViewer)Main.INSTANCE.getCurrentDataEditor()),Activator.NAME));
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(PdfViewer)Main.INSTANCE.getCurrentDataEditor()),Activator.class));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

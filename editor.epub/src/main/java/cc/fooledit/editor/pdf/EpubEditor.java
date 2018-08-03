@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.pdf;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.util.*;
@@ -27,9 +26,9 @@ import javafx.scene.*;
  */
 public class EpubEditor implements DataEditor<EpubObject>{
 	public static final EpubEditor INSTANCE=new EpubEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.class);
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
 	private EpubEditor(){
 	}
 	@Override
@@ -38,13 +37,13 @@ public class EpubEditor implements DataEditor<EpubObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("EPUB_EDITOR",Activator.NAME);
+		return MessageRegistry.getString("EPUB_EDITOR",Activator.class);
 	}
 	private void addCommand(String name,Consumer<EpubViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((EpubViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((EpubViewer)Main.INSTANCE.getCurrentNode()),Activator.class));
 	}
 	private void addCommand(String name,List<Argument> parameters,BiFunction<Object[],EpubViewer,Object> action){
-		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(EpubViewer)Main.INSTANCE.getCurrentDataEditor()),Activator.NAME));
+		commandRegistry.put(name,new Command(name,parameters,(args)->action.apply(args,(EpubViewer)Main.INSTANCE.getCurrentDataEditor()),Activator.class));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

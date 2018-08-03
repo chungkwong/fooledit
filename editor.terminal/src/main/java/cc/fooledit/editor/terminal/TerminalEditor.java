@@ -42,7 +42,7 @@ public class TerminalEditor implements DataEditor<TerminalObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("TERMINAL",Activator.NAME);
+		return MessageRegistry.getString("TERMINAL",Activator.class);
 	}
 
 }

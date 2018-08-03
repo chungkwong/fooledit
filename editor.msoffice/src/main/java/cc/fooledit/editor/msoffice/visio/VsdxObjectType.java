@@ -45,7 +45,7 @@ public class VsdxObjectType implements DataObjectType<VsdxObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("NEW_WORD_DOCUMENT",cc.fooledit.editor.msoffice.Activator.NAME);
+		return MessageRegistry.getString("NEW_WORD_DOCUMENT",cc.fooledit.editor.msoffice.Activator.class);
 	}
 	@Override
 	public void writeTo(VsdxObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

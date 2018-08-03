@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.spi.*;
@@ -32,9 +31,9 @@ import org.eclipse.jgit.revwalk.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.class);
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
 	public static GitRepositoryEditor INSTANCE=new GitRepositoryEditor();
 	private GitRepositoryEditor(){
 		Argument git=new Argument("GIT",GitRepositoryEditor::getGit);
@@ -122,7 +121,7 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 		});//TODO
 	}
 	private void addCommand(String name,List<Argument> args,ThrowableVarargsFunction<Object,Object> proc){
-		commandRegistry.put(name,new Command(name,args,proc,Activator.NAME));
+		commandRegistry.put(name,new Command(name,args,proc,Activator.class));
 	}
 	@Override
 	public Node edit(GitRepositoryObject data,Object remark,RegistryNode<String,Object> meta){
@@ -146,7 +145,7 @@ public class GitRepositoryEditor implements DataEditor<GitRepositoryObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("GIT_REPOSITORY_VIEWER",Activator.NAME);
+		return MessageRegistry.getString("GIT_REPOSITORY_VIEWER",Activator.class);
 	}
 	static Git getGit() throws Exception{
 		DataObject data=Main.INSTANCE.getCurrentData();

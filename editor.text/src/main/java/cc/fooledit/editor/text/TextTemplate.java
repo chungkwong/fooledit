@@ -52,8 +52,8 @@ public class TextTemplate implements Template<TextObject>{
 		return mime;
 	}
 	@Override
-	public String getModule(){
-		return module;
+	public Class<Activator> getModule(){
+		return Activator.class;
 	}
 	@Override
 	public Collection<String> getParameters(){
@@ -111,16 +111,16 @@ public class TextTemplate implements Template<TextObject>{
 	static{
 		ENGINE=new Configuration(new Version(2,3,23));
 		ENGINE.setDefaultEncoding("UTF-8");
-		try{
-			ENGINE.setDirectoryForTemplateLoading(new File(Main.INSTANCE.getModulePath(Activator.NAME),"modes"));
+		/*		try{
+			ENGINE.setDirectoryForTemplateLoading(new File(Main.INSTANCE.getModulePath(Activator.class),"modes"));
 		}catch(IOException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
+		}*/
 	}
 	public static void main(String[] args) throws IOException,TemplateException{
 		Configuration configuration=new Configuration(new Version(2,3,26));
 		configuration.setDefaultEncoding("UTF-8");
-		configuration.setDirectoryForTemplateLoading(new File(Main.INSTANCE.getModulePath(Activator.NAME),"modes"));
+		//configuration.setDirectoryForTemplateLoading(new File(Main.INSTANCE.getModulePath(Activator.class),"modes"));
 		freemarker.template.Template template=configuration.getTemplate("java/Main.java");
 		Map<String,Object> props=new HashMap<>();
 		props.put("name","Name");

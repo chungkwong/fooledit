@@ -83,7 +83,7 @@ public class HistoryRing<T>{
 	public Stream<T> stream(){
 		return list.stream();
 	}
-	public void registerComamnds(String noun,Supplier<T> snapshotAction,Consumer<T> chooseAction,RegistryNode<String,Command> registry,String module){
+	public void registerComamnds(String noun,Supplier<T> snapshotAction,Consumer<T> chooseAction,RegistryNode<String,Command> registry,Class module){
 		addCommand("first-"+noun,()->chooseAction.accept(get(0)),registry,module);
 		addCommand("last-"+noun,()->chooseAction.accept(get(size()-1)),registry,module);
 		addCommand("next-"+noun,()->chooseAction.accept(get(next())),registry,module);
@@ -99,10 +99,10 @@ public class HistoryRing<T>{
 			return null;
 		},registry,module);
 	}
-	private void addCommand(String name,Runnable action,RegistryNode<String,Command> registry,String module){
+	private void addCommand(String name,Runnable action,RegistryNode<String,Command> registry,Class module){
 		registry.put(name,new Command(name,action,module));
 	}
-	private void addCommand(String name,ThrowableVarargsFunction<Object,Object> action,RegistryNode<String,Command> registry,String module){
+	private void addCommand(String name,ThrowableVarargsFunction<Object,Object> action,RegistryNode<String,Command> registry,Class module){
 		registry.put(name,new Command(name,action,module));
 	}
 }

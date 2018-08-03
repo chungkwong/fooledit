@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.util.*;
@@ -30,7 +29,6 @@ public class TemplateEditor extends Prompt{
 	//private static final List<Map<Object,Object>> recent=(List<Map<Object,Object>>)PersistenceStatusManager.getOrDefault("template",()->Collections.emptyList());
 	public static final TemplateEditor INSTANCE=new TemplateEditor();
 	public TemplateEditor(){
-
 	}
 	@Override
 	public javafx.scene.Node edit(Prompt data,Object remark,RegistryNode<String,Object> meta){
@@ -45,12 +43,12 @@ public class TemplateEditor extends Prompt{
 	@Override
 	public RegistryNode<String,Command> getCommandRegistry(){
 		RegistryNode<String,Command> commands=new SimpleRegistryNode<>();
-		commands.put("create",new Command("create",()->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose(),CoreModule.NAME));//FIXME
+		commands.put("create",new Command("create",()->((TemplateChooser)Main.INSTANCE.getCurrentNode()).choose(),Activator.class));//FIXME
 		return commands;
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("TEMPLATES",CoreModule.NAME);
+		return MessageRegistry.getString("TEMPLATES",Activator.class);
 	}
 	@Override
 	public String getName(){
@@ -73,7 +71,7 @@ public class TemplateEditor extends Prompt{
 		private TreeItem buildTree(RegistryNode obj){
 			TreeItem item;
 			if(obj.containsKey("children")){
-				item=new TreeItem(MessageRegistry.getString((String)obj.get("name"),(String)obj.get("module")));
+				item=new TreeItem(MessageRegistry.getString((String)obj.get("name"),(Class)CoreModule.INSTALLED_MODULE_REGISTRY.get((String)obj.get("module"))));
 				ListRegistryNode<RegistryNode> children=(ListRegistryNode<RegistryNode>)obj.get("children");
 				item.getChildren().setAll(children.values().stream().map(this::buildTree).collect(Collectors.toList()));
 			}else if(CoreModule.TEMPLATE_TYPE_REGISTRY.containsKey((String)obj.get("type"))){

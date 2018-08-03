@@ -46,7 +46,7 @@ public class MessageObjectType implements DataObjectType<MessageObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("MESSAGE",Activator.NAME);
+		return MessageRegistry.getString("MESSAGE",Activator.class);
 	}
 	@Override
 	public void writeTo(MessageObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

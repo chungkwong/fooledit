@@ -45,7 +45,7 @@ public class ChartObjectType implements DataObjectType<ChartObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",cc.fooledit.editor.odf.Activator.NAME);
+		return MessageRegistry.getString("OLD_WORD_DOCUMENT",cc.fooledit.editor.odf.Activator.class);
 	}
 	@Override
 	public void writeTo(ChartObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

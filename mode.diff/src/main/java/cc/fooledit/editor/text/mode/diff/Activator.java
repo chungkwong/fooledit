@@ -16,7 +16,7 @@ public class Activator implements BundleActivator{
 		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("text/x-diff",CONTENT_TYPE);
 		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
 		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
-		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.diff.DiffLexer.class,Activator.class.getResourceAsStream("token.json"),CONTENT_TYPE);
+		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.diff.DiffLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.diff.DiffParser.class,"file",CONTENT_TYPE);
 	}
 	@Override

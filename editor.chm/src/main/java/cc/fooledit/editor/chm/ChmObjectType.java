@@ -46,7 +46,7 @@ public class ChmObjectType implements DataObjectType<ChmObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("CHM_DOCUMENT",Activator.NAME);
+		return MessageRegistry.getString("CHM_DOCUMENT",Activator.class);
 	}
 	@Override
 	public void writeTo(ChmObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

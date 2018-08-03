@@ -36,7 +36,7 @@ public class EffectToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("EFFECT",Activator.NAME);
+		return MessageRegistry.getString("EFFECT",Activator.class);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){

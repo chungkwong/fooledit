@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.browser;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.util.function.*;
@@ -29,9 +28,9 @@ import javafx.scene.web.*;
  */
 public class BrowserEditor implements DataEditor<BrowserObject>{
 	public static final BrowserEditor INSTANCE=new BrowserEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.class);
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
 	private BrowserEditor(){
 		addCommand("move-to-previous-page",(viewer)->viewer.backward());
 		addCommand("move-to-next-page",(viewer)->viewer.forward());
@@ -67,12 +66,13 @@ public class BrowserEditor implements DataEditor<BrowserObject>{
 		});
 	}
 	private void addCommand(String name,Consumer<BrowserViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((BrowserViewer)Main.INSTANCE.getCurrentNode()),Activator.class));
 	}
 	@Override
 	public Node edit(BrowserObject data,Object remark,RegistryNode<String,Object> meta){
-		if(remark!=null)
+		if(remark!=null){
 			data.getWebView().getEngine().load((String)remark);
+		}
 		return data.getEditor();
 	}
 	@Override
@@ -81,7 +81,7 @@ public class BrowserEditor implements DataEditor<BrowserObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("BROWSER",Activator.NAME);
+		return MessageRegistry.getString("BROWSER",Activator.class);
 	}
 	@Override
 	public RegistryNode<String,Command> getCommandRegistry(){

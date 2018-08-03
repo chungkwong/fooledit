@@ -24,11 +24,11 @@ import java.util.function.*;
  */
 public class UndoableCommand extends Command{
 	private final Function<Object[],UndoableAction> backup;
-	public UndoableCommand(String name,ThrowableVarargsFunction<Object,Object> action,Function<Object[],UndoableAction> backup,String module){
+	public UndoableCommand(String name,ThrowableVarargsFunction<Object,Object> action,Function<Object[],UndoableAction> backup,Class module){
 		super(name,action,module);
 		this.backup=backup;
 	}
-	public UndoableCommand(String name,List<Argument> parameters,ThrowableVarargsFunction<Object,Object> action,Function<Object[],UndoableAction> backup,String module){
+	public UndoableCommand(String name,List<Argument> parameters,ThrowableVarargsFunction<Object,Object> action,Function<Object[],UndoableAction> backup,Class module){
 		super(name,parameters,action,module);
 		this.backup=backup;
 	}

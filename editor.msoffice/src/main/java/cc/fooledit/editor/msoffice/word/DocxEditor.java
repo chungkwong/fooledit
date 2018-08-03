@@ -32,6 +32,6 @@ public class DocxEditor implements DataEditor<DocxObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",cc.fooledit.editor.msoffice.Activator.NAME);
+		return MessageRegistry.getString("DOCUMENT_EDITOR",cc.fooledit.editor.msoffice.Activator.class);
 	}
 }

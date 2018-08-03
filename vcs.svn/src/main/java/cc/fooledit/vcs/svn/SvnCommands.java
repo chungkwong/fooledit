@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.svn;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
 import cc.fooledit.spi.*;
@@ -41,15 +40,15 @@ public class SvnCommands{
 				String old=last!=null?last.getUserName():"";
 				switch(kind){
 					case ISVNAuthenticationManager.PASSWORD:
-						return SVNPasswordAuthentication.newInstance(input(MessageRegistry.getString("USERNAME",Activator.NAME)+realm,old),
-								input(MessageRegistry.getString("PASSWORD",Activator.NAME)+realm,old).toCharArray(),true,svnurl,false);
+						return SVNPasswordAuthentication.newInstance(input(MessageRegistry.getString("USERNAME",Activator.class)+realm,old),
+								input(MessageRegistry.getString("PASSWORD",Activator.class)+realm,old).toCharArray(),true,svnurl,false);
 					case ISVNAuthenticationManager.USERNAME:
 						return SVNUserNameAuthentication.newInstance(input(kind+":"+realm,old),true,svnurl,false);
 					case ISVNAuthenticationManager.SSH:
-						return SVNSSHAuthentication.newInstance(input(MessageRegistry.getString("USERNAME",Activator.NAME)+realm,old),
-								input(MessageRegistry.getString("PASSWORD",Activator.NAME)+realm,old).toCharArray(),22,true,svnurl,false);
+						return SVNSSHAuthentication.newInstance(input(MessageRegistry.getString("USERNAME",Activator.class)+realm,old),
+								input(MessageRegistry.getString("PASSWORD",Activator.class)+realm,old).toCharArray(),22,true,svnurl,false);
 					case ISVNAuthenticationManager.SSL:
-						return SVNSSLAuthentication.newInstance(kind,input(MessageRegistry.getString("ALIAS",Activator.NAME),old),true,svnurl,false);
+						return SVNSSLAuthentication.newInstance(kind,input(MessageRegistry.getString("ALIAS",Activator.class),old),true,svnurl,false);
 					default:
 						return null;
 				}

@@ -25,7 +25,7 @@ import javafx.scene.*;
 public class ProjectChooser extends Prompt{
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("PROJECT",CoreModule.NAME);
+		return MessageRegistry.getString("PROJECT",Activator.class);
 	}
 	@Override
 	public String getName(){
@@ -35,5 +35,4 @@ public class ProjectChooser extends Prompt{
 	public Node edit(Prompt data,Object remark,RegistryNode<String,Object> meta){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
-
 }

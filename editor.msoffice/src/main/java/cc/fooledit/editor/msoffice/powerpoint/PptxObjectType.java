@@ -46,7 +46,7 @@ public class PptxObjectType implements DataObjectType<PptxObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("NEW_POWERPOINT_DOCUMENT",Activator.NAME);
+		return MessageRegistry.getString("NEW_POWERPOINT_DOCUMENT",Activator.class);
 	}
 	@Override
 	public void writeTo(PptxObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

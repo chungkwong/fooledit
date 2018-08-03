@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.core.CoreModule;
-import cc.fooledit.core.MessageRegistry;
+import cc.fooledit.core.*;
 import java.util.function.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
@@ -25,7 +24,7 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class OnDemandMenu extends Menu{
-	private final MenuItem stub=new MenuItem(MessageRegistry.getString("NO_MORE",CoreModule.NAME));
+	private final MenuItem stub=new MenuItem(MessageRegistry.getString("NO_MORE",Activator.class));
 	public OnDemandMenu(String title,Consumer<ObservableList<MenuItem>> setter){
 		super(title);
 		stub.setDisable(true);
@@ -33,8 +32,9 @@ public class OnDemandMenu extends Menu{
 		setOnShowing((e)->{
 			getItems().clear();
 			setter.accept(getItems());
-			if(getItems().isEmpty())
+			if(getItems().isEmpty()){
 				getItems().add(stub);
+			}
 		});
 		setOnHiding((e)->getItems().setAll(stub));
 	}

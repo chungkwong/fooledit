@@ -62,7 +62,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("COLOR",CoreModule.NAME);
+			return MessageRegistry.getString("COLOR",Activator.class);
 		}
 	}
 	private class ImageChooser implements MinorChooser{
@@ -87,7 +87,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("IMAGE",CoreModule.NAME);
+			return MessageRegistry.getString("IMAGE",Activator.class);
 		}
 	}
 	private class LinearChooser implements MinorChooser{
@@ -118,7 +118,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("LINEAR_GRADIENT",CoreModule.NAME);
+			return MessageRegistry.getString("LINEAR_GRADIENT",Activator.class);
 		}
 		private class StopEditor extends HBox{
 			private final Button remove=new Button("X");
@@ -164,7 +164,7 @@ public class PaintChooser extends BorderPane{
 		}
 		@Override
 		public String toString(){
-			return MessageRegistry.getString("RADIAL_GRADIENT",CoreModule.NAME);
+			return MessageRegistry.getString("RADIAL_GRADIENT",Activator.class);
 		}
 		private class StopEditor extends HBox{
 			private final Button remove=new Button("X");
@@ -182,5 +182,4 @@ public class PaintChooser extends BorderPane{
 			}
 		}
 	}
-
 }

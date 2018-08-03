@@ -46,7 +46,7 @@ public class OdpObjectType implements DataObjectType<OdpObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("PRESENTATION_DOCUMENT",Activator.NAME);
+		return MessageRegistry.getString("PRESENTATION_DOCUMENT",Activator.class);
 	}
 	@Override
 	public void writeTo(OdpObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

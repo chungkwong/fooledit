@@ -27,8 +27,8 @@ public class Activator implements BundleActivator{
 		Registry.provides(CONTENT_TYPE_DTD,NAME,"highlighter","cc.fooledit.editor.text");
 		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
 		Registry.provides(CONTENT_TYPE_DTD,NAME,"parser","cc.fooledit.editor.text");
-		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.xml.XMLLexer.class,Activator.class.getResourceAsStream("token.json"),CONTENT_TYPE);
-		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.xml.XMLLexer.class,Activator.class.getResourceAsStream("token.json"),CONTENT_TYPE_DTD);
+		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.xml.XMLLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
+		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.xml.XMLLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE_DTD);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.xml.XMLParser.class,"document",CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.xml.XMLParser.class,"extSubset",CONTENT_TYPE_DTD);
 	}

@@ -33,6 +33,6 @@ public class DocEditor implements DataEditor<DocObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",Activator.NAME);
+		return MessageRegistry.getString("DOCUMENT_EDITOR",Activator.class);
 	}
 }

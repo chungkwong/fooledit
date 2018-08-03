@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.image.Activator;
 import cc.fooledit.spi.*;
 import java.util.*;
 import java.util.function.*;
@@ -37,7 +37,6 @@ import javafx.scene.shape.*;
 public class DrawToolBox implements ToolBox{
 	public static final DrawToolBox INSTANCE=new DrawToolBox();
 	private DrawToolBox(){
-
 	}
 	@Override
 	public String getName(){
@@ -45,7 +44,7 @@ public class DrawToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("DRAW",Activator.NAME);
+		return MessageRegistry.getString("DRAW",Activator.class);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
@@ -64,9 +63,9 @@ public class DrawToolBox implements ToolBox{
 	}
 }
 class DrawingToolBox extends TabPane{
-	private final ToggleButton fill=new ToggleButton(MessageRegistry.getString("FILL",Activator.NAME));
-	private final ToggleButton border=new ToggleButton(MessageRegistry.getString("BORDER",Activator.NAME));
-	private final ToggleButton close=new ToggleButton(MessageRegistry.getString("CLOSE",Activator.NAME));
+	private final ToggleButton fill=new ToggleButton(MessageRegistry.getString("FILL",Activator.class));
+	private final ToggleButton border=new ToggleButton(MessageRegistry.getString("BORDER",Activator.class));
+	private final ToggleButton close=new ToggleButton(MessageRegistry.getString("CLOSE",Activator.class));
 	private final FontChooser fontChooser=new FontChooser();
 	private final ComboBox<FillRule> fillRuleChooser=new ComboBox<>();
 	private final Spinner alphaChooser=new Spinner(0.0,1.0,1.0,0.1);
@@ -78,8 +77,8 @@ class DrawingToolBox extends TabPane{
 	private final PaintChooser strokeChooser=new PaintChooser(Color.BLACK);
 	private final GraphicsObject object;
 	private final GraphicsViewer viewer;
-	private double lastx=Double.NaN,lasty=Double.NaN;
-	private double lastlastx=Double.NaN,lastlasty=Double.NaN;
+	private double lastx=Double.NaN, lasty=Double.NaN;
+	private double lastlastx=Double.NaN, lastlasty=Double.NaN;
 	private int recorded=0;
 	public DrawingToolBox(GraphicsObject object,GraphicsViewer viewer){
 		getTabs().setAll(getDrawTab(),getTextTab(),getFrontgroundTab(),getBackgroundTab());
@@ -91,13 +90,13 @@ class DrawingToolBox extends TabPane{
 		pane.getChildren().add(new Separator());
 		ToggleGroup elements=new ToggleGroup();
 		for(Element shape:Element.values()){
-			ToggleButton button=new ToggleButton(MessageRegistry.getString(shape.name(),Activator.NAME));
+			ToggleButton button=new ToggleButton(MessageRegistry.getString(shape.name(),Activator.class));
 			button.setUserData(shape);
 			elements.getToggles().add(button);
 			pane.getChildren().add(button);
 		}
 		elements.selectedToggleProperty().addListener((e,o,n)->recorded=0);
-		Button draw=new Button(MessageRegistry.getString("DRAW",Activator.NAME));
+		Button draw=new Button(MessageRegistry.getString("DRAW",Activator.class));
 		draw.setOnAction((e)->{
 			GraphicsContext g2d=getGraphicsContext();
 			draw(g2d);
@@ -129,22 +128,22 @@ class DrawingToolBox extends TabPane{
 		return new Tab("TOOL",pane);
 	}
 	public Tab getBackgroundTab(){
-		fillRuleChooser.setConverter(new EnumStringConvertor<>(FillRule.class,Activator.NAME));
+		fillRuleChooser.setConverter(new EnumStringConvertor<>(FillRule.class,Activator.class));
 		fillRuleChooser.getItems().setAll(FillRule.values());
 		fillRuleChooser.getSelectionModel().select(FillRule.NON_ZERO);
 		alphaChooser.setEditable(true);
 		return new Tab("Fill",new FlowPane(fillRuleChooser,alphaChooser,fillChooser));
 	}
 	public Tab getFrontgroundTab(){
-		joinChooser.setConverter(new EnumStringConvertor<>(StrokeLineJoin.class,Activator.NAME));
+		joinChooser.setConverter(new EnumStringConvertor<>(StrokeLineJoin.class,Activator.class));
 		joinChooser.getItems().setAll(StrokeLineJoin.values());
 		joinChooser.getSelectionModel().select(StrokeLineJoin.MITER);
-		capChooser.setConverter(new EnumStringConvertor<>(StrokeLineCap.class,Activator.NAME));
+		capChooser.setConverter(new EnumStringConvertor<>(StrokeLineCap.class,Activator.class));
 		capChooser.getItems().setAll(StrokeLineCap.values());
 		capChooser.getSelectionModel().select(StrokeLineCap.BUTT);
-		Label dashLabel=new Label(MessageRegistry.getString("DASH",Activator.NAME));
+		Label dashLabel=new Label(MessageRegistry.getString("DASH",Activator.class));
 		dashChooser.setText("1.0");
-		Label thickLabel=new Label(MessageRegistry.getString("THICK",Activator.NAME));
+		Label thickLabel=new Label(MessageRegistry.getString("THICK",Activator.class));
 		thickChooser.setText("1.0");
 		return new Tab("STROKE",new FlowPane(joinChooser,capChooser,dashLabel,dashChooser,thickLabel,thickChooser,strokeChooser));
 	}
@@ -158,12 +157,15 @@ class DrawingToolBox extends TabPane{
 		return array==null?"1":Arrays.stream(array).mapToObj((d)->Double.toString(d)).collect(Collectors.joining(":"));
 	}
 	private void draw(GraphicsContext g2d){
-		if(close.isSelected())
+		if(close.isSelected()){
 			g2d.closePath();
-		if(border.isSelected())
+		}
+		if(border.isSelected()){
 			g2d.stroke();
-		if(fill.isSelected())
+		}
+		if(fill.isSelected()){
 			g2d.fill();
+		}
 	}
 	private GraphicsContext getGraphicsContext(){
 		return ((Canvas)object.currentLayerProperty().getValue()).getGraphicsContext2D();

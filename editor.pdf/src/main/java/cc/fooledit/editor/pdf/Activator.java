@@ -27,13 +27,13 @@ public class Activator implements BundleActivator{
 	public static final String NAME=Activator.class.getPackage().getName();
 	@Override
 	public void start(BundleContext bc) throws Exception{
-		Registry.providesDataObjectType(PdfObjectType.class.getName(),Activator.NAME);
-		Registry.providesDataObjectEditor(PdfEditor.class.getName(),Activator.NAME);
-		Registry.providesTypeToEditor(PdfObject.class.getName(),Activator.NAME);
-		Registry.providesToolBox(PageToolBox.class.getName(),Activator.NAME);
-		Registry.providesToolBox(ContentsToolBox.class.getName(),Activator.NAME);
-		Registry.providesToolBox(PropertiesToolBox.class.getName(),Activator.NAME);
-		Registry.providesEditorToToolbox(PdfEditor.class.getName(),Activator.NAME);
+		Registry.providesDataObjectType(PdfObjectType.class.getName(),NAME);
+		Registry.providesDataObjectEditor(PdfEditor.class.getName(),NAME);
+		Registry.providesTypeToEditor(PdfObject.class.getName(),NAME);
+		Registry.providesToolBox(PageToolBox.class.getName(),NAME);
+		Registry.providesToolBox(ContentsToolBox.class.getName(),NAME);
+		Registry.providesToolBox(PropertiesToolBox.class.getName(),NAME);
+		Registry.providesEditorToToolbox(PdfEditor.class.getName(),NAME);
 		DataObjectTypeRegistry.addDataObjectType(PdfObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(PdfEditor.INSTANCE,PdfObject.class);
 		DataObjectTypeRegistry.addToolBox(PageToolBox.INSTANCE,PdfEditor.class);

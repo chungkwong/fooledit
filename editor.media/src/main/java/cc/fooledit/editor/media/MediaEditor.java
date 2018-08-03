@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.media;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.util.function.*;
@@ -29,9 +28,9 @@ import javafx.scene.media.*;
  */
 public class MediaEditor implements DataEditor<MediaObject>{
 	public static final MediaEditor INSTANCE=new MediaEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.class);
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
 	private MediaEditor(){
 		addCommand("play",(player)->player.play());
 		addCommand("pause",(player)->player.pause());
@@ -45,7 +44,7 @@ public class MediaEditor implements DataEditor<MediaObject>{
 			Logger.getGlobal().log(Level.INFO,"",ex);
 		}
 		editor=new VlcMediaViewer(data.getProperty().getValue());
-		editor.statusProperty().addListener((e,o,n)->Main.INSTANCE.getNotifier().notify(MessageRegistry.getString(n.toString(),Activator.NAME)));
+		editor.statusProperty().addListener((e,o,n)->Main.INSTANCE.getNotifier().notify(MessageRegistry.getString(n.toString(),Activator.class)));
 		editor.play();
 		return new ScrollPane((Node)editor);
 	}
@@ -55,10 +54,10 @@ public class MediaEditor implements DataEditor<MediaObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("MEDIA_PLAYER",Activator.NAME);
+		return MessageRegistry.getString("MEDIA_PLAYER",Activator.class);
 	}
 	private void addCommand(String name,Consumer<MediaViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((MediaViewer)((ScrollPane)Main.INSTANCE.getCurrentNode()).getContent()),Activator.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((MediaViewer)((ScrollPane)Main.INSTANCE.getCurrentNode()).getContent()),Activator.class));
 	}
 	@Override
 	public MenuRegistry getMenuRegistry(){

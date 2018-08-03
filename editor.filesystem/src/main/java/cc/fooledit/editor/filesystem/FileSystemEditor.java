@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.filesystem;
-import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
@@ -33,9 +32,9 @@ import javafx.scene.control.*;
  */
 public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	public static final FileSystemEditor INSTANCE=new FileSystemEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.class);
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
 	private FileSystemEditor(){
 		addCommand("delete",(viewer)->viewer.getSelectedPaths().forEach((path)->delete(path)));
 		addCommand("mark",(viewer)->viewer.markPaths());
@@ -48,15 +47,15 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 		addCommand("create-directory",(viewer)->viewer.getCurrentDirectories().forEach((path)->createDirectory(path)));
 		addCommand("create-file",(viewer)->viewer.getCurrentDirectories().forEach((path)->createFile(path)));
 		addCommand("open",(viewer)->viewer.getSelectedPaths().forEach((p)->{
-				try{
-					Main.INSTANCE.showOnNewTab(DataObjectRegistry.readFrom(p.toUri().toURL()));
-				}catch(Exception ex){
-					Logger.getGlobal().log(Level.SEVERE,null,ex);
-				}
+			try{
+				Main.INSTANCE.showOnNewTab(DataObjectRegistry.readFrom(p.toUri().toURL()));
+			}catch(Exception ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
 		}));
 	}
 	private void addCommand(String name,Consumer<FileSystemViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((FileSystemViewer)Main.INSTANCE.getCurrentNode()),Activator.class));
 	}
 	private static final void delete(Path path){
 		try{
@@ -78,7 +77,7 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 			}
 			Main.INSTANCE.getMiniBuffer().restore();
 			Main.INSTANCE.getCurrentNode().requestFocus();
-		},null,"",new Label(MessageRegistry.getString("NAME",Activator.NAME)),null);
+		},null,"",new Label(MessageRegistry.getString("NAME",Activator.class)),null);
 	}
 	private static void createFile(Path from){
 		Main.INSTANCE.getMiniBuffer().setMode((name)->{
@@ -90,13 +89,13 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 			}
 			Main.INSTANCE.getMiniBuffer().restore();
 			Main.INSTANCE.getCurrentNode().requestFocus();
-		},null,"",new Label(MessageRegistry.getString("NAME",Activator.NAME)),null);
+		},null,"",new Label(MessageRegistry.getString("NAME",Activator.class)),null);
 	}
 	private static void rename(Path from){
 		Main.INSTANCE.getMiniBuffer().setMode((name)->{
 			try{
 				Path to=from.getParent().resolve(name);
-				if(Files.exists(to))
+				if(Files.exists(to)){
 					onOverride(()->{
 						try{
 							Files.move(from,to,StandardCopyOption.REPLACE_EXISTING);
@@ -104,7 +103,7 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 							Logger.getGlobal().log(Level.SEVERE,null,ex);
 						}
 					});
-				else{
+				}else{
 					Files.move(from,to);
 					Main.INSTANCE.getMiniBuffer().restore();
 					Main.INSTANCE.getCurrentNode().requestFocus();
@@ -112,14 +111,15 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 			}catch(IOException ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
-		},null,from.getFileName().toString(),new Label(MessageRegistry.getString("RENAME_TO",Activator.NAME)),null);
+		},null,from.getFileName().toString(),new Label(MessageRegistry.getString("RENAME_TO",Activator.class)),null);
 	}
 	private static void move(Path from,Path dir){
 		fileToDirectory(from,dir,(f,t,o)->{
-			if(o)
+			if(o){
 				Files.move(f,t,StandardCopyOption.REPLACE_EXISTING);
-			else
+			}else{
 				Files.move(f,t);
+			}
 		});
 	}
 	private static void symbolicLink(Path from,Path dir){
@@ -134,16 +134,17 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	}
 	private static void copy(Path from,Path dir){
 		fileToDirectory(from,dir,(f,t,o)->{
-			if(o)
+			if(o){
 				Files.copy(f,t,StandardCopyOption.REPLACE_EXISTING);
-			else
+			}else{
 				Files.copy(f,t);
+			}
 		});
 	}
 	private static void fileToDirectory(Path from,Path dir,FileToDirectoryAction action){
 		try{
 			Path to=dir.resolve(from.getFileName());
-			if(Files.exists(to))
+			if(Files.exists(to)){
 				onOverride(()->{
 					try{
 						action.apply(from,to,true);
@@ -151,7 +152,7 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 						Logger.getGlobal().log(Level.SEVERE,null,ex);
 					}
 				});
-			else{
+			}else{
 				action.apply(from,to,false);
 				Main.INSTANCE.getMiniBuffer().restore();
 				Main.INSTANCE.getCurrentNode().requestFocus();
@@ -161,14 +162,15 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 		}
 	}
 	private static void onOverride(Runnable action){
-		String yes=MessageRegistry.getString("YES",Activator.NAME);
-		String no=MessageRegistry.getString("NO",Activator.NAME);
+		String yes=MessageRegistry.getString("YES",Activator.class);
+		String no=MessageRegistry.getString("NO",Activator.class);
 		Main.INSTANCE.getMiniBuffer().setMode((ans)->{
-			if(ans.equals(yes))
+			if(ans.equals(yes)){
 				action.run();
+			}
 			Main.INSTANCE.getMiniBuffer().restore();
-		},AutoCompleteProvider.createSimple(Arrays.asList(AutoCompleteHint.create(yes,yes,""),AutoCompleteHint.create(no,no,"")))
-		,"",new Label(MessageRegistry.getString("OVERRIDE_EXIST",Activator.NAME)),null);
+		},AutoCompleteProvider.createSimple(Arrays.asList(AutoCompleteHint.create(yes,yes,""),AutoCompleteHint.create(no,no,""))),
+				"",new Label(MessageRegistry.getString("OVERRIDE_EXIST",Activator.class)),null);
 		Main.INSTANCE.getMiniBuffer().restore();
 		Main.INSTANCE.getCurrentNode().requestFocus();
 	}
@@ -178,8 +180,9 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 			((ListRegistryNode<String>)remark).getChildren().forEach((path)->{
 				if(path!=null){
 					File file=new File(path);
-					if(file.exists())
+					if(file.exists()){
 						data.getPaths().add(file.toPath());
+					}
 				}
 			});
 		}
@@ -188,7 +191,7 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("FILE_SYSTEM_VIEWER",Activator.NAME);
+		return MessageRegistry.getString("FILE_SYSTEM_VIEWER",Activator.class);
 	}
 	@Override
 	public Object getRemark(Node node){
@@ -208,6 +211,6 @@ public class FileSystemEditor implements DataEditor<FileSystemObject>{
 		return menuRegistry;
 	}
 	public static interface FileToDirectoryAction{
-		void apply(Path from,Path to,boolean override)throws IOException;
+		void apply(Path from,Path to,boolean override) throws IOException;
 	}
 }

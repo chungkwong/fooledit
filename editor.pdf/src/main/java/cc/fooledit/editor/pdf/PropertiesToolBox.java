@@ -36,7 +36,7 @@ public class PropertiesToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("PROPERTIES",Activator.NAME);
+		return MessageRegistry.getString("PROPERTIES",Activator.class);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){

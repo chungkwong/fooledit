@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
+import com.github.chungkwong.json.*;
 import com.sun.javafx.scene.control.skin.*;
 import java.io.*;
+import java.nio.charset.*;
 import java.util.*;
+import java.util.logging.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
 /**
@@ -39,9 +41,11 @@ public class TreeViewWrapper<T> extends TreeView<T>{
 	}
 	private void installKeymap(){
 		TreeMap<String,String> mapping=new TreeMap<>();
-		File src=Main.getFile("keymaps/tree.json",CoreModule.NAME);
-		if(src!=null)
-			mapping.putAll((Map<String,String>)(Object)Main.loadJSON(src));
+		try{
+			mapping.putAll((Map<String,String>)JSONDecoder.decode(new InputStreamReader(getClass().getResourceAsStream("/tree.json"),StandardCharsets.UTF_8)));
+		}catch(IOException|SyntaxException ex){
+			Logger.getLogger(TreeTableWrapper.class.getName()).log(Level.SEVERE,null,ex);
+		}
 		NavigableRegistryNode<String,String> registry=new NavigableRegistryNode<>(mapping);
 		getProperties().put(WorkSheet.KEYMAP_NAME,registry);
 	}
@@ -58,16 +62,40 @@ public class TreeViewWrapper<T> extends TreeView<T>{
 		addCommand("focus-down",()->focusDown(),registry);
 		addCommand("focus-previous-page",()->focusToPreviousPage(),registry);
 		addCommand("focus-next-page",()->focusToNextPage(),registry);
-		addCommand("select-previous",()->{clearSelection();getSelectionModel().selectPrevious();},registry);
-		addCommand("select-next",()->{clearSelection();getSelectionModel().selectNext();},registry);
+		addCommand("select-previous",()->{
+			clearSelection();
+			getSelectionModel().selectPrevious();
+		},registry);
+		addCommand("select-next",()->{
+			clearSelection();
+			getSelectionModel().selectNext();
+		},registry);
 		addCommand("select-first",()->getSelectionModel().clearAndSelect(0),registry);
 		addCommand("select-last",()->getSelectionModel().clearAndSelect(getExpandedItemCount()-1),registry);
-		addCommand("select-first-in-directory",()->{clearSelection();selectBeginOfDirectory();},registry);
-		addCommand("select-last-in-directory",()->{clearSelection();selectEndOfDirectory();},registry);
-		addCommand("select-up",()->{getSelectionModel().clearSelection();selectUp();},registry);
-		addCommand("select-down",()->{getSelectionModel().clearSelection();selectDown();},registry);
-		addCommand("select-previous-page",()->{clearSelection();selectToPreviousPage();},registry);
-		addCommand("select-next-page",()->{clearSelection();selectToNextPage();},registry);
+		addCommand("select-first-in-directory",()->{
+			clearSelection();
+			selectBeginOfDirectory();
+		},registry);
+		addCommand("select-last-in-directory",()->{
+			clearSelection();
+			selectEndOfDirectory();
+		},registry);
+		addCommand("select-up",()->{
+			getSelectionModel().clearSelection();
+			selectUp();
+		},registry);
+		addCommand("select-down",()->{
+			getSelectionModel().clearSelection();
+			selectDown();
+		},registry);
+		addCommand("select-previous-page",()->{
+			clearSelection();
+			selectToPreviousPage();
+		},registry);
+		addCommand("select-next-page",()->{
+			clearSelection();
+			selectToNextPage();
+		},registry);
 		addCommand("select",()->getSelectionModel().clearAndSelect(getFocusModel().getFocusedIndex()),registry);
 		addCommand("select-also-previous",()->getSelectionModel().selectPrevious(),registry);
 		addCommand("select-also-next",()->getSelectionModel().selectNext(),registry);
@@ -91,13 +119,13 @@ public class TreeViewWrapper<T> extends TreeView<T>{
 		addCommand("expand",()->getTreeItem(getFocusModel().getFocusedIndex()).setExpanded(true),registry);
 		addCommand("fold",()->getTreeItem(getFocusModel().getFocusedIndex()).setExpanded(false),registry);
 		getSelectionModel().selectedIndexProperty().addListener((e,o,n)->{
-			if(n!=null)
+			if(n!=null){
 				getFocusModel().focus(n.intValue());
+			}
 		});
-
 	}
 	private void addCommand(String name,Runnable action,ObservableMap<String,Command> registry){
-		registry.put(name,new Command(name,action,CoreModule.NAME));
+		registry.put(name,new Command(name,action,Activator.class));
 	}
 	private void focusToPreviousPage(){
 		int newIndex=((TreeViewSkin)getSkin()).onScrollPageUp(true);
@@ -182,10 +210,11 @@ public class TreeViewWrapper<T> extends TreeView<T>{
 	}
 	private void toggleSelection(){
 		int curr=getFocusModel().getFocusedIndex();
-		if(getSelectionModel().isSelected(curr))
+		if(getSelectionModel().isSelected(curr)){
 			getSelectionModel().clearSelection(curr);
-		else
+		}else{
 			getSelectionModel().select(curr);
+		}
 	}
 	private void clearSelection(){
 		if(getSelectionModel().getSelectionMode()==SelectionMode.MULTIPLE){

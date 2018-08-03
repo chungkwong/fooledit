@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.*;
 import static cc.fooledit.core.CoreModule.DATA_OBJECT_REGISTRY;
 import cc.fooledit.spi.*;
 import java.io.*;
@@ -28,7 +27,7 @@ import javax.activation.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class DataObjectRegistry{
-	private static final String UNTITLED=MessageRegistry.getString("UNTITLED",CoreModule.NAME);
+	private static final String UNTITLED=MessageRegistry.getString("UNTITLED",Activator.class);
 	private static final String KEY="file_history.json";
 	private static final String TRASH="trash";
 	public static RegistryNode getDataObject(String name){
@@ -44,8 +43,9 @@ public class DataObjectRegistry{
 		if(prop.containsKey(DataObject.URI)){
 			String uri=(String)prop.get(DataObject.URI);
 			Optional<RegistryNode> old=DATA_OBJECT_REGISTRY.values().stream().filter((o)->uri.equals(o.get(DataObject.URI))).findAny();
-			if(old.isPresent())
+			if(old.isPresent()){
 				return old.get();
+			}
 			try{
 				String mime=(String)prop.get(DataObject.MIME);
 				if(mime!=null){
@@ -94,25 +94,28 @@ public class DataObjectRegistry{
 			ListRegistryNode<RegistryNode<String,Object>> history=CoreModule.HISTORY_REGISTRY;
 			for(int i=0;i<history.size();i++){
 				RegistryNode<String,Object> entry=history.get(i);
-				if(uri.equals(entry.get(DataObject.URI)))
+				if(uri.equals(entry.get(DataObject.URI))){
 					history.remove(i);
+				}
 			}
 			history.put(0,new SimpleRegistryNode<String,Object>(prop));
 		}
 	}
 	public static RegistryNode getNextDataObject(RegistryNode<String,Object> curr){
 		Map.Entry<String,RegistryNode> next=DATA_OBJECT_REGISTRY.higherEntry((String)curr.get(DataObject.BUFFER_NAME));
-		if(next==null)
+		if(next==null){
 			return DATA_OBJECT_REGISTRY.firstEntry().getValue();
-		else
+		}else{
 			return next.getValue();
+		}
 	}
 	public static RegistryNode getPreviousDataObject(RegistryNode<String,Object> curr){
 		Map.Entry<String,RegistryNode> prev=DATA_OBJECT_REGISTRY.lowerEntry((String)curr.get(DataObject.BUFFER_NAME));
-		if(prev==null)
+		if(prev==null){
 			return DATA_OBJECT_REGISTRY.lastEntry().getValue();
-		else
+		}else{
 			return prev.getValue();
+		}
 	}
 	public static RegistryNode<String,Object> create(DataObjectType<?> type){
 		RegistryNode<String,Object> object=new SimpleRegistryNode<>();
@@ -121,7 +124,7 @@ public class DataObjectRegistry{
 		object.put(DataObject.DATA,type.create());
 		return object;
 	}
-	public static RegistryNode<String,Object> readFrom(URL url)throws Exception{
+	public static RegistryNode<String,Object> readFrom(URL url) throws Exception{
 		FoolURLConnection connection=FoolURLConnection.open(url);
 		for(String mime:ContentTypeHelper.guess(connection)){
 			try{
@@ -132,10 +135,10 @@ public class DataObjectRegistry{
 		}
 		throw new Exception();
 	}
-	public static RegistryNode<String,Object> readFrom(URL url,MimeType mime)throws Exception{
+	public static RegistryNode<String,Object> readFrom(URL url,MimeType mime) throws Exception{
 		return readFrom(FoolURLConnection.open(url),mime);
 	}
-	public static RegistryNode<String,Object> readFrom(URLConnection connection,MimeType mime)throws Exception{
+	public static RegistryNode<String,Object> readFrom(URLConnection connection,MimeType mime) throws Exception{
 		for(DataObjectType type:DataObjectTypeRegistry.getPreferedDataObjectType(mime)){
 			try{
 				return readFrom(connection,type,mime);
@@ -145,11 +148,11 @@ public class DataObjectRegistry{
 		}
 		throw new Exception();
 	}
-	public static RegistryNode<String,Object> readFrom(URL url,DataObjectType type,MimeType mime)throws Exception{
+	public static RegistryNode<String,Object> readFrom(URL url,DataObjectType type,MimeType mime) throws Exception{
 		return readFrom(FoolURLConnection.open(url),type,mime);
 	}
-	public static RegistryNode<String,Object> readFrom(URLConnection connection,DataObjectType type,MimeType mime)throws Exception{
-		RegistryNode<String,Object>  object=new SimpleRegistryNode<>();
+	public static RegistryNode<String,Object> readFrom(URLConnection connection,DataObjectType type,MimeType mime) throws Exception{
+		RegistryNode<String,Object> object=new SimpleRegistryNode<>();
 		DataObject data=type.readFrom(connection,mime,object);
 		object.put(DataObject.URI,connection.getURL().toString());
 		object.put(DataObject.MIME,mime.toString());
@@ -164,7 +167,7 @@ public class DataObjectRegistry{
 		return i==-1?path:path.substring(i+1);
 	}
 	public static void clean(RegistryNode<String,Object> data){
-		if((Boolean)data.getOrDefault(DataObject.MODIFIED,false))
+		if((Boolean)data.getOrDefault(DataObject.MODIFIED,false)){
 			try{
 				write(data);
 			}catch(Exception e){
@@ -175,11 +178,12 @@ public class DataObjectRegistry{
 					Logger.getGlobal().log(Level.SEVERE,null,ex);
 				}
 			}
+		}
 	}
 	public static void write(RegistryNode<String,Object> data) throws Exception{
 		writeTo(data,new URL((String)data.get(DataObject.URI)));
 	}
-	public static void writeTo(RegistryNode<String,Object> object,URL url)throws Exception{
+	public static void writeTo(RegistryNode<String,Object> object,URL url) throws Exception{
 		DataObject data=((DataObject)object.get(DataObject.DATA));
 		data.getDataObjectType().writeTo(data,FoolURLConnection.open(url),object);
 		object.put(DataObject.URI,url.toString());

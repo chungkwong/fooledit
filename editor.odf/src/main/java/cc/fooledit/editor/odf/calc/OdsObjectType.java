@@ -46,7 +46,7 @@ public class OdsObjectType implements DataObjectType<OdsObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",Activator.NAME);
+		return MessageRegistry.getString("OLD_WORD_DOCUMENT",Activator.class);
 	}
 	@Override
 	public void writeTo(OdsObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

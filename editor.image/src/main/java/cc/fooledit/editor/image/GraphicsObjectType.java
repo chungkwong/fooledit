@@ -52,7 +52,7 @@ public class GraphicsObjectType implements DataObjectType<GraphicsObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("GRAPHICS",Activator.NAME);
+		return MessageRegistry.getString("GRAPHICS",Activator.class);
 	}
 	@Override
 	public void writeTo(GraphicsObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

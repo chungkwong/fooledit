@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.git;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
+import cc.fooledit.vcs.git.Activator;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -38,19 +38,19 @@ public class GitCommands{
 	public static void execute(String command){
 		TaskManager.executeCommand(GitRepositoryEditor.INSTANCE.getCommandRegistry().get(command));
 	}
-	public static Git init(File file)throws Exception{
+	public static Git init(File file) throws Exception{
 		return Git.init().setDirectory(file).call();
 	}
-	public static Git clone(String uri,File dir)throws Exception{
+	public static Git clone(String uri,File dir) throws Exception{
 		return Git.cloneRepository().setDirectory(dir).setURI(uri).call();//TODO: Progress
 	}
-	public static Iterable<PushResult> push(Object remote,String username,String password,Git git)throws Exception{
+	public static Iterable<PushResult> push(Object remote,String username,String password,Git git) throws Exception{
 		return git.push().setRemote(toRemoteConfigName(remote)).setCredentialsProvider(new UsernamePasswordCredentialsProvider(username,password)).call();
 	}
-	public static PullResult pull(Object remote,Git git)throws Exception{
+	public static PullResult pull(Object remote,Git git) throws Exception{
 		return git.pull().setRemote(toRemoteConfigName(remote)).call();
 	}
-	public static FetchResult fetch(Object remote,Git git)throws Exception{
+	public static FetchResult fetch(Object remote,Git git) throws Exception{
 		return git.fetch().setRemote(toRemoteConfigName(remote)).call();
 	}
 	private static String toRemoteConfigName(Object remote){
@@ -111,61 +111,64 @@ public class GitCommands{
 	private static String toString(DiffEntry entry){
 		switch(entry.getChangeType()){
 			case ADD:
-				return entry.getNewPath()+MessageRegistry.getString(" ADDED",Activator.NAME);
+				return entry.getNewPath()+MessageRegistry.getString(" ADDED",Activator.class);
 			case COPY:
-				return entry.getOldPath()+MessageRegistry.getString(" COPIED TO ",Activator.NAME)+entry.getNewPath();
+				return entry.getOldPath()+MessageRegistry.getString(" COPIED TO ",Activator.class)+entry.getNewPath();
 			case DELETE:
-				return entry.getOldPath()+MessageRegistry.getString(" REMOVED",Activator.NAME);
+				return entry.getOldPath()+MessageRegistry.getString(" REMOVED",Activator.class);
 			case MODIFY:
-				return entry.getOldPath()+MessageRegistry.getString(" MODIFIED",Activator.NAME);
+				return entry.getOldPath()+MessageRegistry.getString(" MODIFIED",Activator.class);
 			case RENAME:
-				return entry.getOldPath()+MessageRegistry.getString(" RENAMED TO ",Activator.NAME)+entry.getNewPath();
+				return entry.getOldPath()+MessageRegistry.getString(" RENAMED TO ",Activator.class)+entry.getNewPath();
 			default:
 				return "";
 		}
 	}
-	public static MergeResult merge(Object obj,Git git) throws GitAPIException, IOException{
+	public static MergeResult merge(Object obj,Git git) throws GitAPIException,IOException{
 		obj=toBranchOrCommit(obj,git);
-		if(obj instanceof AnyObjectId)
+		if(obj instanceof AnyObjectId){
 			return git.merge().include((AnyObjectId)obj).call();
-		else
+		}else{
 			return git.merge().include((Ref)obj).call();
+		}
 	}
-	public static Ref checkout(Object obj,Git git) throws GitAPIException, IOException{
+	public static Ref checkout(Object obj,Git git) throws GitAPIException,IOException{
 		obj=toBranchOrCommit(obj,git);
-		if(obj instanceof RevCommit)
+		if(obj instanceof RevCommit){
 			return git.checkout().setStartPoint((RevCommit)obj).call();
-		else
+		}else{
 			return git.checkout().setName(obj.toString()).call();
+		}
 	}
-	public static RevCommit revert(Object obj,Git git) throws GitAPIException, IOException{
+	public static RevCommit revert(Object obj,Git git) throws GitAPIException,IOException{
 		obj=toBranchOrCommit(obj,git);
-		if(obj instanceof AnyObjectId)
+		if(obj instanceof AnyObjectId){
 			return git.revert().include((AnyObjectId)obj).call();
-		else
+		}else{
 			return git.revert().include(git.getRepository().findRef(obj.toString())).call();
+		}
 	}
 	private static Object toBranchOrCommit(Object obj,Git git) throws IOException{
-		if(obj instanceof AnyObjectId||obj instanceof Ref)
+		if(obj instanceof AnyObjectId||obj instanceof Ref){
 			return obj;
-		else{
+		}else{
 			String name=Objects.toString(obj);
 			ObjectId id=git.getRepository().resolve(name);
 			return id!=null?git.getRepository().parseCommit(id):git.getRepository().findRef(name);
 		}
 	}
-	public static RemoteConfig addRemote(String name,String uri,Git git) throws URISyntaxException, GitAPIException{
+	public static RemoteConfig addRemote(String name,String uri,Git git) throws URISyntaxException,GitAPIException{
 		RemoteAddCommand command=git.remoteAdd();
 		command.setName(name);
 		command.setUri(new URIish(uri));
 		return command.call();
 	}
-	public static RemoteConfig deleteRemote(Object remote,Git git) throws URISyntaxException, GitAPIException{
+	public static RemoteConfig deleteRemote(Object remote,Git git) throws URISyntaxException,GitAPIException{
 		RemoteRemoveCommand command=git.remoteRemove();
 		command.setName(toRemoteConfigName(remote));
 		return command.call();
 	}
-	public static RemoteConfig setRemote(Object remote,String uri,Git git) throws URISyntaxException, GitAPIException{
+	public static RemoteConfig setRemote(Object remote,String uri,Git git) throws URISyntaxException,GitAPIException{
 		RemoteSetUrlCommand command=git.remoteSetUrl();
 		String name=toRemoteConfigName(remote);
 		command.setName(name);
@@ -178,7 +181,7 @@ public class GitCommands{
 		command.setPush(false);
 		return command.call();
 	}
-	public static Ref addTag(String tag,Object id,Git git) throws GitAPIException, IOException{
+	public static Ref addTag(String tag,Object id,Git git) throws GitAPIException,IOException{
 		return git.tag().setName(tag).setObjectId((RevObject)toBranchOrCommit(id,git)).call();
 	}
 	public static List<String> removeTag(Object tag,Git git) throws GitAPIException{
@@ -201,7 +204,7 @@ public class GitCommands{
 		}catch(Exception ex){
 			Logger.getLogger(GitTreeItem.class.getName()).log(Level.SEVERE,null,ex);
 		}
-		*/
+		 */
 	}
 	public static DirCache add(String filepattern,Git git) throws GitAPIException{
 		return git.add().addFilepattern(filepattern).call();
@@ -242,10 +245,11 @@ public class GitCommands{
 		return id;
 	}
 	private static AnyObjectId toObjectId(Object obj,Git git) throws Exception{
-		if(obj instanceof AnyObjectId)
+		if(obj instanceof AnyObjectId){
 			return (AnyObjectId)obj;
-		else
+		}else{
 			return git.getRepository().resolve(Objects.toString(obj));
+		}
 	}
 	public static String read(ObjectId id,Git git) throws IOException{
 		ObjectLoader obj=git.getRepository().open(id);

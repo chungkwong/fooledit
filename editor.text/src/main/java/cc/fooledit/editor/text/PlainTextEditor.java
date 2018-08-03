@@ -39,6 +39,6 @@ public class PlainTextEditor implements DataEditor<TextObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("TEXT_EDITOR",Activator.NAME);
+		return MessageRegistry.getString("TEXT_EDITOR",Activator.class);
 	}
 }

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.core.MessageRegistry;
+import cc.fooledit.core.*;
 import javafx.util.*;
 /**
  *
@@ -23,8 +23,8 @@ import javafx.util.*;
  */
 public class EnumStringConvertor<E extends Enum<E>> extends StringConverter<E>{
 	private final Class<E> cls;
-	private final String module;
-	public EnumStringConvertor(Class<E> cls,String module){
+	private final Class module;
+	public EnumStringConvertor(Class<E> cls,Class module){
 		this.cls=cls;
 		this.module=module;
 	}

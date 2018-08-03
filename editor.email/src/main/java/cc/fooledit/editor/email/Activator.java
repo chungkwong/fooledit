@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.email;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.email.Activator;
 import cc.fooledit.spi.*;
@@ -37,7 +36,7 @@ public class Activator implements BundleActivator{
 		CoreModule.PROTOCOL_REGISTRY.put("imap",new NaiveStreamHandler());
 		CoreModule.PROTOCOL_REGISTRY.put("pop3",new NaiveStreamHandler());
 		CoreModule.PROTOCOL_REGISTRY.put("smtp",new NaiveStreamHandler());
-		Main.INSTANCE.getGlobalCommandRegistry().put("email",new Command("email",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(MailBoxObjectType.INSTANCE)),NAME));
+		CoreModule.COMMAND_REGISTRY.put("email",new Command("email",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(MailBoxObjectType.INSTANCE)),Activator.class));
 	}
 	public static void onUnLoad(){
 	}

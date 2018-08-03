@@ -32,6 +32,6 @@ public class XlsEditor implements DataEditor<XlsObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("SPREADSHEET",cc.fooledit.editor.msoffice.Activator.NAME);
+		return MessageRegistry.getString("SPREADSHEET",cc.fooledit.editor.msoffice.Activator.class);
 	}
 }

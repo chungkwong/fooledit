@@ -46,7 +46,7 @@ public class VsdObjectType implements DataObjectType<VsdObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",cc.fooledit.editor.msoffice.Activator.NAME);
+		return MessageRegistry.getString("OLD_WORD_DOCUMENT",cc.fooledit.editor.msoffice.Activator.class);
 	}
 	@Override
 	public void writeTo(VsdObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

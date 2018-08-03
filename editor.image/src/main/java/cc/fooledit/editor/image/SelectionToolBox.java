@@ -35,7 +35,7 @@ public class SelectionToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("SELECTION",Activator.NAME);
+		return MessageRegistry.getString("SELECTION",Activator.class);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){

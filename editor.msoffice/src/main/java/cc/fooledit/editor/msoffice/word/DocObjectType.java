@@ -46,7 +46,7 @@ public class DocObjectType implements DataObjectType<DocObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",Activator.NAME);
+		return MessageRegistry.getString("OLD_WORD_DOCUMENT",Activator.class);
 	}
 	@Override
 	public void writeTo(DocObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

@@ -30,8 +30,9 @@ public class Helper{
 	}
 	public static HashMap hashMap(Object... val){
 		HashMap map=new HashMap();
-		for(int i=0;i<val.length;i+=2)
+		for(int i=0;i<val.length;i+=2){
 			map.put(val[i],val[i+1]);
+		}
 		return map;
 	}
 	public static <T> void uniq(Collection<T> list){
@@ -39,14 +40,18 @@ public class Helper{
 		Set<T> founded=new HashSet<>();
 		while(iterator.hasNext()){
 			T next=iterator.next();
-			if(founded.contains(next))
+			if(founded.contains(next)){
 				iterator.remove();
-			else
+			}else{
 				founded.add(next);
+			}
 		}
 	}
 	public static String readText(String resource){
 		return readText(new InputStreamReader(Helper.class.getResourceAsStream(resource),StandardCharsets.UTF_8));
+	}
+	public static String readText(InputStream in){
+		return readText(new InputStreamReader(in,StandardCharsets.UTF_8));
 	}
 	public static String readText(Reader in){
 		return new BufferedReader(in).lines().collect(Collectors.joining("\n"));
@@ -58,8 +63,9 @@ public class Helper{
 		Files.write(file.toPath(),text.getBytes(StandardCharsets.UTF_8));
 	}
 	public static <T> void addEntry(T obj,List<T> list,int limit){
-		if(list.size()>=limit)
+		if(list.size()>=limit){
 			list.subList(limit-1,list.size()).clear();
+		}
 		list.add(0,obj);
 	}
 	public static <T> T getEntry(List<T> list){

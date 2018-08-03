@@ -36,7 +36,7 @@ public class BinaryEditor implements DataEditor<BinaryObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("BINARY_EDITOR",Activator.NAME);
+		return MessageRegistry.getString("BINARY_EDITOR",Activator.class);
 	}
 	private static class HexConvertor extends StringConverter<byte[]>{
 		static String[] units=new String[]{

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.zip;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import com.sun.javafx.scene.control.skin.*;
@@ -32,9 +31,9 @@ import org.apache.commons.compress.archivers.*;
  */
 public class ArchiveEditor implements DataEditor<ArchiveObject>{
 	public static final ArchiveEditor INSTANCE=new ArchiveEditor();
-	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.NAME);
+	private final MenuRegistry menuRegistry=Registry.ROOT.registerMenu(Activator.class);
 	private final RegistryNode<String,Command> commandRegistry=Registry.ROOT.registerCommand(Activator.NAME);
-	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.NAME);
+	private final NavigableRegistryNode<String,String> keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
 	private ArchiveEditor(){
 		addCommand("focus-previous",(viewer)->viewer.getTree().getFocusModel().focusPrevious());
 		addCommand("focus-next",(viewer)->viewer.getTree().getFocusModel().focusNext());
@@ -55,7 +54,7 @@ public class ArchiveEditor implements DataEditor<ArchiveObject>{
 		addCommand("submit",(viewer)->viewer.fireAction());
 	}
 	private void addCommand(String name,Consumer<ArchiveViewer> action){
-		commandRegistry.put(name,new Command(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),Activator.NAME));
+		commandRegistry.put(name,new Command(name,()->action.accept((ArchiveViewer)Main.INSTANCE.getCurrentNode()),Activator.class));
 	}
 	@Override
 	public Node edit(ArchiveObject data,Object remark,RegistryNode<String,Object> meta){
@@ -75,7 +74,7 @@ public class ArchiveEditor implements DataEditor<ArchiveObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("ARCHIVE_EDITOR",Activator.NAME);
+		return MessageRegistry.getString("ARCHIVE_EDITOR",Activator.class);
 	}
 	private void focusUp(TableView<ArchiveEntry> tree){
 		focusBeginOfDirectory(tree);

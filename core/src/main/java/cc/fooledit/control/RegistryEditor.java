@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.core.Registry;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import javafx.scene.*;
@@ -26,11 +25,10 @@ import javafx.scene.*;
 public class RegistryEditor extends Prompt{
 	public static final RegistryEditor INSTANCE=new RegistryEditor();
 	private RegistryEditor(){
-
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("REGISTRY",CoreModule.NAME);
+		return MessageRegistry.getString("REGISTRY",Activator.class);
 	}
 	@Override
 	public Node edit(Prompt data,Object remark,RegistryNode<String,Object> meta){

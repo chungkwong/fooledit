@@ -15,7 +15,7 @@ public class Activator implements BundleActivator{
 		MultiRegistryNode.addChildElement("md",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("mkd",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
-		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.markdown.MarkdownLexer.class,Activator.class.getResourceAsStream("token.json"),CONTENT_TYPE);
+		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.markdown.MarkdownLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 	}
 	@Override
 	public void stop(BundleContext bc) throws Exception{

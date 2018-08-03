@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-import cc.fooledit.*;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataEditor;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataObjectType;
 import cc.fooledit.core.*;
@@ -75,7 +74,7 @@ public class Activator implements BundleActivator{
 		Registry.providesEditorToToolbox(GraphicsEditor.class.getName(),NAME);
 		try{
 			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getOrCreateChild("children")).put(
-					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Main.INSTANCE.getFile("templates.json",NAME))));
+					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Activator.class.getResourceAsStream("/templates.json"))));
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.INFO,null,ex);
 		}

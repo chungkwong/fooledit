@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.filesystem;
-import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.filesystem.Activator;
 import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
@@ -31,7 +31,6 @@ import javafx.scene.control.*;
  */
 public class FileCommands{
 	private FileCommands(){
-
 	}
 	public static void open(){
 		RegistryNode<String,Object> files=DataObjectRegistry.create(FileSystemObjectType.INSTANCE);
@@ -47,7 +46,7 @@ public class FileCommands{
 			});
 			DataObjectRegistry.removeDataObject(files);
 		});
-		files.put(DataObject.DEFAULT_NAME,MessageRegistry.getString("OPEN_FILE",CoreModule.NAME));
+		files.put(DataObject.DEFAULT_NAME,MessageRegistry.getString("OPEN_FILE",Activator.class));
 		DataObjectRegistry.addDataObject(files);
 		Main.INSTANCE.showOnNewTab(files);
 	}
@@ -64,14 +63,15 @@ public class FileCommands{
 	public static void save(){
 		RegistryNode<String,Object> data=Main.INSTANCE.getCurrentDataObject();
 		String url=(String)data.get(DataObject.URI);
-		if(url==null)
+		if(url==null){
 			saveAs();
-		else
+		}else{
 			try{
 				DataObjectRegistry.write(data);
 			}catch(Exception ex){
 				Logger.getLogger(FileCommands.class.getName()).log(Level.SEVERE,null,ex);
 			}
+		}
 	}
 	public static void saveAs(){
 		RegistryNode<String,Object> files=DataObjectRegistry.create(FileSystemObjectType.INSTANCE);
@@ -81,7 +81,7 @@ public class FileCommands{
 			paths.forEach((p)->saveAs(p));
 			DataObjectRegistry.removeDataObject(files);
 		});
-		files.put(DataObject.DEFAULT_NAME,MessageRegistry.getString("SAVE",CoreModule.NAME));
+		files.put(DataObject.DEFAULT_NAME,MessageRegistry.getString("SAVE",Activator.class));
 		DataObjectRegistry.addDataObject(files);
 		Main.INSTANCE.showOnNewTab(files);
 	}
@@ -105,8 +105,9 @@ public class FileCommands{
 	private static String extractFilename(URL url){
 		String path=url.getPath();
 		int index=path.lastIndexOf('/');
-		if(index!=-1)
+		if(index!=-1){
 			path=path.substring(index+1);
+		}
 		return path;
 	}
 	public static void create(){

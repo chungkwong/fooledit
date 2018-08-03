@@ -129,6 +129,7 @@ public class CodeEditor extends BorderPane{
 			}
 		});
 		setCenter(new VirtualizedScrollPane(area));
+		getStylesheets().add(getClass().getResource("/stylesheet.css").toString());
 	}
 	private static int findMatchingBraceForward(String text,int start,char left,char right){
 		int level=1;

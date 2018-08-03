@@ -15,14 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.*;
 import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
-import java.util.*;
 import java.util.logging.*;
-import java.util.stream.*;
 import java.util.zip.*;
 /**
  *
@@ -37,7 +34,7 @@ public class ModuleRegistry{
 	public static void ensureLoaded(String module){
 		if(!CoreModule.LOADED_MODULE_REGISTRY.containsKey(module)){
 			try{
-				load(getModuleDescriptor(module));
+				//load(getModuleDescriptor(module));
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
@@ -46,43 +43,40 @@ public class ModuleRegistry{
 	private static void load(RegistryNode<String,Object> moduleDescriptor) throws Exception{
 		String module=(String)moduleDescriptor.get(NAME);
 		Logger.getGlobal().log(Level.INFO,"Trying to load {0}",new Object[]{module});
-		if(CoreModule.LOADING_MODULE_REGISTRY.containsKey(module))
+		if(CoreModule.LOADING_MODULE_REGISTRY.containsKey(module)){
 			return;
+		}
 		CoreModule.LOADING_MODULE_REGISTRY.put(module,moduleDescriptor);
 		ensureInstalled(module);
 		((ListRegistryNode<String>)moduleDescriptor.get(DEPENDENCY)).values().forEach((s)->ensureLoaded(s));
-		onLoad(module);
+		//onLoad(module);
 		CoreModule.LOADING_MODULE_REGISTRY.remove(module);
 		CoreModule.LOADED_MODULE_REGISTRY.put(module,moduleDescriptor);
 	}
 	public static void ensureInstalled(String module){
-		if(!CoreModule.INSTALLED_MODULE_REGISTRY.containsKey(module))
+		if(!CoreModule.INSTALLED_MODULE_REGISTRY.containsKey(module)){
 			try{
-				install(getModuleDescriptor(module));
+				//install(getModuleDescriptor(module));
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}
+		}
 	}
 	private static void install(RegistryNode<String,Object> moduleDescriptor) throws Exception{
 		String module=(String)moduleDescriptor.get(NAME);
 		Logger.getGlobal().log(Level.INFO,"Trying to install {0}",new Object[]{module});
-		if(CoreModule.INSTALLING_MODULE_REGISTRY.containsKey(module))
+		if(CoreModule.INSTALLING_MODULE_REGISTRY.containsKey(module)){
 			return;
+		}
 		CoreModule.INSTALLING_MODULE_REGISTRY.put(module,null);
 		((ListRegistryNode<String>)moduleDescriptor.get(DEPENDENCY)).values().forEach((s)->ensureInstalled(s));
-		onInstall(module);
+		//onInstall(module);
 		CoreModule.INSTALLING_MODULE_REGISTRY.remove(module);
 		CoreModule.INSTALLED_MODULE_REGISTRY.put(module,null);
 	}
-	public static RegistryNode<String,Object> getModuleDescriptor(String name) throws Exception{
-		RegistryNode<String,Object> moduleDescriptor=(RegistryNode<String,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getModulePath(name),"descriptor.json")));
-		if(!moduleDescriptor.get(NAME).equals(name))
-			throw new RuntimeException("Bad module format: "+name);
+	public static RegistryNode<String,Object> getModuleDescriptor(Class model) throws Exception{
+		RegistryNode<String,Object> moduleDescriptor=(RegistryNode<String,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(model.getResourceAsStream("/descriptor.json")));
 		return moduleDescriptor;
-	}
-	public static Collection<String> getInstalledModules(){
-		return Arrays.stream(Main.INSTANCE.getDataPath().listFiles((File file)->file.isDirectory())).
-				map((f)->f.getName()).collect(Collectors.toSet());
 	}
 	public static ListRegistryNode<RegistryNode<String,Object>> listDownloadable(){
 		String url=(String)CoreModule.REGISTRY.get(REPOSITORY);
@@ -95,7 +89,13 @@ public class ModuleRegistry{
 	}
 	public File download(RegistryNode<String,Object> module) throws IOException{
 		try(ZipInputStream in=new ZipInputStream(new BufferedInputStream(new URL((String)module.get(URL)).openStream()),StandardCharsets.UTF_8)){
-			File base=Main.INSTANCE.getModulePath((String)module.get(NAME));
+			File base;
+			URL url=Main.class.getResource("");
+			if(url.getProtocol().equals("file")){
+				base=new File("/home/kwong/NetBeansProjects/fooledit/distribution/target/distribution-1.0-SNAPSHOT-dist/bundle");
+			}else{
+				base=new File(URLDecoder.decode(url.toString().substring(9,url.toString().indexOf('!')),"UTF-8")).getParentFile();
+			}
 			base.mkdirs();
 			ZipEntry entry;
 			byte[] buf=new byte[4096];
@@ -106,33 +106,13 @@ public class ModuleRegistry{
 				}else{
 					FileOutputStream out=new FileOutputStream(file);
 					int c;
-					while((c=in.read(buf))!=-1)
+					while((c=in.read(buf))!=-1){
 						out.write(buf,0,c);
+					}
 					out.close();
 				}
 			}
 			return base;
-		}
-	}
-	private void onLoadModule(){
-
-	}
-	public static void onLoad(String module)throws Exception{
-		evalScript("on-load.scm",module);
-	}
-	public static void onUnLoad(String module)throws Exception{
-		evalScript("on-unload.scm",module);
-	}
-	public static void onInstall(String module)throws Exception{
-		evalScript("on-install.scm",module);
-	}
-	public static void onUninstall(String module)throws Exception{
-		evalScript("on-uninstall.scm",module);
-	}
-	private static void evalScript(String filename,String module)throws Exception{
-		File file=Main.INSTANCE.getFile(filename,module);
-		if(file.exists()){
-			Main.INSTANCE.getScriptAPI().eval(Helper.readText(file));
 		}
 	}
 	public static final String MODULE="module";

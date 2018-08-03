@@ -30,17 +30,17 @@ public class FontChooser extends HBox{
 	private final ComboBox<FontSmoothingType> smoothing=new ComboBox<>();
 	private final ComboBox<TextAlignment> alignment=new ComboBox<>();
 	private final ComboBox<VPos> baseline=new ComboBox<>();
-	private final TextField preview=new TextField(MessageRegistry.getString("FONT_PREVIEW_TEXT",CoreModule.NAME));
+	private final TextField preview=new TextField(MessageRegistry.getString("FONT_PREVIEW_TEXT",Activator.class));
 	private final Spinner size=new Spinner(0.0,100.0,Font.getDefault().getSize(),0.5);
 	private final ToggleButton italic=new ToggleButton("I");
 	public FontChooser(){
 		getChildren().setAll(family,italic,weight,size,smoothing,alignment,baseline,preview);
 		family.getItems().setAll(Font.getFamilies());
 		family.getSelectionModel().select(Font.getDefault().getFamily());
-		weight.setConverter(new EnumStringConvertor<>(FontWeight.class,CoreModule.NAME));
-		smoothing.setConverter(new EnumStringConvertor<>(FontSmoothingType.class,CoreModule.NAME));
-		alignment.setConverter(new EnumStringConvertor<>(TextAlignment.class,CoreModule.NAME));
-		baseline.setConverter(new EnumStringConvertor<>(VPos.class,CoreModule.NAME));
+		weight.setConverter(new EnumStringConvertor<>(FontWeight.class,Activator.class));
+		smoothing.setConverter(new EnumStringConvertor<>(FontSmoothingType.class,Activator.class));
+		alignment.setConverter(new EnumStringConvertor<>(TextAlignment.class,Activator.class));
+		baseline.setConverter(new EnumStringConvertor<>(VPos.class,Activator.class));
 		weight.getItems().setAll(FontWeight.values());
 		smoothing.getItems().setAll(FontSmoothingType.values());
 		alignment.getItems().setAll(TextAlignment.values());

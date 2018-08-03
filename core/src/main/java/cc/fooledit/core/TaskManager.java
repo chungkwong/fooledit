@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.*;
 import cc.fooledit.util.*;
 import java.text.*;
 import java.util.*;
@@ -35,22 +34,22 @@ public class TaskManager{
 		CoreModule.TASK_REGISTRY.put(id,task);
 		task.setOnRunning((e)->{
 			Logger.getGlobal().log(Level.INFO,
-					MessageFormat.format(MessageRegistry.getString("EXECUTING",CoreModule.NAME),id));
+					MessageFormat.format(MessageRegistry.getString("EXECUTING",Activator.class),id));
 		});
 		task.setOnFailed((e)->{
 			Logger.getGlobal().log(Level.SEVERE,
-					MessageFormat.format(MessageRegistry.getString("FAILED",CoreModule.NAME),id),
+					MessageFormat.format(MessageRegistry.getString("FAILED",Activator.class),id),
 					task.getException());
 			CoreModule.TASK_REGISTRY.remove(id);
 		});
 		task.setOnCancelled((e)->{
 			Logger.getGlobal().log(Level.INFO,
-					MessageFormat.format(MessageRegistry.getString("CANCELLED",CoreModule.NAME),id));
+					MessageFormat.format(MessageRegistry.getString("CANCELLED",Activator.class),id));
 			CoreModule.TASK_REGISTRY.remove(id);
 		});
 		task.setOnSucceeded((e)->{
 			Logger.getGlobal().log(Level.INFO,
-					MessageFormat.format(MessageRegistry.getString("EXECUTED",CoreModule.NAME),id,task.getValue()));
+					MessageFormat.format(MessageRegistry.getString("EXECUTED",Activator.class),id,task.getValue()));
 			CoreModule.TASK_REGISTRY.remove(id);
 		});
 		executor.submit(task);

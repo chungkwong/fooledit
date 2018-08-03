@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
+import com.github.chungkwong.json.*;
 import java.io.*;
+import java.nio.charset.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.logging.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
 /**
@@ -44,9 +46,10 @@ public class PaginationWrapper extends Pagination{
 	}
 	private void installKeymap(){
 		TreeMap<String,String> mapping=new TreeMap<>();
-		File src=Main.getFile("keymaps/pagination.json",CoreModule.NAME);
-		if(src!=null){
-			mapping.putAll((Map<String,String>)(Object)Main.loadJSON(src));
+		try{
+			mapping.putAll((Map<String,String>)JSONDecoder.decode(new InputStreamReader(getClass().getResourceAsStream("/pagination.json"),StandardCharsets.UTF_8)));
+		}catch(IOException|SyntaxException ex){
+			Logger.getLogger(TreeTableWrapper.class.getName()).log(Level.SEVERE,null,ex);
 		}
 		NavigableRegistryNode<String,String> registry=new NavigableRegistryNode<>(mapping);
 		getProperties().put(WorkSheet.KEYMAP_NAME,registry);
@@ -66,9 +69,9 @@ public class PaginationWrapper extends Pagination{
 		addCommand("move-to-previous-page",()->setCurrentPageIndex(getCurrentPageIndex()-1),registry);
 	}
 	private void addCommand(String name,Runnable action,ObservableMap<String,Command> registry){
-		registry.put(name,new Command(name,action,CoreModule.NAME));
+		registry.put(name,new Command(name,action,Activator.class));
 	}
 	private void addCommand(String name,List<Argument> parameters,Function<Object[],Object> action,ObservableMap<String,Command> registry){
-		registry.put(name,new Command(name,parameters,(args)->action.apply(args),CoreModule.NAME));
+		registry.put(name,new Command(name,parameters,(args)->action.apply(args),Activator.class));
 	}
 }

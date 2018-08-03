@@ -33,6 +33,6 @@ public class OdpEditor implements DataEditor<OdpObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("SLIDE_SHOW",Activator.NAME);
+		return MessageRegistry.getString("SLIDE_SHOW",Activator.class);
 	}
 }

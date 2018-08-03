@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.vcs.svn;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.filesystem.*;
 import cc.fooledit.spi.*;
@@ -133,13 +132,13 @@ public class Activator implements BundleActivator{
 		SETTINGS_REGISTRY.putIfAbsent("VACUUM_PRISTINES",true);
 	}
 	private static Argument createArgument(String name){
-		return new Argument(MessageRegistry.getString(name,NAME),()->SETTINGS_REGISTRY.get(name));
+		return new Argument(MessageRegistry.getString(name,Activator.class),()->SETTINGS_REGISTRY.get(name));
 	}
 	private static void addCommand(String name,List<Argument> args,ThrowableFunction<Object[],Object> proc){
-		FileSystemEditor.INSTANCE.getCommandRegistry().put(name,new Command(name,args,(a)->proc.accept(a),FileSystemViewer.class.getPackage().getName()));
+		FileSystemEditor.INSTANCE.getCommandRegistry().put(name,new Command(name,args,(a)->proc.accept(a),Activator.class));
 	}
 	private static MenuItem createMenuItem(String command,String name){
-		MenuItem item=new MenuItem(MessageRegistry.getString(name,NAME));
+		MenuItem item=new MenuItem(MessageRegistry.getString(name,Activator.class));
 		item.setOnAction((e)->TaskManager.executeCommand(Main.INSTANCE.getCommand(command)));
 		return item;
 	}

@@ -18,7 +18,6 @@ package cc.fooledit.core;
 import cc.fooledit.spi.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
-import java.net.*;
 import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.*;
@@ -45,7 +44,7 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 		return new String[]{parent,leaf};
 	}
 	public void loadPreference(){
-		try{
+		/*try{
 			RegistryNode<String,RegistryNode<Object,Object>> toLoad=(RegistryNode<String,RegistryNode<Object,Object>>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(getPersistentFile()));
 			for(String path:toLoad.keySet()){
 				String[] comp=splitPath(path);
@@ -62,7 +61,7 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 				}
 			}
 		}
-		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());
+		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());*/
 	}
 	public void fixProvider(){
 		RegistryNode providers=((RegistryNode)ROOT.get(CoreModule.NAME).getOrCreateChild(CoreModule.PROVIDER_REGISTRY_NAME));
@@ -102,11 +101,11 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 	private File getPersistentFile(){
 		return new File(Main.INSTANCE.getUserPath(),"registry.json");
 	}
-	public MenuRegistry registerMenu(String module){
+	public MenuRegistry registerMenu(Class module){
 		try{
-			File src=Main.INSTANCE.getFile("menus/default.json",module);
+			InputStream src=module.getResourceAsStream("/menu.json");
 			RegistryNode<String,List<ListRegistryNode<Object>>> json=(RegistryNode<String,List<ListRegistryNode<Object>>>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(src));
-			RegistryNode<String,ListRegistryNode<Object>> mod=((RegistryNode<String,ListRegistryNode<Object>>)Registry.ROOT.getOrCreateChild(module));
+			RegistryNode<String,ListRegistryNode<Object>> mod=((RegistryNode<String,ListRegistryNode<Object>>)Registry.ROOT.getOrCreateChild(module.getPackage().getName()));
 			mod.putIfAbsent(CoreModule.MENU_REGISTRY_NAME,new ListRegistryNode<>());
 			mergeTo((ListRegistryNode<Object>)json.get("children"),mod.get(CoreModule.MENU_REGISTRY_NAME));
 		}catch(Exception ex){
@@ -129,27 +128,22 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 			}
 		}
 	}
-	public NavigableRegistryNode<String,String> registerKeymap(String module){
+	public NavigableRegistryNode<String,String> registerKeymap(Class module){
 		TreeMap<String,String> mapping=new TreeMap<>();
-		File src=Main.INSTANCE.getFile("keymaps/default.json",module);
-		if(src!=null){
-			mapping.putAll((Map<String,String>)(Object)Main.INSTANCE.loadJSON(src));
+		try{
+			mapping.putAll((Map<String,String>)(Object)JSONDecoder.decode(new InputStreamReader(module.getResourceAsStream("/keymap.json"),StandardCharsets.UTF_8)));
+		}catch(IOException|SyntaxException ex){
+			Logger.getLogger(Registry.class.getName()).log(Level.SEVERE,null,ex);
 		}
 		NavigableRegistryNode<String,String> registry=new NavigableRegistryNode<>(mapping);
-		((RegistryNode<String,RegistryNode<String,String>>)ROOT.getOrCreateChild(module)).put(CoreModule.KEYMAP_REGISTRY_NAME,registry);
+		((RegistryNode<String,RegistryNode<String,String>>)ROOT.getOrCreateChild(module.getPackage().getName())).put(CoreModule.KEYMAP_REGISTRY_NAME,registry);
 		return registry;
 	}
-	public RegistryNode<String,String> registerMessage(String module){
+	public RegistryNode<String,String> registerMessage(Class module){
 		RegistryNode<String,String> registry=new SimpleRegistryNode<>();
-		ResourceBundle bundle;
-		try{
-			bundle=ResourceBundle.getBundle("messages",Locale.getDefault(),
-					new URLClassLoader(new URL[]{new File(new File(Main.INSTANCE.getDataPath(),module),"locales").toURI().toURL()}));
-			bundle.keySet().forEach((key)->registry.put(key,bundle.getString(key)));
-		}catch(MalformedURLException|MissingResourceException ex){
-			Logger.getGlobal().log(Level.INFO,null,ex);
-		}
-		((RegistryNode<String,RegistryNode<String,String>>)ROOT.getOrCreateChild(module)).put(CoreModule.MESSAGE_REGISTRY_NAME,registry);
+		ResourceBundle bundle=ResourceBundle.getBundle("/messages",Locale.getDefault(),module.getClassLoader());
+		bundle.keySet().forEach((key)->registry.put(key,bundle.getString(key)));
+		((RegistryNode<String,RegistryNode<String,String>>)ROOT.getOrCreateChild(module.getPackage().getName())).put(CoreModule.MESSAGE_REGISTRY_NAME,registry);
 		return registry;
 	}
 	public RegistryNode<String,Command> registerCommand(String module){

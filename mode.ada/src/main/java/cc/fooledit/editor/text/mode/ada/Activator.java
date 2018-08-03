@@ -17,7 +17,7 @@ public class Activator implements BundleActivator{
 		MultiRegistryNode.addChildElement("ads",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
 		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
-		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.ada.AdaLexer.class,cc.fooledit.core.Activator.class.getResourceAsStream("token.json"),CONTENT_TYPE);
+		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.ada.AdaLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.ada.AdaParser.class,"program",CONTENT_TYPE);
 	}
 	@Override

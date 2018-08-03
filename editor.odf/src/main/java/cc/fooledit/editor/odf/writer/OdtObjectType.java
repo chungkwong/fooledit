@@ -51,7 +51,7 @@ public class OdtObjectType implements DataObjectType<OdtObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("WRITER_DOCUMENT",cc.fooledit.editor.odf.Activator.NAME);
+		return MessageRegistry.getString("WRITER_DOCUMENT",cc.fooledit.editor.odf.Activator.class);
 	}
 	@Override
 	public void writeTo(OdtObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

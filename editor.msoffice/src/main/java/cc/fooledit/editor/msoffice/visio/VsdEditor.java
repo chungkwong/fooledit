@@ -32,6 +32,6 @@ public class VsdEditor implements DataEditor<VsdObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DIAGRAM_EDITOR",cc.fooledit.editor.msoffice.Activator.NAME);
+		return MessageRegistry.getString("DIAGRAM_EDITOR",cc.fooledit.editor.msoffice.Activator.class);
 	}
 }

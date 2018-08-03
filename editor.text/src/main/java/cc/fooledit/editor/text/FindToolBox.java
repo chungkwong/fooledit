@@ -35,7 +35,7 @@ public class FindToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("FIND",Activator.NAME);
+		return MessageRegistry.getString("FIND",Activator.class);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
@@ -51,9 +51,9 @@ public class FindToolBox implements ToolBox{
 	}
 	private static class FindPanel extends VBox{
 		private final CodeEditor area;
-		private final ToggleButton regex=new ToggleButton(MessageRegistry.getString("REGEX",Activator.NAME));
-		private final ToggleButton word=new ToggleButton(MessageRegistry.getString("WORD",Activator.NAME));
-		private final ToggleButton ignoreCase=new ToggleButton(MessageRegistry.getString("IGNORE_CASE",Activator.NAME));
+		private final ToggleButton regex=new ToggleButton(MessageRegistry.getString("REGEX",Activator.class));
+		private final ToggleButton word=new ToggleButton(MessageRegistry.getString("WORD",Activator.class));
+		private final ToggleButton ignoreCase=new ToggleButton(MessageRegistry.getString("IGNORE_CASE",Activator.class));
 		private final TextArea findString=new TextArea();
 		private final TextArea replaceString=new TextArea();
 		private final SelectionGroup found;
@@ -61,21 +61,21 @@ public class FindToolBox implements ToolBox{
 			this.area=area;
 			this.found=area.createSelectionGroup("found");
 			HBox searchBar=new HBox();
-			searchBar.getChildren().add(new Label(MessageRegistry.getString("FIND",Activator.NAME)));
+			searchBar.getChildren().add(new Label(MessageRegistry.getString("FIND",Activator.class)));
 			searchBar.getChildren().add(findString);
 			HBox.setHgrow(findString,Priority.ALWAYS);
-			Button previous=new Button(MessageRegistry.getString("PREVIOUS",Activator.NAME));
+			Button previous=new Button(MessageRegistry.getString("PREVIOUS",Activator.class));
 			previous.setOnAction((e)->findPrevious());
-			Button next=new Button(MessageRegistry.getString("NEXT",Activator.NAME));
+			Button next=new Button(MessageRegistry.getString("NEXT",Activator.class));
 			next.setOnAction((e)->findNext());
 			searchBar.getChildren().addAll(next,previous,ignoreCase,word,regex);
 			HBox replaceBar=new HBox();
-			replaceBar.getChildren().add(new Label(MessageRegistry.getString("REPLACE_WITH",Activator.NAME)));
+			replaceBar.getChildren().add(new Label(MessageRegistry.getString("REPLACE_WITH",Activator.class)));
 			replaceBar.getChildren().add(replaceString);
 			HBox.setHgrow(replaceBar,Priority.ALWAYS);
-			Button current=new Button(MessageRegistry.getString("CURRENT",Activator.NAME));
+			Button current=new Button(MessageRegistry.getString("CURRENT",Activator.class));
 			current.setOnAction((e)->replaceCurrent());
-			Button all=new Button(MessageRegistry.getString("ALL",Activator.NAME));
+			Button all=new Button(MessageRegistry.getString("ALL",Activator.class));
 			all.setOnAction((e)->replaceAll());
 			replaceBar.getChildren().addAll(current,all);
 			getChildren().setAll(searchBar,replaceBar);

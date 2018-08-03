@@ -16,6 +16,7 @@
  */
 package cc.fooledit.editor.filesystem;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.filesystem.Activator;
 import org.osgi.framework.*;
 /**
  *
@@ -34,7 +35,7 @@ public class Activator implements BundleActivator{
 		addCommand("save-as",()->FileCommands.saveAs());
 	}
 	private static void addCommand(String name,Runnable action){
-		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,NAME));
+		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,Activator.class));
 	}
 	public static void onUnLoad(){
 	}

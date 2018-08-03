@@ -15,12 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.zip;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
-import java.io.*;
 import java.util.*;
 import java.util.function.*;
-import java.util.logging.*;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.scene.control.*;
@@ -40,11 +37,11 @@ public class ArchiveViewer extends BorderPane{
 		tree.getItems().setAll(entries);
 		tree.setTableMenuButtonVisible(true);
 		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		this.<String>createColumnChooser(MessageRegistry.getString("NAME",Activator.NAME),(param)
+		this.<String>createColumnChooser(MessageRegistry.getString("NAME",Activator.class),(param)
 				->new ReadOnlyStringWrapper(getFileName(param.getValue())),true);
-		this.<Number>createColumnChooser(MessageRegistry.getString("SIZE",Activator.NAME),(param)
+		this.<Number>createColumnChooser(MessageRegistry.getString("SIZE",Activator.class),(param)
 				->new ReadOnlyLongWrapper(getSize(param.getValue())),true);
-		this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED",Activator.NAME),(param)
+		this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED",Activator.class),(param)
 				->new ReadOnlyStringWrapper(getLastModified(param.getValue())),true);
 		((TableColumn<ArchiveEntry,String>)tree.getColumns().get(0)).setCellFactory((p)->new ZipCell());
 		((TableColumn<ArchiveEntry,String>)tree.getColumns().get(0)).prefWidthProperty().bind(tree.widthProperty().multiply(0.4));
@@ -119,11 +116,7 @@ public class ArchiveViewer extends BorderPane{
 	}
 	private static Image FOLDER, REGULAR;
 	static{
-		try{
-			FOLDER=new Image(new FileInputStream(Main.INSTANCE.getFile("icons/folder.png","core")));
-			REGULAR=new Image(new FileInputStream(Main.INSTANCE.getFile("icons/regular.png","core")));
-		}catch(FileNotFoundException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
+		FOLDER=new Image(ArchiveViewer.class.getResourceAsStream("/folder.png"));
+		REGULAR=new Image(ArchiveViewer.class.getResourceAsStream("/regular.png"));
 	}
 }

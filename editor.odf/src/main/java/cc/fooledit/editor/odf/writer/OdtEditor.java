@@ -32,6 +32,6 @@ public class OdtEditor implements DataEditor<OdtObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("WRITER",cc.fooledit.editor.odf.Activator.NAME);
+		return MessageRegistry.getString("WRITER",cc.fooledit.editor.odf.Activator.class);
 	}
 }

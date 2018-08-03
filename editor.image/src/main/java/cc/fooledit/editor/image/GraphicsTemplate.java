@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.image;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.util.*;
@@ -47,8 +46,8 @@ public class GraphicsTemplate implements Template<GraphicsObject>{
 		return mime;
 	}
 	@Override
-	public String getModule(){
-		return Activator.NAME;
+	public Class<cc.fooledit.editor.image.Activator> getModule(){
+		return Activator.class;
 	}
 	@Override
 	public Collection<String> getParameters(){
@@ -60,7 +59,7 @@ public class GraphicsTemplate implements Template<GraphicsObject>{
 			SimpleRegistryNode<String,Object> prop=new SimpleRegistryNode<>();
 			prop.put(DataObject.MIME,mime);
 			prop.put(DataObject.DEFAULT_NAME,name);
-			return GraphicsObjectType.INSTANCE.readFrom(Main.INSTANCE.getFile(file,Activator.NAME).toURL().openConnection(),prop);
+			return GraphicsObjectType.INSTANCE.readFrom(GraphicsTemplate.class.getResource(file).openConnection(),prop);
 		}catch(Exception ex){
 			Logger.getLogger(GraphicsTemplate.class.getName()).log(Level.SEVERE,null,ex);
 			return GraphicsObjectType.INSTANCE.create();

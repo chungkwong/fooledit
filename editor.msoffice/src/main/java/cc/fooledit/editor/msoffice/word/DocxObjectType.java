@@ -45,7 +45,7 @@ public class DocxObjectType implements DataObjectType<DocxObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("NEW_WORD_DOCUMENT",cc.fooledit.editor.msoffice.Activator.NAME);
+		return MessageRegistry.getString("NEW_WORD_DOCUMENT",cc.fooledit.editor.msoffice.Activator.class);
 	}
 	@Override
 	public void writeTo(DocxObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.spi.*;
 import java.util.function.*;
@@ -27,14 +26,14 @@ import javafx.scene.layout.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MenuRegistry{
-	private final String module;
+	private final Class module;
 	private final MenuBar bar=new MenuBar();
 	public MenuRegistry(){
 		this.module=null;
 	}
-	public MenuRegistry(String module){
+	public MenuRegistry(Class module){
 		this.module=module;
-		setMenus(((RegistryNode<String,ListRegistryNode<RegistryNode<String,Object>>>)Registry.ROOT.getOrCreateChild(module)).get(CoreModule.MENU_REGISTRY_NAME));
+		setMenus(((RegistryNode<String,ListRegistryNode<RegistryNode<String,Object>>>)Registry.ROOT.getOrCreateChild(module.getPackage().getName())).get(CoreModule.MENU_REGISTRY_NAME));
 		HBox.setHgrow(bar,Priority.NEVER);
 	}
 	private void setMenus(ListRegistryNode<RegistryNode<String,Object>> json){

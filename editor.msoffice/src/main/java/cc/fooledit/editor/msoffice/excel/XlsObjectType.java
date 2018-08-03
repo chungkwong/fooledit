@@ -45,7 +45,7 @@ public class XlsObjectType implements DataObjectType<XlsObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",cc.fooledit.editor.msoffice.Activator.NAME);
+		return MessageRegistry.getString("OLD_WORD_DOCUMENT",cc.fooledit.editor.msoffice.Activator.class);
 	}
 	@Override
 	public void writeTo(XlsObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

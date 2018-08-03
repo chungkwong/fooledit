@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit;
+import cc.fooledit.Main;
+import java.io.*;
+import java.net.*;
 import java.util.*;
+import java.util.logging.*;
+import java.util.logging.Logger;
 import org.apache.felix.framework.FrameworkFactory;
 import org.apache.felix.main.*;
 import org.osgi.framework.launch.*;
@@ -46,14 +51,25 @@ public class Main{
 				+"javafx.util,javafx.util.converter,netscape.javascript,javax.crypto,javax.crypto.spec,javax.imageio,javax.i"
 				+"mageio.metadata,javax.imageio.plugins.jpeg,javax.imageio.stream,javax.xml.namespace,javax.xml.parsers,javax.xml.xpath,"
 				+"org.w3c.dom,org.xml.sax,com.sun.javafx.scene.control.skin,javax.activation,javax.script,"
-				+"com.sun.javafx.binding,com.sun.org.apache.xml.internal.utils,com.sun.org.apache.xpath.internal,"
+				+"com.sun.javafx.binding,com.sun.javafx.collections,com.sun.org.apache.xml.internal.utils,com.sun.org.apache.xpath.internal,"
 				+"com.sun.org.apache.xpath.internal.objects,sun.net.www");
 		config.put("felix.auto.deploy.action","uninstall,install,update,start");
-		config.put("org.osgi.framework.storage","/home/kwong/NetBeansProjects/fooledit/distribution/target/distribution-1.0-SNAPSHOT-dist/felix-cache");
-		config.put("felix.auto.deploy.dir","/home/kwong/NetBeansProjects/fooledit/distribution/target/distribution-1.0-SNAPSHOT-dist/bundle");
+		URL url=Main.class.getResource("");
+		if(url.getProtocol().equals("file")){
+			config.put("org.osgi.framework.storage","/home/kwong/NetBeansProjects/fooledit/distribution/target/distribution-1.0-SNAPSHOT-dist/felix-cache");
+			config.put("felix.auto.deploy.dir","/home/kwong/NetBeansProjects/fooledit/distribution/target/distribution-1.0-SNAPSHOT-dist/bundle");
+		}else{
+			try{
+				File home=new File(URLDecoder.decode(url.toString().substring(9,url.toString().indexOf('!')),"UTF-8")).getParentFile().getParentFile();
+				config.put("org.osgi.framework.storage",new File(home,"felix-cache").getAbsolutePath());
+				config.put("felix.auto.deploy.dir",new File(home,"bundle").getAbsolutePath());
+			}catch(UnsupportedEncodingException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+		}
 		//config.put("felix.auto.deploy.dir","bundle");
 		config.put("org.osgi.framework.storage.clean","onFirstInit");
-		config.put("felix.log.level","4");
+		config.put("felix.log.level","3");
 		return config;
 	}
 	private static void stopFrameOnExit(Framework framework){

@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
+import com.github.chungkwong.json.*;
 import com.sun.javafx.scene.control.skin.*;
 import java.io.*;
+import java.nio.charset.*;
 import java.util.*;
+import java.util.logging.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
 /**
@@ -39,9 +41,11 @@ public class TreeTableWrapper<T> extends TreeTableView<T>{
 	}
 	private void installKeymap(){
 		TreeMap<String,String> mapping=new TreeMap<>();
-		File src=Main.getFile("keymaps/treetable.json",CoreModule.NAME);
-		if(src!=null)
-			mapping.putAll((Map<String,String>)(Object)Main.loadJSON(src));
+		try{
+			mapping.putAll((Map<String,String>)JSONDecoder.decode(new InputStreamReader(getClass().getResourceAsStream("/treetable.json"),StandardCharsets.UTF_8)));
+		}catch(IOException|SyntaxException ex){
+			Logger.getLogger(TreeTableWrapper.class.getName()).log(Level.SEVERE,null,ex);
+		}
 		NavigableRegistryNode<String,String> registry=new NavigableRegistryNode<>(mapping);
 		getProperties().put(WorkSheet.KEYMAP_NAME,registry);
 	}
@@ -67,7 +71,7 @@ public class TreeTableWrapper<T> extends TreeTableView<T>{
 		addCommand("fold",()->getTreeItem(getSelectionModel().getFocusedIndex()).setExpanded(false),registry);
 	}
 	private void addCommand(String name,Runnable action,ObservableMap<String,Command> registry){
-		registry.put(name,new Command(name,action,CoreModule.NAME));
+		registry.put(name,new Command(name,action,Activator.class));
 	}
 	private void moveToPreviousPage(){
 		int newIndex=((TreeTableViewSkin)getSkin()).onScrollPageUp(true);
@@ -107,10 +111,11 @@ public class TreeTableWrapper<T> extends TreeTableView<T>{
 	}
 	private void toggleSelection(){
 		int curr=getFocusModel().getFocusedIndex();
-		if(getSelectionModel().isSelected(curr))
+		if(getSelectionModel().isSelected(curr)){
 			getSelectionModel().clearSelection(curr);
-		else
+		}else{
 			getSelectionModel().select(curr);
+		}
 	}
 	private void selectTo(){
 		int last=getSelectionModel().getSelectedIndex();

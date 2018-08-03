@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.filesystem;
-import cc.fooledit.*;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import java.io.*;
@@ -60,24 +59,24 @@ public class FileSystemViewer extends BorderPane{
 		tree.setTableMenuButtonVisible(true);
 		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		setCenter(tree);
-		this.<String>createColumnChooser(MessageRegistry.getString("NAME",Activator.NAME),(param)->
-				new ReadOnlyStringWrapper(getFileName(param.getValue().getValue())),true);
-		this.<String>createColumnChooser(MessageRegistry.getString("OWNER",Activator.NAME),(param)->
-				new ReadOnlyStringWrapper(getOwnerName(param.getValue().getValue())),true);
-		this.<Boolean>createColumnChooser(MessageRegistry.getString("READABLE",Activator.NAME),(param)->
-				new ReadOnlyBooleanWrapper(Files.isReadable(param.getValue().getValue())),true);
-		this.<Boolean>createColumnChooser(MessageRegistry.getString("WRITABLE",Activator.NAME),(param)->
-				new ReadOnlyBooleanWrapper(Files.isWritable(param.getValue().getValue())),true);
-		this.<Boolean>createColumnChooser(MessageRegistry.getString("EXECUTABLE",Activator.NAME),(param)->
-				new ReadOnlyBooleanWrapper(Files.isExecutable(param.getValue().getValue())),true);
-		this.<Boolean>createColumnChooser(MessageRegistry.getString("HIDDEN",Activator.NAME),(param)->
-				new ReadOnlyBooleanWrapper(isHidden(param.getValue().getValue())),true);
-		this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED",Activator.NAME),(param)->
-				new ReadOnlyStringWrapper(getLastModified(param.getValue().getValue())),true);
-		this.<Number>createColumnChooser(MessageRegistry.getString("SIZE",Activator.NAME),(param)->
-				new ReadOnlyLongWrapper(getSize(param.getValue().getValue())),true);
-		this.<String>createColumnChooser(MessageRegistry.getString("SYMBOLIC_LINK",Activator.NAME),(param)->
-				new ReadOnlyStringWrapper(getLinkTarget(param.getValue().getValue())),false);
+		this.<String>createColumnChooser(MessageRegistry.getString("NAME",Activator.class),(param)
+				->new ReadOnlyStringWrapper(getFileName(param.getValue().getValue())),true);
+		this.<String>createColumnChooser(MessageRegistry.getString("OWNER",Activator.class),(param)
+				->new ReadOnlyStringWrapper(getOwnerName(param.getValue().getValue())),true);
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("READABLE",Activator.class),(param)
+				->new ReadOnlyBooleanWrapper(Files.isReadable(param.getValue().getValue())),true);
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("WRITABLE",Activator.class),(param)
+				->new ReadOnlyBooleanWrapper(Files.isWritable(param.getValue().getValue())),true);
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("EXECUTABLE",Activator.class),(param)
+				->new ReadOnlyBooleanWrapper(Files.isExecutable(param.getValue().getValue())),true);
+		this.<Boolean>createColumnChooser(MessageRegistry.getString("HIDDEN",Activator.class),(param)
+				->new ReadOnlyBooleanWrapper(isHidden(param.getValue().getValue())),true);
+		this.<String>createColumnChooser(MessageRegistry.getString("LAST_MODIFIED",Activator.class),(param)
+				->new ReadOnlyStringWrapper(getLastModified(param.getValue().getValue())),true);
+		this.<Number>createColumnChooser(MessageRegistry.getString("SIZE",Activator.class),(param)
+				->new ReadOnlyLongWrapper(getSize(param.getValue().getValue())),true);
+		this.<String>createColumnChooser(MessageRegistry.getString("SYMBOLIC_LINK",Activator.class),(param)
+				->new ReadOnlyStringWrapper(getLinkTarget(param.getValue().getValue())),false);
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).setCellFactory((p)->new FileCell());
 		((TreeTableColumn<Path,String>)tree.getColumns().get(0)).prefWidthProperty().bind(tree.widthProperty().multiply(0.4));
 		tree.setEditable(true);
@@ -98,14 +97,14 @@ public class FileSystemViewer extends BorderPane{
 		try{
 			return Files.getOwner(path,LinkOption.NOFOLLOW_LINKS).getName();
 		}catch(IOException ex){
-			return MessageRegistry.getString("UNKNOWN",Activator.NAME);
+			return MessageRegistry.getString("UNKNOWN",Activator.class);
 		}
 	}
 	private static String getLastModified(Path path){
 		try{
 			return Files.getLastModifiedTime(path).toString();
 		}catch(IOException ex){
-			return MessageRegistry.getString("UNKNOWN",Activator.NAME);
+			return MessageRegistry.getString("UNKNOWN",Activator.class);
 		}
 	}
 	private static long getSize(Path path){
@@ -135,8 +134,9 @@ public class FileSystemViewer extends BorderPane{
 				WatchKey key=watchService.take();
 				Path path=(Path)key.watchable();
 				TreeItem<Path> item=getTreeItem(path,false);
-				if(item==null||!item.isExpanded())
+				if(item==null||!item.isExpanded()){
 					continue;
+				}
 				for(WatchEvent event:key.pollEvents()){
 					if(event.kind()==StandardWatchEventKinds.OVERFLOW){
 						((LazyTreeItem<Path>)item).refresh();
@@ -144,10 +144,11 @@ public class FileSystemViewer extends BorderPane{
 						Path file=(Path)event.context();
 						TreeItem<Path> sub=getTreeItem(path.resolve(file),item,false);
 						if(event.kind()==StandardWatchEventKinds.ENTRY_CREATE){
-							if(sub==null)
+							if(sub==null){
 								item.getChildren().add(createTreeItem(path.resolve(file)));
-							else
+							}else{
 								item.getChildren().set(item.getChildren().indexOf(sub),sub);
+							}
 						}else if(event.kind()==StandardWatchEventKinds.ENTRY_DELETE){
 							item.getChildren().remove(sub);
 						}else if(event.kind()==StandardWatchEventKinds.ENTRY_MODIFY){
@@ -157,7 +158,6 @@ public class FileSystemViewer extends BorderPane{
 				}
 				key.reset();
 			}catch(Exception ex){
-
 			}
 		}
 		try{
@@ -168,13 +168,15 @@ public class FileSystemViewer extends BorderPane{
 	}
 	public void focusPath(Path path){
 		TreeItem<Path> treeItem=getTreeItem(path,true);
-		if(treeItem!=null)
+		if(treeItem!=null){
 			tree.getFocusModel().focus(tree.getRow(treeItem));
+		}
 	}
 	public void selectPath(Path path){
 		TreeItem<Path> treeItem=getTreeItem(path,true);
-		if(treeItem!=null)
+		if(treeItem!=null){
 			tree.getSelectionModel().select(tree.getRow(treeItem));
+		}
 	}
 	private TreeItem<Path> getTreeItem(Path path,boolean expand){
 		Optional<TreeItem<Path>> cand=tree.getRoot().getChildren().stream().filter((p)->path.startsWith(p.getValue())).findAny();
@@ -183,11 +185,13 @@ public class FileSystemViewer extends BorderPane{
 	private TreeItem<Path> getTreeItem(Path path,TreeItem<Path> start,boolean expand){
 		while(true){
 			Path curr=start.getValue();
-			if(path.equals(curr))
+			if(path.equals(curr)){
 				return start;
+			}
 			Path next=path.getName(curr.getNameCount());
-			if(expand)
+			if(expand){
 				start.setExpanded(true);
+			}
 			Optional<TreeItem<Path>> cand=start.getChildren().stream().filter((p)->p.getValue().endsWith(next)).findAny();
 			if(cand.isPresent()){
 				start=cand.get();
@@ -202,13 +206,14 @@ public class FileSystemViewer extends BorderPane{
 	}
 	private TreeItem<Path> createTreeItem(Path path){
 		if(Files.isDirectory(path)){
-			if(watchService!=null)
+			if(watchService!=null){
 				try{
 					path.register(watchService,StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_DELETE,
 							StandardWatchEventKinds.ENTRY_MODIFY,StandardWatchEventKinds.OVERFLOW);
 				}catch(IOException ex){
 					Logger.getGlobal().log(Level.SEVERE,null,ex);
 				}
+			}
 			return new LazyTreeItem<Path>(path,()->getChildren(path));
 		}else{
 			return new TreeItem<>(path);
@@ -230,8 +235,9 @@ public class FileSystemViewer extends BorderPane{
 	}
 	public void fireAction(){
 		Consumer<Collection<Path>> action=data.getAction();
-		if(action!=null)
+		if(action!=null){
 			action.accept(getSelectedPaths());
+		}
 	}
 	public void markPaths(){
 		marked=getSelectedPaths();
@@ -263,10 +269,11 @@ public class FileSystemViewer extends BorderPane{
 				e.consume();
 			});
 			setOnDragOver((e)->{
-				if(e.getDragboard().hasFiles()&&Files.isDirectory(getTreeTableRow().getTreeItem().getValue()))
+				if(e.getDragboard().hasFiles()&&Files.isDirectory(getTreeTableRow().getTreeItem().getValue())){
 					e.acceptTransferModes(TransferMode.MOVE,TransferMode.COPY,TransferMode.LINK);
-				else
+				}else{
 					e.acceptTransferModes();
+				}
 				e.consume();
 			});
 			setOnDragDropped((e)->{
@@ -275,12 +282,13 @@ public class FileSystemViewer extends BorderPane{
 					try{
 						for(File f:board.getFiles()){
 							Path to=getTreeTableRow().getItem().resolve(f.getName());
-							if(e.getTransferMode().equals(TransferMode.MOVE))
+							if(e.getTransferMode().equals(TransferMode.MOVE)){
 								Files.move(f.toPath(),to);
-							else if(e.getTransferMode().equals(TransferMode.COPY))
+							}else if(e.getTransferMode().equals(TransferMode.COPY)){
 								Files.copy(f.toPath(),to);
-							else if(e.getTransferMode().equals(TransferMode.LINK))
+							}else if(e.getTransferMode().equals(TransferMode.LINK)){
 								Files.createLink(to,f.toPath());
+							}
 						}
 						e.setDropCompleted(true);
 					}catch(IOException ex){
@@ -301,26 +309,22 @@ public class FileSystemViewer extends BorderPane{
 				setGraphic(null);
 			}else{
 				setText(item);
-				if(Files.isDirectory(path))
+				if(Files.isDirectory(path)){
 					setGraphic(new ImageView(FOLDER));
-				else if(Files.isRegularFile(path))
+				}else if(Files.isRegularFile(path)){
 					setGraphic(new ImageView(REGULAR));
-				else
+				}else{
 					setGraphic(null);
+				}
 			}
 		}
-
 	}
-	private static Image FOLDER,REGULAR;
+	private static Image FOLDER, REGULAR;
 	static{
-		try{
-			FOLDER=new Image(new FileInputStream(Main.INSTANCE.getFile("icons/folder.png","core")));
-			REGULAR=new Image(new FileInputStream(Main.INSTANCE.getFile("icons/regular.png","core")));
-		}catch(FileNotFoundException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
+		FOLDER=new Image(FileSystemViewer.class.getResourceAsStream("/folder.png"));
+		REGULAR=new Image(FileSystemViewer.class.getResourceAsStream("/regular.png"));
 	}
-	public static void main(String[] args) throws IOException, InterruptedException{
+	public static void main(String[] args) throws IOException,InterruptedException{
 		/*WatchService service=FileSystems.getDefault().newWatchService();
 		new File("/home/kwong/NetBeansProjects/fooledit/").toPath().register(service,
 				StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_DELETE,StandardWatchEventKinds.ENTRY_MODIFY);

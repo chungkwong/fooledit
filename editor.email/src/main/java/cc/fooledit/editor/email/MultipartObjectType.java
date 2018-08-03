@@ -46,7 +46,7 @@ public class MultipartObjectType implements DataObjectType<MultipartObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("MULTIPART",Activator.NAME);
+		return MessageRegistry.getString("MULTIPART",Activator.class);
 	}
 	@Override
 	public void writeTo(MultipartObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

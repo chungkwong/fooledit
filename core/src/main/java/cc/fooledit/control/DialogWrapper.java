@@ -28,7 +28,7 @@ public class DialogWrapper extends Tab{
 	public DialogWrapper(String title,List<Argument> arguments,Consumer<List<Object>> onCommit){
 		setText(title);
 		FlowPane content=new FlowPane();
-		Button commit=new Button(MessageRegistry.getString("COMMIT",CoreModule.NAME));
+		Button commit=new Button(MessageRegistry.getString("COMMIT",Activator.class));
 		content.getChildren().add(commit);
 		setContent(content);
 	}

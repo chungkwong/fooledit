@@ -70,7 +70,7 @@ public class Main extends Application{
 			Logger.getGlobal().log(Level.SEVERE,ex.getLocalizedMessage(),ex);
 		}
 		Logger.getGlobal().addHandler(notifier);
-		scene.getStylesheets().add(getClass().getResource("/stylesheets/base.css").toString());
+		scene.getStylesheets().add(getClass().getResource("/base.css").toString());
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//scene.focusOwnerProperty().addListener((e,o,n)->System.out.println(n));
 		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
@@ -81,7 +81,7 @@ public class Main extends Application{
 		ModuleRegistry.loadDefault();
 		CoreModule.PROTOCOL_REGISTRY.put("application",new ApplicationRegistry());
 		CoreModule.PROTOCOL_REGISTRY.put("data",new DataStreamHandler());
-		keymapRegistry=Registry.ROOT.registerKeymap(CoreModule.NAME);
+		keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
 		root.addEventFilter(KeyEvent.ANY,getKeyFilter());
 		initMenuBar();
 		root.setBottom(notifier.getStatusBar());
@@ -90,7 +90,7 @@ public class Main extends Application{
 		//notifier.addItem(Notifier.createTimeField(DateFormat.getDateTimeInstance()));
 	}
 	private void initMenuBar(){
-		menuRegistry=Registry.ROOT.registerMenu(CoreModule.NAME);
+		menuRegistry=Registry.ROOT.registerMenu(Activator.class);
 		menuRegistry.registerDynamicMenu("buffer",getBufferMenu());
 		menuRegistry.registerDynamicMenu("file_history",getHistoryMenu());
 		input=new MiniBuffer();
@@ -192,16 +192,16 @@ public class Main extends Application{
 		});
 	}
 	private void addCommand(String name,Runnable action){
-		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,CoreModule.NAME));
+		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,Activator.class));
 	}
 	private void addCommand(String name,ThrowableVarargsFunction<Object,Object> action){
-		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,CoreModule.NAME));
+		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,Activator.class));
 	}
 	private void addCommandBatch(String name,Runnable action){
-		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,CoreModule.NAME,false));
+		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,Activator.class,false));
 	}
 	private void addCommandBatch(String name,ThrowableVarargsFunction<Object,Object> action){
-		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,CoreModule.NAME,false));
+		CoreModule.COMMAND_REGISTRY.put(name,new Command(name,action,Activator.class,false));
 	}
 	private Consumer<ObservableList<MenuItem>> getBufferMenu(){
 		return (l)->{
@@ -256,7 +256,7 @@ public class Main extends Application{
 		};
 	}
 	private MenuItem createCommandMenuItem(String name){
-		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase(),CoreModule.NAME));
+		MenuItem item=new MenuItem(MessageRegistry.getString(name.toUpperCase(),Activator.class));
 		item.setOnAction((e)->TaskManager.executeCommand(CoreModule.COMMAND_REGISTRY.get(name)));
 		return item;
 	}
@@ -446,7 +446,7 @@ public class Main extends Application{
 				return true;
 			}else if(entry.getKey().startsWith(code+' ')){
 				currKey=code;
-				getNotifier().notify(MessageRegistry.getString("ENTERED",CoreModule.NAME)+code);
+				getNotifier().notify(MessageRegistry.getString("ENTERED",Activator.class)+code);
 				ignoreKey=true;
 				return true;
 			}

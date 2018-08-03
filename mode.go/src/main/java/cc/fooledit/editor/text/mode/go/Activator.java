@@ -15,7 +15,7 @@ public class Activator implements BundleActivator{
 		MultiRegistryNode.addChildElement("go",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
 		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
-		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.go.GolangLexer.class,Activator.class.getResourceAsStream("token.json"),CONTENT_TYPE);
+		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.go.GolangLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.go.GolangParser.class,"sourceFile",CONTENT_TYPE);
 	}
 	@Override

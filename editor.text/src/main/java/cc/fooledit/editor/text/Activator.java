@@ -16,6 +16,7 @@
  */
 package cc.fooledit.editor.text;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.text.Activator;
 import cc.fooledit.spi.*;
 import java.io.*;
 import java.nio.charset.*;
@@ -48,7 +49,7 @@ public class Activator implements BundleActivator{
 		TextObject logObject=new TextObject("");
 		logObject.getText().bind(Notifier.MESSAGES);
 		RegistryNode<String,Object> log=new SimpleRegistryNode<>();
-		log.put(DataObject.DEFAULT_NAME,MessageRegistry.getString("LOG",NAME));
+		log.put(DataObject.DEFAULT_NAME,MessageRegistry.getString("LOG",getClass()));
 		log.put(DataObject.TYPE,TextObjectType.class.getName());
 		log.put(DataObject.MIME,"text/plain");
 		log.put(DataObject.DATA,logObject);

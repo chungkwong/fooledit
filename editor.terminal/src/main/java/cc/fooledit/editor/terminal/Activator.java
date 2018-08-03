@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.terminal;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.terminal.Activator;
 import org.osgi.framework.*;
 /**
  *
@@ -28,7 +28,7 @@ public class Activator implements BundleActivator{
 	public static final String CONTENT_TYPE_NAME="fooledit/terminal";
 	public static void onLoad(){
 		Registry.registerApplication("terminal","fooledit/terminal",TerminalObjectType.INSTANCE,TerminalObject.class,TerminalEditor.INSTANCE);
-		Main.INSTANCE.getGlobalCommandRegistry().put("terminal",new Command("terminal",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(TerminalObjectType.INSTANCE)),NAME));
+		CoreModule.COMMAND_REGISTRY.put("terminal",new Command("terminal",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(TerminalObjectType.INSTANCE)),Activator.class));
 	}
 	public static void onUnLoad(){
 	}

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.browser;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.browser.Activator;
 import org.osgi.framework.*;
 /**
  *
@@ -28,7 +28,7 @@ public class Activator implements BundleActivator{
 	public static final String CONTENT_TYPE_NAME="fooledit/browser";
 	public static void onLoad(){
 		Registry.registerApplication("browser","fooledit/browser",BrowserObjectType.INSTANCE,BrowserObject.class,BrowserEditor.INSTANCE);
-		Main.INSTANCE.getGlobalCommandRegistry().put("browser",new Command("browser",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(BrowserObjectType.INSTANCE)),NAME));
+		CoreModule.COMMAND_REGISTRY.put("browser",new Command("browser",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(BrowserObjectType.INSTANCE)),Activator.class));
 	}
 	public static void onUnLoad(){
 	}

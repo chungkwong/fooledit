@@ -23,31 +23,31 @@ import javafx.application.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Command implements ThrowableVarargsFunction<Object,Object>{
-	private final String module;
+	private final Class module;
 	private final String name;
 	private final ThrowableVarargsFunction<Object,Object> action;
 	private final List<Argument> parameters;
 	private final boolean interactive;
 	private static Pair<Command,Object[]> lastCommand=new Pair<>(null,null);
-	public Command(String name,Runnable action,String module){
+	public Command(String name,Runnable action,Class module){
 		this(name,action,module,true);
 	}
-	public Command(String name,ThrowableVarargsFunction<Object,Object> action,String module){
+	public Command(String name,ThrowableVarargsFunction<Object,Object> action,Class module){
 		this(name,action,module,true);
 	}
-	public Command(String name,List<Argument> parameters,ThrowableVarargsFunction<Object,Object> action,String module){
+	public Command(String name,List<Argument> parameters,ThrowableVarargsFunction<Object,Object> action,Class module){
 		this(name,parameters,action,module,true);
 	}
-	public Command(String name,Runnable action,String module,boolean interactive){
+	public Command(String name,Runnable action,Class module,boolean interactive){
 		this(name,(t)->{
 			action.run();
 			return null;
 		},module,interactive);
 	}
-	public Command(String name,ThrowableVarargsFunction<Object,Object> action,String module,boolean interactive){
+	public Command(String name,ThrowableVarargsFunction<Object,Object> action,Class module,boolean interactive){
 		this(name,Collections.emptyList(),action,module,interactive);
 	}
-	public Command(String name,List<Argument> parameters,ThrowableVarargsFunction<Object,Object> action,String module,boolean interactive){
+	public Command(String name,List<Argument> parameters,ThrowableVarargsFunction<Object,Object> action,Class module,boolean interactive){
 		this.action=action;
 		this.module=module;
 		this.name=name;
@@ -61,7 +61,7 @@ public class Command implements ThrowableVarargsFunction<Object,Object>{
 	public String getName(){
 		return name;
 	}
-	public String getModule(){
+	public Class getModule(){
 		return module;
 	}
 	public List<Argument> getParameters(){

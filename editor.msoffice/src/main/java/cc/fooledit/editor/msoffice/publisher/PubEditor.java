@@ -34,6 +34,6 @@ public class PubEditor implements DataEditor<PubObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DOCUMENT_EDITOR",cc.fooledit.editor.msoffice.Activator.NAME);
+		return MessageRegistry.getString("DOCUMENT_EDITOR",cc.fooledit.editor.msoffice.Activator.class);
 	}
 }

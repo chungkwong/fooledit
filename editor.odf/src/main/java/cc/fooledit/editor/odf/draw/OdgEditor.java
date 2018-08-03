@@ -33,6 +33,6 @@ public class OdgEditor implements DataEditor<OdgObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("DIAGRAM_EDITOR",Activator.NAME);
+		return MessageRegistry.getString("DIAGRAM_EDITOR",Activator.class);
 	}
 }

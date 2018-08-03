@@ -36,7 +36,7 @@ public class TransformToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("TRANSFORM",Activator.NAME);
+		return MessageRegistry.getString("TRANSFORM",Activator.class);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){

@@ -33,6 +33,6 @@ public class OdsEditor implements DataEditor<OdsObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("SPREADSHEET",Activator.NAME);
+		return MessageRegistry.getString("SPREADSHEET",Activator.class);
 	}
 }

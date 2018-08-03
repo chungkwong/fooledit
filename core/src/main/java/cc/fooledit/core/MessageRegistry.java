@@ -21,14 +21,11 @@ import cc.fooledit.spi.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MessageRegistry{
-	public static String getString(String key,String module){
-		RegistryNode<String,RegistryNode> mod=(RegistryNode<String,RegistryNode>)Registry.ROOT.getOrCreateChild(module);
+	public static String getString(String key,Class module){
+		RegistryNode<String,RegistryNode> mod=(RegistryNode<String,RegistryNode>)Registry.ROOT.getOrCreateChild(module.getPackage().getName());
 		if(!mod.containsKey(CoreModule.MESSAGE_REGISTRY_NAME)){
 			Registry.ROOT.registerMessage(module);
 		}
 		return ((RegistryNode<String,String>)mod.getOrCreateChild(CoreModule.MESSAGE_REGISTRY_NAME)).getOrDefault(key,key);
-	}
-	public static void addBundle(String module){
-		Registry.ROOT.registerMessage(module);
 	}
 }

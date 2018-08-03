@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
+import com.github.chungkwong.json.*;
 import com.sun.javafx.scene.control.skin.*;
 import java.io.*;
+import java.nio.charset.*;
 import java.util.*;
+import java.util.logging.*;
 import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -40,9 +42,11 @@ public class ScrollPaneWrapper extends ScrollPane{
 	}
 	private void installKeymap(){
 		TreeMap<String,String> mapping=new TreeMap<>();
-		File src=Main.getFile("keymaps/scrollPane.json",CoreModule.NAME);
-		if(src!=null)
-			mapping.putAll((Map<String,String>)(Object)Main.loadJSON(src));
+		try{
+			mapping.putAll((Map<String,String>)JSONDecoder.decode(new InputStreamReader(getClass().getResourceAsStream("/scrollPane.json"),StandardCharsets.UTF_8)));
+		}catch(IOException|SyntaxException ex){
+			Logger.getLogger(TreeTableWrapper.class.getName()).log(Level.SEVERE,null,ex);
+		}
 		NavigableRegistryNode<String,String> registry=new NavigableRegistryNode<>(mapping);
 		getProperties().put(WorkSheet.KEYMAP_NAME,registry);
 	}
@@ -57,6 +61,6 @@ public class ScrollPaneWrapper extends ScrollPane{
 		addCommand("scroll-to-bottom",()->setVvalue(getVmax()),registry);
 	}
 	private void addCommand(String name,Runnable action,ObservableMap<String,Command> registry){
-		registry.put(name,new Command(name,action,CoreModule.NAME));
+		registry.put(name,new Command(name,action,Activator.class));
 	}
 }

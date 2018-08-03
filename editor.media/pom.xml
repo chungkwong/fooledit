@@ -64,6 +64,9 @@
 					<instructions>
 						<Bundle-Activator>cc.fooledit.editor.media.Activator</Bundle-Activator>
 						<Export-Package />
+						<Import-Package>
+							*;resolution:=optional
+						</Import-Package>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>

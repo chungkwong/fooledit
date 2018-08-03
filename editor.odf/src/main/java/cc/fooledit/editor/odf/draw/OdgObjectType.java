@@ -46,7 +46,7 @@ public class OdgObjectType implements DataObjectType<OdgObject>{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("OLD_WORD_DOCUMENT",Activator.NAME);
+		return MessageRegistry.getString("OLD_WORD_DOCUMENT",Activator.class);
 	}
 	@Override
 	public void writeTo(OdgObject data,URLConnection connection,RegistryNode<String,Object> meta) throws Exception{

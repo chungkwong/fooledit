@@ -32,6 +32,6 @@ public class PptxEditor implements DataEditor<PptxObject>{
 	}
 	@Override
 	public String getName(){
-		return MessageRegistry.getString("SLIDE_SHOW",cc.fooledit.editor.msoffice.Activator.NAME);
+		return MessageRegistry.getString("SLIDE_SHOW",cc.fooledit.editor.msoffice.Activator.class);
 	}
 }

@@ -37,7 +37,7 @@ public class PageToolBox implements ToolBox{
 	}
 	@Override
 	public String getDisplayName(){
-		return MessageRegistry.getString("PAGE",Activator.NAME);
+		return MessageRegistry.getString("PAGE",Activator.class);
 	}
 	@Override
 	public Node createInstance(Node viewer,Object remark,RegistryNode<String,Object> meta){
