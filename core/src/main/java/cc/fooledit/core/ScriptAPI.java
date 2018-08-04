@@ -49,7 +49,6 @@ public class ScriptAPI{
 		return engine!=null?engine:evaluator;
 	}
 	public static void main(String[] args){
-		java.net.URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		new Evaluator(true);
 	}
 }

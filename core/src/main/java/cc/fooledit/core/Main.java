@@ -73,14 +73,11 @@ public class Main extends Application{
 		scene.getStylesheets().add(getClass().getResource("/base.css").toString());
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//scene.focusOwnerProperty().addListener((e,o,n)->System.out.println(n));
-		URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		script=new ScriptAPI();
 		CoreModule.onInit();
 		registerStandardCommand();
 		//Registry.ROOT.loadPreference();
 		ModuleRegistry.loadDefault();
-		CoreModule.PROTOCOL_REGISTRY.put("application",new ApplicationRegistry());
-		CoreModule.PROTOCOL_REGISTRY.put("data",new DataStreamHandler());
 		keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
 		root.addEventFilter(KeyEvent.ANY,getKeyFilter());
 		initMenuBar();
@@ -321,6 +318,7 @@ public class Main extends Application{
 		updateCurrentNode(workSheet.getCenter());
 	}
 	private void loadDefaultWorkSheet(){
+		//Activator.bundleContext.getBundle(currKey);
 		SimpleRegistryNode<String,Object> last;
 		try{
 			last=(SimpleRegistryNode<String,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getUserPath(),"layout.json")));
@@ -494,24 +492,6 @@ public class Main extends Application{
 	}
 	public ScriptAPI getScriptAPI(){
 		return script;
-	}
-	class ApplicationRegistry extends URLStreamHandler{
-		@Override
-		protected URLConnection openConnection(URL u) throws IOException{
-			return new ApplicationURLConnection(u);
-		}
-		private class ApplicationURLConnection extends URLConnection{
-			public ApplicationURLConnection(URL url){
-				super(url);
-			}
-			@Override
-			public void connect() throws IOException{
-			}
-			@Override
-			public String getContentType(){
-				return CoreModule.APPLICATION_REGISTRY.get(getURL().getPath());
-			}
-		}
 	}
 	private final StringBuilder buf=new StringBuilder();
 	private String encode(KeyEvent evt){

@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.spi;
+import java.util.*;
+import java.util.function.*;
 import javafx.collections.*;
 /**
  *
@@ -28,8 +30,9 @@ public abstract class RegistryNode<K,V> implements ObservableMap<K,V>{
 		return getOrCreateChild(name,(V)new SimpleRegistryNode());
 	}
 	public V getOrCreateChild(K name,V def){
-		if(!containsKey(name))
+		if(!containsKey(name)){
 			put(name,def);
+		}
 		return get(name);
 	}
 	@Override
@@ -45,6 +48,22 @@ public abstract class RegistryNode<K,V> implements ObservableMap<K,V>{
 		return value;
 	}
 	protected abstract V getReal(K name);
+	public void setOnValue(K key,Consumer<V> consumer){
+		if(containsKey(key)){
+			consumer.accept(get(key));
+		}else{
+			MapChangeListener<K,V> listener=new MapChangeListener<K,V>(){
+				@Override
+				public void onChanged(MapChangeListener.Change<? extends K,? extends V> change){
+					if(change.wasAdded()&&Objects.equals(change.getKey(),key)){
+						consumer.accept(change.getValueAdded());
+						removeListener(this);
+					}
+				}
+			};
+			addListener(listener);
+		}
+	}
 	/*protected void realizedAll(){
 		Collection<LoaderValue> loaders=collectLoader();
 		while(!loaders.isEmpty()){

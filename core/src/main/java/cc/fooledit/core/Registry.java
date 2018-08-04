@@ -158,7 +158,7 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 		DataObjectTypeRegistry.registerMime(baseType,factory.getClass().getName());
 	}
 	public static void providesProtocol(String scheme,String module){
-		providesCore(scheme,module,CoreModule.PROTOCOL_REGISTRY_NAME);
+		//providesCore(scheme,module,CoreModule.PROTOCOL_REGISTRY_NAME);
 	}
 	public static void providesDataObjectType(String type,String module){
 		providesCore(type,module,CoreModule.DATA_OBJECT_TYPE_REGISTRY_NAME);

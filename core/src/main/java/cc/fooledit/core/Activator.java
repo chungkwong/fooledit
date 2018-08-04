@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 import org.osgi.framework.*;
+import org.osgi.service.url.*;
 /**
  *
  * @author Chan Chung Kwong
@@ -25,9 +29,33 @@ public class Activator implements BundleActivator{
 	@Override
 	public void start(BundleContext context) throws Exception{
 		bundleContext=context;
+		Hashtable dataProperties=new Hashtable();
+		dataProperties.put(URLConstants.URL_HANDLER_PROTOCOL,new String[]{"data"});
+		context.registerService(URLStreamHandlerService.class.getName(),new DataStreamHandler(),dataProperties);
+		Hashtable appProperties=new Hashtable();
+		appProperties.put(URLConstants.URL_HANDLER_PROTOCOL,new String[]{"application"});
+		context.registerService(URLStreamHandlerService.class.getName(),new DataStreamHandler(),appProperties);
 		new Thread(()->Main.launch(Main.class)).start();
 	}
 	@Override
 	public void stop(BundleContext context) throws Exception{
+	}
+	class ApplicationRegistry extends AbstractURLStreamHandlerService{
+		@Override
+		public URLConnection openConnection(URL u) throws IOException{
+			return new ApplicationURLConnection(u);
+		}
+		private class ApplicationURLConnection extends URLConnection{
+			public ApplicationURLConnection(URL url){
+				super(url);
+			}
+			@Override
+			public void connect() throws IOException{
+			}
+			@Override
+			public String getContentType(){
+				return CoreModule.APPLICATION_REGISTRY.get(getURL().getPath());
+			}
+		}
 	}
 }

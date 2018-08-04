@@ -18,7 +18,6 @@ package cc.fooledit.core;
 import cc.fooledit.control.*;
 import cc.fooledit.spi.*;
 import java.io.*;
-import java.net.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
@@ -56,7 +55,6 @@ public class CoreModule{
 	public static final String KEYMAP_REGISTRY_NAME="keymap";
 	public static final String MESSAGE_REGISTRY_NAME="message";
 	public static final String MENU_REGISTRY_NAME="menu";
-	public static final String PROTOCOL_REGISTRY_NAME="protocol";
 	public static final String PROVIDER_REGISTRY_NAME="provider";
 	public static final String PERSISTENT_REGISTRY_NAME="persistent";
 	public static final String SERIALIZIER_REGISTRY_NAME="serializier";
@@ -87,7 +85,6 @@ public class CoreModule{
 	public static final RegistryNode<String,RegistryNode<String,Object>> LOADING_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object>>)REGISTRY.getOrCreateChild(LOADING_MODULE_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> INSTALLED_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLED_MODULE_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> INSTALLING_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLING_MODULE_REGISTRY_NAME);
-	public static final RegistryNode<String,URLStreamHandler> PROTOCOL_REGISTRY=(RegistryNode<String,URLStreamHandler>)REGISTRY.getOrCreateChild(PROTOCOL_REGISTRY_NAME);
 	public static final RegistryNode<String,RegistryNode<Object,Object>> PROVIDER_REGISTRY=(RegistryNode<String,RegistryNode<Object,Object>>)REGISTRY.getOrCreateChild(PROVIDER_REGISTRY_NAME);
 	public static ListRegistryNode<String> PERSISTENT_REGISTRY=(ListRegistryNode<String>)REGISTRY.getOrCreateChild(PERSISTENT_REGISTRY_NAME,new ListRegistryNode<>());
 	public static final RegistryNode<String,Serializier> SERIALIZIER_REGISTRY=(RegistryNode<String,Serializier>)REGISTRY.getOrCreateChild(SERIALIZIER_REGISTRY_NAME);

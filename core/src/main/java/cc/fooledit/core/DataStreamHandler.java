@@ -18,13 +18,14 @@ package cc.fooledit.core;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import org.osgi.service.url.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DataStreamHandler extends URLStreamHandler{
+public class DataStreamHandler extends AbstractURLStreamHandlerService{
 	@Override
-	protected URLConnection openConnection(URL u) throws IOException{
+	public URLConnection openConnection(URL u) throws IOException{
 		return new DataURLConnection(u);
 	}
 	private class DataURLConnection extends URLConnection{
@@ -45,7 +46,7 @@ public class DataStreamHandler extends URLStreamHandler{
 				mime=dataStart==5?DEFAULT_MIME:str.substring(5,dataStart);
 				data=new byte[str.length()-dataStart-1];
 				int count=0;
-				for(int i=dataStart+1,len=str.length();i<len;++count){
+				for(int i=dataStart+1, len=str.length();i<len;++count){
 					char c=str.charAt(i);
 					if(c=='%'){
 						data[count]=Byte.parseByte(str.substring(i+1,i+3),16);
@@ -60,7 +61,6 @@ public class DataStreamHandler extends URLStreamHandler{
 		}
 		@Override
 		public void connect() throws IOException{
-
 		}
 		@Override
 		public String getContentType(){

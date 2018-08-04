@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.*;
 import cc.fooledit.core.*;
 import cc.fooledit.spi.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
 import java.util.stream.*;
+import javafx.application.*;
 import javafx.beans.value.*;
 import javafx.collections.*;
 import javafx.geometry.*;
@@ -100,7 +100,7 @@ public class WorkSheet extends BorderPane{
 	}
 	private void restoreRegistry(){
 		registry.clear();
-		if(getCenter()instanceof SideBarPane){
+		if(getCenter() instanceof SideBarPane){
 			registry.put(REMARK,new LazyValue<>(remarkSupplier));
 			registry.put(BUFFER,getDataObject());
 			registry.put(EDITOR,getDataEditor().getClass().getName());
@@ -128,7 +128,7 @@ public class WorkSheet extends BorderPane{
 			}
 			getTabs().forEach((w)->children.put(w.getRegistry()));
 			registry.put(CHILDREN,children);
-		}else{
+		}else if(getCenter() instanceof SplitPane){
 			registry.put(DIRECTION,getOrientation().name());
 			registry.put(DIVIDER,getDivider());
 			ListRegistryNode<Object> children=new ListRegistryNode<>();
@@ -142,9 +142,18 @@ public class WorkSheet extends BorderPane{
 				map((tab)->(RegistryNode<String,Object>)tab.getProperties().get(TOOLBOX)).collect(Collectors.toList()));
 	}
 	private static WorkSheet getDefaultWorkSheet(){
-		RegistryNode<String,Object> object=DataObjectRegistry.create(CoreModule.DATA_OBJECT_TYPE_REGISTRY.get("cc.fooledit.editor.text.TextObjectType"));
-		DataEditor editor=CoreModule.DATA_OBJECT_EDITOR_REGISTRY.get("cc.fooledit.editor.text.StructuredTextEditor");
-		return new WorkSheet(object,editor,null);
+		WorkSheet workSheet=new WorkSheet(getLoadingLabel());
+		CoreModule.DATA_OBJECT_TYPE_REGISTRY.setOnValue("cc.fooledit.editor.text.TextObjectType",(type)->{
+			CoreModule.DATA_OBJECT_EDITOR_REGISTRY.setOnValue("cc.fooledit.editor.text.StructuredTextEditor",(editor)->{
+				Platform.runLater(()->workSheet.setData(DataObjectRegistry.create(type),editor,null));
+			});
+		});
+		return workSheet;
+	}
+	private static Label getLoadingLabel(){
+		Label label=new Label("...");
+		label.getProperties().put(DATA_OBJECT_NAME,new SimpleRegistryNode<>());
+		return label;
 	}
 	@Override
 	public void requestFocus(){
@@ -171,10 +180,11 @@ public class WorkSheet extends BorderPane{
 		splitPane.getDividers().get(0).positionProperty().addListener((e,o,n)->registry.put(DIVIDER,n));
 	}
 	private WorkSheet wrap(WorkSheet sheet){
-		if(sheet.isCompound())
+		if(sheet.isCompound()){
 			return sheet;
-		else
+		}else{
 			return new WorkSheet(new DraggableTabPane(new Tab(sheet.getName(),sheet)));
+		}
 	}
 	public void addTab(WorkSheet worksheet){
 		Tab newTab=new Tab(worksheet.getName(),worksheet);
@@ -210,7 +220,7 @@ public class WorkSheet extends BorderPane{
 		}
 	}
 	private void showToolBox(ListRegistryNode<RegistryNode<String,Object>> boxs,Side side){
-		if(boxs!=null)
+		if(boxs!=null){
 			boxs.values().forEach((box)->{
 				try{
 					ToolBox toolbox=CoreModule.TOOLBOX_REGISTRY.get(box.get(TOOLBOX));
@@ -219,6 +229,7 @@ public class WorkSheet extends BorderPane{
 					Logger.getGlobal().log(Level.INFO,null,ex);
 				}
 			});
+		}
 	}
 	public void showToolBox(ToolBox toolBox,Object remark){
 		((SideBarPane)getCenter()).showToolBox(getToolTab(toolBox,remark),toolBox.getPerferedSides());
@@ -262,11 +273,14 @@ public class WorkSheet extends BorderPane{
 			pane.getTabs().setAll(children.getChildren().stream().map((child)->fromJSON(child)).map((child)->new Tab(child.getName(),child)).collect(Collectors.toList()));
 			return new WorkSheet(pane,json);
 		}else{
-			RegistryNode<String,Object> buffer=DataObjectRegistry.get((RegistryNode<String,Object>)json.get(BUFFER));
-			String editorName=(String)json.get(EDITOR);
-			DataEditor editor=CoreModule.DATA_OBJECT_EDITOR_REGISTRY.get(editorName);
-			json.put(BUFFER,buffer);
-			return new WorkSheet(buffer,editor,json.get(REMARK),json);
+			RegistryNode<String,Object> buffer=(RegistryNode<String,Object>)json.get(BUFFER);
+			WorkSheet workSheet=new WorkSheet(getLoadingLabel());
+			CoreModule.DATA_OBJECT_TYPE_REGISTRY.setOnValue((String)buffer.get(DataObject.TYPE),(type)->{
+				CoreModule.DATA_OBJECT_EDITOR_REGISTRY.setOnValue((String)json.get(EDITOR),(editor)->{
+					Platform.runLater(()->workSheet.setData(DataObjectRegistry.get((RegistryNode<String,Object>)json.get(BUFFER)),editor,null));
+				});
+			});
+			return workSheet;
 		}
 	}
 	public boolean isSplit(){
@@ -295,7 +309,7 @@ public class WorkSheet extends BorderPane{
 		return getCenter() instanceof TabPane;
 	}
 	public boolean isCompound(){
-		return !(getCenter()instanceof SideBarPane);
+		return !(getCenter() instanceof SideBarPane);
 	}
 	public Stream<WorkSheet> getTabs(){
 		return ((TabPane)getCenter()).getTabs().stream().map((tab)->(WorkSheet)tab.getContent());
@@ -318,7 +332,8 @@ public class WorkSheet extends BorderPane{
 		}else if(isSplit()){
 			return getFirst().getName()+"...";
 		}else{
-			return Objects.toString(getDataObject().get(DataObject.BUFFER_NAME));
+			RegistryNode<String,Object> dataObject=getDataObject();
+			return Objects.toString(getDataObject().getOrDefault(DataObject.BUFFER_NAME,"..."));
 		}
 	}
 	public RegistryNode<String,Object> getRegistry(){
@@ -327,13 +342,15 @@ public class WorkSheet extends BorderPane{
 	public WorkSheet getParentWorkSheet(){
 		Node parent=this;
 		parent=parent.getParent();
-		while(parent!=null&&!(parent instanceof WorkSheet))
+		while(parent!=null&&!(parent instanceof WorkSheet)){
 			parent=parent.getParent();
+		}
 		return (WorkSheet)parent;
 	}
 	public void dispose(WorkSheet except){
-		if(this==except)
+		if(this==except){
 			return;
+		}
 		if(isTabed()){
 			getTabs().forEach((tab)->tab.dispose(except));
 		}else if(isSplit()){
