@@ -23,6 +23,7 @@ import cc.fooledit.vcs.svn.Activator;
 import java.util.*;
 import javafx.scene.control.*;
 import org.osgi.framework.*;
+import org.osgi.service.url.*;
 import org.tmatesoft.svn.core.wc.*;
 /**
  *
@@ -357,7 +358,9 @@ public class Activator implements BundleActivator{
 			SvnCommands.upgrade(args[0]);
 			return null;
 		});
-		CoreModule.PROTOCOL_REGISTRY.put("svn",new SvnStreamHandler());
+		Hashtable prop=new Hashtable();
+		prop.put(URLConstants.URL_HANDLER_PROTOCOL,new String[]{"archive"});
+		bc.registerService(URLStreamHandlerService.class.getName(),new SvnStreamHandler(),prop);
 		ContentTypeHelper.getURL_GUESSER().registerPathPattern("^.*[/\\\\]\\.svn$","directory/svn");
 	}
 	@Override

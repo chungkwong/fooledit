@@ -20,26 +20,21 @@ import static cc.fooledit.core.DataObjectTypeRegistry.addDataObjectType;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.media.Activator;
 import cc.fooledit.spi.*;
+import java.util.*;
 import org.osgi.framework.*;
+import org.osgi.service.url.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Activator implements BundleActivator{
 	public static final String NAME=Activator.class.getPackage().getName();
-	private static final String[] protocols=new String[]{
-		"cdda","dv","dvd","mms","pvr","rtp","rtsp","simpledvd","vcdx","vlc","v4l2"
-	};
 	public static void onLoad(){
 		addDataObjectType(MediaObjectType.INSTANCE);
 		addDataEditor(MediaEditor.INSTANCE,MediaObject.class);
 		DataObjectTypeRegistry.addToolBox(new ControlToolBox(),MediaEditor.class);
 		addDataObjectType(MidiObjectType.INSTANCE);
 		addDataEditor(MidiEditor.INSTANCE,MidiObject.class);
-		NaiveStreamHandler naiveStreamHandler=new NaiveStreamHandler();
-		for(String protocol:protocols){
-			CoreModule.PROTOCOL_REGISTRY.put(protocol,naiveStreamHandler);
-		}
 	}
 	public static void onUnLoad(){
 	}
@@ -51,9 +46,6 @@ public class Activator implements BundleActivator{
 		Registry.providesDataObjectEditor(MidiEditor.class.getName(),NAME);
 		Registry.providesTypeToEditor(MidiObject.class.getName(),NAME);
 		Registry.providesEditorToToolbox(MediaEditor.class.getName(),NAME);
-		for(String protocol:protocols){
-			Registry.providesProtocol(protocol,NAME);
-		}
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("audio/midi","cc.fooledit.editor.media.MidiObjectType");
 		MultiRegistryNode.addChildElement("midi","audio/midi",CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("mid","audio/midi",CoreModule.SUFFIX_REGISTRY);
@@ -64,6 +56,9 @@ public class Activator implements BundleActivator{
 	public void start(BundleContext bc) throws Exception{
 		onInstall();
 		onLoad();
+		Hashtable properties=new Hashtable();
+		properties.put(URLConstants.URL_HANDLER_PROTOCOL,new String[]{"cdda","dv","dvd","mms","pvr","rtp","rtsp","simpledvd","vcdx","vlc","v4l2"});
+		bc.registerService(URLStreamHandlerService.class.getName(),new NaiveStreamHandler(),properties);
 	}
 	@Override
 	public void stop(BundleContext bc) throws Exception{

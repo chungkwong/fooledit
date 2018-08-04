@@ -29,8 +29,6 @@ public class ChmTest extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
 		CoreModule.onInit();
-		CoreModule.PROTOCOL_REGISTRY.put("chm",new ChmStreamHandler());
-		java.net.URL.setURLStreamHandlerFactory(FoolURLStreamHandler.INSTNACE);
 		ChmFile chmFile=new ChmFile("/home/kwong/sysu_learning/马克思主义/马恩选集.chm");
 		ChmViewer chmViewer=new ChmViewer(chmFile);
 		ContentsToolBox.ContentsViewer contents=new ContentsToolBox.ContentsViewer(chmViewer,chmFile);

@@ -16,19 +16,20 @@
  */
 package cc.fooledit.vcs.git;
 import java.io.*;
-import java.net.URLConnection;
 import java.net.*;
+import java.net.URLConnection;
 import java.util.logging.*;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.lib.*;
+import org.osgi.service.url.*;
 import sun.net.www.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class GitStreamHandler extends URLStreamHandler{
+public class GitStreamHandler extends AbstractURLStreamHandlerService{
 	private static final String separator="!/";
-	protected URLConnection openConnection(URL u)throws IOException{
+	public URLConnection openConnection(URL u) throws IOException{
 		return new GitConnection(u);
 	}
 	private static int indexOfBangSlash(String spec){
@@ -158,10 +159,11 @@ class GitConnection extends URLConnection{
 		try{
 			connect();
 			long size=in.getSize();
-			if(size>Integer.MAX_VALUE)
+			if(size>Integer.MAX_VALUE){
 				return -1;
-			else
+			}else{
 				return (int)size;
+			}
 		}catch(IOException ex){
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 			return -1;
@@ -177,22 +179,22 @@ class GitConnection extends URLConnection{
 			return -1;
 		}
 	}
-	private void parseSpecs(URL url) throws MalformedURLException, URISyntaxException, IOException {
-		String spec = url.getFile();
-		int separator = spec.lastIndexOf("!/");
-		if (separator == -1) {
-			throw new MalformedURLException("no !/ found in url spec:" + spec);
+	private void parseSpecs(URL url) throws MalformedURLException,URISyntaxException,IOException{
+		String spec=url.getFile();
+		int separator=spec.lastIndexOf("!/");
+		if(separator==-1){
+			throw new MalformedURLException("no !/ found in url spec:"+spec);
 		}
-		git = Git.open(new File(new URL(spec.substring(0, separator++)).toURI()));
-		id = null;
-		if (++separator != spec.length()) {
-			id = git.getRepository().resolve(ParseUtil.decode (spec.substring(separator, spec.length())));
+		git=Git.open(new File(new URL(spec.substring(0,separator++)).toURI()));
+		id=null;
+		if(++separator!=spec.length()){
+			id=git.getRepository().resolve(ParseUtil.decode(spec.substring(separator,spec.length())));
 		}
 	}
 	public Git getGit(){
 		return git;
 	}
-	public AnyObjectId getObjectId() {
+	public AnyObjectId getObjectId(){
 		return id;
 	}
 }

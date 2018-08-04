@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.fooledit.editor.pdf;
+package cc.fooledit.editor.epub;
 import javafx.application.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;

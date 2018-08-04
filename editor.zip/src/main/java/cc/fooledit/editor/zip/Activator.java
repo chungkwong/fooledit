@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.zip;
-import static cc.fooledit.core.CoreModule.PROTOCOL_REGISTRY;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.zip.Activator;
 import cc.fooledit.spi.*;
+import java.util.*;
 import org.osgi.framework.*;
+import org.osgi.service.url.*;
 /**
  *
  * @author Chan Chung Kwong
@@ -42,8 +43,6 @@ public class Activator implements BundleActivator{
 		DataObjectTypeRegistry.addDataEditor(ArchiveEditor.INSTANCE,ArchiveObject.class);
 		DataObjectTypeRegistry.addDataObjectType(ZipObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(ZipEditor.INSTANCE,ZipObject.class);
-		PROTOCOL_REGISTRY.put("archive",new ArchiveStreamHandler());
-		PROTOCOL_REGISTRY.put("compressed",new ZipStreamHandler());
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-7z-compressed","cc.fooledit.editor.zip.ArchiveObjectType");
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-archive","cc.fooledit.editor.zip.ArchiveObjectType");
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/x-arj","cc.fooledit.editor.zip.ArchiveObjectType");
@@ -97,6 +96,12 @@ public class Activator implements BundleActivator{
 		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-debian-package","application/vnd.debian.binary-package");
 		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-rar","application/vnd.rar");
 		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-rar-compressed","application/vnd.rar");
+		Hashtable properties=new Hashtable();
+		properties.put(URLConstants.URL_HANDLER_PROTOCOL,new String[]{"archive"});
+		bc.registerService(URLStreamHandlerService.class.getName(),new ArchiveStreamHandler(),properties);
+		properties=new Hashtable();
+		properties.put(URLConstants.URL_HANDLER_PROTOCOL,new String[]{"compressed"});
+		bc.registerService(URLStreamHandlerService.class.getName(),new ZipStreamHandler(),properties);
 //TODO: DUMP,Brotli,DEFLATE,LZ77,LZW,Snappy
 	}
 	@Override

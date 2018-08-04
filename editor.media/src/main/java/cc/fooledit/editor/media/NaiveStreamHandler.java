@@ -17,13 +17,14 @@
 package cc.fooledit.editor.media;
 import java.io.*;
 import java.net.*;
+import org.osgi.service.url.*;
 /**
  *
  * @author Chan Chung Kwong
  */
-public class NaiveStreamHandler extends URLStreamHandler{
+public class NaiveStreamHandler extends AbstractURLStreamHandlerService{
 	@Override
-	protected URLConnection openConnection(URL url) throws IOException{
+	public URLConnection openConnection(URL url) throws IOException{
 		return new NaiveConnection(url);
 	}
 }
@@ -33,7 +34,6 @@ class NaiveConnection extends URLConnection{
 	}
 	@Override
 	public void connect() throws IOException{
-		
 	}
 	@Override
 	public String getContentType(){

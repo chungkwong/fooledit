@@ -20,16 +20,17 @@ import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 import org.apache.commons.compress.compressors.*;
+import org.osgi.service.url.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ZipStreamHandler extends URLStreamHandler{
-	protected URLConnection openConnection(URL u) throws IOException{
+public class ZipStreamHandler extends AbstractURLStreamHandlerService{
+	public URLConnection openConnection(URL u) throws IOException{
 		return new ZipConnection(u,this);
 	}
 	@Override
-	protected boolean sameFile(URL u1,URL u2){
+	public boolean sameFile(URL u1,URL u2){
 		if(!u1.getProtocol().equals("compressed")||!u2.getProtocol().equals("compressed")){
 			return false;
 		}
@@ -48,7 +49,7 @@ public class ZipStreamHandler extends URLStreamHandler{
 		return true;
 	}
 	@Override
-	protected int hashCode(URL u){
+	public int hashCode(URL u){
 		int h=0;
 		String protocol=u.getProtocol();
 		if(protocol!=null){

@@ -24,6 +24,7 @@ import java.util.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
 import org.osgi.framework.*;
+import org.osgi.service.url.*;
 /**
  *
  * @author Chan Chung Kwong
@@ -57,7 +58,9 @@ public class Activator implements BundleActivator{
 			items.add(createMenuItem("git-clone","CLONE"));
 			items.add(createMenuItem("git-browse","BROWSE"));
 		});
-		CoreModule.PROTOCOL_REGISTRY.put("git",new GitStreamHandler());
+		Hashtable properties=new Hashtable();
+		properties.put(URLConstants.URL_HANDLER_PROTOCOL,new String[]{"git"});
+		bc.registerService(URLStreamHandlerService.class.getName(),new GitStreamHandler(),properties);
 		ContentTypeHelper.getURL_GUESSER().registerPathPattern("^.*[/\\\\]\\.git$","directory/git");
 	}
 	@Override

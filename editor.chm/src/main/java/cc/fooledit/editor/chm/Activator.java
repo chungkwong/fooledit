@@ -16,8 +16,11 @@
  */
 package cc.fooledit.editor.chm;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.chm.Activator;
 import cc.fooledit.spi.*;
+import java.util.*;
 import org.osgi.framework.*;
+import org.osgi.service.url.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -29,7 +32,6 @@ public class Activator implements BundleActivator{
 		DataObjectTypeRegistry.addDataObjectType(ChmObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(ChmEditor.INSTANCE,ChmObject.class);
 		DataObjectTypeRegistry.addToolBox(ContentsToolBox.INSTANCE,ChmEditor.class);
-		CoreModule.PROTOCOL_REGISTRY.put("chm",new ChmStreamHandler());
 	}
 	public static void onUnLoad(){
 	}
@@ -48,6 +50,9 @@ public class Activator implements BundleActivator{
 	public void start(BundleContext bc) throws Exception{
 		onInstall();
 		onLoad();
+		Hashtable properties=new Hashtable();
+		properties.put(URLConstants.URL_HANDLER_PROTOCOL,new String[]{"chm"});
+		bc.registerService(URLStreamHandlerService.class.getName(),new ChmStreamHandler(),properties);
 	}
 	@Override
 	public void stop(BundleContext bc) throws Exception{

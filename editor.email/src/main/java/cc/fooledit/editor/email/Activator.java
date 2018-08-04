@@ -18,7 +18,9 @@ package cc.fooledit.editor.email;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.email.Activator;
 import cc.fooledit.spi.*;
+import java.util.*;
 import org.osgi.framework.*;
+import org.osgi.service.url.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -33,9 +35,6 @@ public class Activator implements BundleActivator{
 		DataObjectTypeRegistry.addDataObjectType(MultipartObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(MessageEditor.INSTANCE,MessageObject.class);
 		DataObjectTypeRegistry.addDataObjectType(MessageObjectType.INSTANCE);
-		CoreModule.PROTOCOL_REGISTRY.put("imap",new NaiveStreamHandler());
-		CoreModule.PROTOCOL_REGISTRY.put("pop3",new NaiveStreamHandler());
-		CoreModule.PROTOCOL_REGISTRY.put("smtp",new NaiveStreamHandler());
 		CoreModule.COMMAND_REGISTRY.put("email",new Command("email",()->Main.INSTANCE.addAndShow(DataObjectRegistry.create(MailBoxObjectType.INSTANCE)),Activator.class));
 	}
 	public static void onUnLoad(){
@@ -70,6 +69,9 @@ public class Activator implements BundleActivator{
 	public void start(BundleContext bc) throws Exception{
 		onInstall();
 		onLoad();
+		Hashtable properties=new Hashtable();
+		properties.put(URLConstants.URL_HANDLER_PROTOCOL,new String[]{"imap","pop3","smtp"});
+		bc.registerService(URLStreamHandlerService.class.getName(),new NaiveStreamHandler(),properties);
 	}
 	@Override
 	public void stop(BundleContext bc) throws Exception{

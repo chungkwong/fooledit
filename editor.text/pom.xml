@@ -86,7 +86,7 @@
 					<instructions>
 						<Bundle-Activator>cc.fooledit.editor.text.Activator</Bundle-Activator>
 						<Import-Package>
-							*;resolution:=optional
+							com.sun.javafx.css.converters,*;resolution:=optional
 						</Import-Package>
 						<Export-Package>cc.fooledit.editor.text,cc.fooledit.editor.text.lex,cc.fooledit.editor.text.parser,org.antlr,org.antlr.*</Export-Package>>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>

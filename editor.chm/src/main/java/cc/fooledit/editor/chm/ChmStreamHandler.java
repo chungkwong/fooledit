@@ -16,19 +16,20 @@
  */
 package cc.fooledit.editor.chm;
 import java.io.*;
-import java.net.URLConnection;
 import java.net.*;
+import java.net.URLConnection;
 import java.util.logging.*;
 import org.jchmlib.*;
+import org.osgi.service.url.*;
 import sun.net.www.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ChmStreamHandler  extends URLStreamHandler{
+public class ChmStreamHandler extends AbstractURLStreamHandlerService{
 	private static final String separator="!/";
 	@Override
-	protected URLConnection openConnection(URL u)throws IOException{
+	public URLConnection openConnection(URL u) throws IOException{
 		return new ChmConnection(u);
 	}
 	private static int indexOfBangSlash(String spec){
@@ -43,7 +44,6 @@ public class ChmStreamHandler  extends URLStreamHandler{
 		}
 		return -1;
 	}
-
 	@Override
 	@SuppressWarnings("deprecation")
 	protected void parseURL(URL url,String spec,
@@ -159,22 +159,22 @@ class ChmConnection extends URLConnection{
 	public long getContentLengthLong(){
 		return size;
 	}
-	private void parseSpecs(URL url) throws Exception {
-		String spec = url.getFile();
-		int separator = spec.lastIndexOf("!/");
-		if (separator == -1) {
-			throw new MalformedURLException("no !/ found in url spec:" + spec);
+	private void parseSpecs(URL url) throws Exception{
+		String spec=url.getFile();
+		int separator=spec.lastIndexOf("!/");
+		if(separator==-1){
+			throw new MalformedURLException("no !/ found in url spec:"+spec);
 		}
-		chm = ChmObjectType.INSTANCE.readFrom(new URL(spec.substring(0, separator++)).openConnection(),null).getDocument();
-		path = null;
-		if (++separator != spec.length()) {
+		chm=ChmObjectType.INSTANCE.readFrom(new URL(spec.substring(0,separator++)).openConnection(),null).getDocument();
+		path=null;
+		if(++separator!=spec.length()){
 			path=ParseUtil.decode('/'+spec.substring(separator,spec.length()));
 		}
 	}
 	public ChmFile getChmFile(){
 		return chm;
 	}
-	public String getPath() {
+	public String getPath(){
 		return path;
 	}
 }

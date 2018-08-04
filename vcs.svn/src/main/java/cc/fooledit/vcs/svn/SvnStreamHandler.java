@@ -22,6 +22,7 @@ import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
+import org.osgi.service.url.*;
 import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.wc.*;
 import sun.net.www.*;
@@ -29,9 +30,9 @@ import sun.net.www.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SvnStreamHandler extends URLStreamHandler{
+public class SvnStreamHandler extends AbstractURLStreamHandlerService{
 	private static final String separator="!/";
-	protected URLConnection openConnection(URL u)throws IOException{
+	public URLConnection openConnection(URL u) throws IOException{
 		try{
 			return new SvnConnection(u);
 		}catch(URISyntaxException ex){
@@ -139,12 +140,12 @@ class SvnConnection extends URLConnection{
 	private final SVNRevision rev;
 	private PipedInputStream in;
 	public SvnConnection(URL url)
-			throws IOException, URISyntaxException{
+			throws IOException,URISyntaxException{
 		super(url);
 		String spec=url.getPath();
 		int separator=spec.lastIndexOf("!");
-		if (separator==-1) {
-			throw new MalformedURLException("no ! found in url spec:" + spec);
+		if(separator==-1){
+			throw new MalformedURLException("no ! found in url spec:"+spec);
 		}
 		root=new File(new URL(spec.substring(0,separator++)).toURI());
 		path=ParseUtil.decode(spec.substring(separator,spec.length()));
@@ -159,11 +160,10 @@ class SvnConnection extends URLConnection{
 	}
 	@Override
 	public void connect() throws IOException{
-
 	}
 	@Override
 	public InputStream getInputStream() throws IOException{
-		if(in==null)
+		if(in==null){
 			try{
 				in=new PipedInputStream();
 				PipedOutputStream out=new PipedOutputStream(in);
@@ -172,14 +172,16 @@ class SvnConnection extends URLConnection{
 			}catch(SVNException ex){
 				throw new IOException(ex);
 			}
+		}
 		return in;
 	}
 	private static Map<String,String> parseQuery(String query){
-		if(query==null)
+		if(query==null){
 			return Collections.emptyMap();
+		}
 		return Arrays.stream(query.split("&")).map((s)->parseParameter(s)).collect(Collectors.toMap(Pair::getKey,Pair::getValue));
 	}
-	public static Pair<String,String> parseParameter(String p) {
+	public static Pair<String,String> parseParameter(String p){
 		int i=p.indexOf('=');
 		String key=i!=-1?p.substring(0,i):p;
 		String value=i!=-1?p.substring(i+1):"";

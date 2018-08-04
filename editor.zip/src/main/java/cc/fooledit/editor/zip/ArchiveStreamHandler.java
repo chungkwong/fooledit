@@ -24,19 +24,20 @@
  */
 package cc.fooledit.editor.zip;
 import java.io.*;
-import java.net.URLConnection;
 import java.net.*;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.logging.*;
 import org.apache.commons.compress.archivers.*;
+import org.osgi.service.url.*;
 import sun.net.www.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ArchiveStreamHandler extends URLStreamHandler{
+public class ArchiveStreamHandler extends AbstractURLStreamHandlerService{
 	private static final String separator="!/";
-	protected URLConnection openConnection(URL u) throws IOException{
+	public URLConnection openConnection(URL u) throws IOException{
 		return new ArchiveConnection(u);
 	}
 	private static int indexOfBangSlash(String spec){
@@ -52,7 +53,7 @@ public class ArchiveStreamHandler extends URLStreamHandler{
 		return -1;
 	}
 	@Override
-	protected boolean sameFile(URL u1,URL u2){
+	public boolean sameFile(URL u1,URL u2){
 		if(!u1.getProtocol().equals("archive")||!u2.getProtocol().equals("archive")){
 			return false;
 		}
@@ -81,7 +82,7 @@ public class ArchiveStreamHandler extends URLStreamHandler{
 		return true;
 	}
 	@Override
-	protected int hashCode(URL u){
+	public int hashCode(URL u){
 		int h=0;
 		String protocol=u.getProtocol();
 		if(protocol!=null){

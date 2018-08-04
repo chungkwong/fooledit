@@ -17,13 +17,14 @@
 package cc.fooledit.editor.email;
 import java.io.*;
 import java.net.*;
+import org.osgi.service.url.*;
 /**
  *
  * @author Chan Chung Kwong
  */
-public class NaiveStreamHandler extends URLStreamHandler{
+public class NaiveStreamHandler extends AbstractURLStreamHandlerService{
 	@Override
-	protected URLConnection openConnection(URL u) throws IOException{
+	public URLConnection openConnection(URL u) throws IOException{
 		return new NaiveConnection(u);
 	}
 	private static class NaiveConnection extends URLConnection{
