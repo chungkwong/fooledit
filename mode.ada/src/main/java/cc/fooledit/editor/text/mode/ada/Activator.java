@@ -15,8 +15,6 @@ public class Activator implements BundleActivator{
 	public void start(BundleContext bc) throws Exception{
 		MultiRegistryNode.addChildElement("adb",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("ads",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
-		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.ada.AdaLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.ada.AdaParser.class,"program",CONTENT_TYPE);
 	}

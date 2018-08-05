@@ -179,10 +179,6 @@ public class Main extends Application{
 		addCommandBatch("get-or-create-registry",(o)->{
 			return ((RegistryNode)o[0]).getOrCreateChild((String)o[1]);
 		});
-		addCommandBatch("provide",(o)->{
-			Registry.provides((String)o[0],(String)o[1],(String)o[2],(String)o[3]);
-			return null;
-		});
 		addCommand("reload",(o)->{
 			showOnCurrentTab(getCurrentDataObject());
 			return null;

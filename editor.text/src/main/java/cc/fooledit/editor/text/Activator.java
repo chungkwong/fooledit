@@ -30,11 +30,6 @@ public class Activator implements BundleActivator{
 	public static final String NAME=Activator.class.getPackage().getName();
 	@Override
 	public void start(BundleContext bc) throws Exception{
-		Registry.providesDataObjectType(TextObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(StructuredTextEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(TextObject.class.getName(),NAME);
-		Registry.providesTemplateType(TextTemplate.class.getName(),NAME);
-		Registry.providesToolBox(FindToolBox.class.getName(),NAME);
 		try{
 			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getOrCreateChild("children")).put(
 					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new InputStreamReader(

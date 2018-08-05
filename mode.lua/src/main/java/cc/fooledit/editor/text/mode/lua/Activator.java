@@ -1,6 +1,7 @@
 package cc.fooledit.editor.text.mode.lua;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
+import cc.fooledit.editor.text.mode.lua.Activator;
 import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
@@ -13,8 +14,6 @@ public class Activator implements BundleActivator{
 	@Override
 	public void start(BundleContext bc) throws Exception{
 		MultiRegistryNode.addChildElement("lua",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
-		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.lua.LuaLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.lua.LuaParser.class,"chunk",CONTENT_TYPE);
 	}

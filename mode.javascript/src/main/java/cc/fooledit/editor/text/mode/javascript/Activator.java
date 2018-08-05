@@ -1,6 +1,7 @@
 package cc.fooledit.editor.text.mode.javascript;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
+import cc.fooledit.editor.text.mode.javascript.Activator;
 import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
@@ -18,8 +19,6 @@ public class Activator implements BundleActivator{
 		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("text/ecmascript",CONTENT_TYPE);
 		MultiRegistryNode.addChildElement("js",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("jsm",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
-		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.javascript.ECMAScriptLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.javascript.ECMAScriptParser.class,"program",CONTENT_TYPE);
 	}

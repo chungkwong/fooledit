@@ -16,6 +16,7 @@
  */
 package cc.fooledit.editor.epub;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.epub.Activator;
 import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
@@ -33,11 +34,6 @@ public class Activator implements BundleActivator{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(EpubObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(EpubEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(EpubObject.class.getName(),NAME);
-		Registry.providesToolBox(ContentsToolBox.class.getName(),NAME);
-		Registry.providesEditorToToolbox(EpubEditor.class.getName(),NAME);
 		CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.put(CONTENT_TYPE,"application/zip");
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(CONTENT_TYPE,EpubObjectType.class.getName());
 		MultiRegistryNode.addChildElement("epub",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);

@@ -45,21 +45,6 @@ public class Activator implements BundleActivator{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(OdtObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(OdtEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(OdtObject.class.getName(),NAME);
-		Registry.providesDataObjectType(OdsObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(OdsEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(OdsObject.class.getName(),NAME);
-		Registry.providesDataObjectType(OdpObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(OdpEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(OdpObject.class.getName(),NAME);
-		Registry.providesDataObjectType(OdgObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(OdgEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(OdgObject.class.getName(),NAME);
-		Registry.providesDataObjectType(ChartObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(ChartEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(ChartObject.class.getName(),NAME);
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.spreadsheet","cc.fooledit.editor.odf.calc.OdsObjectType");
 		MultiRegistryNode.addChildElement("ods","application/vnd.oasis.opendocument.spreadsheet",CoreModule.SUFFIX_REGISTRY);
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.oasis.opendocument.spreadsheet-template","cc.fooledit.editor.odf.calc.OdsObjectType");

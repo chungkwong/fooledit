@@ -16,8 +16,6 @@ public class Activator implements BundleActivator{
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(CONTENT_TYPE,TextObjectType.class.getName());
 		MultiRegistryNode.addChildElement("cbl",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("cob",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
-		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.cobol.Cobol85Lexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.cobol.Cobol85Parser.class,"startRule",CONTENT_TYPE);
 	}

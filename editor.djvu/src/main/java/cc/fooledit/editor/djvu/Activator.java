@@ -16,6 +16,7 @@
  */
 package cc.fooledit.editor.djvu;
 import cc.fooledit.core.*;
+import cc.fooledit.editor.djvu.Activator;
 import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
@@ -32,9 +33,6 @@ public class Activator implements BundleActivator{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(DjvuObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(DjvuEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(DjvuObject.class.getName(),NAME);
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(CONTENT_TYPE,DjvuObjectType.class.getName());
 		MultiRegistryNode.addChildElement("djv",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("djvu",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);

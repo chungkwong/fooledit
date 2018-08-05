@@ -1,6 +1,7 @@
 package cc.fooledit.editor.text.mode.xml;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
+import cc.fooledit.editor.text.mode.xml.Activator;
 import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
@@ -23,10 +24,6 @@ public class Activator implements BundleActivator{
 		MultiRegistryNode.addChildElement("xsd",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("rng",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("dtd",CONTENT_TYPE_DTD,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
-		Registry.provides(CONTENT_TYPE_DTD,NAME,"highlighter","cc.fooledit.editor.text");
-		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
-		Registry.provides(CONTENT_TYPE_DTD,NAME,"parser","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.xml.XMLLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.xml.XMLLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE_DTD);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.xml.XMLParser.class,"document",CONTENT_TYPE);

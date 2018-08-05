@@ -19,7 +19,6 @@ import cc.fooledit.spi.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.nio.charset.*;
-import java.nio.file.*;
 import java.util.*;
 import java.util.logging.*;
 /**
@@ -42,64 +41,6 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 		String parent=index==-1?"":path.substring(0,index);
 		String leaf=index==-1?path:path.substring(index+1);
 		return new String[]{parent,leaf};
-	}
-	public void loadPreference(){
-		/*try{
-			RegistryNode<String,RegistryNode<Object,Object>> toLoad=(RegistryNode<String,RegistryNode<Object,Object>>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(getPersistentFile()));
-			for(String path:toLoad.keySet()){
-				String[] comp=splitPath(path);
-				RegistryNode<Object,Object> parent=(RegistryNode<Object,Object>)resolve(comp[0]).getOrCreateChild(comp[1]);
-				parent.putAll(toLoad.get(path));
-			}
-			fixProvider();
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.INFO,"Failed to load registry cache",ex);
-			File path=Main.getDataPath();
-			for(File file:path.listFiles()){
-				if(file.isDirectory()&&new File(file,"descriptor.json").exists()){
-					ModuleRegistry.ensureInstalled(file.getName());
-				}
-			}
-		}
-		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->syncPersistent());*/
-	}
-	public void fixProvider(){
-		RegistryNode providers=((RegistryNode)ROOT.get(CoreModule.NAME).getOrCreateChild(CoreModule.PROVIDER_REGISTRY_NAME));
-		fixProvider(providers,ROOT);
-	}
-	private void fixProvider(RegistryNode provider,RegistryNode actual){
-		provider.forEach((key,value)->{
-			if(value instanceof RegistryNode){
-				fixProvider((RegistryNode)value,(RegistryNode)actual.getOrCreateChild(key));
-			}else if(value instanceof String){
-				actual.putIfAbsent(key,LoaderValue.create((String)value));
-			}
-		});
-	}
-	public void syncPersistent(){
-		File tmp=new File(Main.INSTANCE.getUserPath(),".registry.json");
-		try(OutputStreamWriter out=new OutputStreamWriter(new FileOutputStream(tmp),StandardCharsets.UTF_8)){
-			out.append('{');
-			Iterator<String> toSave=CoreModule.PERSISTENT_REGISTRY.values().iterator();
-			while(toSave.hasNext()){
-				String path=toSave.next();
-				out.write(JSONEncoder.encode(path));
-				out.write(':');
-				out.write(StandardSerializiers.JSON_SERIALIZIER.encode(resolve(path)));
-				if(toSave.hasNext()){
-					out.write(',');
-				}
-			}
-			out.append('}');
-			out.flush();
-			Files.move(tmp.toPath(),getPersistentFile().toPath(),StandardCopyOption.REPLACE_EXISTING);
-		}catch(Exception ex){
-			ex.printStackTrace();
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}
-	}
-	private File getPersistentFile(){
-		return new File(Main.INSTANCE.getUserPath(),"registry.json");
 	}
 	public MenuRegistry registerMenu(Class module){
 		try{
@@ -156,46 +97,5 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 		DataObjectTypeRegistry.addDataObjectType(factory);
 		DataObjectTypeRegistry.addDataEditor(editor,cls);
 		DataObjectTypeRegistry.registerMime(baseType,factory.getClass().getName());
-	}
-	public static void providesProtocol(String scheme,String module){
-		//providesCore(scheme,module,CoreModule.PROTOCOL_REGISTRY_NAME);
-	}
-	public static void providesDataObjectType(String type,String module){
-		providesCore(type,module,CoreModule.DATA_OBJECT_TYPE_REGISTRY_NAME);
-	}
-	public static void providesDataObjectEditor(String type,String module){
-		providesCore(type,module,CoreModule.DATA_OBJECT_EDITOR_REGISTRY_NAME);
-	}
-	public static void providesToolBox(String type,String module){
-		providesCore(type,module,CoreModule.TOOLBOX_REGISTRY_NAME);
-	}
-	public static void providesTypeToEditor(String type,String module){
-		providesCore(type,module,CoreModule.TYPE_TO_EDITOR_REGISTRY_NAME);
-	}
-	public static void providesEditorToToolbox(String type,String module){
-		providesCore(type,module,CoreModule.EDITOR_TO_TOOLBOX_REGISTRY_NAME);
-	}
-	public static void providesTemplateType(String type,String module){
-		providesCore(type,module,CoreModule.TEMPLATE_TYPE_REGISTRY_NAME);
-	}
-	public static void providesApplication(String type,String module){
-		providesCore(type,module,CoreModule.APPLICATION_REGISTRY_NAME);
-	}
-	public static void providesContentTypeLoader(String type,String module){
-		providesCore(type,module,CoreModule.CONTENT_TYPE_LOADER_REGISTRY_NAME);
-	}
-	public static void providesDynamicMenu(String type,String module){
-		providesCore(type,module,CoreModule.DYNAMIC_MENU_REGISTRY_NAME);
-	}
-	public static void providesCommand(String type,String module){
-		providesCore(type,module,CoreModule.COMMAND_REGISTRY_NAME);
-	}
-	public static void providesCore(String type,String module,String registry){
-		provides(type,module,registry,CoreModule.NAME);
-	}
-	public static void provides(String type,String module,String registry,String target){
-		/*RegistryNode<Object,Object> core=CoreModule.PROVIDER_REGISTRY.getOrCreateChild(target);
-		((RegistryNode)core.getOrCreateChild(registry)).put(type,module);
-		((RegistryNode)ROOT.getOrCreateChild(target).getOrCreateChild(registry)).put(type,LoaderValue.create(module));*/
 	}
 }

@@ -33,9 +33,6 @@ public class Activator implements BundleActivator{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(PsObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(PsEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(PsObject.class.getName(),NAME);
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(CONTENT_TYPE,PsObjectType.class.getName());
 		MultiRegistryNode.addChildElement("ps",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 	}

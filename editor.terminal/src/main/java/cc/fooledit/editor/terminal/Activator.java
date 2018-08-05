@@ -33,12 +33,6 @@ public class Activator implements BundleActivator{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(TerminalObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(TerminalEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(TerminalObject.class.getName(),NAME);
-		Registry.providesApplication(APPLICATION_NAME,NAME);
-		Registry.providesContentTypeLoader(CONTENT_TYPE_NAME,NAME);
-		Registry.providesCommand(APPLICATION_NAME,NAME);
 	}
 	@Override
 	public void start(BundleContext bc) throws Exception{

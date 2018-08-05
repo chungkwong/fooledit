@@ -31,14 +31,6 @@ public class Activator implements BundleActivator{
 	public static final String COMPRESSED_PROTOCOL_NAME="compressed";
 	@Override
 	public void start(BundleContext bc) throws Exception{
-		Registry.providesDataObjectType(ZipObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(ZipEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(ZipObject.class.getName(),NAME);
-		Registry.providesProtocol(COMPRESSED_PROTOCOL_NAME,NAME);
-		Registry.providesDataObjectType(ArchiveObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(ArchiveEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(ArchiveObject.class.getName(),NAME);
-		Registry.providesProtocol(ARCHIVE_PROTOCOL_NAME,NAME);
 		DataObjectTypeRegistry.addDataObjectType(ArchiveObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(ArchiveEditor.INSTANCE,ArchiveObject.class);
 		DataObjectTypeRegistry.addDataObjectType(ZipObjectType.INSTANCE);

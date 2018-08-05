@@ -72,7 +72,6 @@ public class Activator implements BundleActivator{
 		providesFileCommand("svn-upgrade");
 	}
 	private static void providesFileCommand(String name){
-		Registry.provides(name,NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemViewer.class.getPackage().getName());
 	}
 	private static void providesDefaultValues(){
 		SETTINGS_REGISTRY.putIfAbsent("ALLOW_MIXED_REVISIONS",false);
@@ -146,8 +145,7 @@ public class Activator implements BundleActivator{
 	@Override
 	public void start(BundleContext bc) throws Exception{
 		providesFileCommands();
-		Registry.providesProtocol("svn",NAME);
-		CoreModule.PERSISTENT_REGISTRY.put("vcs.svn/"+SETTINGS_REGISTRY_NAME);
+		//CoreModule.PERSISTENT_REGISTRY.put("vcs.svn/"+SETTINGS_REGISTRY_NAME);FIXME
 		providesDefaultValues();
 		Argument allowMixedRevisions=createArgument("ALLOW_MIXED_REVISIONS");
 		Argument allowUnversionedObstructions=createArgument("ALLOW_UNVERSIONED_OBSTRUCTIONS");

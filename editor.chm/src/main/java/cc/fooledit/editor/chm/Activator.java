@@ -36,12 +36,6 @@ public class Activator implements BundleActivator{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(ChmObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(ChmEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(ChmObject.class.getName(),NAME);
-		Registry.providesProtocol("chm",NAME);
-		Registry.providesEditorToToolbox(ChmEditor.class.getName(),NAME);
-		Registry.providesToolBox(ContentsToolBox.class.getName(),NAME);
 		MultiRegistryNode.addChildElement("chm",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(CONTENT_TYPE,cc.fooledit.editor.chm.ChmObjectType.class.getName());
 		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("application/x-chm",CONTENT_TYPE);

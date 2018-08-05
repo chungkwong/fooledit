@@ -15,7 +15,6 @@ public class Activator implements BundleActivator{
 	public void start(BundleContext bc) throws Exception{
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(CONTENT_TYPE,TextObjectType.class.getName());
 		MultiRegistryNode.addChildElement("awk",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.awk.AwkLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 	}
 	@Override

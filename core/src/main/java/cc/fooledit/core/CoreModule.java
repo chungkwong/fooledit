@@ -55,8 +55,6 @@ public class CoreModule{
 	public static final String KEYMAP_REGISTRY_NAME="keymap";
 	public static final String MESSAGE_REGISTRY_NAME="message";
 	public static final String MENU_REGISTRY_NAME="menu";
-	public static final String PROVIDER_REGISTRY_NAME="provider";
-	public static final String PERSISTENT_REGISTRY_NAME="persistent";
 	public static final String SERIALIZIER_REGISTRY_NAME="serializier";
 	public static final String TASK_REGISTRY_NAME="task";
 	public static final String TEMPLATE_REGISTRY_NAME="template";
@@ -85,8 +83,6 @@ public class CoreModule{
 	public static final RegistryNode<String,RegistryNode<String,Object>> LOADING_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object>>)REGISTRY.getOrCreateChild(LOADING_MODULE_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> INSTALLED_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLED_MODULE_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> INSTALLING_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLING_MODULE_REGISTRY_NAME);
-	public static final RegistryNode<String,RegistryNode<Object,Object>> PROVIDER_REGISTRY=(RegistryNode<String,RegistryNode<Object,Object>>)REGISTRY.getOrCreateChild(PROVIDER_REGISTRY_NAME);
-	public static ListRegistryNode<String> PERSISTENT_REGISTRY=(ListRegistryNode<String>)REGISTRY.getOrCreateChild(PERSISTENT_REGISTRY_NAME,new ListRegistryNode<>());
 	public static final RegistryNode<String,Serializier> SERIALIZIER_REGISTRY=(RegistryNode<String,Serializier>)REGISTRY.getOrCreateChild(SERIALIZIER_REGISTRY_NAME);
 	public static final RegistryNode<String,Task> TASK_REGISTRY=(RegistryNode<String,Task>)REGISTRY.getOrCreateChild(TASK_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> TEMPLATE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(TEMPLATE_REGISTRY_NAME);
@@ -119,19 +115,6 @@ public class CoreModule{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		PERSISTENT_REGISTRY.put("core/"+PROVIDER_REGISTRY_NAME);
-		PERSISTENT_REGISTRY.put("core/"+PERSISTENT_REGISTRY_NAME);
-		PERSISTENT_REGISTRY.put("core/"+INSTALLED_MODULE_REGISTRY_NAME);
-		PERSISTENT_REGISTRY.put("core/"+TEMPLATE_REGISTRY_NAME);
-		PERSISTENT_REGISTRY.put("core/"+CONTENT_TYPE_ALIAS_REGISTRY_NAME);
-		PERSISTENT_REGISTRY.put("core/"+CONTENT_TYPE_SUPERCLASS_REGISTRY_NAME);
-		PERSISTENT_REGISTRY.put("core/"+CONTENT_TYPE_LOADER_REGISTRY_NAME);
-		PERSISTENT_REGISTRY.put("core/"+SUFFIX_REGISTRY_NAME);
-		PERSISTENT_REGISTRY.put("core/"+GLOB_REGISTRY_NAME);
-		PERSISTENT_REGISTRY.put("core/"+MISC_REGISTRY_NAME);
-		TEMPLATE_REGISTRY.putIfAbsent("name","");
-		TEMPLATE_REGISTRY.putIfAbsent("module","core");
-		TEMPLATE_REGISTRY.putIfAbsent("children",new ListRegistryNode<>());
 		MISC_REGISTRY.put(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
 		MISC_REGISTRY.put(ScriptAPI.ENGINE,"JSchemeMin");
 	}
@@ -146,6 +129,8 @@ public class CoreModule{
 		}
 	}
 	static{
+		TEMPLATE_REGISTRY.put("name","");
+		TEMPLATE_REGISTRY.put("module",Activator.class.getPackage().getName());
 		TEMPLATE_REGISTRY.put("children",new ListRegistryNode<>());
 	}
 }

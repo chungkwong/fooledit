@@ -34,14 +34,6 @@ public class Activator implements BundleActivator{
 	public static final String NAME=Activator.class.getPackage().getName();
 	@Override
 	public void start(BundleContext bc) throws Exception{
-		Registry.providesDynamicMenu(APPLICATION_NAME,NAME);
-		Registry.provides("git-init",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemViewer.class.getPackage().getName());
-		Registry.provides("git-clone",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemViewer.class.getPackage().getName());
-		Registry.provides("git-browse",NAME,CoreModule.COMMAND_REGISTRY_NAME,FileSystemViewer.class.getPackage().getName());
-		Registry.providesDataObjectType(GitRepositoryObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(GitRepositoryEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(GitRepositoryObject.class.getName(),NAME);
-		Registry.providesProtocol("git",NAME);
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("directory/git",GitRepositoryObjectType.class.getName());
 		DataObjectTypeRegistry.addDataObjectType(GitRepositoryObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(GitRepositoryEditor.INSTANCE,GitRepositoryObject.class);

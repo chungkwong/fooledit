@@ -1,6 +1,7 @@
 package cc.fooledit.editor.text.mode.php;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
+import cc.fooledit.editor.text.mode.php.Activator;
 import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
@@ -19,8 +20,6 @@ public class Activator implements BundleActivator{
 		MultiRegistryNode.addChildElement("php4",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("php5",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("phps",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
-		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.php.PHPLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.php.PHPParser.class,"htmlDocument",CONTENT_TYPE);
 	}

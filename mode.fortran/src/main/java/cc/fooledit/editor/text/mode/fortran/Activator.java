@@ -1,6 +1,7 @@
 package cc.fooledit.editor.text.mode.fortran;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
+import cc.fooledit.editor.text.mode.fortran.Activator;
 import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
@@ -16,8 +17,6 @@ public class Activator implements BundleActivator{
 		MultiRegistryNode.addChildElement("f90",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("f95",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("for",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
-		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.fortran.fortran77Lexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.fortran.fortran77Parser.class,"program",CONTENT_TYPE);
 	}

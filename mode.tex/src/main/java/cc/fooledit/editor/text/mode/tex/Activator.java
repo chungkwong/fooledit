@@ -1,6 +1,7 @@
 package cc.fooledit.editor.text.mode.tex;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
+import cc.fooledit.editor.text.mode.tex.Activator;
 import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
@@ -20,7 +21,6 @@ public class Activator implements BundleActivator{
 		MultiRegistryNode.addChildElement("latex",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("ltx",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("sty",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.tex.TexLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 	}
 	@Override

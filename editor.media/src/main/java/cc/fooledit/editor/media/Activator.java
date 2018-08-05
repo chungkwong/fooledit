@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.media;
+import cc.fooledit.core.*;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataEditor;
 import static cc.fooledit.core.DataObjectTypeRegistry.addDataObjectType;
-import cc.fooledit.core.*;
 import cc.fooledit.editor.media.Activator;
 import cc.fooledit.spi.*;
 import java.util.*;
@@ -39,13 +39,6 @@ public class Activator implements BundleActivator{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(MediaObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(MediaEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(MediaObject.class.getName(),NAME);
-		Registry.providesDataObjectType(MidiObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(MidiEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(MidiObject.class.getName(),NAME);
-		Registry.providesEditorToToolbox(MediaEditor.class.getName(),NAME);
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("audio/midi","cc.fooledit.editor.media.MidiObjectType");
 		MultiRegistryNode.addChildElement("midi","audio/midi",CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("mid","audio/midi",CoreModule.SUFFIX_REGISTRY);

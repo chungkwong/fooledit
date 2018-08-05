@@ -16,7 +16,6 @@ public class Activator implements BundleActivator{
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put(CONTENT_TYPE,TextObjectType.class.getName());
 		CoreModule.CONTENT_TYPE_ALIAS_REGISTRY.put("text/x-sh",CONTENT_TYPE);
 		MultiRegistryNode.addChildElement("sh",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.bash.BashLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 	}
 	@Override

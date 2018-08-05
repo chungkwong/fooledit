@@ -63,15 +63,6 @@ public class Activator implements BundleActivator{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(GraphicsObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(GraphicsEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(GraphicsObject.class.getName(),NAME);
-		Registry.providesTemplateType(GraphicsTemplate.class.getName(),NAME);
-		Registry.providesToolBox(LayerToolBox.class.getName(),NAME);
-		Registry.providesToolBox(DrawToolBox.class.getName(),NAME);
-		Registry.providesToolBox(EffectToolBox.class.getName(),NAME);
-		Registry.providesToolBox(SelectionToolBox.class.getName(),NAME);
-		Registry.providesEditorToToolbox(GraphicsEditor.class.getName(),NAME);
 		try{
 			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getOrCreateChild("children")).put(
 					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(Activator.class.getResourceAsStream("/templates.json"))));

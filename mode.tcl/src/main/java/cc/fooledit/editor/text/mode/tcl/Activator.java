@@ -1,6 +1,7 @@
 package cc.fooledit.editor.text.mode.tcl;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
+import cc.fooledit.editor.text.mode.tcl.Activator;
 import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
@@ -14,8 +15,6 @@ public class Activator implements BundleActivator{
 	public void start(BundleContext bc) throws Exception{
 		MultiRegistryNode.addChildElement("tcl",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("tk",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
-		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.tcl.TclLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.tcl.TclParser.class,"program",CONTENT_TYPE);
 	}

@@ -40,21 +40,6 @@ public class Activator implements BundleActivator{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(MailBoxObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(MailBoxEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(MailBoxObject.class.getName(),NAME);
-		Registry.providesApplication(APPLICATION_NAME,NAME);
-		Registry.providesContentTypeLoader(CONTENT_TYPE_NAME,NAME);
-		Registry.providesCommand(APPLICATION_NAME,NAME);
-		Registry.providesDataObjectType(MultipartObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(MultipartEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(MultipartObject.class.getName(),NAME);
-		Registry.providesDataObjectType(MessageObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(MessageEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(MessageObject.class.getName(),NAME);
-		Registry.providesProtocol("stmp",NAME);
-		Registry.providesProtocol("pop3",NAME);
-		Registry.providesProtocol("imap",NAME);
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("multipart/alternative","cc.fooledit.editor.email.MultipartObjectType");
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("multipart/digest","cc.fooledit.editor.email.MultipartObjectType");
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("multipart/mixed","cc.fooledit.editor.email.MultipartObjectType");

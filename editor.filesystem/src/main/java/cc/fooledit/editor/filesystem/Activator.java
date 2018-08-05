@@ -40,17 +40,6 @@ public class Activator implements BundleActivator{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(FileSystemObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(FileSystemEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(FileSystemObject.class.getName(),NAME);
-		Registry.providesApplication(APPLICATION_NAME,NAME);
-		Registry.providesContentTypeLoader(CONTENT_TYPE_NAME,NAME);
-		Registry.providesCommand(APPLICATION_NAME,NAME);
-		Registry.providesCommand("new",NAME);
-		Registry.providesCommand("open-file",NAME);
-		Registry.providesCommand("open-url",NAME);
-		Registry.providesCommand("save",NAME);
-		Registry.providesCommand("save-as",NAME);
 	}
 	@Override
 	public void start(BundleContext bc) throws Exception{

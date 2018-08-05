@@ -1,7 +1,6 @@
 package cc.fooledit.editor.text.mode.makefile;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
-import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
  *
@@ -13,7 +12,6 @@ public class Activator implements BundleActivator{
 	@Override
 	public void start(BundleContext bc) throws Exception{
 		CoreModule.GLOB_REGISTRY.put("(.*[/\\\\])?(GNUmakefile|makefile|Makefile)",CONTENT_TYPE);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.makefile.MakefileLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 	}
 	@Override

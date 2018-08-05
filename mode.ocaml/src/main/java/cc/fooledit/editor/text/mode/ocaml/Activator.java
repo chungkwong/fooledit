@@ -1,6 +1,7 @@
 package cc.fooledit.editor.text.mode.ocaml;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
+import cc.fooledit.editor.text.mode.ocaml.Activator;
 import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
@@ -14,7 +15,6 @@ public class Activator implements BundleActivator{
 	public void start(BundleContext bc) throws Exception{
 		MultiRegistryNode.addChildElement("ml",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("mli",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.ocaml.OcamlLexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 	}
 	@Override

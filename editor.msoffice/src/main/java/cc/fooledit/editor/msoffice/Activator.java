@@ -43,21 +43,6 @@ public class Activator implements BundleActivator{
 	public static void onUnLoad(){
 	}
 	public static void onInstall(){
-		Registry.providesDataObjectType(DocObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(DocEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(DocObject.class.getName(),NAME);
-		Registry.providesDataObjectType(DocxObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(DocxEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(DocxObject.class.getName(),NAME);
-		Registry.providesDataObjectType(XlsObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(XlsEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(XlsObject.class.getName(),NAME);
-		Registry.providesDataObjectType(PptObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(PptEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(PptObject.class.getName(),NAME);
-		Registry.providesDataObjectType(PptxObjectType.class.getName(),NAME);
-		Registry.providesDataObjectEditor(PptxEditor.class.getName(),NAME);
-		Registry.providesTypeToEditor(PptxObject.class.getName(),NAME);
 		CoreModule.CONTENT_TYPE_LOADER_REGISTRY.put("application/vnd.ms-excel","cc.fooledit.editor.msoffice.excel.XlsObjectType");
 		MultiRegistryNode.addChildElement("xls","application/vnd.ms-excel",CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("xlc","application/vnd.ms-excel",CoreModule.SUFFIX_REGISTRY);

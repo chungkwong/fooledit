@@ -1,6 +1,7 @@
 package cc.fooledit.editor.text.mode.python;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.*;
+import cc.fooledit.editor.text.mode.python.Activator;
 import cc.fooledit.spi.*;
 import org.osgi.framework.*;
 /**
@@ -15,8 +16,6 @@ public class Activator implements BundleActivator{
 		MultiRegistryNode.addChildElement("py",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("pyx",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
 		MultiRegistryNode.addChildElement("wsgi",CONTENT_TYPE,CoreModule.SUFFIX_REGISTRY);
-		Registry.provides(CONTENT_TYPE,NAME,"highlighter","cc.fooledit.editor.text");
-		Registry.provides(CONTENT_TYPE,NAME,"parser","cc.fooledit.editor.text");
 		StructuredTextEditor.INSTANCE.registerHighlighter(cc.fooledit.editor.text.mode.python.Python3Lexer.class,Activator.class.getResourceAsStream("tokens.json"),CONTENT_TYPE);
 		StructuredTextEditor.INSTANCE.registerParser(cc.fooledit.editor.text.mode.python.Python3Parser.class,"file_input",CONTENT_TYPE);
 	}
