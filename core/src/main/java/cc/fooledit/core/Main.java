@@ -76,8 +76,6 @@ public class Main extends Application{
 		script=new ScriptAPI();
 		CoreModule.onInit();
 		registerStandardCommand();
-		//Registry.ROOT.loadPreference();
-		ModuleRegistry.loadDefault();
 		keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
 		root.addEventFilter(KeyEvent.ANY,getKeyFilter());
 		initMenuBar();
@@ -163,8 +161,8 @@ public class Main extends Application{
 			CoreModule.CONTENT_TYPE_SUPERCLASS_REGISTRY.put((String)o[0],(String)o[1]);
 			return null;
 		});
-		addCommandBatch("ensure-loaded",(o)->{
-			ModuleRegistry.ensureLoaded((String)o[0]);
+		addCommandBatch("ensure-installed",(o)->{
+			ModuleRegistry.ensureInstalled((String)o[0]);
 			return null;
 		});
 		addCommandBatch("get-registry",(o)->{
@@ -370,6 +368,7 @@ public class Main extends Application{
 	@Override
 	public void stop() throws Exception{
 		super.stop();
+		EventManager.fire(EventManager.SHUTDOWN,null);
 		for(Bundle bundle:Activator.bundleContext.getBundles()){
 			if(bundle instanceof Framework){
 				bundle.stop();

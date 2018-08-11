@@ -145,7 +145,7 @@ public class Activator implements BundleActivator{
 	@Override
 	public void start(BundleContext bc) throws Exception{
 		providesFileCommands();
-		//CoreModule.PERSISTENT_REGISTRY.put("vcs.svn/"+SETTINGS_REGISTRY_NAME);FIXME
+		CoreModule.PERSISTENT_REGISTRY.put(NAME+"/"+SETTINGS_REGISTRY_NAME);
 		providesDefaultValues();
 		Argument allowMixedRevisions=createArgument("ALLOW_MIXED_REVISIONS");
 		Argument allowUnversionedObstructions=createArgument("ALLOW_UNVERSIONED_OBSTRUCTIONS");

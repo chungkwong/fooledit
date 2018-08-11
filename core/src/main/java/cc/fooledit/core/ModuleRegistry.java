@@ -28,35 +28,10 @@ import java.util.zip.*;
 public class ModuleRegistry{
 	public static final String REPOSITORY="repository";
 	public static final String PRELOAD="preload";
-	public static void loadDefault(){
-		ensureLoaded(CoreModule.NAME);
-	}
-	public static void ensureLoaded(String module){
-		if(!CoreModule.LOADED_MODULE_REGISTRY.containsKey(module)){
-			try{
-				//load(getModuleDescriptor(module));
-			}catch(Exception ex){
-				Logger.getGlobal().log(Level.SEVERE,null,ex);
-			}
-		}
-	}
-	private static void load(RegistryNode<String,Object> moduleDescriptor) throws Exception{
-		String module=(String)moduleDescriptor.get(NAME);
-		Logger.getGlobal().log(Level.INFO,"Trying to load {0}",new Object[]{module});
-		if(CoreModule.LOADING_MODULE_REGISTRY.containsKey(module)){
-			return;
-		}
-		CoreModule.LOADING_MODULE_REGISTRY.put(module,moduleDescriptor);
-		ensureInstalled(module);
-		((ListRegistryNode<String>)moduleDescriptor.get(DEPENDENCY)).values().forEach((s)->ensureLoaded(s));
-		//onLoad(module);
-		CoreModule.LOADING_MODULE_REGISTRY.remove(module);
-		CoreModule.LOADED_MODULE_REGISTRY.put(module,moduleDescriptor);
-	}
 	public static void ensureInstalled(String module){
 		if(!CoreModule.INSTALLED_MODULE_REGISTRY.containsKey(module)){
 			try{
-				//install(getModuleDescriptor(module));
+				install(listDownloadable().values().stream().filter((d)->module.equals(d.get(NAME))).findAny().get());
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.SEVERE,null,ex);
 			}

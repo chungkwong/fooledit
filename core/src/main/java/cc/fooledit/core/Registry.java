@@ -19,6 +19,7 @@ import cc.fooledit.spi.*;
 import com.github.chungkwong.json.*;
 import java.io.*;
 import java.nio.charset.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.logging.*;
 /**
@@ -28,6 +29,43 @@ import java.util.logging.*;
 public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 	public static final Registry ROOT=new Registry();
 	private Registry(){
+		loadPreference();
+	}
+	private void loadPreference(){
+		try{
+			RegistryNode<String,RegistryNode<Object,Object>> toLoad=(RegistryNode<String,RegistryNode<Object,Object>>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(getPersistentFile()));
+			for(String path:toLoad.keySet()){
+				String[] comp=splitPath(path);
+				RegistryNode<Object,Object> parent=(RegistryNode<Object,Object>)resolve(comp[0]).getOrCreateChild(comp[1]);
+				parent.putAll(toLoad.get(path));
+			}
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.INFO,"Failed to load registry cache",ex);
+		}
+	}
+	public void syncPersistent(){
+		File tmp=new File(Main.INSTANCE.getUserPath(),".registry.json");
+		try(OutputStreamWriter out=new OutputStreamWriter(new FileOutputStream(tmp),StandardCharsets.UTF_8)){
+			out.append('{');
+			Iterator<String> toSave=CoreModule.PERSISTENT_REGISTRY.values().iterator();
+			while(toSave.hasNext()){
+				String path=toSave.next();
+				out.write(JSONEncoder.encode(path));
+				out.write(':');
+				out.write(StandardSerializiers.JSON_SERIALIZIER.encode(resolve(path)));
+				if(toSave.hasNext()){
+					out.write(',');
+				}
+			}
+			out.append('}');
+			out.flush();
+			Files.move(tmp.toPath(),getPersistentFile().toPath(),StandardCopyOption.REPLACE_EXISTING);
+		}catch(Exception ex){
+			Logger.getGlobal().log(Level.SEVERE,null,ex);
+		}
+	}
+	private static File getPersistentFile(){
+		return new File(Main.INSTANCE.getUserPath(),"registry.json");
 	}
 	public <K,V> RegistryNode<K,V> resolve(String path){
 		RegistryNode node=this;

@@ -24,7 +24,6 @@ import javafx.collections.*;
  */
 public abstract class RegistryNode<K,V> implements ObservableMap<K,V>{
 	protected RegistryNode(){
-
 	}
 	public V getOrCreateChild(K name){
 		return getOrCreateChild(name,(V)new SimpleRegistryNode());
@@ -38,11 +37,7 @@ public abstract class RegistryNode<K,V> implements ObservableMap<K,V>{
 	@Override
 	public V get(Object name){
 		V value=getReal((K)name);
-		if(value instanceof LoaderValue){
-			remove(name);
-			((LoaderValue)value).loadValue();
-			value=getReal((K)name);
-		}else if(value instanceof LazyValue){
+		if(value instanceof LazyValue){
 			value=((LazyValue<V>)value).getValue();
 		}
 		return value;

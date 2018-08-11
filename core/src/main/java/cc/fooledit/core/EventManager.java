@@ -60,7 +60,4 @@ public class EventManager{
 			super(message,cause);
 		}
 	}
-	static{
-		Runtime.getRuntime().addShutdownHook(new Thread(()->fire(SHUTDOWN,null)));
-	}
 }

@@ -48,8 +48,6 @@ public class CoreModule{
 	public static final String EDITOR_TO_TOOLBOX_REGISTRY_NAME="editor_to_toolbox";
 	public static final String EVENT_REGISTRY_NAME="event";
 	public static final String HISTORY_REGISTRY_NAME="history";
-	public static final String LOADED_MODULE_REGISTRY_NAME="loaded_module";
-	public static final String LOADING_MODULE_REGISTRY_NAME="loading_module";
 	public static final String INSTALLED_MODULE_REGISTRY_NAME="installed_module";
 	public static final String INSTALLING_MODULE_REGISTRY_NAME="installing_module";
 	public static final String KEYMAP_REGISTRY_NAME="keymap";
@@ -62,6 +60,7 @@ public class CoreModule{
 	public static final String TOOLBOX_REGISTRY_NAME="toolbox";
 	public static final String WINDOW_REGISTRY_NAME="window";
 	public static final String MISC_REGISTRY_NAME="misc";
+	public static final String PERSISTENT_REGISTRY_NAME="persistent";
 	public static final RegistryNode<String,Object> REGISTRY=(RegistryNode<String,Object>)Registry.ROOT.getOrCreateChild(NAME);
 	public static final RegistryNode<String,String> APPLICATION_REGISTRY=(RegistryNode<String,String>)REGISTRY.getOrCreateChild(APPLICATION_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> CLIP_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(CLIP_REGISTRY_NAME);
@@ -79,8 +78,6 @@ public class CoreModule{
 	public static final RegistryNode<String,ListRegistryNode<String>> EDITOR_TO_TOOLBOX_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(EDITOR_TO_TOOLBOX_REGISTRY_NAME);
 	public static final RegistryNode<String,ListRegistryNode<Consumer>> EVENT_REGISTRY=(RegistryNode<String,ListRegistryNode<Consumer>>)REGISTRY.getOrCreateChild(EVENT_REGISTRY_NAME);
 	public static ListRegistryNode<RegistryNode<String,Object>> HISTORY_REGISTRY=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
-	public static final RegistryNode<String,RegistryNode<String,Object>> LOADED_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object>>)REGISTRY.getOrCreateChild(LOADED_MODULE_REGISTRY_NAME);
-	public static final RegistryNode<String,RegistryNode<String,Object>> LOADING_MODULE_REGISTRY=(RegistryNode<String,RegistryNode<String,Object>>)REGISTRY.getOrCreateChild(LOADING_MODULE_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> INSTALLED_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLED_MODULE_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> INSTALLING_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLING_MODULE_REGISTRY_NAME);
 	public static final RegistryNode<String,Serializier> SERIALIZIER_REGISTRY=(RegistryNode<String,Serializier>)REGISTRY.getOrCreateChild(SERIALIZIER_REGISTRY_NAME);
@@ -90,7 +87,7 @@ public class CoreModule{
 	public static final RegistryNode<String,ToolBox> TOOLBOX_REGISTRY=(RegistryNode<String,ToolBox>)REGISTRY.getOrCreateChild(TOOLBOX_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> MISC_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(MISC_REGISTRY_NAME);
 	public static final RegistryNode<String,Command> COMMAND_REGISTRY=(RegistryNode<String,Command>)REGISTRY.getOrCreateChild(COMMAND_REGISTRY_NAME);
-	;
+	public static final ListRegistryNode<String> PERSISTENT_REGISTRY=new ListRegistryNode<>();
 	public static void onLoad(){
 		//HISTORY_REGISTRY.limit(20);
 		REGISTRY.put(HISTORY_REGISTRY_NAME,HISTORY_REGISTRY);
@@ -132,5 +129,7 @@ public class CoreModule{
 		TEMPLATE_REGISTRY.put("name","");
 		TEMPLATE_REGISTRY.put("module",Activator.class.getPackage().getName());
 		TEMPLATE_REGISTRY.put("children",new ListRegistryNode<>());
+		REGISTRY.put(PERSISTENT_REGISTRY_NAME,PERSISTENT_REGISTRY);
+		PERSISTENT_REGISTRY.put(NAME+"/"+PERSISTENT_REGISTRY_NAME);
 	}
 }

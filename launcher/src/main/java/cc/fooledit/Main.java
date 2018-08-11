@@ -56,8 +56,15 @@ public class Main{
 		config.put("felix.auto.deploy.action","uninstall,install,update,start");
 		URL url=Main.class.getResource("");
 		if(url.getProtocol().equals("file")){
-			config.put("org.osgi.framework.storage","/home/kwong/NetBeansProjects/fooledit/distribution/target/distribution-1.0-SNAPSHOT-dist/felix-cache");
-			config.put("felix.auto.deploy.dir","/home/kwong/NetBeansProjects/fooledit/distribution/target/distribution-1.0-SNAPSHOT-dist/bundle");
+			System.out.println(url);
+			File base;
+			try{
+				base=new File(new File(url.toURI()),"../../../../../distribution/target/distribution-1.0-SNAPSHOT-dist");
+				config.put("org.osgi.framework.storage",new File(base,"felix-cache").getCanonicalPath());
+				config.put("felix.auto.deploy.dir",new File(base,"bundle").getCanonicalPath());
+			}catch(URISyntaxException|IOException ex){
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,null,ex);
+			}
 		}else{
 			try{
 				File home=new File(URLDecoder.decode(url.toString().substring(9,url.toString().indexOf('!')),"UTF-8")).getParentFile().getParentFile();
