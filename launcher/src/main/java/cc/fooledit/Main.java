@@ -18,6 +18,8 @@ package cc.fooledit;
 import cc.fooledit.Main;
 import java.io.*;
 import java.net.*;
+import java.nio.file.FileSystem;
+import java.nio.file.*;
 import java.util.*;
 import java.util.logging.*;
 import java.util.logging.Logger;
@@ -91,15 +93,15 @@ public class Main{
 	}
 	private static void syncBundles(Map config,Framework framework){
 		AutoProcessor.process(config,framework.getBundleContext());
-		/*try{
-			Path path=new File("bundle").toPath();
+		try{
+			Path path=new File(Objects.toString(config.get("felix.auto.deploy.dir"))).toPath();
 			FileSystem fileSystem=path.getFileSystem();
 			WatchService watchService=fileSystem.newWatchService();
 			path.register(watchService,StandardWatchEventKinds.ENTRY_CREATE,
 					StandardWatchEventKinds.ENTRY_DELETE,
 					StandardWatchEventKinds.ENTRY_MODIFY,
 					StandardWatchEventKinds.OVERFLOW);
-			new Thread(()->{
+			Thread monitor=new Thread(()->{
 				while(true){
 					try{
 						WatchKey key=watchService.take();
@@ -110,9 +112,11 @@ public class Main{
 					}
 				}
 			},"Check bundle directory");
+			monitor.setDaemon(true);
+			monitor.start();
 		}catch(Exception ex){
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,null,ex);
 			ex.printStackTrace();
-		}*/
+		}
 	}
 }
