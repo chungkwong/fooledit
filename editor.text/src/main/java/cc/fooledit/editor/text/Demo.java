@@ -27,12 +27,15 @@ import org.fxmisc.richtext.*;
 public class Demo extends Application{
 	private final CodeEditor area=new CodeEditor(null,null);
 	private Selection caret;
+	private int id=0;
 	@Override
 	public void start(Stage primaryStage){
 		area.getStylesheets().add("file:///home/kwong/NetBeansProjects/fooledit/editor.text/stylesheets/default.css");
 		Button addButton=new Button("Added caret");
 		addButton.setOnAction((e)->{
-			area.getArea().addCaret(new CaretNode("caret",area.getArea(),area.getArea().getCaretPosition()));
+			CaretNode caret=new CaretNode("caret"+(++id),area.getArea(),area.getArea().getCaretPosition());
+			caret.setStyle("-fx-stroke:red");
+			area.getArea().addCaret(caret);
 		});
 		area.setBottom(addButton);
 		Scene scene=new Scene(area);

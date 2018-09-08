@@ -452,8 +452,9 @@ public class CodeEditor extends BorderPane{
 	public void unhighlight(){
 		selections.clear();
 	}
-	public void mark(int offset,String tag){
-		markers.add(new CaretNode(tag,area,offset));
+	private int markerId=0;
+	public void mark(int offset){
+		markers.add(new CaretNode("caret"+(++markerId),area,offset));
 	}
 	public void unmark(int start,int end){
 		markers.removeIf((marker)->marker.getPosition()>=start&&marker.getPosition()<end);

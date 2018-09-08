@@ -234,6 +234,26 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			area.getArea().setWrapText((Boolean)args[0]);
 			return null;
 		});
+		addCommand("mark",Arrays.asList(new Argument("position",()->((CodeEditor)Main.INSTANCE.getCurrentNode()).getArea().getCaretPosition())),(args,area)->{
+			area.mark(area.getArea().getCaretPosition());
+			return null;
+		});
+		addCommand("next-marker",Collections.emptyList(),(args,area)->{
+			int position=area.getArea().getCaretPosition();
+			Optional<CaretNode> nextTag=area.getMarkers().stream().filter((tag)->tag.getPosition()>position).findFirst();
+			if(nextTag.isPresent()){
+				area.getArea().moveTo(nextTag.get().getPosition());
+			}
+			return null;
+		});
+		addCommand("previous-marker",Arrays.asList(new Argument("position",()->((CodeEditor)Main.INSTANCE.getCurrentNode()).getArea().getCaretPosition())),(args,area)->{
+			int position=area.getArea().getCaretPosition();
+			Optional<CaretNode> prevTag=area.getMarkers().descendingSet().stream().filter((tag)->tag.getPosition()<position).findFirst();
+			if(prevTag.isPresent()){
+				area.getArea().moveTo(prevTag.get().getPosition());
+			}
+			return null;
+		});
 	}
 	public void registerHighlighter(Class lexer,InputStream typeFile,String mime){
 		Supplier<Highlighter> highlighter;

@@ -46,12 +46,14 @@ public class PdfViewer extends BorderPane{
 			return currentPage;
 		});
 		zoom.addListener((e,o,n)->{
-			if(currentPage!=null)
+			if(currentPage!=null){
 				currentPage.setImage(getPage(getPageIndex(),n.floatValue()));
+			}
 		});
 		rotate.addListener((e,o,n)->{
-			if(currentPage!=null)
+			if(currentPage!=null){
 				currentPage.setRotate(n.doubleValue());
+			}
 		});
 		setCenter(new ScrollPaneWrapper(pagination));
 	}
