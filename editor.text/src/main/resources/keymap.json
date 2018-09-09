@@ -84,5 +84,9 @@
 	"Paste":"paste",
 	"M-S-Left":"indent-less",
 	"M-S-Right":"indent-more",
-	"C-S-Up":"duplicate-lines"
+	"C-S-Up":"duplicate-lines",
+	"C-M":"mark",
+	"C-M-M":"unmark",
+	"M-Up":"next-marker",
+	"M-Down":"previous-marker"
 }

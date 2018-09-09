@@ -235,9 +235,14 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			return null;
 		});
 		addCommand("mark",Arrays.asList(new Argument("position",()->((CodeEditor)Main.INSTANCE.getCurrentNode()).getArea().getCaretPosition())),(args,area)->{
-			area.mark(area.getArea().getCaretPosition());
+			area.mark((int)args[0]);
 			return null;
 		});
+		addCommand("unmark",Arrays.asList(new Argument("start",()->((CodeEditor)Main.INSTANCE.getCurrentNode()).getArea().getSelection().getStart()),
+				new Argument("end",()->((CodeEditor)Main.INSTANCE.getCurrentNode()).getArea().getSelection().getEnd())),(args,area)->{
+					area.unmark((int)args[0],(int)args[1]+1);
+					return null;
+				});
 		addCommand("next-marker",Collections.emptyList(),(args,area)->{
 			int position=area.getArea().getCaretPosition();
 			Optional<CaretNode> nextTag=area.getMarkers().stream().filter((tag)->tag.getPosition()>position).findFirst();

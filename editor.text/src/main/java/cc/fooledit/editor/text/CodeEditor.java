@@ -454,10 +454,19 @@ public class CodeEditor extends BorderPane{
 	}
 	private int markerId=0;
 	public void mark(int offset){
-		markers.add(new CaretNode("caret"+(++markerId),area,offset));
+		CaretNode caret=new CaretNode("caret"+(++markerId),area,offset);
+		area.addCaret(caret);
+		markers.add(caret);
 	}
 	public void unmark(int start,int end){
-		markers.removeIf((marker)->marker.getPosition()>=start&&marker.getPosition()<end);
+		markers.removeIf((marker)->{
+			if(marker.getPosition()>=start&&marker.getPosition()<end){
+				area.removeCaret(marker);
+				return true;
+			}else{
+				return false;
+			}
+		});
 	}
 	public TreeSet<CaretNode> getMarkers(){
 		return markers;
