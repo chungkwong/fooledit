@@ -455,6 +455,7 @@ public class CodeEditor extends BorderPane{
 	private int markerId=0;
 	public void mark(int offset){
 		CaretNode caret=new CaretNode("caret"+(++markerId),area,offset);
+		caret.getStyleClass().add("marker");
 		area.addCaret(caret);
 		markers.add(caret);
 	}

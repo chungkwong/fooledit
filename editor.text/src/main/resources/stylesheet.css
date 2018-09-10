@@ -36,3 +36,4 @@
 .error{-rtfx-background-color: red;}
 .brace{-rtfx-border-stroke-color: black;-rtfx-border-stroke-width: 1px;}
 .paragraph-box:has-caret{-fx-background-color: azure;}
+.marker{-fx-stroke:orange;-fx-caret-blink-rate:0ms;}

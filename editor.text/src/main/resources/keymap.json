@@ -87,6 +87,6 @@
 	"C-S-Up":"duplicate-lines",
 	"C-M":"mark",
 	"C-M-M":"unmark",
-	"M-Up":"next-marker",
-	"M-Down":"previous-marker"
+	"M-Up":"previous-marker",
+	"M-Down":"next-marker"
 }
