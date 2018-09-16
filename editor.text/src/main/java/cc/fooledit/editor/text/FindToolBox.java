@@ -20,6 +20,7 @@ import cc.fooledit.editor.text.Activator;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import java.util.*;
+import java.util.regex.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -87,6 +88,28 @@ public class FindToolBox implements ToolBox{
 			getChildren().setAll(searchBar,replaceBar);
 			task=new RealTimeTask<>((key)->{
 				String text=area.getArea().getText();
+				int index=0;
+				int mode=0;
+				if(ignoreCase.isSelected()){
+					mode|=Pattern.CASE_INSENSITIVE;
+				}
+				if(!regex.isSelected()){
+					mode|=Pattern.LITERAL;
+				}
+				Matcher matcher=Pattern.compile(key,mode).matcher(text);
+				while(!Thread.interrupted()){
+					if(matcher.find()){
+						index=matcher.end();
+						int end=matcher.start();
+						found.createSelection(end,index);
+					}else{
+						break;
+					}
+					if(index==-1){
+						break;
+					}else{
+					}
+				}
 			});
 		}
 		private void find(String str){
