@@ -20,12 +20,15 @@ import cc.fooledit.editor.text.Activator;
 import cc.fooledit.spi.*;
 import cc.fooledit.util.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.regex.*;
+import javafx.application.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import org.fxmisc.richtext.*;
+import org.fxmisc.richtext.model.*;
 /**
  *
  * @author Chan Chung Kwong
@@ -87,7 +90,6 @@ public class FindToolBox implements ToolBox{
 			replaceBar.getChildren().addAll(current,all);
 			getChildren().setAll(searchBar,replaceBar);
 			task=new RealTimeTask<>((key)->{
-				String text=area.getArea().getText();
 				int index=0;
 				int mode=0;
 				if(ignoreCase.isSelected()){
@@ -96,12 +98,28 @@ public class FindToolBox implements ToolBox{
 				if(!regex.isSelected()){
 					mode|=Pattern.LITERAL;
 				}
+				if(word.isSelected()){
+					Predicate<String> pred=Pattern.compile(key,mode).asPredicate();
+					Iterator<StyleSpan<Collection<String>>> iterator=area.getArea().getStyleSpans(0,area.getArea().getLength()).iterator();
+					while(!(Thread.interrupted())&&iterator.hasNext()){
+						StyleSpan<Collection<String>> span=iterator.next();
+						int start=index;
+						int end=index+span.getLength();
+						index=end;
+						if(pred.test(key)){
+							Platform.runLater(()->found.createSelection(end,start));
+						}
+					}
+					return;
+				}
+				String text=area.getArea().getText();
 				Matcher matcher=Pattern.compile(key,mode).matcher(text);
 				while(!Thread.interrupted()){
 					if(matcher.find()){
-						index=matcher.end();
+						int start=matcher.end();
 						int end=matcher.start();
-						found.createSelection(end,index);
+						index=start;
+						Platform.runLater(()->found.createSelection(end,start));
 					}else{
 						break;
 					}
@@ -113,6 +131,7 @@ public class FindToolBox implements ToolBox{
 			});
 		}
 		private void find(String str){
+			found.getSelections().clear();
 			task.summit(str);
 		}
 		private void findNext(){
