@@ -37,12 +37,13 @@ public class SelectionGroup{
 					c.getRemoved().forEach((s)->area.getArea().removeSelection(s));
 				}
 			}
+			area.applyCss();
 		});
 	}
 	public void select(int start,int end){
-		selections.add(area.createSelection(start,end,cls));
+		selections.add(createSelection(start,end));
 	}
-	public Selection<Collection<String>,String,Collection<String>> createSelection(int start,int end){
+	private Selection<Collection<String>,String,Collection<String>> createSelection(int start,int end){
 		return area.createSelection(start,end,cls);
 	}
 	public ObservableList<Selection<Collection<String>,String,Collection<String>>> getSelections(){

@@ -107,7 +107,7 @@ public class FindToolBox implements ToolBox{
 						int end=index+span.getLength();
 						index=end;
 						if(pred.test(key)){
-							Platform.runLater(()->found.createSelection(end,start));
+							Platform.runLater(()->found.select(end,start));
 						}
 					}
 					return;
@@ -119,7 +119,7 @@ public class FindToolBox implements ToolBox{
 						int start=matcher.end();
 						int end=matcher.start();
 						index=start;
-						Platform.runLater(()->found.createSelection(end,start));
+						Platform.runLater(()->found.select(end,start));
 					}else{
 						break;
 					}
