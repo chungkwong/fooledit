@@ -37,7 +37,6 @@ public class SelectionGroup{
 					c.getRemoved().forEach((s)->area.getArea().removeSelection(s));
 				}
 			}
-			area.applyCss();
 		});
 	}
 	public void select(int start,int end){

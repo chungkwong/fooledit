@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.regex.*;
 import javafx.application.*;
+import javafx.beans.value.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -127,6 +128,15 @@ public class FindToolBox implements ToolBox{
 						break;
 					}else{
 					}
+				}
+			});
+			final ChangeListener<String> textChanged=(e,o,n)->find(findString.getText());
+			area.textProperty().addListener(textChanged);
+			visibleProperty().addListener((e,o,n)->{
+				if(!n){
+					area.textProperty().removeListener(textChanged);
+					task.cancelAll();
+					found.getSelections().clear();
 				}
 			});
 		}
