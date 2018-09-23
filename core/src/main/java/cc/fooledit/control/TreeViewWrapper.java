@@ -31,27 +31,23 @@ import javafx.scene.control.*;
  */
 public class TreeViewWrapper<T> extends TreeView<T>{
 	public TreeViewWrapper(){
-		installCommands();
-		installKeymap();
+		Main.INSTANCE.getKeymapManager().adopt(this,getKeymap(),getCommands());
 	}
 	public TreeViewWrapper(TreeItem<T> root){
 		super(root);
-		installCommands();
-		installKeymap();
+		Main.INSTANCE.getKeymapManager().adopt(this,getKeymap(),getCommands());
 	}
-	private void installKeymap(){
+	private NavigableRegistryNode<String,String> getKeymap(){
 		TreeMap<String,String> mapping=new TreeMap<>();
 		try{
 			mapping.putAll((Map<String,String>)JSONDecoder.decode(new InputStreamReader(getClass().getResourceAsStream("/tree.json"),StandardCharsets.UTF_8)));
 		}catch(IOException|SyntaxException ex){
 			Logger.getLogger(TreeTableWrapper.class.getName()).log(Level.SEVERE,null,ex);
 		}
-		NavigableRegistryNode<String,String> registry=new NavigableRegistryNode<>(mapping);
-		getProperties().put(WorkSheet.KEYMAP_NAME,registry);
+		return new NavigableRegistryNode<>(mapping);
 	}
-	private void installCommands(){
+	private RegistryNode<String,Command> getCommands(){
 		RegistryNode<String,Command> registry=new SimpleRegistryNode<>();
-		getProperties().put(WorkSheet.COMMANDS_NAME,registry);
 		addCommand("focus-previous",()->getFocusModel().focusPrevious(),registry);
 		addCommand("focus-next",()->getFocusModel().focusNext(),registry);
 		addCommand("focus-first",()->getFocusModel().focus(0),registry);
@@ -123,6 +119,7 @@ public class TreeViewWrapper<T> extends TreeView<T>{
 				getFocusModel().focus(n.intValue());
 			}
 		});
+		return registry;
 	}
 	private void addCommand(String name,Runnable action,ObservableMap<String,Command> registry){
 		registry.put(name,new Command(name,action,Activator.class));

@@ -28,7 +28,6 @@ import java.util.logging.*;
 import static javafx.application.Application.launch;
 import javafx.application.*;
 import javafx.collections.*;
-import javafx.event.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -47,7 +46,6 @@ public class Main extends Application{
 	public static Main INSTANCE;
 	private static final File USER_PATH=new File(System.getProperty("user.home"),".fooledit");
 	private MenuRegistry menuRegistry;
-	private final NavigableRegistryNode<String,String> keymapRegistry;
 	private final Notifier notifier=new Notifier();
 	private final BorderPane root=new BorderPane();
 	private MiniBuffer input;
@@ -57,8 +55,7 @@ public class Main extends Application{
 	private Stage stage;
 	private Node mainFocusOwner;
 	private WorkSheet currentWorksheet;
-	private List<KeyEvent> macro=new ArrayList<>();
-	private boolean recording=false;
+	private KeymapManager keymapManager=new KeymapManager();
 	private HistoryRing<Map<Object,Object>> worksheets=new HistoryRing<>();
 	public Main(){
 		INSTANCE=this;
@@ -74,10 +71,8 @@ public class Main extends Application{
 		scene.focusOwnerProperty().addListener((e,o,n)->updateCurrentNode(n));
 		//scene.focusOwnerProperty().addListener((e,o,n)->System.out.println(n));
 		script=new ScriptAPI();
-		CoreModule.onInit();
 		registerStandardCommand();
-		keymapRegistry=Registry.ROOT.registerKeymap(Activator.class);
-		root.addEventFilter(KeyEvent.ANY,getKeyFilter());
+		keymapManager.adopt(root,Registry.ROOT.registerKeymap(Activator.class),CoreModule.COMMAND_REGISTRY);
 		initMenuBar();
 		root.setBottom(notifier.getStatusBar());
 		loadDefaultWorkSheet();
@@ -127,18 +122,9 @@ public class Main extends Application{
 		addCommand("cancel",()->getCurrentNode().requestFocus());
 		addCommand("next-buffer",()->showOnCurrentTab(DataObjectRegistry.getNextDataObject(getCurrentDataObject())));
 		addCommand("previous-buffer",()->showOnCurrentTab(DataObjectRegistry.getPreviousDataObject(getCurrentDataObject())));
-		addCommand("start-record",()->{
-			macro.clear();
-			recording=true;
-		});
-		addCommand("stop-record",()->{
-			recording=false;
-			macro.remove(0);
-			macro.remove(macro.size()-1);
-		});
-		addCommand("replay",()->{
-			macro.forEach((e)->((Node)e.getTarget()).fireEvent(e));
-		});
+		addCommand("start-record",()->keymapManager.startRecording());
+		addCommand("stop-record",()->keymapManager.stopRecording());
+		addCommand("replay",()->keymapManager.getMacro().forEach((e)->((Node)e.getTarget()).fireEvent(e)));
 		addCommand("restore",()->getMiniBuffer().restore());
 		addCommand("repeat",(o)->Command.repeat(o.length==0?1:((Number)o[0]).intValue()));
 		addCommandBatch("map-mime-to-type",(o)->{
@@ -311,6 +297,9 @@ public class Main extends Application{
 	public void setCurrentWorkSheet(WorkSheet workSheet){
 		updateCurrentNode(workSheet.getCenter());
 	}
+	public KeymapManager getKeymapManager(){
+		return keymapManager;
+	}
 	private void loadDefaultWorkSheet(){
 		//Activator.bundleContext.getBundle(currKey);
 		SimpleRegistryNode<String,Object> last;
@@ -388,63 +377,6 @@ public class Main extends Application{
 			Logger.getGlobal().log(Level.SEVERE,null,ex);
 		}
 		return obj;
-	}
-	private String currKey=null;
-	private boolean ignoreKey=false;
-	private EventHandler<KeyEvent> getKeyFilter(){
-		return (KeyEvent e)->{
-			if(recording){
-				macro.add(e.copyFor(e.getSource(),e.getTarget()));
-			}
-			if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
-				if(ignoreKey){
-					e.consume();
-				}
-			}else if(e.getEventType().equals(KeyEvent.KEY_RELEASED)){
-				if(ignoreKey){
-					e.consume();
-				}
-			}else if(e.getEventType().equals(KeyEvent.KEY_PRESSED)){
-				if(e.getCode().isModifierKey()){
-					e.consume();
-					return;
-				}
-				String code=currKey==null?encode(e):currKey+'+'+encode(e);
-				Node node=scene.getFocusOwner();
-				while(node!=null){
-					Object local=node.getProperties().get("keymap");
-					if(local instanceof NavigableRegistryNode&&checkForKey(code,(NavigableRegistryNode<String,String>)local)){
-						e.consume();
-						return;
-					}
-					node=node.getParent();
-				}
-				if(checkForKey(code,keymapRegistry)){
-					e.consume();
-				}else{
-					currKey=null;
-					getNotifier().notify("");
-					ignoreKey=false;
-				}
-			}
-		};
-	}
-	private boolean checkForKey(String code,NavigableRegistryNode<String,String> keymapRegistryNode){
-		Map.Entry<String,String> entry=keymapRegistryNode.ceilingEntry(code);
-		if(entry!=null){
-			if(code.equals(entry.getKey())){
-				currKey=null;
-				TaskManager.executeCommand(getCommand(entry.getValue()));
-				ignoreKey=true;
-				return true;
-			}else if(entry.getKey().startsWith(code+' ')){
-				currKey=code;
-				getNotifier().notify(MessageRegistry.getString("ENTERED",Activator.class)+code);
-				ignoreKey=true;
-				return true;
-			}
-		}
-		return false;
 	}
 	public Command getCommand(String name){
 		Node node=mainFocusOwner;

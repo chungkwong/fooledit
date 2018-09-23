@@ -32,33 +32,30 @@ import javafx.scene.control.*;
  */
 public class ScrollPaneWrapper extends ScrollPane{
 	public ScrollPaneWrapper(){
-		installCommands();
-		installKeymap();
+		Main.INSTANCE.getKeymapManager().adopt(this,getKeymap(),getCommands());
 	}
 	public ScrollPaneWrapper(Node content){
 		super(content);
-		installCommands();
-		installKeymap();
+		Main.INSTANCE.getKeymapManager().adopt(this,getKeymap(),getCommands());
 	}
-	private void installKeymap(){
+	private NavigableRegistryNode<String,String> getKeymap(){
 		TreeMap<String,String> mapping=new TreeMap<>();
 		try{
 			mapping.putAll((Map<String,String>)JSONDecoder.decode(new InputStreamReader(getClass().getResourceAsStream("/scrollPane.json"),StandardCharsets.UTF_8)));
 		}catch(IOException|SyntaxException ex){
 			Logger.getLogger(TreeTableWrapper.class.getName()).log(Level.SEVERE,null,ex);
 		}
-		NavigableRegistryNode<String,String> registry=new NavigableRegistryNode<>(mapping);
-		getProperties().put(WorkSheet.KEYMAP_NAME,registry);
+		return new NavigableRegistryNode<>(mapping);
 	}
-	private void installCommands(){
+	private RegistryNode<String,Command> getCommands(){
 		RegistryNode<String,Command> registry=new SimpleRegistryNode<>();
-		getProperties().put(WorkSheet.COMMANDS_NAME,registry);
 		addCommand("scroll-up",()->((ScrollPaneSkin)getSkin()).vsbDecrement(),registry);
 		addCommand("scroll-down",()->((ScrollPaneSkin)getSkin()).vsbIncrement(),registry);
 		addCommand("scroll-left",()->((ScrollPaneSkin)getSkin()).hsbDecrement(),registry);
 		addCommand("scroll-right",()->((ScrollPaneSkin)getSkin()).hsbIncrement(),registry);
 		addCommand("scroll-to-top",()->setVvalue(getVmin()),registry);
 		addCommand("scroll-to-bottom",()->setVvalue(getVmax()),registry);
+		return registry;
 	}
 	private void addCommand(String name,Runnable action,ObservableMap<String,Command> registry){
 		registry.put(name,new Command(name,action,Activator.class));

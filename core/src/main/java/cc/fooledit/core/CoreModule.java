@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
-import cc.fooledit.control.*;
 import cc.fooledit.spi.*;
 import java.io.*;
 import java.util.*;
@@ -29,7 +28,6 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CoreModule{
-	private static final Serializier serializier=StandardSerializiers.JSON_SERIALIZIER;
 	public static final String NAME="core";
 	public static final String APPLICATION_REGISTRY_NAME="application";
 	public static final String CLIP_REGISTRY_NAME="clip";
@@ -88,38 +86,9 @@ public class CoreModule{
 	public static final RegistryNode<String,Object> MISC_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(MISC_REGISTRY_NAME);
 	public static final RegistryNode<String,Command> COMMAND_REGISTRY=(RegistryNode<String,Command>)REGISTRY.getOrCreateChild(COMMAND_REGISTRY_NAME);
 	public static final ListRegistryNode<String> PERSISTENT_REGISTRY=new ListRegistryNode<>();
-	public static void onLoad(){
-		//HISTORY_REGISTRY.limit(20);
-		REGISTRY.put(HISTORY_REGISTRY_NAME,HISTORY_REGISTRY);
-		Registry.registerApplication("template","fooledit/template",TemplateEditor.INSTANCE,TemplateEditor.class,TemplateEditor.INSTANCE);
-		Registry.registerApplication("registry","fooledit/registry",RegistryEditor.INSTANCE,RegistryEditor.class,RegistryEditor.INSTANCE);
-		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
-			try{
-				Helper.writeText(serializier.encode(HISTORY_REGISTRY),new File(Main.INSTANCE.getUserPath(),"file_history.json"));
-			}catch(Exception ex){
-				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
-			}
-		});
-		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
-			try{
-				Helper.writeText(serializier.encode(HISTORY_REGISTRY),new File(Main.INSTANCE.getUserPath(),"file_history.json"));
-			}catch(Exception ex){
-				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
-			}
-			DATA_OBJECT_REGISTRY.values().forEach((data)->DataObjectRegistry.clean(data));
-		});
-	}
-	public static void onUnLoad(){
-	}
-	public static void onInstall(){
-		MISC_REGISTRY.put(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
-		MISC_REGISTRY.put(ScriptAPI.ENGINE,"JSchemeMin");
-	}
-	public static void onInit(){
-	}
 	private static <T> T fromJSON(String file,Supplier<T> def){
 		try{
-			return (T)serializier.decode(Helper.readText(new File(Main.INSTANCE.getUserPath(),file)));
+			return (T)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getUserPath(),file)));
 		}catch(Exception ex){
 			Logger.getLogger(CoreModule.class.getName()).log(Level.INFO,null,ex);
 			return def.get();
@@ -131,5 +100,7 @@ public class CoreModule{
 		TEMPLATE_REGISTRY.put("children",new ListRegistryNode<>());
 		REGISTRY.put(PERSISTENT_REGISTRY_NAME,PERSISTENT_REGISTRY);
 		PERSISTENT_REGISTRY.put(NAME+"/"+PERSISTENT_REGISTRY_NAME);
+		MISC_REGISTRY.putIfAbsent(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
+		MISC_REGISTRY.putIfAbsent(ScriptAPI.ENGINE,"JSchemeMin");
 	}
 }

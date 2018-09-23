@@ -94,8 +94,7 @@ public class WorkSheet extends BorderPane{
 		SideBarPane nodeWithSideBar=new SideBarPane(node);
 		nodeWithSideBar.getProperties().put(DATA_OBJECT_NAME,data);
 		nodeWithSideBar.getProperties().put(DATA_EDITOR_NAME,editor);
-		nodeWithSideBar.getProperties().put(COMMANDS_NAME,editor.getCommandRegistry());
-		nodeWithSideBar.getProperties().put(KEYMAP_NAME,editor.getKeymapRegistry());
+		Main.INSTANCE.getKeymapManager().adopt(node,editor.getKeymapRegistry(),editor.getCommandRegistry());
 		setCenter(nodeWithSideBar);
 	}
 	private void restoreRegistry(){

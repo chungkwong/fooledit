@@ -31,27 +31,23 @@ import javafx.scene.control.*;
  */
 public class TreeTableWrapper<T> extends TreeTableView<T>{
 	public TreeTableWrapper(){
-		installCommands();
-		installKeymap();
+		Main.INSTANCE.getKeymapManager().adopt(this,getKeymap(),getCommands());
 	}
 	public TreeTableWrapper(TreeItem<T> root){
 		super(root);
-		installCommands();
-		installKeymap();
+		Main.INSTANCE.getKeymapManager().adopt(this,getKeymap(),getCommands());
 	}
-	private void installKeymap(){
+	private NavigableRegistryNode<String,String> getKeymap(){
 		TreeMap<String,String> mapping=new TreeMap<>();
 		try{
 			mapping.putAll((Map<String,String>)JSONDecoder.decode(new InputStreamReader(getClass().getResourceAsStream("/treetable.json"),StandardCharsets.UTF_8)));
 		}catch(IOException|SyntaxException ex){
 			Logger.getLogger(TreeTableWrapper.class.getName()).log(Level.SEVERE,null,ex);
 		}
-		NavigableRegistryNode<String,String> registry=new NavigableRegistryNode<>(mapping);
-		getProperties().put(WorkSheet.KEYMAP_NAME,registry);
+		return new NavigableRegistryNode<>(mapping);
 	}
-	private void installCommands(){
+	private RegistryNode<String,Command> getCommands(){
 		RegistryNode<String,Command> registry=new SimpleRegistryNode<>();
-		getProperties().put(WorkSheet.COMMANDS_NAME,registry);
 		addCommand("focus-previous",()->getFocusModel().focusPrevious(),registry);
 		addCommand("focus-next",()->getFocusModel().focusNext(),registry);
 		addCommand("focus-first",()->getFocusModel().focus(0),registry);
@@ -69,6 +65,7 @@ public class TreeTableWrapper<T> extends TreeTableView<T>{
 		addCommand("toggle-selection",()->toggleSelection(),registry);
 		addCommand("expand",()->getTreeItem(getSelectionModel().getFocusedIndex()).setExpanded(true),registry);
 		addCommand("fold",()->getTreeItem(getSelectionModel().getFocusedIndex()).setExpanded(false),registry);
+		return registry;
 	}
 	private void addCommand(String name,Runnable action,ObservableMap<String,Command> registry){
 		registry.put(name,new Command(name,action,Activator.class));

@@ -15,9 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
+import cc.fooledit.control.*;
+import static cc.fooledit.core.CoreModule.DATA_OBJECT_REGISTRY;
+import static cc.fooledit.core.CoreModule.HISTORY_REGISTRY;
+import static cc.fooledit.core.CoreModule.HISTORY_REGISTRY_NAME;
+import static cc.fooledit.core.CoreModule.REGISTRY;
+import cc.fooledit.spi.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.logging.*;
 import org.osgi.framework.*;
 import org.osgi.service.url.*;
 /**
@@ -35,6 +42,17 @@ public class Activator implements BundleActivator{
 		Hashtable appProperties=new Hashtable();
 		appProperties.put(URLConstants.URL_HANDLER_PROTOCOL,new String[]{"application"});
 		context.registerService(URLStreamHandlerService.class.getName(),new DataStreamHandler(),appProperties);
+		REGISTRY.put(HISTORY_REGISTRY_NAME,HISTORY_REGISTRY);
+		Registry.registerApplication("template","fooledit/template",TemplateEditor.INSTANCE,TemplateEditor.class,TemplateEditor.INSTANCE);
+		Registry.registerApplication("registry","fooledit/registry",RegistryEditor.INSTANCE,RegistryEditor.class,RegistryEditor.INSTANCE);
+		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{
+			try{
+				Helper.writeText(StandardSerializiers.JSON_SERIALIZIER.encode(HISTORY_REGISTRY),new File(Main.INSTANCE.getUserPath(),"file_history.json"));
+			}catch(Exception ex){
+				Logger.getLogger(CoreModule.class.getName()).log(Level.SEVERE,null,ex);
+			}
+			DATA_OBJECT_REGISTRY.values().forEach((data)->DataObjectRegistry.clean(data));
+		});
 		new Thread(()->Main.launch(Main.class)).start();
 	}
 	@Override
