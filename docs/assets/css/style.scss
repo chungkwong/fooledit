@@ -1,0 +1,53 @@
+---
+---
+
+@import 'jekyll-theme-architect';
+
+.tag{
+  background-color: orange;
+}
+.enter{
+  text-align: right;
+}
+td,th{
+  text-align: left;
+}
+
+ol {
+  padding-left: 20px;
+}
+
+blockquote {
+  padding: 0 0 0 0px;
+  margin-bottom: 20px;
+  font-size: 15px;
+  border-left:0px;
+}
+
+header {
+  background: #cc297a url(../images/header-bg.jpg) 0 0 repeat-x;
+}
+
+.searchbox{
+  width: 134px;
+  height: 58px;
+  font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 23px;
+  line-height: 1.2;
+  background-color: #cc7aa3;
+  border-style: none;
+  border-collapse: collapse;
+  border: none;
+  margin: none;
+  right:0; 
+  top:0;
+  position: absolute;
+}
+
+#main-content video {
+  max-width: 100%;
+}
+::cue {
+  background-color: rgba(255, 255, 255, 0.0);
+  color: black;
+}
