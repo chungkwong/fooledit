@@ -8,5 +8,248 @@ Mousepad
 转置
 去除两侧空白
 右边缘线
-高亮当前行
 显示行尾/空格
+
+org-netbeans-modules-javahelp-HelpAction" "F1"/>
+org-netbeans-modules-javadoc-search-SearchDocAction" "S-F1"/>
+org-netbeans-modules-db-sql-editor-ui-actions-SQLHistoryAction" "SDO-H"/>
+toggle-comment" "SD-C"/ "D-SLASH"/>
+bookmark-history-popup-previous" "SD-COMMA"/>
+org-netbeans-core-actions-PreviousViewCallbackAction" "DO-PAGE_UP"/>
+word-match-prev" "D-K"/>
+org-netbeans-core-windows-actions-PreviousTabAction" "D-PAGE_UP"/>
+jump-list-last-edit" "D-Q"/>
+org-netbeans-core-actions-JumpPrevAction" "D-COMMA"/>
+move-code-element-up" "SO-PAGE_UP"/>
+org-netbeans-modules-refactoring-java-api-ui-PullUpAction" "SDO-U"/>
+move-selection-else-line-up" "SO-KP_UP"/ "SO-UP"/>
+bookmark-history-popup-next" "SD-PERIOD"/>
+org-netbeans-core-actions-NextViewCallbackAction" "DO-PAGE_DOWN"/>
+word-match-next" "SD-K"/>
+org-netbeans-core-windows-actions-NextTabAction" "D-PAGE_DOWN"/>
+org-netbeans-core-actions-JumpNextAction" "D-PERIOD"/>
+move-code-element-down" "SO-PAGE_DOWN"/>
+org-netbeans-modules-refactoring-java-api-ui-PushDownAction" "SDO-D"/>
+move-selection-else-line-down" "SO-DOWN"/ "SO-KP_DOWN"/>
+addCaretSelectNext" "D-J"/>
+org-netbeans-core-windows-actions-ShowEditorOnlyAction" "SD-ENTER"/>
+org-netbeans-modules-refactoring-java-api-ui-InnerToOuterAction" "SDO-L"/>
+clipboard-history" "SD-D"/>
+org-netbeans-modules-tasks-ui-DashboardTopComponent" "SD-6"/>
+org-netbeans-modules-debugger-ui-actions-SessionsViewAction" "SO-6"/>
+org-openide-actions-SaveAction" "D-S"/>
+org-netbeans-modules-editor-hints-FixAction" "O-ENTER"/>
+fix-imports" "SD-I"/>
+org-netbeans-core-windows-actions-DockWindowAction" "SO-D"/>
+org-netbeans-core-windows-actions-ToggleFullScreenAction" "SO-ENTER"/>
+select-all" "D-A"/>
+org-openide-actions-SaveAllAction" "SD-S"/>
+expand-all-folds" "SD-ADD"/ "SD-PLUS"/ "SD-EQUALS"/>
+collapse-all-folds" "SD-MINUS"/ "SD-SUBTRACT"/>
+CloseAction" "SD-W"/>
+output-window-close" "D-F4"/>
+org-netbeans-core-windows-actions-CloseAllDocumentsAction" "SD-F4"/ "SD-W"/>
+org-netbeans-core-windows-actions-CloseWindowAction" "D-F4"/ "D-W"/>
+org-netbeans-modules-refactoring-java-api-ui-InlineAction" "SO-N"/>
+org-netbeans-modules-java-navigation-actions-ShowHierarchyAtCaretAction" "SO-F12"/>
+org-netbeans-modules-profiler-actions-SelfSamplerAction" "SO-Y"/>
+org-netbeans-modules-profiler-actions-ProfileMainProject" "D-F2"/>
+org-netbeans-modules-gsf-testrunner-ui-TestCreatorAction" "SD-U"/>
+delete-previous" "S-BACK_SPACE"/ "BACK_SPACE"/>
+remove-word-previous" "D-BACK_SPACE"/>
+delete-next" "DELETE"/>
+remove-word-next" "D-DELETE"/>
+remove-surrounding-code" "O-BACK_SPACE"/>
+remove-last-caret" "SO-J"/>
+remove-tab" "S-TAB"/>
+remove-line" "D-E"/>
+jump-list-next" "O-RIGHT"/ "O-KP_RIGHT"/>
+cut-to-clipboard" "CUT"/ "S-DELETE"/ "D-X"/>
+org-netbeans-modules-debugger-jpda-heapwalk-actions-ClassesCountsViewAction" "SO-4"/>
+org-netbeans-modules-refactoring-java-api-ui-IntroduceParameterAction" "SO-P"/>
+org-netbeans-modules-progress-ui-CancelAction" "SD-DELETE"/>
+org-netbeans-modules-debugger-ui-actions-LocalsViewAction" "SO-1"/>
+introduce-variable" "SO-V"/>
+output-window-save-as" "D-S"/>
+org-netbeans-core-windows-actions-MoveWindowRightAction" "SDO-RIGHT"/>
+shift-line-right" "SO-RIGHT"/ "SO-KP_RIGHT"/>
+jump-list-prev" "O-LEFT"/ "O-KP_LEFT"/>
+selection-up" "S-UP"/ "S-KP_UP"/>
+scroll-up" "D-KP_DOWN"/ "D-DOWN"/>
+page-up" "PAGE_UP"/>
+selection-down" "S-DOWN"/ "S-KP_DOWN"/>
+scroll-down" "D-KP_UP"/ "D-UP"/>
+page-down" "PAGE_DOWN"/>
+selection-forward" "S-RIGHT"/ "S-KP_RIGHT"/>
+selection-backward" "S-KP_LEFT"/ "S-LEFT"/>
+org-netbeans-modules-favorites-Select" "SD-3"/>
+org-netbeans-modules-project-ui-SelectInFiles" "SD-2"/>
+org-netbeans-modules-dlight-terminal-action-OpenInTerminalAction" "SO-K"/>
+org-netbeans-modules-search-ReplaceInFilesAction" "SD-H"/>
+org-netbeans-modules-search-FindInFilesAction" "SD-F"/>
+org-netbeans-modules-project-ui-SelectInProjects" "SD-1"/>
+org-netbeans-modules-form-actions-DuplicateAction" "D-D"/>
+CopyAction" "SD-C"/>
+copy-to-clipboard" "COPY"/ "D-C"/ "D-INSERT"/>
+org-netbeans-modules-refactoring-api-ui-CopyAction" "O-C"/>
+org-netbeans-modules-utilities-CopyPathToClipboard" "SO-L"/>
+introduce-field" "SO-E"/>
+org-netbeans-modules-refactoring-api-ui-SafeDeleteAction" "O-DELETE"/>
+org-netbeans-modules-profiler-v2-ProfilerSessions-StopAction" "S-F2"/>
+org-netbeans-modules-debugger-ui-actions-KillAction" "S-F5"/>
+org-netbeans-modules-java-hints-jackpot-refactoring-InvertBooleanAction" "SDO-I"/>
+org-netbeans-modules-navigator-ShowNavigatorAction" "D-7"/>
+prev-marked-occurrence" "O-UP"/>
+next-marked-occurrence" "O-DOWN"/>
+org-netbeans-modules-refactoring-java-api-ui-EncapsulateFieldAction" "SDO-E"/>
+adjust-caret-center" "SO-INSERT"/>
+adjust-caret-bottom" "SO-END"/>
+adjust-caret-top" "SO-HOME"/>
+org-netbeans-modules-java-hints-jackpot-refactoring-ReplaceConstructorWithFactoryAction" "SDO-F"/>
+org-netbeans-modules-java-hints-jackpot-refactoring-ReplaceConstructorWithBuilderAction" "SDO-B"/>
+selection-previous-word" "SD-KP_LEFT"/ "SD-LEFT"/>
+selection-page-up" "S-PAGE_UP"/>
+selection-next-word" "SD-KP_RIGHT"/ "SD-RIGHT"/>
+selection-page-down" "S-PAGE_DOWN"/>
+selection-match-brace" "SD-OPEN_BRACKET"/>
+selection-begin" "SD-HOME"/>
+selection-end" "SD-END"/>
+selection-begin-line" "S-HOME"/>
+selection-end-line" "S-END"/>
+org-netbeans-modules-refactoring-java-api-ui-UseSuperTypeAction" "SDO-W"/>
+expand-fold" "D-PLUS"/ "D-EQUALS"/ "D-ADD"/>
+expand-fold-tree" "D-MULTIPLY"/ "DO-PLUS"/>
+org-netbeans-core-windows-actions-GlobalPropertiesAction" "SD-7"/>
+org-netbeans-core-windows-actions-MoveWindowLeftAction" "SDO-LEFT"/>
+shift-line-left" "SO-KP_LEFT"/ "SO-LEFT"/>
+introduce-constant" "SO-C"/>
+bookmark-toggle" "SD-M"/>
+org-netbeans-modules-profiler-ppoints-ui-ToggleProfilingPointAction" "SD-F2"/>
+toggle-highlight-search" "SO-H"/>
+toggle-rectangular-selection" "SD-R"/>
+org-netbeans-modules-debugger-ui-actions-ToggleBreakpointAction" "D-F8"/>
+toggle-typing-mode" "INSERT"/>
+start-new-line" "S-ENTER"/>
+org-openide-actions-PopupAction" "S-F10"/ "CONTEXT_MENU"/>
+fast-import" "SO-I"/>
+org-netbeans-modules-quicksearch-QuickSearchAction" "D-I"/>
+org-netbeans-modules-java-navigation-actions-ShowMembersAtCaretAction" "SD-F12"/>
+org-netbeans-modules-print-action-PrintAction" "SDO-P"/>
+org-netbeans-modules-openfile-RecentFileAction" "SD-T"/>
+org-netbeans-modules-project-ui-OpenProject" "SD-O"/>
+collapse-fold" "D-MINUS"/ "D-SUBTRACT"/>
+collapse-fold-tree" "D-DIVIDE"/>
+split-line" "D-ENTER"/>
+org-netbeans-modules-refactoring-java-api-ui-ExtractInterfaceAction" "SDO-T"/>
+org-netbeans-modules-refactoring-java-api-ui-ExtractSuperclassAction" "SDO-S"/>
+generate-code" "O-INSERT"/>
+org-netbeans-modules-i18n-InsertI18nStringAction" "SD-J"/>
+match-brace" "D-OPEN_BRACKET"/>
+org-netbeans-modules-search-ResultViewOpenAction" "SD-0"/>
+org-netbeans-modules-tasklist-ui-TaskListAction" "D-6"/>
+org-netbeans-modules-favorites-View" "D-3"/>
+zoom-text-in" "O-MOUSE_WHEEL_UP"/>
+org-netbeans-modules-project-ui-physical-tab-action" "D-2"/>
+org-netbeans-modules-java-navigation-actions-ShowHierarchyAction" "O-F12"/>
+org-netbeans-modules-java-navigation-actions-ShowMembersAction" "D-F12"/>
+org-netbeans-core-windows-actions-DocumentsAction" "S-F4"/>
+org-netbeans-modules-debugger-ui-actions-BreakpointsViewAction" "SO-5"/>
+org-netbeans-modules-project-ui-NewFile" "D-N"/>
+org-netbeans-modules-debugger-ui-actions-AddBreakpointAction" "SD-F8"/>
+NewTabAction" "SDO-T"/>
+org-netbeans-modules-debugger-ui-actions-AddWatchAction" "SD-F7"/>
+org-netbeans-modules-project-ui-NewProject" "SD-N"/>
+introduce-method" "SO-M"/>
+completion-show" "D-SPACE"/ "D-BACK_SLASH"/>
+all-completion-show" "DO-BACK_SLASH"/ "DO-SPACE"/>
+documentation-show" "SD-BACK_SLASH"/ "SD-SPACE"/>
+tooltip-show" "D-P"/>
+org-netbeans-modules-refactoring-java-api-ui-ChangeParametersAction" "SDO-C"/>
+replace" "D-H"/>
+org.openide.actions.ReplaceAction" "D-H"/>
+org-netbeans-core-windows-actions-MaximizeWindowAction" "S-ESCAPE"/>
+org-netbeans-core-ide-ServicesTabAction" "D-5"/>
+org-netbeans-modules-refactoring-java-api-ui-IntroduceLocalExtensionAction" "SO-X"/>
+org-netbeans-modules-project-ui-BuildMainProject" "O-F11"/ "F11"/>
+FindAction" "SD-F"/>
+find" "FIND"/ "D-F"/>
+org.openide.actions.FindAction" "FIND"/ "D-F"/>
+find-previous" "S-F3"/>
+find-next" "F3"/>
+org-netbeans-modules-refactoring-api-ui-WhereUsedAction" "O-F7"/>
+find-selection" "D-F3"/>
+annotations-cycling" "SO-C"/>
+format" "SO-F"/>
+org-netbeans-modules-xml-tools-actions-CheckAction" "O-F9"/>
+org-netbeans-modules-debugger-ui-actions-StepIntoAction" "F7"/>
+org-netbeans-modules-debugger-ui-actions-StepIntoNextMethodAction" "S-F7"/>
+org-netbeans-modules-debugger-ui-actions-StepOutAction" "D-F7"/>
+org-netbeans-modules-debugger-ui-actions-StepOverAction" "F8"/>
+org-netbeans-modules-debugger-ui-actions-StepOperationAction" "S-F8"/>
+org-netbeans-modules-project-ui-TestSingle" "D-F6"/>
+org-netbeans-modules-gsf-testrunner-ui-ResultWindowOpenAction" "SO-R"/>
+org-netbeans-modules-project-ui-TestProject" "O-F6"/>
+org-netbeans-modules-project-ui-RebuildMainProject" "SO-F11"/ "S-F11"/>
+output-window-clear" "D-L"/>
+org-netbeans-modules-debugger-ui-actions-SourcesViewAction" "SO-8"/>
+org-netbeans-modules-debugger-ui-actions-MakeCalleeCurrentAction" "O-PAGE_UP"/>
+org-netbeans-modules-debugger-ui-actions-MakeCallerCurrentAction" "O-PAGE_DOWN"/>
+org-netbeans-modules-profiler-actions-TakeSnapshotAction" "O-F2"/>
+org-netbeans-modules-debugger-ui-actions-WatchesViewAction" "SO-2"/>
+org-netbeans-modules-refactoring-api-ui-MoveAction" "D-M"/>
+PasteAction" "SD-V"/>
+clipboard-lines" "SD-L"/>
+paste-formated" "SD-V"/>
+org-netbeans-modules-debugger-ui-actions-ThreadsViewAction" "SO-7"/>
+org-netbeans-modules-debugger-ui-actions-SetCurrentThreadFromHistoryAction" "SO-T"/>
+org-netbeans-modules-palette-ShowPaletteAction" "SD-8"/>
+complete-line" "D-SEMICOLON"/>
+complete-line-newline" "SD-SEMICOLON"/>
+org-netbeans-modules-debugger-ui-actions-ContinueAction" "F5"/>
+org-netbeans-modules-project-ui-CompileSingle" "F9"/>
+org-netbeans-core-windows-actions-SwitchToRecentDocumentAction" "D-0"/>
+zoom-text-out" "O-MOUSE_WHEEL_DOWN"/>
+output-window-wrap" "D-R"/>
+org-netbeans-modules-debugger-ui-actions-EvaluateAction" "D-F9"/>
+transpose-letters" "D-T"/>
+org-netbeans-modules-debugger-ui-actions-CallStackViewAction" "SO-3"/>
+org-netbeans-modules-debugger-ui-actions-DebuggingViewAction" "SO-9"/>
+org-netbeans-modules-debugger-ui-actions-DebugMainProjectAction" "D-F5"/>
+org-netbeans-modules-debugger-ui-actions-DebugFileAction" "SD-F5"/>
+org-netbeans-modules-debugger-ui-actions-DebugTestFileAction" "SD-F6"/>
+switch-case" "D-U S"/>
+goto-help" "O-F1"/>
+org-netbeans-modules-spring-beans-jumpto-type-GoToBean" "SO-B"/>
+org-netbeans-core-windows-actions-RecentViewListAction" "D-BACK_QUOTE"/>
+goto-declaration" "D-B"/>
+goto-implementation" "DO-B"/>
+org-netbeans-modules-jumpto-file-FileSearchAction" "SO-O"/>
+org-netbeans-modules-gototest-GotoOppositeAction" "DO-T"/>
+goto-source" "SD-B"/>
+org-netbeans-modules-jumpto-symbol-GoToSymbol" "SDO-O"/>
+org-netbeans-modules-jumpto-type-GoToType" "D-O"/>
+org-openide-actions-GotoAction" "D-G"/>
+goto-super-implementation" "SD-P"/>
+output-window-larger-font" "D-UP"/>
+output-window-smaller-font" "D-DOWN"/>
+org-netbeans-core-io-ui-IOWindowAction" "D-4"/>
+output-window-filter" "D-G"/>
+org-netbeans-modules-db-sql-editor-ui-actions-RunSQLAction" "SD-E"/>
+org-netbeans-modules-project-ui-RunMainProject" "F6"/>
+org-netbeans-modules-project-ui-RunSingle" "S-F6"/>
+org-netbeans-modules-debugger-ui-actions-RunToCursorAction" "F4"/>
+select-element-previous" "SO-COMMA"/>
+select-element-next" "SO-PERIOD"/>
+addCaretSelectAll" "SDO-J"/>
+select-identifier" "D-L"/>
+redo" "D-Y"/ "SD-Z"/>
+in-place-refactoring" "D-R"/>
+org-netbeans-modules-refactoring-api-ui-RenameAction" "D-R"/>
+add-caret-up" "SO-OPEN_BRACKET"/>
+add-caret-down" "SO-CLOSE_BRACKET"/>
+org-netbeans-modules-project-ui-Rerun" "D-F11"/>
+copy-selection-else-line-up" "SD-KP_UP"/ "SD-UP"/>
+copy-selection-else-line-down" "SD-KP_DOWN"/ "SD-DOWN"/>
+org-netbeans-modules-profiler-actions-ResetResultsAction" "SO-F2"/>
+org-netbeans-modules-project-ui-logical-tab-action" "D-1"/>
+org-netbeans-modules-xml-tools-actions-ValidateAction" "SO-F9"/>
