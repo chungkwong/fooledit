@@ -22,6 +22,9 @@ import cc.fooledit.spi.*;
  */
 public class MessageRegistry{
 	public static String getString(String key,Class module){
+		if(module==null){
+			module=Activator.class;
+		}
 		RegistryNode<String,RegistryNode> mod=(RegistryNode<String,RegistryNode>)Registry.ROOT.getOrCreateChild(module.getPackage().getName());
 		if(!mod.containsKey(CoreModule.MESSAGE_REGISTRY_NAME)){
 			Registry.ROOT.registerMessage(module);

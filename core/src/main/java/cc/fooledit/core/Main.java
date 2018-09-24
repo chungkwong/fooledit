@@ -55,7 +55,7 @@ public class Main extends Application{
 	private Stage stage;
 	private Node mainFocusOwner;
 	private WorkSheet currentWorksheet;
-	private KeymapManager keymapManager=new KeymapManager();
+	private KeymapManager keymapManager=new KeymapManager(scene);
 	private HistoryRing<Map<Object,Object>> worksheets=new HistoryRing<>();
 	public Main(){
 		INSTANCE=this;

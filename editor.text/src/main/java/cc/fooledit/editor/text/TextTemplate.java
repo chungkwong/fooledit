@@ -18,6 +18,7 @@ package cc.fooledit.editor.text;
 import cc.fooledit.core.*;
 import cc.fooledit.core.Template;
 import cc.fooledit.editor.text.Activator;
+import freemarker.cache.*;
 import freemarker.template.*;
 import java.io.*;
 import java.util.*;
@@ -103,6 +104,7 @@ public class TextTemplate implements Template<TextObject>{
 		}
 	}
 	private String tryToApply(Properties properties) throws TemplateException,IOException{
+		ENGINE.setTemplateLoader(new ClassTemplateLoader(((Class)CoreModule.INSTALLED_MODULE_REGISTRY.get(module)).getClassLoader(),module+".template"));
 		StringWriter out=new StringWriter();
 		freemarker.template.Template template=ENGINE.getTemplate(file);
 		template.process(properties,out);
@@ -111,11 +113,6 @@ public class TextTemplate implements Template<TextObject>{
 	static{
 		ENGINE=new Configuration(new Version(2,3,23));
 		ENGINE.setDefaultEncoding("UTF-8");
-		/*		try{
-			ENGINE.setDirectoryForTemplateLoading(new File(Main.INSTANCE.getModulePath(Activator.class),"modes"));
-		}catch(IOException ex){
-			Logger.getGlobal().log(Level.SEVERE,null,ex);
-		}*/
 	}
 	public static void main(String[] args) throws IOException,TemplateException{
 		Configuration configuration=new Configuration(new Version(2,3,26));

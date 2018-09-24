@@ -29,7 +29,41 @@ public class KeymapManager{
 	private boolean ignoreKey=false;
 	private boolean recording=false;
 	private List<KeyEvent> macro=new ArrayList<>();
-	public KeymapManager(){
+	public KeymapManager(Scene scene){
+		scene.addEventFilter(KeyEvent.ANY,(KeyEvent e)->{
+			if(recording){
+				macro.add(e.copyFor(e.getSource(),e.getTarget()));
+			}
+			if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
+				if(ignoreKey){
+					e.consume();
+				}
+			}else if(e.getEventType().equals(KeyEvent.KEY_RELEASED)){
+				if(ignoreKey){
+					e.consume();
+				}
+			}else if(e.getEventType().equals(KeyEvent.KEY_PRESSED)){
+				if(e.getCode().isModifierKey()){
+					e.consume();
+					return;
+				}
+				String code=currKey==null?encode(e):currKey+'+'+encode(e);
+				Node node=scene.getFocusOwner();
+				while(node!=null){
+					NavigableRegistryNode<String,String> keymapRegistry=(NavigableRegistryNode<String,String>)node.getProperties().get(WorkSheet.KEYMAP_NAME);
+					RegistryNode<String,Command> commandRegistry=(RegistryNode<String,Command>)node.getProperties().get(WorkSheet.COMMANDS_NAME);
+					Object local=node.getProperties().get("keymap");
+					if(keymapRegistry!=null&&commandRegistry!=null&&checkForKey(code,keymapRegistry,commandRegistry)){
+						e.consume();
+						return;
+					}
+					node=node.getParent();
+				}
+				currKey=null;
+				Main.INSTANCE.getNotifier().notify("");
+				ignoreKey=false;
+			}
+		});
 	}
 	public void startRecording(){
 		macro.clear();
@@ -49,30 +83,6 @@ public class KeymapManager{
 	public void adopt(Node node,NavigableRegistryNode<String,String> keymapRegistry,RegistryNode<String,Command> commandRegistry){
 		node.getProperties().put(WorkSheet.KEYMAP_NAME,keymapRegistry);
 		node.getProperties().put(WorkSheet.COMMANDS_NAME,commandRegistry);
-		node.addEventHandler(KeyEvent.ANY,(KeyEvent e)->{
-			if(recording){
-				macro.add(e.copyFor(e.getSource(),e.getTarget()));
-			}
-			if(e.getEventType().equals(KeyEvent.KEY_TYPED)){
-				if(ignoreKey){
-					e.consume();
-				}
-			}else if(e.getEventType().equals(KeyEvent.KEY_RELEASED)){
-				if(ignoreKey){
-					e.consume();
-				}
-			}else if(e.getEventType().equals(KeyEvent.KEY_PRESSED)){
-				if(e.getCode().isModifierKey()){
-					e.consume();
-					return;
-				}
-				String code=currKey==null?encode(e):currKey+'+'+encode(e);
-				if(checkForKey(code,keymapRegistry,commandRegistry)){
-					e.consume();
-					return;
-				}
-			}
-		});
 	}
 	private boolean checkForKey(String code,NavigableRegistryNode<String,String> keymapRegistryNode,RegistryNode<String,Command> commandRegistry){
 		Map.Entry<String,String> entry=keymapRegistryNode.ceilingEntry(code);
