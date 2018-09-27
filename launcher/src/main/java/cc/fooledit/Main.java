@@ -35,7 +35,6 @@ public class Main{
 		Map config=getDefaultConfig();
 		Framework framework=new FrameworkFactory().newFramework(config);
 		stopFrameOnExit(framework);
-		System.out.println(framework.getLocation());
 		framework.init();
 		syncBundles(config,framework);
 		framework.start();

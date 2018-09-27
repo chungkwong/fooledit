@@ -1,9 +1,0 @@
-{
-    "states":{"init":0},
-	"rules":[
-	    {"old state":"init","new state":"init","type":"other","regex":"[\\p{Me}\\p{Mn}\\p{Pc}\\p{Pd}\\p{Pe}\\p{Pf}\\p{Pi}\\p{Po}\\p{Ps}\\p{Sc}\\p{Sk}\\p{Sm}\\p{So}]+"},
-	    {"old state":"init","new state":"init","type":"integer","regex":"[\\p{Nd}\\p{No}\\p{Nl}]+"},
-	    {"old state":"init","new state":"init","type":"whitespace","regex":"[\\p{Mc}\\p{Zl}\\p{Zp}\\p{Zs}]+"},
-	    {"old state":"init","new state":"init","type":"plain","regex":"[\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lu}\\p{Lt}]+"}
-	]
-}

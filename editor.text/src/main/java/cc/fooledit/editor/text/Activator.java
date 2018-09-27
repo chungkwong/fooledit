@@ -18,9 +18,6 @@ package cc.fooledit.editor.text;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.Activator;
 import cc.fooledit.spi.*;
-import java.io.*;
-import java.nio.charset.*;
-import java.util.logging.*;
 import org.osgi.framework.*;
 /**
  *
@@ -30,13 +27,7 @@ public class Activator implements BundleActivator{
 	public static final String NAME=Activator.class.getPackage().getName();
 	@Override
 	public void start(BundleContext bc) throws Exception{
-		try{
-			((ListRegistryNode)CoreModule.TEMPLATE_REGISTRY.getOrCreateChild("children")).put(
-					StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new InputStreamReader(
-							Activator.class.getResourceAsStream("templates/templates.json"),StandardCharsets.UTF_8))));
-		}catch(Exception ex){
-			Logger.getGlobal().log(Level.INFO,null,ex);
-		}
+		CoreModule.INSTALLED_MODULE_REGISTRY.put(NAME,this.getClass());
 		DataObjectTypeRegistry.addDataObjectType(TextObjectType.INSTANCE);
 		DataObjectTypeRegistry.addDataEditor(StructuredTextEditor.INSTANCE,TextObject.class);
 		DataObjectTypeRegistry.addToolBox(FindToolBox.INSTANCE,StructuredTextEditor.class);

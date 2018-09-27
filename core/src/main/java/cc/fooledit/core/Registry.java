@@ -120,8 +120,12 @@ public class Registry extends SimpleRegistryNode<String,RegistryNode<String,?>>{
 	}
 	public RegistryNode<String,String> registerMessage(Class module){
 		RegistryNode<String,String> registry=new SimpleRegistryNode<>();
-		ResourceBundle bundle=ResourceBundle.getBundle("/messages",Locale.getDefault(),module.getClassLoader());
-		bundle.keySet().forEach((key)->registry.put(key,bundle.getString(key)));
+		try{
+			ResourceBundle bundle=ResourceBundle.getBundle("/messages",Locale.getDefault(),module.getClassLoader());
+			bundle.keySet().forEach((key)->registry.put(key,bundle.getString(key)));
+		}catch(MissingResourceException ex){
+			Logger.getGlobal().log(Level.INFO,"",ex);
+		}
 		((RegistryNode<String,RegistryNode<String,String>>)ROOT.getOrCreateChild(module.getPackage().getName())).put(CoreModule.MESSAGE_REGISTRY_NAME,registry);
 		return registry;
 	}
