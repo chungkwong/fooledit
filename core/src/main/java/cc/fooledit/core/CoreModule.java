@@ -76,7 +76,7 @@ public class CoreModule{
 	public static final RegistryNode<String,ListRegistryNode<String>> EDITOR_TO_TOOLBOX_REGISTRY=(RegistryNode<String,ListRegistryNode<String>>)REGISTRY.getOrCreateChild(EDITOR_TO_TOOLBOX_REGISTRY_NAME);
 	public static final RegistryNode<String,ListRegistryNode<Consumer>> EVENT_REGISTRY=(RegistryNode<String,ListRegistryNode<Consumer>>)REGISTRY.getOrCreateChild(EVENT_REGISTRY_NAME);
 	public static ListRegistryNode<RegistryNode<String,Object>> HISTORY_REGISTRY=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
-	public static final RegistryNode<String,Object> INSTALLED_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLED_MODULE_REGISTRY_NAME);
+	public static final RegistryNode<String,Class> INSTALLED_MODULE_REGISTRY=(RegistryNode<String,Class>)REGISTRY.getOrCreateChild(INSTALLED_MODULE_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> INSTALLING_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLING_MODULE_REGISTRY_NAME);
 	public static final RegistryNode<String,Serializier> SERIALIZIER_REGISTRY=(RegistryNode<String,Serializier>)REGISTRY.getOrCreateChild(SERIALIZIER_REGISTRY_NAME);
 	public static final RegistryNode<String,Task> TASK_REGISTRY=(RegistryNode<String,Task>)REGISTRY.getOrCreateChild(TASK_REGISTRY_NAME);

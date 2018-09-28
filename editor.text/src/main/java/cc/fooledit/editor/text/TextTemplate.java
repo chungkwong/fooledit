@@ -54,7 +54,7 @@ public class TextTemplate implements Template<TextObject>{
 	}
 	@Override
 	public Class<Activator> getModule(){
-		return Activator.class;
+		return CoreModule.INSTALLED_MODULE_REGISTRY.get(module);
 	}
 	@Override
 	public Collection<String> getParameters(){
@@ -104,7 +104,7 @@ public class TextTemplate implements Template<TextObject>{
 		}
 	}
 	private String tryToApply(Properties properties) throws TemplateException,IOException{
-		ENGINE.setTemplateLoader(new ClassTemplateLoader(((Class)CoreModule.INSTALLED_MODULE_REGISTRY.get(module)).getClassLoader(),module+".templates"));
+		ENGINE.setTemplateLoader(new ClassTemplateLoader(((Class)CoreModule.INSTALLED_MODULE_REGISTRY.get(module)).getClassLoader(),""));
 		StringWriter out=new StringWriter();
 		freemarker.template.Template template=ENGINE.getTemplate(file);
 		template.process(properties,out);
