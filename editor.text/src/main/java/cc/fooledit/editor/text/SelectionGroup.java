@@ -34,7 +34,10 @@ public class SelectionGroup{
 		selections.addListener((ListChangeListener.Change<? extends Selection<Collection<String>,String,Collection<String>>> c)->{
 			while(c.next()){
 				if(c.wasRemoved()){
-					c.getRemoved().forEach((s)->area.getArea().removeSelection(s));
+					c.getRemoved().forEach((s)->{
+						s.deselect();
+						area.getArea().removeSelection(s);
+					});
 				}
 			}
 		});
