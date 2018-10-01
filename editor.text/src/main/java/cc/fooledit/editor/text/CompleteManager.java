@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2018 Chan Chung Kwong
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.text;
-import cc.fooledit.core.Helper;
 import cc.fooledit.control.*;
 import cc.fooledit.core.*;
 import cc.fooledit.editor.text.PopupHint;
@@ -35,10 +34,11 @@ import javafx.stage.*;
 import org.fxmisc.richtext.*;
 /**
  *
- * @author Chan Chung Kwong <1m02math@126.com>
+ * @author Chan Chung Kwong
  */
-public class CompleteSupport{
-	private final AutoCompleteProvider hints;
+public class CompleteManager{
+	private final CodeEditor editor;
+	private AutoCompleteProvider hints;
 	private static final PopupHint popupHint=new PopupHint();
 	private static final RealTimeTask<HintContext> task=new RealTimeTask<>((o)->{
 		Stream<AutoCompleteHint> hint=o.provider.checkForHints(o.text,o.position);
@@ -46,50 +46,53 @@ public class CompleteSupport{
 			Platform.runLater(()->popupHint.showHints(o.component,o.position,hint));
 		}
 	});
-	public CompleteSupport(AutoCompleteProvider hints){
-		this.hints=hints;
-	}
-	public Runnable apply(CodeArea area,boolean once){
+	public CompleteManager(CodeEditor editor){
+		this.editor=editor;
 		EventHandler<KeyEvent> keyHandler=(e)->{
 			if(popupHint.isShowing()){
 				switch(e.getCode()){
 					case UP:
 						popupHint.selectPrevious();
-						area.requestFocus();
+						editor.requestFocus();
 						e.consume();
 						break;
 					case DOWN:
 						popupHint.selectNext();
-						area.requestFocus();
+						editor.requestFocus();
 						e.consume();
 						break;
 					case ENTER:
 						if(popupHint.isShowing()){
 							popupHint.choose();
-							area.requestFocus();
+							editor.requestFocus();
 							e.consume();
 						}
 						break;
 					case ESCAPE:
 						popupHint.hideHints();
-						area.requestFocus();
+						editor.requestFocus();
 						e.consume();
 						break;
 				}
 			}
 		};
 		Main.INSTANCE.getScene().addEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
-		ChangeListener<Integer> caretListener=(e,o,n)->task.summit(new HintContext(hints,area.getText(),n,area));
-		if(!once){
-			area.caretPositionProperty().addListener(caretListener);
+		ChangeListener<Integer> caretListener=(e,o,n)->show(hints,n);
+		editor.getArea().caretPositionProperty().addListener(caretListener);
+	}
+	public void show(AutoCompleteProvider hints){
+		show(hints,editor.getArea().getCaretPosition());
+	}
+	public void show(AutoCompleteProvider hints,int position){
+		if(hints!=null){
+			task.summit(new HintContext(hints,editor.getArea().getText(),position,editor.getArea()));
 		}
-		task.summit(new HintContext(hints,area.getText(),area.getCaretPosition(),area));
-		return ()->{
-			Main.INSTANCE.getScene().removeEventFilter(KeyEvent.KEY_PRESSED,keyHandler);
-			if(!once){
-				area.caretPositionProperty().removeListener(caretListener);
-			}
-		};
+	}
+	public void setCompleteProvider(AutoCompleteProvider hints){
+		this.hints=hints;
+	}
+	public AutoCompleteProvider getCompleteProvider(){
+		return hints;
 	}
 	public static void main(String[] args){
 		launch(args);

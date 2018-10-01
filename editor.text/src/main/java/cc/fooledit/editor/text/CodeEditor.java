@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.text;
-import cc.fooledit.control.*;
 import cc.fooledit.editor.text.LineNumberFactory;
-import cc.fooledit.editor.text.parser.*;
-import cc.fooledit.util.*;
 import java.text.*;
 import java.util.*;
 import java.util.function.*;
@@ -35,9 +32,6 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.text.*;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
-import org.antlr.v4.runtime.tree.*;
 import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.Caret.CaretVisibility;
 import org.fxmisc.richtext.*;
@@ -49,20 +43,17 @@ import org.reactfx.value.*;
  */
 public class CodeEditor extends BorderPane{
 	private final CodeArea area=new CodeArea();
-	private final ParserBuilder parserBuilder;
 	private final LineNumberFactory header=new LineNumberFactory(area);
 	private final IndentPolicy indentPolicy;
 	private final StringProperty textProperty=new PlainTextProperty();
 	private final TreeSet<CaretNode> markers=new TreeSet<>(Comparator.comparing((n)->n.getPosition()));
 	private final ObservableList<SelectionGroup> selections=FXCollections.observableArrayList();
-	private final Property<Highlighter> highlighters=new SimpleObjectProperty<>();
 	private int selectionId=0;
 	private int currentSelectionGroup=0;
-	public CodeEditor(ParserBuilder parserBuilder,Highlighter lex){
-		this.parserBuilder=parserBuilder;
-		if(lex!=null){
-			lex.highlight(this);
-		}
+	private final CompleteManager completeManager;
+	private final TooltipManager tooltipManager;
+	private final LanguageManager languageManager;
+	public CodeEditor(){
 		selections.add(createSelectionGroup("selection"));
 		//tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
 		area.currentParagraphProperty().addListener((e,o,n)->area.showParagraphInViewport(n));
@@ -82,15 +73,6 @@ public class CodeEditor extends BorderPane{
 			area.showCaretProperty().setValue(CaretVisibility.ON);
 		});
 		indentPolicy=IndentPolicy.AS_PREVIOUS;
-		RealTimeTask<String> task=new RealTimeTask<>((text)->{
-			this.syntaxTree=null;
-			Highlighter highlighter=highlighters.getValue();
-			if(highlighter!=null){
-				highlighter.highlight(CodeEditor.this);
-			}
-		});
-		area.textProperty().addListener((e,o,n)->task.summit(n));
-		highlighters.setValue(lex);
 		Selection<Collection<String>,String,Collection<String>> currentBrace=createSelection(0,0,"brace");
 		area.addSelection(currentBrace);
 		Selection<Collection<String>,String,Collection<String>> matchingBrace=createSelection(0,0,"brace");
@@ -130,6 +112,18 @@ public class CodeEditor extends BorderPane{
 		});
 		setCenter(new VirtualizedScrollPane(area));
 		getStylesheets().add(getClass().getResource("/stylesheet.css").toString());
+		this.completeManager=new CompleteManager(this);
+		this.tooltipManager=new TooltipManager(this);
+		this.languageManager=new LanguageManager(this);
+	}
+	public TooltipManager getTooltipManager(){
+		return tooltipManager;
+	}
+	public CompleteManager getCompleteManager(){
+		return completeManager;
+	}
+	public LanguageManager getLanguageManager(){
+		return languageManager;
 	}
 	private static int findMatchingBraceForward(String text,int start,char left,char right){
 		int level=1;
@@ -205,123 +199,6 @@ public class CodeEditor extends BorderPane{
 	public SelectionGroup getCurrentSelectionGroup(){
 		return selections.get(currentSelectionGroup);
 	}
-	private Runnable destroyCompleteSupport=null;
-	public void setAutoCompleteProvider(AutoCompleteProvider provider,boolean once){
-		if(destroyCompleteSupport!=null){
-			destroyCompleteSupport.run();
-			destroyCompleteSupport=null;
-		}
-		if(provider!=null){
-			destroyCompleteSupport=new CompleteSupport(provider).apply(area,once);
-		}
-	}
-	private List<? extends org.antlr.v4.runtime.Token> tokens;
-	void cache(List<? extends org.antlr.v4.runtime.Token> tokens){
-		this.tokens=tokens;
-	}
-	private Object syntaxTree;
-	public Object syntaxTree(){
-		if(syntaxTree==null&&parserBuilder!=null){
-			syntaxTree=parserBuilder.parse(tokens);
-		}
-		return syntaxTree;
-	}
-	public void selectNode(){
-		IndexRange oldselection=area.getSelection();
-		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
-		Interval newselection=node.getSourceInterval();
-		area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
-	}
-	public void selectParentNode(){
-		IndexRange oldselection=area.getSelection();
-		ParseTree node=getOuterNode(getSurroundingNode(oldselection.getStart(),oldselection.getEnd()));
-		if(node!=null){
-			Interval newselection=node.getSourceInterval();
-			area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
-		}
-	}
-	public void selectChildNode(){
-		ParseTree node=getSurroundingNode(area.getSelection().getStart(),area.getSelection().getEnd());
-		Interval oldInterval=node.getSourceInterval();
-		while(node.getChildCount()>0){
-			node=node.getChild(0);
-			Interval newInterval=node.getSourceInterval();
-			if(newInterval.a!=oldInterval.a||newInterval.b!=oldInterval.b){
-				area.selectRange(tokens.get(newInterval.a).getStartIndex(),tokens.get(newInterval.b).getStopIndex()+1);
-				return;
-			}
-		}
-	}
-	public void selectPreviousNode(){
-		IndexRange oldselection=area.getSelection();
-		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
-		ParseTree parent=getOuterNode(node);
-		if(node!=null){
-			for(int i=0;i<parent.getChildCount();i++){
-				if(parent.getChild(i).getSourceInterval().equals(node.getSourceInterval())&&i>0){
-					Interval newselection=parent.getChild(i-1).getSourceInterval();
-					area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
-				}
-			}
-		}
-	}
-	public void selectNextNode(){
-		IndexRange oldselection=area.getSelection();
-		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
-		ParseTree parent=getOuterNode(node);
-		if(parent!=null){
-			for(int i=0;i<parent.getChildCount();i++){
-				if(parent.getChild(i).getSourceInterval().equals(node.getSourceInterval())&&i+1<parent.getChildCount()){
-					Interval newselection=parent.getChild(i+1).getSourceInterval();
-					area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
-				}
-			}
-		}
-	}
-	public void selectFirstNode(){
-		IndexRange oldselection=area.getSelection();
-		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
-		ParseTree parent=getOuterNode(node);
-		if(node!=null){
-			Interval newselection=parent.getChild(0).getSourceInterval();
-			area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
-		}
-	}
-	public void selectLastNode(){
-		IndexRange oldselection=area.getSelection();
-		ParseTree node=getSurroundingNode(oldselection.getStart(),oldselection.getEnd());
-		ParseTree parent=getOuterNode(node);
-		if(node!=null){
-			Interval newselection=parent.getChild(parent.getChildCount()-1).getSourceInterval();
-			area.selectRange(tokens.get(newselection.a).getStartIndex(),tokens.get(newselection.b).getStopIndex()+1);
-		}
-	}
-	private ParseTree getOuterNode(ParseTree node){
-		Interval oldInterval=node.getSourceInterval();
-		while(node.getParent()!=null){
-			node=node.getParent();
-			Interval newInterval=node.getSourceInterval();
-			if(newInterval.a!=oldInterval.a||newInterval.b!=oldInterval.b){
-				return node;
-			}
-		}
-		return null;
-	}
-	public ParseTree getSurroundingNode(int start,int end){
-		ParseTree tree=(ParseTree)syntaxTree();
-		while(true){
-			int childCount=tree.getChildCount();
-			int index=0;
-			while(index<childCount&&tokens.get(tree.getChild(index).getSourceInterval().a).getStartIndex()<=start){
-				++index;
-			}
-			if(index==0||tokens.get(tree.getChild(index-1).getSourceInterval().b).getStopIndex()+1<end){
-				return tree;
-			}else{
-				tree=tree.getChild(index-1);
-			}
-		}
-	}
 	public CodeArea getArea(){
 		return area;
 	}
@@ -371,31 +248,6 @@ public class CodeEditor extends BorderPane{
 	}
 	public void deletePreviousChar(){
 		area.previousChar(NavigationActions.SelectionPolicy.EXTEND);
-		area.replaceSelection("");
-	}
-	public void nextWord(NavigationActions.SelectionPolicy policy){
-		int from=area.getCaretPosition();
-		int to=tokens.stream().mapToInt((t)->t.getStartIndex()).filter((i)->i>from).findFirst().orElse(area.getLength());//TODO: bsearch is better
-		area.moveTo(to,policy);
-	}
-	public void previousWord(NavigationActions.SelectionPolicy policy){
-		int from=area.getCaretPosition();
-		int to=tokens.stream().mapToInt((t)->t.getStartIndex()).filter((i)->i<from).max().orElse(0);//TODO: bsearch is better
-		area.moveTo(to,policy);
-	}
-	public void selectWord(){
-		int from=area.getCaretPosition();
-		Optional<? extends Token> token=tokens.stream().filter((t)->t.getStopIndex()>from).findFirst();
-		if(token.isPresent()){
-			area.selectRange(token.get().getStartIndex(),token.get().getStopIndex()+1);
-		}
-	}
-	public void deleteNextWord(){
-		nextWord(NavigationActions.SelectionPolicy.EXTEND);
-		area.replaceSelection("");
-	}
-	public void deletePreviousWord(){
-		previousWord(NavigationActions.SelectionPolicy.EXTEND);
 		area.replaceSelection("");
 	}
 	public void nextLine(NavigationActions.SelectionPolicy policy){

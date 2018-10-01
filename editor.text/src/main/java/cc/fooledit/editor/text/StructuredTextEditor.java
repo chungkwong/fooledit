@@ -89,22 +89,22 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("paste",(area)->area.getArea().paste());
 		addCommand("swap-anchor-and-caret",(area)->area.swapAnchorAndCaret());
 		addCommand("select-all",(area)->area.getArea().selectAll());
-		addCommand("select-word",(area)->area.selectWord());
+		addCommand("select-word",(area)->area.getLanguageManager().selectWord());
 		addCommand("select-line",(area)->area.getArea().selectLine());
 		addCommand("select-paragraph",(area)->area.getArea().selectParagraph());
 		addCommand("delete-selection-or-next-character",(area)->area.delete());
 		addCommand("delete-selection-or-previous-character",(area)->area.backspace());
 		addCommand("delete-next-character",(area)->area.deleteNextChar());
 		addCommand("delete-previous-character",(area)->area.deletePreviousChar());
-		addCommand("delete-next-word",(area)->area.deleteNextWord());
-		addCommand("delete-previous-word",(area)->area.deletePreviousWord());
+		addCommand("delete-next-word",(area)->area.getLanguageManager().deleteNextWord());
+		addCommand("delete-previous-word",(area)->area.getLanguageManager().deletePreviousWord());
 		addCommand("delete-line",(area)->area.deleteLine());
 		addCommand("clear",(area)->area.getArea().clear());
 		addCommand("new-line",(area)->area.newline());
 		addCommand("new-line-no-indent",(area)->area.getArea().replaceSelection("\n"));
 		addCommand("indent",(area)->area.getArea().replaceSelection("\t"));
-		addCommand("move-to-next-word",(area)->area.nextWord(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("move-to-previous-word",(area)->area.previousWord(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-next-word",(area)->area.getLanguageManager().nextWord(NavigationActions.SelectionPolicy.CLEAR));
+		addCommand("move-to-previous-word",(area)->area.getLanguageManager().previousWord(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-next-character",(area)->area.getArea().nextChar(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-previous-character",(area)->area.getArea().previousChar(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-next-line",(area)->area.nextLine(NavigationActions.SelectionPolicy.CLEAR));
@@ -117,8 +117,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("move-to-paragraph-begin",(area)->area.getArea().paragraphStart(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-file-end",(area)->area.getArea().end(NavigationActions.SelectionPolicy.CLEAR));
 		addCommand("move-to-file-begin",(area)->area.getArea().start(NavigationActions.SelectionPolicy.CLEAR));
-		addCommand("select-to-next-word",(area)->area.nextWord(NavigationActions.SelectionPolicy.ADJUST));
-		addCommand("select-to-previous-word",(area)->area.previousWord(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-next-word",(area)->area.getLanguageManager().nextWord(NavigationActions.SelectionPolicy.ADJUST));
+		addCommand("select-to-previous-word",(area)->area.getLanguageManager().previousWord(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-next-character",(area)->area.getArea().nextChar(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-previous-character",(area)->area.getArea().previousChar(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-next-line",(area)->area.nextLine(NavigationActions.SelectionPolicy.ADJUST));
@@ -135,13 +135,13 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("reverse-selection",(area)->area.reverseSelection());
 		addCommand("next-selection",(area)->area.nextSelection());
 		addCommand("previous-selection",(area)->area.previousSelection());
-		addCommand("select-node",(area)->area.selectNode());
-		addCommand("select-parent-node",(area)->area.selectParentNode());
-		addCommand("select-child-node",(area)->area.selectChildNode());
-		addCommand("select-next-node",(area)->area.selectNextNode());
-		addCommand("select-previous-node",(area)->area.selectPreviousNode());
-		addCommand("select-first-node",(area)->area.selectFirstNode());
-		addCommand("select-last-node",(area)->area.selectLastNode());
+		addCommand("select-node",(area)->area.getLanguageManager().selectNode());
+		addCommand("select-parent-node",(area)->area.getLanguageManager().selectParentNode());
+		addCommand("select-child-node",(area)->area.getLanguageManager().selectChildNode());
+		addCommand("select-next-node",(area)->area.getLanguageManager().selectNextNode());
+		addCommand("select-previous-node",(area)->area.getLanguageManager().selectPreviousNode());
+		addCommand("select-first-node",(area)->area.getLanguageManager().selectFirstNode());
+		addCommand("select-last-node",(area)->area.getLanguageManager().selectLastNode());
 		addCommand("indent-more",(area)->area.transformLines(StructuredTextEditor::indentMore));
 		addCommand("indent-less",(area)->area.transformLines(StructuredTextEditor::indentLess));
 		addCommand("duplicate-lines",(area)->area.transformLines(StructuredTextEditor::duplicateLine));
@@ -195,8 +195,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			return area.getArea().getText(start,end);
 		});
 		clips.registerComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry,Activator.class);
-		addCommand("clips",(area)->area.setAutoCompleteProvider(AutoCompleteProvider.createFixed(
-				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList())),true));
+		addCommand("clips",(area)->area.getCompleteManager().show(AutoCompleteProvider.createFixed(
+				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList()))));
 		addCommand("highlight",(area)->area.getCurrentSelectionGroup().select(area.getArea().getSelection().getStart(),area.getArea().getSelection().getEnd()));
 		addCommand("unhighlight",(area)->area.unhighlight());
 		addCommand("find-string",Collections.singletonList(new Argument("target")),(args,area)->{
@@ -385,7 +385,9 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		}catch(MimeTypeParseException ex){
 			Logger.getGlobal().log(Level.INFO,"",ex);
 		}
-		CodeEditor codeEditor=new CodeEditor(parserBuilder,highlighter);
+		CodeEditor codeEditor=new CodeEditor();
+		codeEditor.getLanguageManager().setHighlighter(highlighter);
+		codeEditor.getLanguageManager().setParserBuilder(parserBuilder);
 		codeEditor.textProperty().bindBidirectional(data.getText());
 		if(remark instanceof ListRegistryNode){
 			List<Number> pair=((ListRegistryNode<Number>)remark).getChildren();

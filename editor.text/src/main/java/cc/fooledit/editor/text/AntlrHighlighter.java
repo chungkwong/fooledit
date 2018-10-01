@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.text;
-import cc.fooledit.editor.text.lex.LexerBuilder;
+import cc.fooledit.editor.text.lex.*;
 import java.util.*;
 import java.util.logging.*;
 import javafx.application.*;
@@ -41,13 +41,14 @@ public class AntlrHighlighter implements Highlighter{
 	public void highlight(CodeEditor editor){
 		CodeArea area=editor.getArea();
 		List<? extends org.antlr.v4.runtime.Token> tokens=computeTokens(area.getText());
-		if(tokens.isEmpty())
+		if(tokens.isEmpty()){
 			return;
+		}
 		StyleSpans<Collection<String>> highlighting=computeHighlighting(tokens);
 		Platform.runLater(()->{
 			try{
 				area.setStyleSpans(0,highlighting);
-				editor.cache(tokens);
+				editor.getLanguageManager().cache(tokens);
 			}catch(Exception ex){
 				Logger.getGlobal().log(Level.FINEST,"",ex);
 			}
@@ -68,8 +69,9 @@ public class AntlrHighlighter implements Highlighter{
 		StyleSpansBuilder<Collection<String>> spansBuilder=new StyleSpansBuilder<>();
 		index=0;
 		tokens.forEach((t)->{
-			if(t.getStartIndex()>index)
+			if(t.getStartIndex()>index){
 				spansBuilder.add(Collections.singleton("comment"),t.getStartIndex()-index);
+			}
 			index=t.getStopIndex()+1;
 			spansBuilder.add(styles[t.getType()+1],index-t.getStartIndex());
 		});
@@ -80,8 +82,9 @@ public class AntlrHighlighter implements Highlighter{
 		styles[0]=Collections.singleton("EOF");
 		lexEngine.getTokenTypeMap().forEach((s,i)->{
 			if(i>=0){
-				if(styles[i+1]==null)
+				if(styles[i+1]==null){
 					styles[i+1]=new LinkedList();
+				}
 				styles[i+1].add(s);
 				String subType=s;
 				while(superType.containsKey(subType)){
