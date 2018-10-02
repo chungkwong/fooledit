@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.text;
-import cc.fooledit.editor.text.lex.MetaLexer;
-import cc.fooledit.editor.text.lex.Token;
+import cc.fooledit.editor.text.lex.*;
 import java.util.*;
 import java.util.logging.*;
 import javafx.application.*;
@@ -53,5 +52,23 @@ public class AdhokHighlighter implements Highlighter{
 		}
 		System.out.println(System.currentTimeMillis()-time);
 		return spansBuilder.create();
+	}
+}
+class InteruptableIterator<T> implements Iterator<T>{
+	private final Iterator<T> iter;
+	public InteruptableIterator(Iterator<T> iter){
+		this.iter=iter;
+	}
+	@Override
+	public boolean hasNext(){
+		if(Thread.currentThread().isInterrupted()){
+			//System.err.println("oop");
+			throw new RuntimeException();
+		}
+		return iter.hasNext();
+	}
+	@Override
+	public T next(){
+		return iter.next();
 	}
 }

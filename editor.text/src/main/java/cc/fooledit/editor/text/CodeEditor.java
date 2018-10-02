@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.editor.text;
-import cc.fooledit.editor.text.LineNumberFactory;
-import java.text.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.regex.*;
@@ -26,24 +24,18 @@ import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.collections.*;
 import javafx.geometry.*;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.text.*;
 import org.fxmisc.flowless.*;
 import org.fxmisc.richtext.Caret.CaretVisibility;
 import org.fxmisc.richtext.*;
-import org.reactfx.collection.*;
-import org.reactfx.value.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CodeEditor extends BorderPane{
 	private final CodeArea area=new CodeArea();
-	private final LineNumberFactory header=new LineNumberFactory(area);
 	private final IndentPolicy indentPolicy;
 	private final StringProperty textProperty=new PlainTextProperty();
 	private final TreeSet<CaretNode> markers=new TreeSet<>(Comparator.comparing((n)->n.getPosition()));
@@ -53,6 +45,8 @@ public class CodeEditor extends BorderPane{
 	private final CompleteManager completeManager;
 	private final TooltipManager tooltipManager;
 	private final LanguageManager languageManager;
+	private final LineLabelManager lineLabelManager;
+	private final MarkManager markManager;
 	public CodeEditor(){
 		selections.add(createSelectionGroup("selection"));
 		//tree=parser!=null?new SyntaxSupport(parser,lex,area):null;
@@ -63,7 +57,6 @@ public class CodeEditor extends BorderPane{
 				area.insertText(area.getCaretPosition(),e.getCommitted());
 			}
 		});
-		area.setParagraphGraphicFactory(header);
 		area.focusedProperty().addListener((e,o,n)->{
 			if(n){
 				area.setStyle("-fx-caret-blink-rate:500ms;");
@@ -115,6 +108,8 @@ public class CodeEditor extends BorderPane{
 		this.completeManager=new CompleteManager(this);
 		this.tooltipManager=new TooltipManager(this);
 		this.languageManager=new LanguageManager(this);
+		this.lineLabelManager=new LineLabelManager(this);
+		this.markManager=new MarkManager(this);
 	}
 	public TooltipManager getTooltipManager(){
 		return tooltipManager;
@@ -124,6 +119,12 @@ public class CodeEditor extends BorderPane{
 	}
 	public LanguageManager getLanguageManager(){
 		return languageManager;
+	}
+	public LineLabelManager getLineLabelManager(){
+		return lineLabelManager;
+	}
+	public MarkManager getMarkManager(){
+		return markManager;
 	}
 	private static int findMatchingBraceForward(String text,int start,char left,char right){
 		int level=1;
@@ -204,9 +205,6 @@ public class CodeEditor extends BorderPane{
 	}
 	public StringProperty textProperty(){
 		return textProperty;
-	}
-	Map<Integer,Node> annotations(){
-		return header.getMarks();
 	}
 	public ObservableList<SelectionGroup> selections(){
 		return selections;
@@ -331,7 +329,7 @@ public class CodeEditor extends BorderPane{
 	class InputMethodRequestsObject implements InputMethodRequests{
 		@Override
 		public String getSelectedText(){
-			return "";
+			return area.getSelectedText();
 		}
 		@Override
 		public int getLocationOffset(int x,int y){
@@ -409,74 +407,6 @@ public class CodeEditor extends BorderPane{
 				throw new java.lang.RuntimeException("A bound value cannot be set.");
 			}
 			area.replaceText(t);
-		}
-	}
-}
-class InteruptableIterator<T> implements Iterator<T>{
-	private final Iterator<T> iter;
-	public InteruptableIterator(Iterator<T> iter){
-		this.iter=iter;
-	}
-	@Override
-	public boolean hasNext(){
-		if(Thread.currentThread().isInterrupted()){
-			//System.err.println("oop");
-			throw new RuntimeException();
-		}
-		return iter.hasNext();
-	}
-	@Override
-	public T next(){
-		return iter.next();
-	}
-}
-class LineNumberFactory implements IntFunction<Node>{
-	private static final Insets INSETS=new Insets(0.0,5.0,0.0,5.0);
-	private static final Background BACKGROUND=new Background(new BackgroundFill(Color.LIGHTGRAY,null,null));
-	private static final Font FONT=Font.font("monospace");
-	private final NumberFormat format=NumberFormat.getIntegerInstance();
-	private final Val<Integer> paragraphs;
-	private final Map<Integer,Node> marks=new HashMap<>();
-	LineNumberFactory(CodeArea area){
-		paragraphs=LiveList.sizeOf(area.getParagraphs());
-		paragraphs.addListener((e,o,n)->format.setMinimumIntegerDigits(getNumberOfDigit(n)));
-	}
-	public Map<Integer,Node> getMarks(){
-		return marks;
-	}
-	@Override
-	public Node apply(int idx){
-		if(marks.containsKey(idx)){
-			return marks.get(idx);
-		}
-		Val<String> formatted=paragraphs.map((n)->format.format(idx+1));
-		Label lineNo=new Label();
-		lineNo.setFont(FONT);
-		lineNo.setBackground(BACKGROUND);
-		lineNo.setPadding(INSETS);
-		lineNo.getStyleClass().add("lineno");
-		lineNo.textProperty().bind(formatted.conditionOnShowing(lineNo));
-		return lineNo;
-	}
-	private static int getNumberOfDigit(int n){
-		if(n<10){
-			return 1;
-		}else if(n<100){
-			return 2;
-		}else if(n<1000){
-			return 3;
-		}else if(n<10000){
-			return 4;
-		}else if(n<100000){
-			return 5;
-		}else if(n<1000000){
-			return 6;
-		}else if(n<10000000){
-			return 7;
-		}else if(n<100000000){
-			return 8;
-		}else{
-			return 9;
 		}
 	}
 }
