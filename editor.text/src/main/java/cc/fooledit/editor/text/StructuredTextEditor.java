@@ -132,7 +132,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		addCommand("select-to-file-end",(area)->area.getArea().end(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("select-to-file-begin",(area)->area.getArea().start(NavigationActions.SelectionPolicy.ADJUST));
 		addCommand("deselect",(area)->area.getArea().deselect());
-		addCommand("reverse-selection",(area)->area.reverseSelection());
+		addCommand("reverse-selection",(area)->area.getMarkManager().reverseSelection());
 		addCommand("next-selection",(area)->area.nextSelection());
 		addCommand("previous-selection",(area)->area.previousSelection());
 		addCommand("select-node",(area)->area.getLanguageManager().selectNode());
@@ -197,8 +197,8 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		clips.registerComamnds("clip",()->getCurrentEditor().getArea().getSelectedText(),(clip)->getCurrentEditor().getArea().replaceSelection(clip),commandRegistry,Activator.class);
 		addCommand("clips",(area)->area.getCompleteManager().show(AutoCompleteProvider.createFixed(
 				clips.stream().map((c)->AutoCompleteHint.create(c,c,c)).collect(Collectors.toList()))));
-		addCommand("highlight",(area)->area.getCurrentSelectionGroup().select(area.getArea().getSelection().getStart(),area.getArea().getSelection().getEnd()));
-		addCommand("unhighlight",(area)->area.unhighlight());
+		addCommand("highlight",(area)->area.getMarkManager().getCurrentSelectionGroup().select(area.getArea().getSelection().getStart(),area.getArea().getSelection().getEnd()));
+		addCommand("unhighlight",(area)->area.getMarkManager().unhighlight());
 		addCommand("find-string",Collections.singletonList(new Argument("target")),(args,area)->{
 			return area.find((String)args[0]);
 		});
@@ -235,17 +235,17 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			return null;
 		});
 		addCommand("mark",Arrays.asList(new Argument("position",()->((CodeEditor)Main.INSTANCE.getCurrentNode()).getArea().getCaretPosition())),(args,area)->{
-			area.mark((int)args[0]);
+			area.getMarkManager().mark((int)args[0]);
 			return null;
 		});
 		addCommand("unmark",Arrays.asList(new Argument("start",()->((CodeEditor)Main.INSTANCE.getCurrentNode()).getArea().getSelection().getStart()),
 				new Argument("end",()->((CodeEditor)Main.INSTANCE.getCurrentNode()).getArea().getSelection().getEnd())),(args,area)->{
-					area.unmark((int)args[0],(int)args[1]+1);
+					area.getMarkManager().unmark((int)args[0],(int)args[1]+1);
 					return null;
 				});
 		addCommand("next-marker",Collections.emptyList(),(args,area)->{
 			int position=area.getArea().getCaretPosition();
-			Optional<CaretNode> nextTag=area.getMarkers().stream().filter((tag)->tag.getPosition()>position).findFirst();
+			Optional<CaretNode> nextTag=area.getMarkManager().getMarkers().stream().filter((tag)->tag.getPosition()>position).findFirst();
 			if(nextTag.isPresent()){
 				area.getArea().moveTo(nextTag.get().getPosition());
 			}
@@ -253,7 +253,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 		});
 		addCommand("previous-marker",Arrays.asList(new Argument("position",()->((CodeEditor)Main.INSTANCE.getCurrentNode()).getArea().getCaretPosition())),(args,area)->{
 			int position=area.getArea().getCaretPosition();
-			Optional<CaretNode> prevTag=area.getMarkers().descendingSet().stream().filter((tag)->tag.getPosition()<position).findFirst();
+			Optional<CaretNode> prevTag=area.getMarkManager().getMarkers().descendingSet().stream().filter((tag)->tag.getPosition()<position).findFirst();
 			if(prevTag.isPresent()){
 				area.getArea().moveTo(prevTag.get().getPosition());
 			}
@@ -358,10 +358,10 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 	@Override
 	public Object getRemark(Node node){
 		CodeEditor editor=(CodeEditor)node;
-		List<Integer> remark=new ArrayList<>(editor.selections().size()*2+2);
+		List<Integer> remark=new ArrayList<>(editor.getMarkManager().selections().size()*2+2);
 		remark.add(editor.getArea().getAnchor());
 		remark.add(editor.getArea().getCaretPosition());
-		editor.getCurrentSelectionGroup().getSelections().forEach((range)->{
+		editor.getMarkManager().getCurrentSelectionGroup().getSelections().forEach((range)->{
 			remark.add(range.getStartPosition());
 			remark.add(range.getEndPosition());
 		});
@@ -394,7 +394,7 @@ public class StructuredTextEditor implements DataEditor<TextObject>{
 			int len=codeEditor.getArea().getLength();
 			codeEditor.getArea().selectRange(Math.min(pair.get(0).intValue(),len),Math.min(pair.get(1).intValue(),len));
 			for(int i=2;i<pair.size();i+=2){
-				codeEditor.getCurrentSelectionGroup().select(pair.get(i).intValue(),pair.get(i+1).intValue());
+				codeEditor.getMarkManager().getCurrentSelectionGroup().select(pair.get(i).intValue(),pair.get(i+1).intValue());
 			}
 		}
 		return codeEditor;

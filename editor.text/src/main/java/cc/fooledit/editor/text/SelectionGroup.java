@@ -46,7 +46,7 @@ public class SelectionGroup{
 		selections.add(createSelection(start,end));
 	}
 	private Selection<Collection<String>,String,Collection<String>> createSelection(int start,int end){
-		return area.createSelection(start,end,cls);
+		return area.getMarkManager().createSelection(start,end,cls);
 	}
 	public ObservableList<Selection<Collection<String>,String,Collection<String>>> getSelections(){
 		return selections;

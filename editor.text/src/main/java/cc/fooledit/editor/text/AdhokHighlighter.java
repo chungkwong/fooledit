@@ -43,14 +43,14 @@ public class AdhokHighlighter implements Highlighter{
 		});
 	}
 	private StyleSpans<Collection<String>> computeHighlighting(String text){
-		long time=System.currentTimeMillis();
+		//long time=System.currentTimeMillis();
 		StyleSpansBuilder<Collection<String>> spansBuilder=new StyleSpansBuilder<>();
 		Iterator<Token> iter=new InteruptableIterator<>(lex.split(text));
 		while(iter.hasNext()){
 			Token token=iter.next();
 			spansBuilder.add(Collections.singleton(token.getType()),token.getText().length());
 		}
-		System.out.println(System.currentTimeMillis()-time);
+		//System.out.println(System.currentTimeMillis()-time);
 		return spansBuilder.create();
 	}
 }

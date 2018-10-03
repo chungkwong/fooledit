@@ -69,7 +69,7 @@ public class FindToolBox implements ToolBox{
 		private final RealTimeTask<String> task;
 		private FindPanel(CodeEditor area){
 			this.area=area;
-			this.found=area.createSelectionGroup("found");
+			this.found=area.getMarkManager().createSelectionGroup("found");
 			HBox searchBar=new HBox();
 			searchBar.getChildren().add(new Label(MessageRegistry.getString("FIND",Activator.class)));
 			findString.textProperty().addListener((e,o,n)->find(n));
