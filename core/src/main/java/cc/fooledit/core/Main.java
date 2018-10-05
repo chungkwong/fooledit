@@ -307,6 +307,7 @@ public class Main extends Application{
 			last=(SimpleRegistryNode<String,Object>)StandardSerializiers.JSON_SERIALIZIER.decode(Helper.readText(new File(Main.INSTANCE.getUserPath(),"layout.json")));
 			resetRootWorkSheet(WorkSheet.fromJSON(last));
 		}catch(Exception ex){
+			Logger.getGlobal().log(Level.INFO,"Failed to restore workspace",ex);
 			resetRootWorkSheet(new WorkSheet());
 		}
 		EventManager.addEventListener(EventManager.SHUTDOWN,(obj)->{

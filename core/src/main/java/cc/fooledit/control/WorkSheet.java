@@ -22,6 +22,7 @@ import java.util.function.*;
 import java.util.logging.*;
 import java.util.stream.*;
 import javafx.application.*;
+import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.collections.*;
 import javafx.geometry.*;
@@ -41,6 +42,7 @@ public class WorkSheet extends BorderPane{
 	private final RegistryNode<String,Object> registry;
 	private final Supplier<Object> remarkSupplier=()->getDataEditor().getRemark(getNode());
 	private final ListChangeListener<Tab> tabChanged=(e)->restoreRegistry();
+	private final Property<String> titleProperty=new SimpleObjectProperty<>("");
 	public WorkSheet(){
 		WorkSheet child=getDefaultWorkSheet();
 		registry=new SimpleRegistryNode<>();
@@ -50,7 +52,6 @@ public class WorkSheet extends BorderPane{
 	public WorkSheet(RegistryNode<String,Object> data,DataEditor editor,Object remark){
 		registry=new SimpleRegistryNode<>();
 		setData(data,editor,remark);
-		restoreRegistry();
 	}
 	private WorkSheet(Node node){
 		registry=new SimpleRegistryNode<>();
@@ -87,7 +88,6 @@ public class WorkSheet extends BorderPane{
 				requestFocus();
 			});
 		}
-		restoreRegistry();
 	}
 	private void setData(RegistryNode<String,Object> data,DataEditor editor,Object remark){
 		Node node=editor.edit((DataObject)data.get(DataObject.DATA),remark,data);
@@ -96,13 +96,17 @@ public class WorkSheet extends BorderPane{
 		nodeWithSideBar.getProperties().put(DATA_EDITOR_NAME,editor);
 		Main.INSTANCE.getKeymapManager().adopt(node,editor.getKeymapRegistry(),editor.getCommandRegistry());
 		setCenter(nodeWithSideBar);
+		restoreRegistry();
+		titleProperty.setValue(getName());
 	}
 	private void restoreRegistry(){
 		registry.clear();
 		if(getCenter() instanceof SideBarPane){
 			registry.put(REMARK,new LazyValue<>(remarkSupplier));
 			registry.put(BUFFER,getDataObject());
-			registry.put(EDITOR,getDataEditor().getClass().getName());
+			if(getDataEditor()!=null){
+				registry.put(EDITOR,getDataEditor().getClass().getName());
+			}
 			registry.put(CURRENT,new LazyValue<>(()->Main.INSTANCE.getCurrentWorkSheet()==WorkSheet.this));
 			registry.put(LEFT,new LazyValue<>(()->getSideBarRegistry(Side.LEFT)));
 			registry.put(RIGHT,new LazyValue<>(()->getSideBarRegistry(Side.RIGHT)));
@@ -187,6 +191,7 @@ public class WorkSheet extends BorderPane{
 	}
 	public void addTab(WorkSheet worksheet){
 		Tab newTab=new Tab(worksheet.getName(),worksheet);
+		newTab.textProperty().bind(worksheet.titleProperty);
 		if(isTabed()){
 			((TabPane)getCenter()).getTabs().add(newTab);
 			((TabPane)getCenter()).getSelectionModel().select(newTab);
@@ -276,7 +281,7 @@ public class WorkSheet extends BorderPane{
 			WorkSheet workSheet=new WorkSheet(getLoadingLabel());
 			CoreModule.DATA_OBJECT_TYPE_REGISTRY.setOnValue((String)buffer.get(DataObject.TYPE),(type)->{
 				CoreModule.DATA_OBJECT_EDITOR_REGISTRY.setOnValue((String)json.get(EDITOR),(editor)->{
-					Platform.runLater(()->workSheet.setData(DataObjectRegistry.get((RegistryNode<String,Object>)json.get(BUFFER)),editor,null));
+					Platform.runLater(()->workSheet.setData(DataObjectRegistry.get(buffer),editor,null));
 				});
 			});
 			return workSheet;
@@ -332,7 +337,11 @@ public class WorkSheet extends BorderPane{
 			return getFirst().getName()+"...";
 		}else{
 			RegistryNode<String,Object> dataObject=getDataObject();
-			return Objects.toString(getDataObject().getOrDefault(DataObject.BUFFER_NAME,"..."));
+			if(dataObject!=null){
+				return Objects.toString(dataObject.getOrDefault(DataObject.BUFFER_NAME,"..."));
+			}else{
+				return "...";
+			}
 		}
 	}
 	public RegistryNode<String,Object> getRegistry(){
