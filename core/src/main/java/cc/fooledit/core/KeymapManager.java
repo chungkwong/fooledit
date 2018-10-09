@@ -43,10 +43,6 @@ public class KeymapManager{
 					e.consume();
 				}
 			}else if(e.getEventType().equals(KeyEvent.KEY_PRESSED)){
-				if(e.getCode().isModifierKey()){
-					e.consume();
-					return;
-				}
 				String code=currKey==null?encode(e):currKey+'+'+encode(e);
 				Node node=scene.getFocusOwner();
 				while(node!=null){

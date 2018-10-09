@@ -272,10 +272,10 @@ public class WorkSheet extends BorderPane{
 			pane.setDividerPositions(((Number)json.get(DIVIDER)).doubleValue());
 			return new WorkSheet(pane,json);
 		}else if(json.containsKey(CHILDREN)){
-			TabPane pane=new DraggableTabPane();
+			WorkSheet sheet=new WorkSheet(new DraggableTabPane());
 			ListRegistryNode<RegistryNode<String,Object>> children=(ListRegistryNode<RegistryNode<String,Object>>)json.get(CHILDREN);
-			pane.getTabs().setAll(children.getChildren().stream().map((child)->fromJSON(child)).map((child)->new Tab(child.getName(),child)).collect(Collectors.toList()));
-			return new WorkSheet(pane,json);
+			children.getChildren().stream().map((child)->fromJSON(child)).forEach((tab)->sheet.addTab(tab));
+			return sheet;
 		}else{
 			RegistryNode<String,Object> buffer=(RegistryNode<String,Object>)json.get(BUFFER);
 			WorkSheet workSheet=new WorkSheet(getLoadingLabel());
