@@ -65,5 +65,4 @@ public class DraggableTabPane extends TabPane{
 			draged=null;
 		});
 	}
-
 }

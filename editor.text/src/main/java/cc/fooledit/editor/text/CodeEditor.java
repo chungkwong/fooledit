@@ -242,14 +242,14 @@ public class CodeEditor extends BorderPane{
 		}
 		@Override
 		public int getLocationOffset(int x,int y){
-			return 0;
+			return area.getCaretPosition();
 		}
 		@Override
 		public void cancelLatestCommittedText(){
 		}
 		@Override
 		public Point2D getTextLocation(int offset){
-			return new Point2D(0,0);
+			return area.getCharacterBoundsOnScreen(offset,offset).map((b)->new Point2D(b.getMinX(),b.getMaxY())).orElse(Point2D.ZERO);
 		}
 	}
 	class PlainTextProperty extends StringProperty{
