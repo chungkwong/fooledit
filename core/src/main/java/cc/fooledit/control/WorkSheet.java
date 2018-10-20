@@ -275,6 +275,7 @@ public class WorkSheet extends BorderPane{
 			WorkSheet sheet=new WorkSheet(new DraggableTabPane());
 			ListRegistryNode<RegistryNode<String,Object>> children=(ListRegistryNode<RegistryNode<String,Object>>)json.get(CHILDREN);
 			children.getChildren().stream().map((child)->fromJSON(child)).forEach((tab)->sheet.addTab(tab));
+			sheet.removeTab(sheet.getTabs().findFirst().get());
 			return sheet;
 		}else{
 			RegistryNode<String,Object> buffer=(RegistryNode<String,Object>)json.get(BUFFER);
