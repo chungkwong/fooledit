@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control;
-import cc.fooledit.core.Helper;
+import cc.fooledit.core.*;
 import cc.fooledit.util.*;
 import java.util.logging.*;
 import java.util.stream.*;
@@ -36,28 +36,54 @@ public class AutoCompleteService{
 	private static final PopupHint popupHint=new PopupHint();
 	private static final RealTimeTask<HintContext> task=new RealTimeTask<>((o)->{
 		Stream<AutoCompleteHint> hint=o.provider.checkForHints(o.text,o.position);
-		if(!Thread.interrupted())
+		if(!Thread.interrupted()){
 			Platform.runLater(()->popupHint.showHints(o.component,o.position,hint));
+		}
 	});
 	public AutoCompleteService(TextInputControl comp,AutoCompleteProvider hints){
 		this.hints=hints;
 		this.comp=comp;
 		comp.addEventFilter(KeyEvent.KEY_PRESSED,(e)->{
-			if(popupHint.isShowing())
+			if(popupHint.isShowing()){
 				switch(e.getCode()){
-					case UP:popupHint.selectPrevious();comp.requestFocus();e.consume();break;
-					case DOWN:popupHint.selectNext();comp.requestFocus();e.consume();break;
-					case ENTER:if(popupHint.isShowing()){popupHint.choose();comp.requestFocus();e.consume();}break;
-					case ESCAPE:popupHint.hideHints();comp.requestFocus();e.consume();break;
+					case UP:
+						popupHint.selectPrevious();
+						comp.requestFocus();
+						e.consume();
+						break;
+					case DOWN:
+						popupHint.selectNext();
+						comp.requestFocus();
+						e.consume();
+						break;
+					case ENTER:
+						if(popupHint.isShowing()){
+							popupHint.choose();
+							comp.requestFocus();
+							e.consume();
+						}
+						break;
+					case ESCAPE:
+						popupHint.hideHints();
+						comp.requestFocus();
+						e.consume();
+						break;
 				}
+			}
 		});
 		comp.focusedProperty().addListener((e,o,n)->{
-			if(!n)
-				//updateHint(comp.getCaretPosition());
+			if(!n) //updateHint(comp.getCaretPosition());
 			//else
+			{
 				popupHint.hideHints();
+			}
 		});
-		comp.caretPositionProperty().addListener((e,o,n)->{try{updateHint(n.intValue());}catch(Exception ex){}});
+		comp.caretPositionProperty().addListener((e,o,n)->{
+			try{
+				updateHint(n.intValue());
+			}catch(Exception ex){
+			}
+		});
 	}
 	public void updateHint(int pos){
 		task.summit(new HintContext(hints,comp.getText(),pos,comp));
@@ -84,12 +110,14 @@ class PopupHint{
 	private Popup popup=new Popup();
 	public PopupHint(){
 		model.selectedItemProperty().addListener((e,o,n)->{
-			if(n!=null)
+			if(n!=null){
 				note.getEngine().loadContent(Helper.readText(n.getDocument()));
+			}
 		});
 		loc.setOnMouseClicked((e)->{
-			if(e.getClickCount()==2)
+			if(e.getClickCount()==2){
 				choose();
+			}
 		});
 		BorderPane pane=new BorderPane();
 		loc.setOpacity(0.8);
@@ -103,12 +131,14 @@ class PopupHint{
 		popup.getContent().add(pane);
 	}
 	public void showHints(TextInputControl comp,int pos,Stream<AutoCompleteHint> choices){
-		if(!comp.isFocused())
+		if(!comp.isFocused()){
 			return;
+		}
 		hideHints();
 		loc.getItems().setAll(choices.collect(Collectors.toList()));
-		if(loc.getItems().isEmpty())
+		if(loc.getItems().isEmpty()){
 			return;
+		}
 		this.pos=pos;
 		this.doc=comp;
 		model.selectFirst();
@@ -131,11 +161,12 @@ class PopupHint{
 		model.selectNext();
 	}
 	void choose(){
-		choose(model.getSelectedItem().getInputText());
+		choose(model.getSelectedItem().getInputText(),model.getSelectedItem().getOffset());
 	}
-	private void choose(String inputText){
+	private void choose(String inputText,int offset){
 		try{
 			doc.insertText(pos,inputText);
+			doc.selectPositionCaret(pos+offset);
 		}catch(Exception ex){
 			Logger.getGlobal().log(Level.FINER,inputText,ex);
 		}

@@ -24,6 +24,9 @@ public interface AutoCompleteHint{
 	String getDisplayText();
 	String getInputText();
 	Reader getDocument();
+	default int getOffset(){
+		return getInputText().length();
+	}
 	static AutoCompleteHint create(String displayText,String inputText,String document){
 		return new SimpleHint(displayText,inputText,document);
 	}
@@ -32,11 +35,16 @@ public interface AutoCompleteHint{
 	}
 }
 class SimpleHint implements AutoCompleteHint{
-	private final String displayText,inputText,document;
+	private final String displayText, inputText, document;
+	private final int offset;
 	public SimpleHint(String displayText,String inputText,String document){
+		this(displayText,inputText,document,inputText.length());
+	}
+	public SimpleHint(String displayText,String inputText,String document,int offset){
 		this.displayText=displayText;
 		this.inputText=inputText;
 		this.document=document;
+		this.offset=offset;
 	}
 	@Override
 	public String getDisplayText(){
@@ -45,6 +53,9 @@ class SimpleHint implements AutoCompleteHint{
 	@Override
 	public String getInputText(){
 		return inputText;
+	}
+	public int getCaretOffset(){
+		return offset;
 	}
 	@Override
 	public Reader getDocument(){
