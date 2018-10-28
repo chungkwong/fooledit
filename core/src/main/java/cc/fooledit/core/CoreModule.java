@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.core;
+import cc.fooledit.control.property.*;
 import cc.fooledit.spi.*;
 import java.io.*;
 import java.util.*;
@@ -51,6 +52,7 @@ public class CoreModule{
 	public static final String KEYMAP_REGISTRY_NAME="keymap";
 	public static final String MESSAGE_REGISTRY_NAME="message";
 	public static final String MENU_REGISTRY_NAME="menu";
+	public static final String PROPERTY_EDITOR_REGISTRY_NAME="property_editor";
 	public static final String SERIALIZIER_REGISTRY_NAME="serializier";
 	public static final String TASK_REGISTRY_NAME="task";
 	public static final String TEMPLATE_REGISTRY_NAME="template";
@@ -78,6 +80,7 @@ public class CoreModule{
 	public static ListRegistryNode<RegistryNode<String,Object>> HISTORY_REGISTRY=fromJSON("file_history.json",()->new ListRegistryNode<>(new LinkedList<>()));
 	public static final RegistryNode<String,Class> INSTALLED_MODULE_REGISTRY=(RegistryNode<String,Class>)REGISTRY.getOrCreateChild(INSTALLED_MODULE_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> INSTALLING_MODULE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(INSTALLING_MODULE_REGISTRY_NAME);
+	public static final RegistryNode<Class,PropertyEditorFactory> PROPERTY_EDITOR_REGISTRY=(RegistryNode<Class,PropertyEditorFactory>)REGISTRY.getOrCreateChild(PROPERTY_EDITOR_REGISTRY_NAME);
 	public static final RegistryNode<String,Serializier> SERIALIZIER_REGISTRY=(RegistryNode<String,Serializier>)REGISTRY.getOrCreateChild(SERIALIZIER_REGISTRY_NAME);
 	public static final RegistryNode<String,Task> TASK_REGISTRY=(RegistryNode<String,Task>)REGISTRY.getOrCreateChild(TASK_REGISTRY_NAME);
 	public static final RegistryNode<String,Object> TEMPLATE_REGISTRY=(RegistryNode<String,Object>)REGISTRY.getOrCreateChild(TEMPLATE_REGISTRY_NAME);
