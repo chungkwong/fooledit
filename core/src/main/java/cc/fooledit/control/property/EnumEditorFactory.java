@@ -22,8 +22,10 @@ import javafx.scene.control.*;
  * @author Chan Chung Kwong
  */
 public class EnumEditorFactory<T extends Enum<T>> implements PropertyEditorFactory<T,ComboBox<T>>{
+	enum Some{
+	}
 	@Override
-	public ComboBox<T> create(T value,boolean editable){
+	public ComboBox<T> create(T value,boolean editable,Class<T> type){
 		ComboBox<T> node=new ComboBox<T>();//FIXME
 		node.setValue(value);
 		return node;

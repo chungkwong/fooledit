@@ -23,7 +23,7 @@ import javafx.scene.control.*;
  */
 public class BooleanEditorFactory implements PropertyEditorFactory<Boolean,CheckBox>{
 	@Override
-	public CheckBox create(Boolean value,boolean editable){
+	public CheckBox create(Boolean value,boolean editable,Class<Boolean> type){
 		CheckBox node=new CheckBox();
 		node.setSelected(value);
 		return node;

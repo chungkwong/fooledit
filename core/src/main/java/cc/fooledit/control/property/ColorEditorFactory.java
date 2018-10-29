@@ -17,31 +17,32 @@
 package cc.fooledit.control.property;
 import javafx.beans.value.*;
 import javafx.scene.control.*;
+import javafx.scene.paint.*;
 /**
  *
  * @author Chan Chung Kwong
  */
-public class StringEditorFactory implements PropertyEditorFactory<String,TextArea>{
+public class ColorEditorFactory implements PropertyEditorFactory<Color,ColorPicker>{
 	@Override
-	public TextArea create(String value,boolean editable,Class<String> type){
-		TextArea textArea=new TextArea(value);
-		textArea.setEditable(editable);
-		return textArea;
+	public ColorPicker create(Color value,boolean editable,Class<Color> type){
+		ColorPicker node=new ColorPicker(value);
+		node.setEditable(editable);
+		return node;
 	}
 	@Override
-	public String getValue(TextArea node){
-		return node.getText();
+	public Color getValue(ColorPicker node){
+		return node.getValue();
 	}
 	@Override
-	public void setValue(String value,TextArea node){
-		node.setText(value);
+	public void setValue(Color value,ColorPicker node){
+		node.setValue(value);
 	}
 	@Override
-	public void addPropertyChangeListener(ChangeListener<? super String> listener,TextArea node){
-		node.textProperty().addListener(listener);
+	public void addPropertyChangeListener(ChangeListener<? super Color> listener,ColorPicker node){
+		node.valueProperty().addListener(listener);
 	}
 	@Override
-	public void removePropertyChangeListener(ChangeListener<? super String> listener,TextArea node){
-		node.textProperty().removeListener(listener);
+	public void removePropertyChangeListener(ChangeListener<? super Color> listener,ColorPicker node){
+		node.valueProperty().removeListener(listener);
 	}
 }

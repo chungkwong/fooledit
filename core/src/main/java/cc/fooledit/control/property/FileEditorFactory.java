@@ -15,16 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control.property;
-import javafx.beans.value.*;
-import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong
  */
-public interface PropertyEditorFactory<T,N extends Node>{
-	N create(T value,boolean editable,Class<T> type);
-	T getValue(N node);
-	void setValue(T value,N node);
-	void addPropertyChangeListener(ChangeListener<? super T> listener,N node);
-	void removePropertyChangeListener(ChangeListener<? super T> listener,N node);
+public class FileEditorFactory{
 }
