@@ -105,5 +105,11 @@ public class CoreModule{
 		PERSISTENT_REGISTRY.put(NAME+"/"+PERSISTENT_REGISTRY_NAME);
 		MISC_REGISTRY.putIfAbsent(ModuleRegistry.REPOSITORY,"https://raw.githubusercontent.com/chungkwong/fooledit/master/MODULES");
 		MISC_REGISTRY.putIfAbsent(ScriptAPI.ENGINE,"JSchemeMin");
+		PROPERTY_EDITOR_REGISTRY.put(String.class,new StringEditorFactory());
+		PROPERTY_EDITOR_REGISTRY.put(Boolean.class,new BooleanEditorFactory());
+		PROPERTY_EDITOR_REGISTRY.put(Number.class,new NumberEditorFactory());
+		PROPERTY_EDITOR_REGISTRY.put(List.class,new ListEditorFactory());
+		PROPERTY_EDITOR_REGISTRY.put(Map.class,new MapEditorFactory());
+		PROPERTY_EDITOR_REGISTRY.put(Object.class,new BeanEditorFactory());
 	}
 }

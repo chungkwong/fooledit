@@ -26,6 +26,7 @@ public class BooleanEditorFactory implements PropertyEditorFactory<Boolean,Check
 	public CheckBox create(Boolean value,boolean editable,Class<Boolean> type){
 		CheckBox node=new CheckBox();
 		node.setSelected(value);
+		node.setDisable(!editable);
 		return node;
 	}
 	@Override

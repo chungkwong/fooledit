@@ -15,9 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control.property;
+import java.io.*;
+import javafx.beans.value.*;
+import javafx.scene.*;
 /**
  *
  * @author Chan Chung Kwong
  */
-public class FileEditorFactory{
+public class FileEditorFactory implements PropertyEditorFactory<File,Node>{
+	@Override
+	public Node create(File value,boolean editable,Class<File> type){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public File getValue(Node node){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public void setValue(File value,Node node){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public void addPropertyChangeListener(ChangeListener<? super File> listener,Node node){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	@Override
+	public void removePropertyChangeListener(ChangeListener<? super File> listener,Node node){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

@@ -16,30 +16,31 @@
  */
 package cc.fooledit.control.property;
 import javafx.beans.value.*;
-import javafx.scene.*;
+import javafx.scene.control.*;
 /**
  *
  * @author Chan Chung Kwong
  */
-public class ClassEditorFactory implements PropertyEditorFactory<Class,Node>{
+public class NumberEditorFactory implements PropertyEditorFactory<Number,Spinner<Number>>{
 	@Override
-	public Node create(Class value,boolean editable,Class<Class> type){
+	public Spinner<Number> create(Number value,boolean editable,Class<Number> type){
+		Spinner<Number> node=new Spinner<>(Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY,value.doubleValue());
+		return node;
+	}
+	@Override
+	public Number getValue(Spinner<Number> node){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public Class getValue(Node node){
+	public void setValue(Number value,Spinner<Number> node){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public void setValue(Class value,Node node){
+	public void addPropertyChangeListener(ChangeListener<? super Number> listener,Spinner<Number> node){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public void addPropertyChangeListener(ChangeListener<? super Class> listener,Node node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void removePropertyChangeListener(ChangeListener<? super Class> listener,Node node){
+	public void removePropertyChangeListener(ChangeListener<? super Number> listener,Spinner<Number> node){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
