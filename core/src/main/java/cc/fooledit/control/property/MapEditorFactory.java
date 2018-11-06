@@ -17,30 +17,31 @@
 package cc.fooledit.control.property;
 import java.util.*;
 import javafx.beans.value.*;
-import javafx.scene.*;
+import javafx.scene.control.*;
 /**
  *
  * @author Chan Chung Kwong
  */
-public class MapEditorFactory implements PropertyEditorFactory<Map,Node>{
+public class MapEditorFactory implements PropertyEditorFactory<Map,TableView>{
 	@Override
-	public Node create(Map value,boolean editable,Class<Map> type){
+	public TableView create(Map value,boolean editable,Class<Map> type){
+		TableView<Object> tableView=new TableView<Object>();
+		return tableView;
+	}
+	@Override
+	public Map getValue(TableView node){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public Map getValue(Node node){
+	public void setValue(Map value,TableView node){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public void setValue(Map value,Node node){
+	public void addPropertyChangeListener(ChangeListener<? super Map> listener,TableView node){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public void addPropertyChangeListener(ChangeListener<? super Map> listener,Node node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void removePropertyChangeListener(ChangeListener<? super Map> listener,Node node){
+	public void removePropertyChangeListener(ChangeListener<? super Map> listener,TableView node){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

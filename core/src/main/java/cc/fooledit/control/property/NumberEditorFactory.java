@@ -29,18 +29,18 @@ public class NumberEditorFactory implements PropertyEditorFactory<Number,Spinner
 	}
 	@Override
 	public Number getValue(Spinner<Number> node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return node.getValue();
 	}
 	@Override
 	public void setValue(Number value,Spinner<Number> node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		node.getValueFactory().setValue(value);
 	}
 	@Override
 	public void addPropertyChangeListener(ChangeListener<? super Number> listener,Spinner<Number> node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		node.getValueFactory().valueProperty().addListener(listener);
 	}
 	@Override
 	public void removePropertyChangeListener(ChangeListener<? super Number> listener,Spinner<Number> node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		node.getValueFactory().valueProperty().removeListener(listener);
 	}
 }
