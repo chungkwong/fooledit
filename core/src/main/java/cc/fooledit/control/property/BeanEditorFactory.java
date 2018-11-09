@@ -15,40 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control.property;
+import cc.fooledit.core.*;
 import java.beans.*;
 import java.util.*;
-import java.util.logging.*;
 import javafx.beans.value.*;
-import javafx.scene.*;
+import javafx.scene.control.*;
 /**
  *
  * @author Chan Chung Kwong
  */
-public class BeanEditorFactory implements PropertyEditorFactory<Object,Node>{
+public class BeanEditorFactory implements PropertyEditorFactory<Object,TreeTableView>{
 	@Override
-	public Node create(Object value,boolean editable,Class<Object> type){
-		try{
-			Introspector.getBeanInfo(type);
-		}catch(IntrospectionException ex){
-			Logger.getLogger(BeanEditorFactory.class.getName()).log(Level.SEVERE,null,ex);
-			return null;
-		}
+	public TreeTableView create(Object value,boolean editable,Class<Object> type){
+		TreeTableView<Object> node=new TreeTableView<>();
+		TreeTableColumn<Object,String> keyColumn=new TreeTableColumn<>(MessageRegistry.getString("KEY",Activator.class));
+		TreeTableColumn<Object,Object> valueColumn=new TreeTableColumn<>(MessageRegistry.getString("VALUE",Activator.class));
+		node.getColumns().addAll(keyColumn,valueColumn);
+		setValue(value,node);
+		return node;
+	}
+	@Override
+	public Object getValue(TreeTableView node){
+		return node.getRoot().getValue();
+	}
+	@Override
+	public void setValue(Object value,TreeTableView node){
+		node.setRoot(new TreeItem<>(value));
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public Object getValue(Node node){
+	public void addPropertyChangeListener(ChangeListener<? super Object> listener,TreeTableView node){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public void setValue(Object value,Node node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void addPropertyChangeListener(ChangeListener<? super Object> listener,Node node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void removePropertyChangeListener(ChangeListener<? super Object> listener,Node node){
+	public void removePropertyChangeListener(ChangeListener<? super Object> listener,TreeTableView node){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	public static void main(String[] args) throws IntrospectionException{

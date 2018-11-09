@@ -26,6 +26,7 @@ public class MapEditorFactory implements PropertyEditorFactory<Map,TableView>{
 	@Override
 	public TableView create(Map value,boolean editable,Class<Map> type){
 		TableView<Object> tableView=new TableView<Object>();
+		setValue(value,tableView);
 		return tableView;
 	}
 	@Override

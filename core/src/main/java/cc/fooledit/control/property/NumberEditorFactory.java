@@ -23,13 +23,45 @@ import javafx.scene.control.*;
  */
 public class NumberEditorFactory implements PropertyEditorFactory<Number,Spinner<Number>>{
 	@Override
-	public Spinner<Number> create(Number value,boolean editable,Class<Number> type){
+	public Spinner<Number> create(Number value,boolean editable,Class type){
+		if(type.isPrimitive()){
+			if(int.class.equals(type)){
+				type=Integer.class;
+			}else if(double.class.equals(type)){
+				type=Double.class;
+			}else if(long.class.equals(type)){
+				type=Long.class;
+			}else if(float.class.equals(type)){
+				type=Float.class;
+			}else if(short.class.equals(type)){
+				type=Short.class;
+			}else if(byte.class.equals(type)){
+				type=Byte.class;
+			}
+		}
 		Spinner<Number> node=new Spinner<>(Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY,value.doubleValue());
+		node.setUserData(type);
 		return node;
 	}
 	@Override
 	public Number getValue(Spinner<Number> node){
-		return node.getValue();
+		Object type=node.getUserData();
+		Number value=node.getValue();
+		if(Integer.class.equals(type)){
+			return value.intValue();
+		}else if(Double.class.equals(type)){
+			return value.doubleValue();
+		}else if(Long.class.equals(type)){
+			return value.longValue();
+		}else if(Float.class.equals(type)){
+			return value.floatValue();
+		}else if(Short.class.equals(type)){
+			return value.shortValue();
+		}else if(Byte.class.equals(type)){
+			return value.byteValue();
+		}else{
+			return value;
+		}
 	}
 	@Override
 	public void setValue(Number value,Spinner<Number> node){
