@@ -39,10 +39,11 @@ public class ListEditorFactory implements PropertyEditorFactory<List,ListView>{
 	}
 	@Override
 	public List getValue(ListView node){
-		return node.getItems();
+		return (List)node.getUserData();
 	}
 	@Override
 	public void setValue(List value,ListView node){
+		node.setUserData(value);
 		if(value instanceof ObservableList){
 			node.setItems((ObservableList)value);
 		}else{
@@ -58,7 +59,8 @@ public class ListEditorFactory implements PropertyEditorFactory<List,ListView>{
 	private static class ElementCell extends ListCell<Object>{
 		@Override
 		protected void updateItem(Object item,boolean empty){
-			super.updateItem(item,empty); //To change body of generated methods, choose Tools | Templates.
+			super.updateItem(item,empty);
+			setGraphic(PropertyEditorFactory.createEditor(item,true,Object.class));
 		}
 	}
 }

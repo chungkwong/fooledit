@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.fooledit.control.property;
+import cc.fooledit.core.*;
 import java.util.*;
+import javafx.beans.property.*;
 import javafx.beans.value.*;
 import javafx.scene.control.*;
 /**
@@ -25,24 +27,32 @@ import javafx.scene.control.*;
 public class MapEditorFactory implements PropertyEditorFactory<Map,TableView>{
 	@Override
 	public TableView create(Map value,boolean editable,Class<Map> type){
-		TableView<Object> tableView=new TableView<Object>();
-		setValue(value,tableView);
-		return tableView;
+		TableView<Map.Entry<Object,Object>> node=new TableView<>();
+		TableColumn<Map.Entry<Object,Object>,Object> keyColumn=new TableColumn<>(MessageRegistry.getString("KEY",Activator.class));
+		keyColumn.setCellValueFactory((param)->{
+			return new SimpleObjectProperty<>(param.getValue().getKey());
+		});
+		TableColumn<Map.Entry<Object,Object>,Object> valueColumn=new TableColumn<>(MessageRegistry.getString("VALUE",Activator.class));
+		valueColumn.setCellValueFactory((param)->{
+			return new SimpleObjectProperty<>(param.getValue().getValue());
+		});
+		node.getColumns().addAll(keyColumn,valueColumn);
+		setValue(value,node);
+		return node;
 	}
 	@Override
 	public Map getValue(TableView node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return (Map)node.getUserData();
 	}
 	@Override
 	public void setValue(Map value,TableView node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		node.setUserData(value);
+		node.getItems().setAll(value.entrySet());
 	}
 	@Override
 	public void addPropertyChangeListener(ChangeListener<? super Map> listener,TableView node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
 	public void removePropertyChangeListener(ChangeListener<? super Map> listener,TableView node){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
